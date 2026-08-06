@@ -52,8 +52,8 @@ jobs:
             exit 0
           fi
 
-          echo "New version detected: $TAG_NAME. Building all packages..."
-          bun run build:all
+          echo "New version detected: $TAG_NAME. Building extension packages..."
+          bun run build:extension
 
           # Create and rename output files
           CHROME_FILE="gistwarden-chrome-${TAG_NAME}.zip"
