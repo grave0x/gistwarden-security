@@ -294,6 +294,187 @@ strict-mode-first codebases.
 
 ---
 
+## 15. Rust-Grade Safety & Reliability Patterns in TypeScript
+
+To achieve Rust-like safety guarantees in TypeScript without sacrificing developer experience, enforce the following 5 core patterns with explicit **DO** and **DON'T** practices:
+
+---
+
+### A. Transparent Error Handling with `Result<T, E>`
+
+- **DON'T**: Throw uncaught exceptions or swallow errors with empty `catch` blocks.
+```typescript
+// Anti-pattern: Throws exception that crashes caller if unhandled
+function parseData(jsonStr: string): UserData {
+  return JSON.parse(jsonStr); // Crashes at runtime on invalid JSON
+}
+
+// Anti-pattern: Swallowing error silently
+function getUser(id: string): UserData | null {
+  try {
+    return fetchUserFromDb(id);
+  } catch {
+    return null; // Conflates "not found" with "db network crash"!
+  }
+}
+```
+
+- **DO**: Return explicit `Result<T, E>` and handle early returns.
+```typescript
+import { ok, err, Result } from "@gistwarden/domain";
+
+// Safe: Forced error path contract in type signature
+export function parseData(jsonStr: string): Result<UserData, "invalid_json"> {
+  try {
+    return ok(JSON.parse(jsonStr) as UserData);
+  } catch {
+    return err("invalid_json");
+  }
+}
+
+// Caller handle pattern:
+const res = parseData(rawInput);
+if (res.isErr()) {
+  return showNotification(res.error); // Early return on error
+}
+console.log(res.value.name); // Type-safe access after isErr check
+```
+
+---
+
+### B. Discriminated Unions with Exhaustive Checks (`assertNever`)
+
+- **DON'T**: Use bloated interfaces full of optional fields.
+```typescript
+// Anti-pattern: Loose interface with optional fields
+interface VaultItem {
+  id: string;
+  type: string;
+  username?: string;    // Only for login
+  cardNumber?: string;  // Only for card
+  notes?: string;       // Only for note
+}
+// Problem: Item can have type "login" but missing username at runtime!
+```
+
+- **DO**: Use Discriminated Unions + `assertNever` in `switch` statements.
+```typescript
+// Safe: Strict tagged union
+type VaultItem = 
+  | { type: "login"; username: string; password: string }
+  | { type: "card"; cardNumber: string; expiry: string }
+  | { type: "note"; notes: string };
+
+function assertNever(x: never): never {
+  throw new Error(`Unhandled union case: ${JSON.stringify(x)}`);
+}
+
+function getItemSummary(item: VaultItem): string {
+  switch (item.type) {
+    case "login": return `Login: ${item.username}`;
+    case "card": return `Card: **** ${item.cardNumber.slice(-4)}`;
+    case "note": return `Note: ${item.notes.slice(0, 20)}`;
+    default: return assertNever(item); // Compile Error if new union type added without handling!
+  }
+}
+```
+
+---
+
+### C. Boundary Parsing with Zod (Never Trust External Input)
+
+- **DON'T**: Trust dynamic inputs or use type assertions (`as`).
+```typescript
+// Anti-pattern: Type assertion performs zero runtime checks
+function handleApiResponse(rawJson: unknown) {
+  const user = rawJson as UserPayload; // If rawJson is null or missing fields, crashes later!
+  console.log(user.profile.email);
+}
+```
+
+- **DO**: Parse `unknown` inputs with Zod schemas at system boundaries and use `.readonly()` to enforce runtime and static immutability.
+```typescript
+import { z } from "zod";
+
+// Safe: Validated boundary schema with Zod .readonly() modifier
+const UserPayloadSchema = z.object({
+  id: z.string(),
+  profile: z.object({
+    email: z.string().email(),
+  }),
+  tags: z.array(z.string()).readonly(), // Infer type: readonly string[]
+}).readonly(); // Infer type: Readonly<{ readonly id: string; ... }>
+
+export type UserPayload = z.infer<typeof UserPayloadSchema>;
+
+function handleApiResponse(rawJson: unknown): Result<UserPayload, "invalid_payload"> {
+  const parsed = UserPayloadSchema.safeParse(rawJson);
+  if (!parsed.success) {
+    return err("invalid_payload");
+  }
+  // parsed.data.tags.push("new"); // Compile Error: Cannot mutate readonly array!
+  return ok(parsed.data);
+}
+```
+
+---
+
+### D. Zero Implicit Nullability & Strict Type Narrowing
+
+- **DON'T**: Use non-null assertion `!` or skip null checks.
+```typescript
+// Anti-pattern: Non-null assertion bypasses compiler safeguard
+const activeAccount = findAccount(id)!; 
+console.log(activeAccount.token); // Crashes if account not found!
+```
+
+- **DO**: Narrow types explicitly before accessing properties.
+```typescript
+// Safe: Explicit narrowing
+const activeAccount = findAccount(id);
+if (activeAccount == null) {
+  return err("account_not_found");
+}
+console.log(activeAccount.token); // Guaranteed non-null by TypeScript
+```
+
+---
+
+### E. Immutability by Default (`readonly`, `as const`, Zod `.readonly()`)
+
+- **DON'T**: Mutate input parameters or array state directly.
+```typescript
+// Anti-pattern: Mutating shared state in place
+function addTag(item: VaultItem, tag: string) {
+  item.tags.push(tag); // Side-effect: mutates caller's object!
+}
+```
+
+- **DO**: Enforce immutability using TS `readonly`, `Readonly<T>`, `as const`, and Zod `.readonly()`.
+```typescript
+// Safe (TypeScript): Readonly modifier & pure function returning fresh instance
+function addTag(
+  item: Readonly<VaultItem & { readonly tags: readonly string[] }>, 
+  tag: string
+) {
+  return {
+    ...item,
+    tags: [...item.tags, tag], // Fresh array instance
+  };
+}
+
+// Safe (Zod + TS): Schema automatically produces immutable types
+const ConfigSchema = z.object({
+  apiEndpoint: z.string().url(),
+  timeoutMs: z.number().positive(),
+}).readonly();
+
+type Config = z.infer<typeof ConfigSchema>; 
+// Infer type: Readonly<{ readonly apiEndpoint: string; readonly timeoutMs: number }>
+```
+
+---
+
 ## Key References
 
 - [TypeScript Handbook](https://www.typescriptlang.org/docs/handbook/intro.html)
