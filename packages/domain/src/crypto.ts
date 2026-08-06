@@ -1,3 +1,4 @@
+import { unzlibSync, zlibSync } from "fflate";
 import { argon2id } from "hash-wasm";
 import { err, ok, Result } from "neverthrow";
 import { type TranslationKey } from "./i18n.ts";
@@ -40,10 +41,12 @@ export async function encryptData(
 
   let ciphertextBuffer: ArrayBuffer;
   try {
+    const plaintextBytes = encoder.encode(data);
+    const compressedBytes = zlibSync(plaintextBytes);
     ciphertextBuffer = await crypto.subtle.encrypt(
       { name: "AES-GCM", iv },
       key,
-      encoder.encode(data),
+      compressedBytes,
     );
   } catch (e) {
     logger.crypto.error("AES-GCM Encryption failed:", e);
@@ -85,7 +88,17 @@ export async function decryptData(
     return err("login_error_wrong_mp");
   }
 
-  return ok(decoder.decode(decryptedBuffer));
+  const decryptedBytes = new Uint8Array(decryptedBuffer);
+  try {
+    if (decryptedBytes.length >= 2 && decryptedBytes[0] === 0x78) {
+      const decompressed = unzlibSync(decryptedBytes);
+      return ok(decoder.decode(decompressed));
+    }
+    return ok(decoder.decode(decryptedBytes));
+  } catch (e) {
+    logger.crypto.error("Decompression failed, falling back to raw decode:", e);
+    return ok(decoder.decode(decryptedBytes));
+  }
 }
 
 export function generateSalt(): Uint8Array {

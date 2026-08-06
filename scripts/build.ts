@@ -169,7 +169,14 @@ async function zipFolderNative(sourceDir: string, outputFile: string): Promise<v
   if (Object.keys(filesMap).length === 0) return;
   const compressionLevel = isFastDev ? 1 : 9;
   const zipped = zipSync(filesMap, { level: compressionLevel });
-  writeFileSync(outputFile, zipped);
+  try {
+    if (existsSync(outputFile)) {
+      rmSync(outputFile, { force: true });
+    }
+    writeFileSync(outputFile, zipped);
+  } catch (e) {
+    console.warn(`[Build] Warning: Could not write ${outputFile} (file may be locked by browser):`, e);
+  }
 }
 
 async function createZipPackages() {
