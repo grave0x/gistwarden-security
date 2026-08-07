@@ -1,11 +1,11 @@
-import { type Component, createMemo, For, Show } from "solid-js";
+import { type Component, createMemo, For } from "solid-js";
 import { isLoginItem, type LoginVaultItem, View } from "@gistwarden/domain";
 import { accountStore } from "@/core/store.ts";
 import { navigate, selectItem } from "@/core/navigation.ts";
 import { t } from "@/core/i18n.ts";
-import DetailHeader from "@/components/ui/DetailHeader.tsx";
 import { RepeatKeyIcon } from "@/icons/svg/index.ts";
 import { formatVaultItemUsername } from "./reports-service.ts";
+import { ReportLayout } from "./components/ReportLayout.tsx";
 
 interface ReusedGroup {
   passwordHashKey: string;
@@ -46,70 +46,48 @@ export const ReportReused: Component = () => {
   };
 
   return (
-    <div class="page-container report-detail-view">
-      <DetailHeader
-        title={t("report_reused_title")}
-        onBack={() => navigate(View.Reports)}
-      />
-
-      <p class="page-subtitle text-muted mt-2 mb-3">
-        {t("report_reused_desc")}
-      </p>
-
-      <Show
-        when={reusedGroups().length > 0}
-        fallback={
-          <div class="empty-state text-center p-4">
-            <div class="empty-state-icon mb-2">
+    <ReportLayout<ReusedGroup>
+      titleKey="report_reused_title"
+      descKey="report_reused_desc"
+      items={reusedGroups()}
+      cleanMsgKey="report_reused_clean_msg"
+      cleanIcon={<RepeatKeyIcon />}
+      renderItem={(group, index) => (
+        <div class="group-card mb-3">
+          <div class="group-header flex-align-center gap-2">
+            <div class="text-warning">
               <RepeatKeyIcon />
             </div>
-            <p class="text-muted fw-medium">
-              {t("report_reused_clean_msg")}
-            </p>
+            <h4 class="group-title">
+              {t("report_reused_group_title")
+                .replace("{index}", (index() + 1).toString())
+                .replace("{count}", group.items.length.toString())}
+            </h4>
           </div>
-        }
-      >
-        <div class="reused-groups-list">
-          <For each={reusedGroups()}>
-            {(group, index) => (
-              <div class="group-card">
-                <div class="group-header flex-align-center gap-2">
-                  <div class="text-warning">
-                    <RepeatKeyIcon />
-                  </div>
-                  <h4 class="group-title">
-                    {t("report_reused_group_title")
-                      .replace("{index}", (index() + 1).toString())
-                      .replace("{count}", group.items.length.toString())}
-                  </h4>
-                </div>
 
-                <div class="group-items">
-                  <For each={group.items}>
-                    {(item) => (
-                      <div class="item-row flex-between align-center">
-                        <div class="item-info">
-                          <div class="fw-semibold">{item.name}</div>
-                          <div class="text-muted text-sm">
-                            {formatVaultItemUsername(item)}
-                          </div>
-                        </div>
-                        <button
-                          class="btn btn-outline-primary btn-sm"
-                          onClick={() => handleEditItem(item)}
-                        >
-                          {t("report_reused_btn_change")}
-                        </button>
-                      </div>
-                    )}
-                  </For>
+          <div class="group-items">
+            <For each={group.items}>
+              {(item) => (
+                <div class="item-row flex-between align-center">
+                  <div class="item-info">
+                    <div class="fw-semibold">{item.name}</div>
+                    <div class="text-muted text-sm">
+                      {formatVaultItemUsername(item)}
+                    </div>
+                  </div>
+                  <button
+                    class="btn btn-outline-primary btn-sm"
+                    onClick={() => handleEditItem(item)}
+                  >
+                    {t("report_reused_btn_change")}
+                  </button>
                 </div>
-              </div>
-            )}
-          </For>
+              )}
+            </For>
+          </div>
         </div>
-      </Show>
-    </div>
+      )}
+    />
   );
 };
 

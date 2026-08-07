@@ -1,11 +1,11 @@
-import { type Component, createMemo, For, Show } from "solid-js";
+import { type Component, createMemo } from "solid-js";
 import { isLoginItem, type LoginVaultItem, View } from "@gistwarden/domain";
 import { accountStore } from "@/core/store.ts";
 import { navigate, selectItem } from "@/core/navigation.ts";
 import { t } from "@/core/i18n.ts";
-import DetailHeader from "@/components/ui/DetailHeader.tsx";
 import { saveItem } from "@/features/vault/vault-service.ts";
 import { setGlobalLoading } from "@gistwarden/ui";
+import { ReportLayout } from "./components/ReportLayout.tsx";
 
 export const ReportUnsecure: Component = () => {
   const unsecureItems = createMemo<LoginVaultItem[]>(() => {
@@ -55,67 +55,41 @@ export const ReportUnsecure: Component = () => {
     navigate(View.ItemEdit);
   };
 
-  const titleWithCount = () => {
-    const count = unsecureItems().length;
-    return count > 0
-      ? `${t("report_unsecure_title")} (${count})`
-      : t("report_unsecure_title");
-  };
-
   return (
-    <div class="page-container report-detail-view">
-      <DetailHeader
-        title={titleWithCount()}
-        onBack={() => navigate(View.Reports)}
-      />
-
-      <p class="page-subtitle text-muted mt-2 mb-3">
-        {t("report_unsecure_desc")}
-      </p>
-
-      <Show
-        when={unsecureItems().length > 0}
-        fallback={
-          <div class="empty-state text-center p-4 card mt-3">
-            <p class="text-muted fw-medium">
-              {t("report_unsecure_clean_msg")}
-            </p>
+    <ReportLayout<LoginVaultItem>
+      titleKey="report_unsecure_title"
+      descKey="report_unsecure_desc"
+      itemCount={unsecureItems().length}
+      items={unsecureItems()}
+      cleanMsgKey="report_unsecure_clean_msg"
+      renderItem={(item) => (
+        <div class="item-row flex-between align-center">
+          <div class="item-info">
+            <div class="fw-bold">{item.name}</div>
+            <div
+              class="text-muted text-sm font-monospace"
+              title={item.login.uris?.[0]?.uri || ""}
+            >
+              {item.login.uris?.[0]?.uri || t("report_no_uri")}
+            </div>
           </div>
-        }
-      >
-        <div class="unsecure-items-list mt-2">
-          <For each={unsecureItems()}>
-            {(item) => (
-              <div class="item-row flex-between align-center">
-                <div class="item-info">
-                  <div class="fw-bold">{item.name}</div>
-                  <div
-                    class="text-muted text-sm font-monospace"
-                    title={item.login.uris?.[0]?.uri || ""}
-                  >
-                    {item.login.uris?.[0]?.uri || t("report_no_uri")}
-                  </div>
-                </div>
-                <div class="item-actions">
-                  <button
-                    class="btn btn-outline-primary btn-sm"
-                    onClick={() => handleUpgradeHttps(item)}
-                  >
-                    {t("report_unsecure_btn_upgrade")}
-                  </button>
-                  <button
-                    class="btn btn-secondary btn-sm"
-                    onClick={() => handleEditItem(item)}
-                  >
-                    {t("btn_edit")}
-                  </button>
-                </div>
-              </div>
-            )}
-          </For>
+          <div class="item-actions">
+            <button
+              class="btn btn-outline-primary btn-sm"
+              onClick={() => handleUpgradeHttps(item)}
+            >
+              {t("report_unsecure_btn_upgrade")}
+            </button>
+            <button
+              class="btn btn-secondary btn-sm"
+              onClick={() => handleEditItem(item)}
+            >
+              {t("btn_edit")}
+            </button>
+          </div>
         </div>
-      </Show>
-    </div>
+      )}
+    />
   );
 };
 

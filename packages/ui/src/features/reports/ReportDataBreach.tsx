@@ -1,10 +1,8 @@
 import { type Component, createSignal, For, Show } from "solid-js";
-import { View } from "@gistwarden/domain";
-import { navigate } from "@/core/navigation.ts";
 import { t } from "@/core/i18n.ts";
-import DetailHeader from "@/components/ui/DetailHeader.tsx";
 import { DatabaseBreachIcon, SyncIcon } from "@/icons/svg/index.ts";
 import { checkEmailBreachUseCase } from "./reports-service.ts";
+import { ReportLayout } from "./components/ReportLayout.tsx";
 
 export const ReportDataBreach: Component = () => {
   const [emailInput, setEmailInput] = createSignal("");
@@ -39,16 +37,12 @@ export const ReportDataBreach: Component = () => {
   };
 
   return (
-    <div class="page-container report-detail-view">
-      <DetailHeader
-        title={t("report_databreach_title")}
-        onBack={() => navigate(View.Reports)}
-      />
-
-      <p class="page-subtitle text-muted mt-2 mb-3">
-        {t("report_databreach_desc")}
-      </p>
-
+    <ReportLayout<string>
+      titleKey="report_databreach_title"
+      descKey="report_databreach_desc"
+      hasScanned={false}
+      cleanMsgKey="report_databreach_clean_msg"
+    >
       <form onSubmit={handleCheckEmail} class="card p-3 mb-4">
         <div class="form-group mb-3">
           <label class="form-label">{t("report_databreach_title")}</label>
@@ -114,7 +108,7 @@ export const ReportDataBreach: Component = () => {
           </div>
         </Show>
       </Show>
-    </div>
+    </ReportLayout>
   );
 };
 

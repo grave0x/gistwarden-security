@@ -1,10 +1,10 @@
-import { type Component, createMemo, For, Show } from "solid-js";
+import { type Component, createMemo } from "solid-js";
 import { isLoginItem, type LoginVaultItem, View } from "@gistwarden/domain";
 import { accountStore } from "@/core/store.ts";
 import { navigate, selectItem } from "@/core/navigation.ts";
 import { t } from "@/core/i18n.ts";
-import DetailHeader from "@/components/ui/DetailHeader.tsx";
 import { formatVaultItemUsername } from "./reports-service.ts";
+import { ReportLayout } from "./components/ReportLayout.tsx";
 
 export const ReportInactive2FA: Component = () => {
   const inactiveItems = createMemo<LoginVaultItem[]>(() => {
@@ -23,56 +23,30 @@ export const ReportInactive2FA: Component = () => {
     navigate(View.ItemEdit);
   };
 
-  const titleWithCount = () => {
-    const count = inactiveItems().length;
-    return count > 0
-      ? `${t("report_inactive_2fa_title")} (${count})`
-      : t("report_inactive_2fa_title");
-  };
-
   return (
-    <div class="page-container report-detail-view">
-      <DetailHeader
-        title={titleWithCount()}
-        onBack={() => navigate(View.Reports)}
-      />
-
-      <p class="page-subtitle text-muted mt-2 mb-3">
-        {t("report_inactive_2fa_desc")}
-      </p>
-
-      <Show
-        when={inactiveItems().length > 0}
-        fallback={
-          <div class="empty-state text-center p-4 card mt-3">
-            <p class="text-muted fw-medium">
-              {t("report_inactive_2fa_clean_msg")}
-            </p>
+    <ReportLayout<LoginVaultItem>
+      titleKey="report_inactive_2fa_title"
+      descKey="report_inactive_2fa_desc"
+      itemCount={inactiveItems().length}
+      items={inactiveItems()}
+      cleanMsgKey="report_inactive_2fa_clean_msg"
+      renderItem={(item) => (
+        <div class="item-row flex-between align-center">
+          <div class="item-info">
+            <div class="fw-bold">{item.name}</div>
+            <div class="text-muted text-sm">
+              {formatVaultItemUsername(item)}
+            </div>
           </div>
-        }
-      >
-        <div class="inactive-items-list mt-2">
-          <For each={inactiveItems()}>
-            {(item) => (
-              <div class="item-row flex-between align-center">
-                <div class="item-info">
-                  <div class="fw-bold">{item.name}</div>
-                  <div class="text-muted text-sm">
-                    {formatVaultItemUsername(item)}
-                  </div>
-                </div>
-                <button
-                  class="btn btn-outline-primary btn-sm"
-                  onClick={() => handleEditItem(item)}
-                >
-                  {t("report_inactive_2fa_btn_setup")}
-                </button>
-              </div>
-            )}
-          </For>
+          <button
+            class="btn btn-outline-primary btn-sm"
+            onClick={() => handleEditItem(item)}
+          >
+            {t("report_inactive_2fa_btn_setup")}
+          </button>
         </div>
-      </Show>
-    </div>
+      )}
+    />
   );
 };
 
