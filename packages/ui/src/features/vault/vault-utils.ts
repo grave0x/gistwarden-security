@@ -4,97 +4,24 @@ import { type VaultItem, VaultItemType } from "@gistwarden/domain";
 import { confirm, setGlobalLoading, showToast } from "../../core/ui-service.ts";
 import { deleteItem } from "@/features/vault/vault-service.ts";
 import { navigate } from "@/core/navigation.ts";
+import {
+  getVaultItemStrategy,
+  getVaultItemTypeLabel as registryGetTypeLabel,
+} from "@/features/vault/registry/vault-item-registry.ts";
 
-export const getVaultItemTypeLabel = (type: VaultItemType | "all") => {
-  switch (type) {
-    case VaultItemType.Login:
-      return t("vault_item_login");
-    case VaultItemType.Card:
-      return t("vault_item_card");
-    case VaultItemType.Identity:
-      return t("vault_item_identity");
-    case VaultItemType.SecureNote:
-      return t("vault_item_note");
-    case VaultItemType.SshKey:
-      return t("vault_item_ssh_key");
-    default:
-      return t("vault_filter_type");
-  }
-};
+export const getVaultItemTypeLabel = registryGetTypeLabel;
 
 export const getVaultItemTitle = (type: VaultItemType, isEdit = false) => {
-  if (isEdit) {
-    switch (type) {
-      case VaultItemType.SecureNote:
-        return t("edit_title_edit_note");
-      case VaultItemType.Card:
-        return t("edit_title_edit_card");
-      case VaultItemType.Identity:
-        return t("edit_title_edit_identity");
-      case VaultItemType.SshKey:
-        return t("edit_title_edit_ssh_key");
-      default:
-        return t("edit_title_edit_login");
-    }
-  } else {
-    switch (type) {
-      case VaultItemType.SecureNote:
-        return t("edit_title_add_note");
-      case VaultItemType.Card:
-        return t("edit_title_add_card");
-      case VaultItemType.Identity:
-        return t("edit_title_add_identity");
-      case VaultItemType.SshKey:
-        return t("edit_title_add_ssh_key");
-      default:
-        return t("edit_title_add_login");
-    }
-  }
+  const strategy = getVaultItemStrategy(type);
+  return isEdit ? strategy.getEditTitle() : strategy.getAddTitle();
 };
 
 export const getVaultItemToastMsg = (type: VaultItemType, isEdit = false) => {
-  if (isEdit) {
-    switch (type) {
-      case VaultItemType.SecureNote:
-        return t("edit_toast_updated_note");
-      case VaultItemType.Card:
-        return t("edit_toast_updated_card");
-      case VaultItemType.Identity:
-        return t("edit_toast_updated_identity");
-      case VaultItemType.SshKey:
-        return t("edit_toast_updated_ssh_key");
-      default:
-        return t("edit_toast_updated_login");
-    }
-  } else {
-    switch (type) {
-      case VaultItemType.SecureNote:
-        return t("edit_toast_created_note");
-      case VaultItemType.Card:
-        return t("edit_toast_created_card");
-      case VaultItemType.Identity:
-        return t("edit_toast_created_identity");
-      case VaultItemType.SshKey:
-        return t("edit_toast_created_ssh_key");
-      default:
-        return t("edit_toast_created_login");
-    }
-  }
+  return getVaultItemStrategy(type).getToastMsg(isEdit);
 };
 
 export const getVaultItemDetailTitle = (type: VaultItemType | undefined) => {
-  switch (Number(type)) {
-    case VaultItemType.SecureNote:
-      return t("detail_title_note");
-    case VaultItemType.Card:
-      return t("detail_title_card");
-    case VaultItemType.Identity:
-      return t("detail_title_identity");
-    case VaultItemType.SshKey:
-      return t("detail_title_ssh_key");
-    default:
-      return t("detail_title_login");
-  }
+  return getVaultItemStrategy(type).getDetailTitle();
 };
 
 export const deleteVaultItemWithConfirm = async (
@@ -125,3 +52,4 @@ export const deleteVaultItemWithConfirm = async (
     return false;
   }
 };
+

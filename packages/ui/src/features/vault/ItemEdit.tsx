@@ -18,11 +18,7 @@ import Checkbox from "@/components/ui/Checkbox.tsx";
 import { TrashIcon } from "@/icons/svg/index.ts";
 import { t } from "@/core/i18n.ts";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
-import LoginEditFields from "@/features/vault/item-edit/LoginEditFields.tsx";
-import CardEditFields from "@/features/vault/item-edit/CardEditFields.tsx";
-import NoteEditFields from "@/features/vault/item-edit/NoteEditFields.tsx";
-import IdentityEditFields from "@/features/vault/item-edit/IdentityEditFields.tsx";
-import SshKeyEditFields from "@/features/vault/item-edit/SshKeyEditFields.tsx";
+import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
 import {
   getInitialFormState,
   type ItemEditFormState,
@@ -237,43 +233,19 @@ export const ItemEdit: Component = () => {
             </div>
           </div>
 
-          <Show when={formState.itemType === VaultItemType.Login}>
-            <LoginEditFields
-              formState={formState}
-              updateForm={updateForm}
-              onDeleteFido={handleDeleteFidoCredential}
-              scanning={scanning()}
-              onScanQr={handleScanQr}
-            />
-          </Show>
-
-          <Show when={formState.itemType === VaultItemType.Card}>
-            <CardEditFields
-              formState={formState}
-              updateForm={updateForm}
-            />
-          </Show>
-
-          <Show when={formState.itemType === VaultItemType.SecureNote}>
-            <NoteEditFields
-              formState={formState}
-              updateForm={updateForm}
-            />
-          </Show>
-
-          <Show when={formState.itemType === VaultItemType.Identity}>
-            <IdentityEditFields
-              formState={formState}
-              updateForm={updateForm}
-            />
-          </Show>
-
-          <Show when={formState.itemType === VaultItemType.SshKey}>
-            <SshKeyEditFields
-              formState={formState}
-              updateForm={updateForm}
-            />
-          </Show>
+          {(() => {
+            const strategy = getVaultItemStrategy(formState.itemType);
+            const EditComponent = strategy.EditComponent;
+            return (
+              <EditComponent
+                formState={formState}
+                updateForm={updateForm}
+                onDeleteFido={handleDeleteFidoCredential}
+                scanning={scanning()}
+                onScanQr={handleScanQr}
+              />
+            );
+          })()}
 
           {/* Notes Section (Common to Login and Card) */}
           <Show when={formState.itemType !== VaultItemType.SecureNote}>

@@ -3,15 +3,12 @@ import { type Folder, VaultItemType } from "@gistwarden/domain";
 import { getVaultItemTypeLabel } from "@/features/vault/vault-utils.ts";
 import { t } from "@/core/i18n.ts";
 import {
-  CardIcon,
   ChevronDownIcon,
   FolderIcon,
-  GlobeIcon,
-  IdentityIcon,
   ListIcon,
-  NoteIcon,
-  SshKeyIcon,
 } from "@/icons/svg/index.ts";
+import { getAllVaultItemStrategies } from "@/features/vault/registry/vault-item-registry.ts";
+import { createDefaultVaultItem } from "@/features/vault/item-edit/vault-edit-helper.ts";
 
 export interface VaultFilterPanelProps {
   showFilterPanel: boolean;
@@ -120,61 +117,21 @@ export const VaultFilterPanel: Component<VaultFilterPanelProps> = (props) => {
                 <ListIcon class="item-icon" />
                 <span>{t("vault_filter_all_types")}</span>
               </div>
-              <div
-                class={`dropdown-item ${
-                  props.selectedFilterType === VaultItemType.Login
-                    ? "selected"
-                    : ""
-                }`}
-                onClick={() => handleSelectType(VaultItemType.Login)}
-              >
-                <GlobeIcon class="item-icon" />
-                <span>{t("vault_item_login")}</span>
-              </div>
-              <div
-                class={`dropdown-item ${
-                  props.selectedFilterType === VaultItemType.Card
-                    ? "selected"
-                    : ""
-                }`}
-                onClick={() => handleSelectType(VaultItemType.Card)}
-              >
-                <CardIcon class="item-icon" />
-                <span>{t("vault_item_card")}</span>
-              </div>
-              <div
-                class={`dropdown-item ${
-                  props.selectedFilterType === VaultItemType.Identity
-                    ? "selected"
-                    : ""
-                }`}
-                onClick={() => handleSelectType(VaultItemType.Identity)}
-              >
-                <IdentityIcon class="item-icon" />
-                <span>{t("vault_item_identity")}</span>
-              </div>
-              <div
-                class={`dropdown-item ${
-                  props.selectedFilterType === VaultItemType.SecureNote
-                    ? "selected"
-                    : ""
-                }`}
-                onClick={() => handleSelectType(VaultItemType.SecureNote)}
-              >
-                <NoteIcon class="item-icon" />
-                <span>{t("vault_item_note")}</span>
-              </div>
-              <div
-                class={`dropdown-item ${
-                  props.selectedFilterType === VaultItemType.SshKey
-                    ? "selected"
-                    : ""
-                }`}
-                onClick={() => handleSelectType(VaultItemType.SshKey)}
-              >
-                <SshKeyIcon class="item-icon" />
-                <span>{t("vault_item_ssh_key")}</span>
-              </div>
+              <For each={getAllVaultItemStrategies()}>
+                {(strategy) => (
+                  <div
+                    class={`dropdown-item ${
+                      props.selectedFilterType === strategy.type ? "selected" : ""
+                    }`}
+                    onClick={() => handleSelectType(strategy.type)}
+                  >
+                    <span class="item-icon">
+                      {strategy.renderIcon(createDefaultVaultItem(strategy.type))}
+                    </span>
+                    <span>{getVaultItemTypeLabel(strategy.type)}</span>
+                  </div>
+                )}
+              </For>
             </div>
           </Show>
         </div>

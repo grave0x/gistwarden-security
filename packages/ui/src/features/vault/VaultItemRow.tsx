@@ -1,34 +1,14 @@
-import { type Component, Match, Show, Switch } from "solid-js";
+import { type Component, Show } from "solid-js";
 import { View } from "@/core/types.ts";
-import {
-  isCardItem,
-  isIdentityItem,
-  isLoginItem,
-  isSshKeyItem,
-  VaultItemType,
-} from "@gistwarden/domain";
-import type {
-  CardVaultItem,
-  IdentityVaultItem,
-  SshKeyVaultItem,
-  VaultItem,
-} from "@gistwarden/domain";
-import {
-  ExternalLinkIcon,
-  GlobeIcon,
-  IdentityIcon,
-  NoteIcon,
-  SshKeyIcon,
-} from "@/icons/svg/index.ts";
+import { type VaultItem, VaultItemType } from "@gistwarden/domain";
+import { ExternalLinkIcon } from "@/icons/svg/index.ts";
 import { openItem } from "@/core/navigation.ts";
 import { openTab } from "@/core/tabs.ts";
 import { t } from "@/core/i18n.ts";
-import CardBrandIcon from "@/components/ui/CardBrandIcon.tsx";
-import { getDomainFromItem } from "@/core/domain-utils.ts";
-import Favicon from "@/components/ui/Favicon.tsx";
 import { Checkbox } from "@/components/ui/Checkbox.tsx";
 import { VaultItemCopyMenu } from "@/features/vault/components/VaultItemCopyMenu.tsx";
 import { VaultItemOptionsMenu } from "@/features/vault/components/VaultItemOptionsMenu.tsx";
+import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
 
 interface VaultItemRowProps {
   item: VaultItem;
@@ -51,25 +31,8 @@ interface VaultItemRowProps {
   onContextMenuRow?: (itemId: string, e: MouseEvent) => void;
 }
 
-const getCardSub = (item: CardVaultItem): string => {
-  const brand = item.card.brand || "Card";
-  const number = item.card.number || "";
-  const last4 = number.length > 4 ? number.slice(-4) : number;
-  return `${brand}${last4 ? `, *${last4}` : ""}`;
-};
-
-const getIdentitySub = (item: IdentityVaultItem): string => {
-  const first = item.identity.firstName || "";
-  const last = item.identity.lastName || "";
-  return `${first} ${last}`.trim() || t("detail_identity_title");
-};
-
-const getSshKeySub = (item: SshKeyVaultItem): string => {
-  return item.sshKey.keyFingerprint || "SSH Key";
-};
-
 export const VaultItemRow: Component<VaultItemRowProps> = (props) => {
-  const domain = () => getDomainFromItem(props.item);
+  const strategy = () => getVaultItemStrategy(props.item.type);
 
   const getUri = (): string | null => {
     if (
@@ -120,26 +83,7 @@ export const VaultItemRow: Component<VaultItemRowProps> = (props) => {
       </Show>
       {/* Icon Container */}
       <div class="item-icon-container">
-        <Show when={Number(props.item.type) === VaultItemType.SecureNote}>
-          <NoteIcon />
-        </Show>
-        <Show when={isCardItem(props.item) ? props.item : null}>
-          {(cardItem) => <CardBrandIcon brand={cardItem().card.brand || ""} />}
-        </Show>
-        <Show when={Number(props.item.type) === VaultItemType.Identity}>
-          <IdentityIcon />
-        </Show>
-        <Show when={Number(props.item.type) === VaultItemType.SshKey}>
-          <SshKeyIcon />
-        </Show>
-        <Show when={Number(props.item.type) === VaultItemType.Login}>
-          <Show
-            when={domain()}
-            fallback={<GlobeIcon />}
-          >
-            {(dom) => <Favicon domain={dom()} fallback={<GlobeIcon />} />}
-          </Show>
-        </Show>
+        {strategy().renderIcon(props.item)}
       </div>
 
       {/* Info Container */}
@@ -148,24 +92,8 @@ export const VaultItemRow: Component<VaultItemRowProps> = (props) => {
           {props.item.name}
         </div>
 
-        <Show when={Number(props.item.type) !== VaultItemType.SecureNote}>
-          <div class="item-sub">
-            <Switch>
-              <Match when={isLoginItem(props.item) ? props.item : null}>
-                {(loginItem) =>
-                  loginItem().login.username || t("vault_no_username")}
-              </Match>
-              <Match when={isCardItem(props.item) ? props.item : null}>
-                {(cardItem) => getCardSub(cardItem())}
-              </Match>
-              <Match when={isIdentityItem(props.item) ? props.item : null}>
-                {(identityItem) => getIdentitySub(identityItem())}
-              </Match>
-              <Match when={isSshKeyItem(props.item) ? props.item : null}>
-                {(sshItem) => getSshKeySub(sshItem())}
-              </Match>
-            </Switch>
-          </div>
+        <Show when={strategy().getSubtitle(props.item)}>
+          {(subtitle) => <div class="item-sub">{subtitle()}</div>}
         </Show>
       </div>
 

@@ -15,18 +15,16 @@ import { confirm, setGlobalLoading } from "@gistwarden/ui";
 import { handlePopout, isPopout } from "@/core/popout-utils.ts";
 import { t } from "@/core/i18n.ts";
 import {
-  CardIcon,
   FolderIcon,
-  GlobeIcon,
-  IdentityIcon,
   LockIcon,
   LogoutIcon,
-  NoteIcon,
   PlusIcon,
   PopoutIcon,
-  SshKeyIcon,
   SyncIcon,
 } from "@/icons/svg/index.ts";
+import { getVaultItemTypeLabel } from "@/features/vault/vault-utils.ts";
+import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
+import { createDefaultVaultItem } from "@/features/vault/item-edit/vault-edit-helper.ts";
 
 interface HeaderProps {
   title: string;
@@ -67,36 +65,11 @@ export const Header: Component<HeaderProps> = (props) => {
     return login.toUpperCase();
   };
 
-  const getTypeLabel = (type: VaultItemType) => {
-    switch (type) {
-      case VaultItemType.Login:
-        return t("vault_item_login");
-      case VaultItemType.Card:
-        return t("vault_item_card");
-      case VaultItemType.Identity:
-        return t("vault_item_identity");
-      case VaultItemType.SecureNote:
-        return t("vault_item_note");
-      case VaultItemType.SshKey:
-        return t("vault_item_ssh_key");
-      default:
-        return "";
-    }
-  };
+  const getTypeLabel = (type: VaultItemType) => getVaultItemTypeLabel(type);
 
   const getTypeIcon = (type: VaultItemType) => {
-    switch (type) {
-      case VaultItemType.Login:
-        return <GlobeIcon class="dropdown-item-icon" />;
-      case VaultItemType.Card:
-        return <CardIcon class="dropdown-item-icon" />;
-      case VaultItemType.Identity:
-        return <IdentityIcon class="dropdown-item-icon" />;
-      case VaultItemType.SecureNote:
-        return <NoteIcon class="dropdown-item-icon" />;
-      case VaultItemType.SshKey:
-        return <SshKeyIcon class="dropdown-item-icon" />;
-    }
+    const dummyItem = createDefaultVaultItem(type);
+    return getVaultItemStrategy(type).renderIcon(dummyItem);
   };
 
   const handleAddTypeClick = (type: VaultItemType, e: MouseEvent) => {

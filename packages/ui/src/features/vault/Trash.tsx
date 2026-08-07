@@ -13,19 +13,11 @@ import {
   setGlobalLoading,
   showToast,
 } from "@gistwarden/ui";
-import {
-  CardIcon,
-  IdentityIcon,
-  KeyIcon,
-  NoteIcon,
-  RefreshIcon,
-  TrashIcon,
-  VaultIcon,
-} from "@/icons/svg/index.ts";
+import { RefreshIcon, TrashIcon } from "@/icons/svg/index.ts";
 import { t } from "@/core/i18n.ts";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
-import { VaultItemType } from "@gistwarden/domain";
 import type { TrashVaultItem } from "@gistwarden/domain";
+import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
 
 export const Trash: Component = () => {
   const [error, setError] = createSignal("");
@@ -98,22 +90,6 @@ export const Trash: Component = () => {
     }
   };
 
-  const getItemIcon = (type: VaultItemType) => {
-    switch (type) {
-      case VaultItemType.SecureNote:
-        return <NoteIcon />;
-      case VaultItemType.Card:
-        return <CardIcon />;
-      case VaultItemType.Identity:
-        return <IdentityIcon />;
-      case VaultItemType.SshKey:
-        return <KeyIcon />;
-      case VaultItemType.Login:
-      default:
-        return <VaultIcon />;
-    }
-  };
-
   const formatDate = (dateStr: string) => {
     const timestamp = Date.parse(dateStr);
     return Number.isNaN(timestamp)
@@ -173,7 +149,7 @@ export const Trash: Component = () => {
               {(entry: TrashVaultItem) => (
                 <div class="trash-item-row">
                   <div class="trash-item-icon">
-                    {getItemIcon(entry.item.type)}
+                    {getVaultItemStrategy(entry.item.type).renderIcon(entry.item)}
                   </div>
 
                   <div class="trash-item-meta">

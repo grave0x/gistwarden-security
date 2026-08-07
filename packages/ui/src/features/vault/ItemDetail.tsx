@@ -3,47 +3,22 @@ import { accountStore, uiStore } from "@/core/store.ts";
 import { View } from "@/core/types.ts";
 import { navigate } from "@/core/navigation.ts";
 import { copyToClipboardWithMessage } from "@gistwarden/ui";
-import {
-  CustomFieldType,
-  isCardItem,
-  isIdentityItem,
-  isLoginItem,
-  isSecureNoteItem,
-  isSshKeyItem,
-  VaultItemType,
-} from "@gistwarden/domain";
-import type {
-  CardVaultItem,
-  IdentityVaultItem,
-  LoginVaultItem,
-  SecureNoteVaultItem,
-  SshKeyVaultItem,
-  VaultField,
-} from "@gistwarden/domain";
-import { getDomainFromItem } from "@/core/domain-utils.ts";
+import { CustomFieldType, VaultItemType } from "@gistwarden/domain";
+import type { VaultField } from "@gistwarden/domain";
 import {
   deleteVaultItemWithConfirm,
   getVaultItemDetailTitle,
 } from "@/features/vault/vault-utils.ts";
-import Favicon from "@/components/ui/Favicon.tsx";
 import Button from "@/components/ui/Button.tsx";
 import {
   CopyIcon,
   EyeIcon,
   EyeOffIcon,
-  GlobeIcon,
-  KeyIcon,
-  NoteIcon,
   TrashIcon,
 } from "@/icons/svg/index.ts";
 import { formatDateTime, t } from "@/core/i18n.ts";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
-import LoginDetailFields from "@/features/vault/item-detail/LoginDetailFields.tsx";
-import CardDetailFields from "@/features/vault/item-detail/CardDetailFields.tsx";
-import NoteDetailFields from "@/features/vault/item-detail/NoteDetailFields.tsx";
-import IdentityDetailFields from "@/features/vault/item-detail/IdentityDetailFields.tsx";
-import SshKeyDetailFields from "@/features/vault/item-detail/SshKeyDetailFields.tsx";
-import CardBrandIcon from "@/components/ui/CardBrandIcon.tsx";
+import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
 
 export const ItemDetail: Component = () => {
   // Local view states
@@ -62,31 +37,6 @@ export const ItemDetail: Component = () => {
       setFields(item.fields || []);
     }
   });
-
-  const getCardItem = (): CardVaultItem | null => {
-    const item = uiStore.selectedItem;
-    return item && isCardItem(item) ? item : null;
-  };
-
-  const getLoginItem = (): LoginVaultItem | null => {
-    const item = uiStore.selectedItem;
-    return item && isLoginItem(item) ? item : null;
-  };
-
-  const getNoteItem = (): SecureNoteVaultItem | null => {
-    const item = uiStore.selectedItem;
-    return item && isSecureNoteItem(item) ? item : null;
-  };
-
-  const getIdentityItem = (): IdentityVaultItem | null => {
-    const item = uiStore.selectedItem;
-    return item && isIdentityItem(item) ? item : null;
-  };
-
-  const getSshKeyItem = (): SshKeyVaultItem | null => {
-    const item = uiStore.selectedItem;
-    return item && isSshKeyItem(item) ? item : null;
-  };
 
   const toggleFieldVisibility = (index: number) => {
     setVisibleFields((prev) => ({ ...prev, [index]: !prev[index] }));
@@ -131,37 +81,12 @@ export const ItemDetail: Component = () => {
           {/* Card Info Name (For all items) */}
           <Show when={uiStore.selectedItem}>
             {(item) => {
-              const getDetailIcon = () => {
-                const currentItem = item();
-                if (Number(currentItem.type) === VaultItemType.SecureNote) {
-                  return <NoteIcon />;
-                }
-                if (Number(currentItem.type) === VaultItemType.SshKey) {
-                  return <KeyIcon />;
-                }
-                if (isCardItem(currentItem)) {
-                  return (
-                    <CardBrandIcon
-                      brand={currentItem.card.brand}
-                    />
-                  );
-                }
-                const domain = getDomainFromItem(currentItem);
-                if (domain) {
-                  return (
-                    <Favicon
-                      domain={domain}
-                      fallback={<GlobeIcon class="icon-inline-large" />}
-                    />
-                  );
-                }
-                return <GlobeIcon class="icon-inline-large" />;
-              };
+              const strategy = getVaultItemStrategy(item().type);
 
               return (
                 <div class="card p-16 mb-16 d-flex align-center gap-12">
                   <div class="item-icon-large">
-                    {getDetailIcon()}
+                    {strategy.renderIcon(item())}
                   </div>
                   <div>
                     <div class="item-name-large">{item().name}</div>
@@ -328,36 +253,11 @@ export const ItemDetail: Component = () => {
 
   function renderTypeFields() {
     if (!uiStore.selectedItem) return null;
-    const type = uiStore.selectedItem.type;
-
-    if (type === VaultItemType.Login) {
-      const item = getLoginItem();
-      return item
-        ? <LoginDetailFields item={item} onCopy={handleCopy} />
-        : null;
-    }
-    if (type === VaultItemType.Card) {
-      const item = getCardItem();
-      return item ? <CardDetailFields item={item} onCopy={handleCopy} /> : null;
-    }
-    if (type === VaultItemType.SecureNote) {
-      const item = getNoteItem();
-      return item ? <NoteDetailFields item={item} /> : null;
-    }
-    if (type === VaultItemType.Identity) {
-      const item = getIdentityItem();
-      return item
-        ? <IdentityDetailFields item={item} onCopy={handleCopy} />
-        : null;
-    }
-    if (type === VaultItemType.SshKey) {
-      const item = getSshKeyItem();
-      return item
-        ? <SshKeyDetailFields item={item} onCopy={handleCopy} />
-        : null;
-    }
-    return null;
+    const strategy = getVaultItemStrategy(uiStore.selectedItem.type);
+    const DetailComponent = strategy.DetailComponent;
+    return <DetailComponent item={uiStore.selectedItem} onCopy={handleCopy} />;
   }
 };
 
 export default ItemDetail;
+

@@ -172,7 +172,7 @@ Dự án sử dụng **Bun** nguyên bản để phát triển, kiểm tra cú p
 
 ### 1. Đóng gói Extension
 
-Biên dịch mã nguồn, SCSS và đóng gói thành các tệp ZIP hoàn chỉnh:
+Biên dịch mã nguồn, Vanilla CSS và đóng gói thành các tệp ZIP hoàn chỉnh:
 
 ```bash
 bun run build
