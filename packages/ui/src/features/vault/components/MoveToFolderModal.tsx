@@ -1,19 +1,21 @@
 import { createEffect, createSignal } from "solid-js";
-import type { Folder } from "@gistwarden/domain";
+import { asFolderId, type Folder, type FolderId } from "@gistwarden/domain";
 import { t } from "@/core/i18n.ts";
 import Button from "@/components/ui/Button.tsx";
 import BaseSlideModal from "@/components/ui/BaseSlideModal.tsx";
 import Select, { type SelectOption } from "@/components/ui/Select.tsx";
 
+
 export interface MoveToFolderModalProps {
   isOpen: boolean;
   folders: Folder[];
   onClose: () => void;
-  onConfirm: (folderId: string | null) => Promise<boolean>;
+  onConfirm: (folderId: FolderId | null) => Promise<boolean>;
 }
 
+
 export default function MoveToFolderModal(props: MoveToFolderModalProps) {
-  const [selectedFolderId, setSelectedFolderId] = createSignal<string>("no_folder");
+  const [selectedFolderId, setSelectedFolderId] = createSignal<FolderId | "no_folder">("no_folder");
 
   createEffect(() => {
     if (props.isOpen) {
@@ -43,9 +45,10 @@ export default function MoveToFolderModal(props: MoveToFolderModalProps) {
       {(triggerClose) => {
         const handleSubmit = async (e: Event) => {
           e.preventDefault();
-          const targetId =
-            selectedFolderId() === "no_folder" ? null : selectedFolderId();
+          const currentId = selectedFolderId();
+          const targetId = currentId === "no_folder" ? null : currentId;
           const success = await props.onConfirm(targetId);
+
           if (success) {
             triggerClose();
           }
@@ -61,7 +64,11 @@ export default function MoveToFolderModal(props: MoveToFolderModalProps) {
                 id="move-folder-select"
                 value={selectedFolderId()}
                 options={getOptions()}
-                onChange={(e) => setSelectedFolderId(e.currentTarget.value)}
+                onChange={(e) => {
+                  const val = e.currentTarget.value;
+                  setSelectedFolderId(val === "no_folder" ? "no_folder" : asFolderId(val));
+                }}
+
                 class="w-100"
                 inFlow={true}
               />

@@ -1,5 +1,8 @@
 import { err, ok, Result } from "neverthrow";
-import type { Fido2Credential } from "@gistwarden/domain";
+import { asFido2CredentialId, asRpId, type Fido2Credential, type Fido2CredentialId } from "@gistwarden/domain";
+
+
+
 import type { TranslationKey } from "@/core/i18n.ts";
 import { safeParseUrl } from "@/core/domain-utils.ts";
 import {
@@ -314,8 +317,9 @@ export async function generateAssertionSignature(
 
 // Convert Bitwarden-style credentialId (UUID or b64.) or raw base64url into raw Uint8Array
 export function getRawCredentialId(
-  credId: string,
+  credId: Fido2CredentialId | string,
 ): Result<Uint8Array, TranslationKey> {
+
   const clean = credId.trim();
   if (clean.includes("-") && clean.length === 36) {
     const hex = clean.replace(/-/g, "");
@@ -410,12 +414,13 @@ export async function generatePasskeyRegisterResponse(
 
   // 5. Build Gistwarden Fido2Credential object
   const newCred: Fido2Credential = {
-    credentialId: credentialIdStr,
+    credentialId: asFido2CredentialId(credentialIdStr),
     keyType: "public-key",
+
     keyAlgorithm: "ECDSA",
     keyCurve: "P-256",
     keyValue: pkcs8Base64Url,
-    rpId: options.rp.id || options.rp.name,
+    rpId: asRpId(options.rp.id || options.rp.name),
     userHandle: typeof options.user.id === "string"
       ? options.user.id
       : (options.user.id

@@ -5,22 +5,24 @@ import {
 } from "../packages/orchestrator/mod.ts";
 
 import {
+  asVaultItemId,
   type CardVaultItem,
   type IdentityVaultItem,
   type LoginVaultItem,
   type SecureNoteVaultItem,
   type SshKeyVaultItem,
   type VaultItem,
+  type VaultItemId,
   VaultItemType,
 } from "@gistwarden/domain";
 
 const createMockLogin = (
-  id: string,
+  id: VaultItemId,
   name: string,
   creationDate: string,
   revisionDate: string,
 ): LoginVaultItem => ({
-  id,
+  id: asVaultItemId(id),
   type: VaultItemType.Login,
   name,
   notes: "Note",
@@ -39,12 +41,12 @@ const createMockLogin = (
 });
 
 const createMockSecureNote = (
-  id: string,
+  id: VaultItemId,
   name: string,
   creationDate: string,
   revisionDate: string,
 ): SecureNoteVaultItem => ({
-  id,
+  id: asVaultItemId(id),
   type: VaultItemType.SecureNote,
   name,
   notes: "Secret Note Content",
@@ -56,12 +58,12 @@ const createMockSecureNote = (
 });
 
 const createMockCard = (
-  id: string,
+  id: VaultItemId,
   name: string,
   creationDate: string,
   revisionDate: string,
 ): CardVaultItem => ({
-  id,
+  id: asVaultItemId(id),
   type: VaultItemType.Card,
   name,
   notes: "Credit Card Notes",
@@ -81,12 +83,12 @@ const createMockCard = (
 });
 
 const createMockIdentity = (
-  id: string,
+  id: VaultItemId,
   name: string,
   creationDate: string,
   revisionDate: string,
 ): IdentityVaultItem => ({
-  id,
+  id: asVaultItemId(id),
   type: VaultItemType.Identity,
   name,
   notes: "Personal Identity Profile",
@@ -118,12 +120,14 @@ const createMockIdentity = (
 });
 
 const createMockSshKey = (
-  id: string,
+  id: VaultItemId,
   name: string,
   creationDate: string,
   revisionDate: string,
 ): SshKeyVaultItem => ({
-  id,
+  id: asVaultItemId(id),
+
+
   type: VaultItemType.SshKey,
   name,
   notes: "Production SSH Key",
@@ -140,19 +144,21 @@ const createMockSshKey = (
   },
 });
 
+
 test("Vault Merge - Login item revision conflict resolution", () => {
   const localLogin = createMockLogin(
-    "login-1",
+    asVaultItemId("login-1"),
     "Login Local Edit",
     "2026-07-24T10:00:00.000Z",
     "2026-07-24T12:00:00.000Z",
   );
   const remoteLogin = createMockLogin(
-    "login-1",
+    asVaultItemId("login-1"),
     "Login Remote Old",
     "2026-07-24T10:00:00.000Z",
     "2026-07-24T11:00:00.000Z",
   );
+
 
   const merged = mergeVaultItems([localLogin], [remoteLogin], 1000);
   assertEquals(merged.length, 1);
@@ -161,13 +167,13 @@ test("Vault Merge - Login item revision conflict resolution", () => {
 
 test("Vault Merge - SecureNote item remote revision takes precedence when newer", () => {
   const localNote = createMockSecureNote(
-    "note-1",
+    asVaultItemId("note-1"),
     "Old Local Note",
     "2026-07-24T10:00:00.000Z",
     "2026-07-24T11:00:00.000Z",
   );
   const remoteNote = createMockSecureNote(
-    "note-1",
+    asVaultItemId("note-1"),
     "New Remote Note",
     "2026-07-24T10:00:00.000Z",
     "2026-07-24T12:00:00.000Z",
@@ -181,7 +187,7 @@ test("Vault Merge - SecureNote item remote revision takes precedence when newer"
 test("Vault Merge - Card item created on local after lastSync is retained", () => {
   const lastSyncTime = new Date("2026-07-24T10:00:00.000Z").getTime();
   const localCard = createMockCard(
-    "card-1",
+    asVaultItemId("card-1"),
     "New Visa Card",
     "2026-07-24T10:30:00.000Z",
     "2026-07-24T10:30:00.000Z",
@@ -189,14 +195,15 @@ test("Vault Merge - Card item created on local after lastSync is retained", () =
 
   const merged = mergeVaultItems([localCard], [], lastSyncTime);
   assertEquals(merged.length, 1);
-  assertEquals(merged[0].id, "card-1");
+  assertEquals(merged[0].id, asVaultItemId("card-1"));
+
   assertEquals(merged[0].type, VaultItemType.Card);
 });
 
 test("Vault Merge - Identity item created on local before lastSync and missing on remote is dropped", () => {
   const lastSyncTime = new Date("2026-07-24T12:00:00.000Z").getTime();
   const localIdentity = createMockIdentity(
-    "identity-1",
+    asVaultItemId("identity-1"),
     "Deleted Identity Profile",
     "2026-07-24T10:00:00.000Z",
     "2026-07-24T10:00:00.000Z",
@@ -209,7 +216,7 @@ test("Vault Merge - Identity item created on local before lastSync and missing o
 test("Vault Merge - SshKey item created on remote is automatically added", () => {
   const lastSyncTime = new Date("2026-07-24T10:00:00.000Z").getTime();
   const remoteSshKey = createMockSshKey(
-    "ssh-1",
+    asVaultItemId("ssh-1"),
     "Remote Server Key",
     "2026-07-24T11:00:00.000Z",
     "2026-07-24T11:00:00.000Z",
@@ -217,7 +224,8 @@ test("Vault Merge - SshKey item created on remote is automatically added", () =>
 
   const merged = mergeVaultItems([], [remoteSshKey], lastSyncTime);
   assertEquals(merged.length, 1);
-  assertEquals(merged[0].id, "ssh-1");
+  assertEquals(merged[0].id, asVaultItemId("ssh-1"));
+
   assertEquals(merged[0].type, VaultItemType.SshKey);
 });
 
@@ -225,51 +233,52 @@ test("Vault Merge - Mixed collection of all 5 Vault item types", () => {
   const lastSyncTime = new Date("2026-07-24T10:00:00.000Z").getTime();
 
   const localLogin = createMockLogin(
-    "id-login",
+    asVaultItemId("id-login"),
     "Login Local Newer",
     "2026-07-24T08:00:00.000Z",
     "2026-07-24T12:00:00.000Z",
   );
   const remoteLogin = createMockLogin(
-    "id-login",
+    asVaultItemId("id-login"),
     "Login Remote Older",
     "2026-07-24T08:00:00.000Z",
     "2026-07-24T09:00:00.000Z",
   );
 
   const localNote = createMockSecureNote(
-    "id-note",
+    asVaultItemId("id-note"),
     "Note Local Older",
     "2026-07-24T08:00:00.000Z",
     "2026-07-24T09:00:00.000Z",
   );
   const remoteNote = createMockSecureNote(
-    "id-note",
+    asVaultItemId("id-note"),
     "Note Remote Newer",
     "2026-07-24T08:00:00.000Z",
     "2026-07-24T11:00:00.000Z",
   );
 
   const localCardNew = createMockCard(
-    "id-card",
+    asVaultItemId("id-card"),
     "New Local Card",
     "2026-07-24T10:30:00.000Z",
     "2026-07-24T10:30:00.000Z",
   );
 
   const localIdentityDeletedOnRemote = createMockIdentity(
-    "id-identity",
+    asVaultItemId("id-identity"),
     "Deleted Identity",
     "2026-07-24T08:00:00.000Z",
     "2026-07-24T08:00:00.000Z",
   );
 
   const remoteSshKeyNew = createMockSshKey(
-    "id-ssh",
+    asVaultItemId("id-ssh"),
     "New Remote SSH Key",
     "2026-07-24T11:30:00.000Z",
     "2026-07-24T11:30:00.000Z",
   );
+
 
   const localItems: VaultItem[] = [
     localLogin,
@@ -296,7 +305,7 @@ test("Vault Merge - Mixed collection of all 5 Vault item types", () => {
 test("Vault Merge - Item deleted on local is dropped even if present on remote", () => {
   const lastSyncTime = new Date("2026-07-24T12:00:00.000Z").getTime();
   const remoteItem = createMockLogin(
-    "item-deleted-locally",
+    asVaultItemId("item-deleted-locally"),
     "Old Login",
     "2026-07-24T10:00:00.000Z",
     "2026-07-24T10:00:00.000Z",
@@ -313,17 +322,18 @@ test("Vault Merge - Item deleted on local is dropped even if present on remote",
 
 test("Vault Merge - Trash array handles deleted items across devices", () => {
   const item1 = createMockLogin(
-    "item-1",
+    asVaultItemId("item-1"),
     "Active Login",
     "2026-07-24T10:00:00.000Z",
     "2026-07-24T10:00:00.000Z",
   );
   const item2 = createMockLogin(
-    "item-2",
+    asVaultItemId("item-2"),
     "Deleted Login",
     "2026-07-24T10:00:00.000Z",
     "2026-07-24T10:00:00.000Z",
   );
+
 
   const localPayload = {
     items: [item1],

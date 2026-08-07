@@ -1,5 +1,5 @@
 import { type Component, createSignal, For, Show } from "solid-js";
-import { type Folder, VaultItemType } from "@gistwarden/domain";
+import { type Folder, type FolderId, VaultItemType } from "@gistwarden/domain";
 import { getVaultItemTypeLabel } from "@/features/vault/vault-utils.ts";
 import { t } from "@/core/i18n.ts";
 import {
@@ -15,9 +15,10 @@ export interface VaultFilterPanelProps {
   selectedFilterType: VaultItemType | "all";
   onSelectFilterType: (type: VaultItemType | "all") => void;
   folders: Folder[];
-  selectedFolderId: string | "no_folder";
-  onSelectFolderId: (folderId: string | "no_folder") => void;
+  selectedFolderId: FolderId | "no_folder";
+  onSelectFolderId: (folderId: FolderId | "no_folder") => void;
 }
+
 
 export const VaultFilterPanel: Component<VaultFilterPanelProps> = (props) => {
   const [showFolderDropdown, setShowFolderDropdown] = createSignal(false);
@@ -28,7 +29,7 @@ export const VaultFilterPanel: Component<VaultFilterPanelProps> = (props) => {
     setShowTypeDropdown(false);
   };
 
-  const handleSelectFolder = (folderId: string | "no_folder") => {
+  const handleSelectFolder = (folderId: FolderId | "no_folder") => {
     props.onSelectFolderId(folderId);
     setShowFolderDropdown(false);
   };

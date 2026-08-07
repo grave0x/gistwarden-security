@@ -1,6 +1,8 @@
 import {
+  asGitHubAccessToken,
   base64ToArrayBuffer,
   decryptData,
+  type GitHubAccessToken,
   logger,
   SESSION_KEY_DERIVED_KEY,
   SESSION_KEY_PENDING_GITHUB_TOKEN,
@@ -232,7 +234,7 @@ export async function clearUnlockedSessionState(): Promise<
   return await removeSessionItem([...SESSION_KEYS_ON_LOCK]);
 }
 
-export async function getGithubToken(): Promise<string> {
+export async function getGithubToken(): Promise<GitHubAccessToken | null> {
   const accRes = await getAccountSettings();
   if (accRes.isOk()) {
     const acc = accRes.value;
@@ -270,7 +272,7 @@ export async function getGithubToken(): Promise<string> {
           key,
         );
         if (decryptRes.isOk()) {
-          return decryptRes.value;
+          return asGitHubAccessToken(decryptRes.value);
         }
       }
     }
@@ -282,10 +284,10 @@ export async function getGithubToken(): Promise<string> {
     pendingRes.isOk() && typeof pendingRes.value === "string" &&
     pendingRes.value
   ) {
-    return pendingRes.value;
+    return asGitHubAccessToken(pendingRes.value);
   }
 
-  return "";
+  return null;
 }
 
 export async function isSessionUnlocked(): Promise<boolean> {

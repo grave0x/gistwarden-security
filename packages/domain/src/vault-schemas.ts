@@ -24,13 +24,13 @@ export const UriMatchModeSchema = z.nativeEnum(UriMatchMode);
 export const LoginUriSchema = z.object({
   uri: z.string(),
   match: UriMatchModeSchema.nullish(),
-});
+}).readonly();
 export type LoginUri = z.infer<typeof LoginUriSchema>;
 
 export const PasswordHistorySchema = z.object({
   lastUsedDate: z.string().nullish(),
   password: z.string().nullish(),
-});
+}).readonly();
 export type PasswordHistory = z.infer<typeof PasswordHistorySchema>;
 
 export const CustomFieldTypeSchema = z.nativeEnum(CustomFieldType);
@@ -42,18 +42,49 @@ export const VaultFieldSchema = z.object({
     .union([z.string(), z.number(), z.boolean(), z.null()])
     .optional()
     .transform((v) => (v == null ? "" : String(v))),
-});
+}).readonly();
 export type VaultField = z.infer<typeof VaultFieldSchema>;
 
+export const VaultItemIdSchema = z.string().brand<"VaultItemId">();
+export type VaultItemId = z.infer<typeof VaultItemIdSchema>;
+
+export const FolderIdSchema = z.string().brand<"FolderId">();
+export type FolderId = z.infer<typeof FolderIdSchema>;
+
+export const GistIdSchema = z.string().brand<"GistId">();
+export type GistId = z.infer<typeof GistIdSchema>;
+
+export const GitHubAccessTokenSchema = z.string().brand<"GitHubAccessToken">();
+export type GitHubAccessToken = z.infer<typeof GitHubAccessTokenSchema>;
+
+export function asVaultItemId(id: string): VaultItemId {
+  return VaultItemIdSchema.parse(id);
+}
+
+export function asFolderId(id: string): FolderId {
+  return FolderIdSchema.parse(id);
+}
+
+export function asGistId(id: string): GistId {
+  return GistIdSchema.parse(id);
+}
+
+export function asGitHubAccessToken(token: string): GitHubAccessToken {
+  return GitHubAccessTokenSchema.parse(token);
+}
+
+
+
+
 export const FolderSchema = z.object({
-  id: z.string(),
+  id: FolderIdSchema,
   name: z.string(),
-});
+}).readonly();
 export type Folder = z.infer<typeof FolderSchema>;
 
 export const BaseVaultItemSchema = z.object({
-  id: z.string(),
-  folderId: z.string().or(z.null()).optional(),
+  id: VaultItemIdSchema,
+  folderId: FolderIdSchema.or(z.null()).optional(),
   name: z.string(),
   notes: z.string().optional(),
   favorite: z.boolean(),
@@ -63,6 +94,7 @@ export const BaseVaultItemSchema = z.object({
   revisionDate: z.string(),
 });
 export type BaseVaultItem = z.infer<typeof BaseVaultItemSchema>;
+
 
 export const LoginVaultItemSchema = BaseVaultItemSchema.extend({
   type: z.literal(VaultItemType.Login),
@@ -75,70 +107,75 @@ export const LoginVaultItemSchema = BaseVaultItemSchema.extend({
     passwordRevisionDate: z.string().nullish(),
     passwordHistory: z.array(PasswordHistorySchema).nullish(),
   }),
-});
+}).readonly();
 export type LoginVaultItem = z.infer<typeof LoginVaultItemSchema>;
 
 export const SecureNoteVaultItemSchema = BaseVaultItemSchema.extend({
   type: z.literal(VaultItemType.SecureNote),
-});
+}).readonly();
 export type SecureNoteVaultItem = z.infer<typeof SecureNoteVaultItemSchema>;
 
+const nullableString = () =>
+  z.string().or(z.null()).optional().transform((v) => v || "");
+
 export const CardSchema = z.object({
-  cardholderName: z.string().or(z.null()).optional().transform((v) => v || ""),
-  brand: z.string().or(z.null()).optional().transform((v) => v || ""),
-  number: z.string().or(z.null()).optional().transform((v) => v || ""),
-  expMonth: z.string().or(z.null()).optional().transform((v) => v || ""),
-  expYear: z.string().or(z.null()).optional().transform((v) => v || ""),
-  code: z.string().or(z.null()).optional().transform((v) => v || ""),
-});
+  cardholderName: nullableString(),
+  brand: nullableString(),
+  number: nullableString(),
+  expMonth: nullableString(),
+  expYear: nullableString(),
+  code: nullableString(),
+}).readonly();
 export type CardDetails = z.infer<typeof CardSchema>;
 
 export const IdentitySchema = z.object({
-  title: z.string().or(z.null()).optional().transform((v) => v || ""),
-  firstName: z.string().or(z.null()).optional().transform((v) => v || ""),
-  middleName: z.string().or(z.null()).optional().transform((v) => v || ""),
-  lastName: z.string().or(z.null()).optional().transform((v) => v || ""),
-  username: z.string().or(z.null()).optional().transform((v) => v || ""),
-  company: z.string().or(z.null()).optional().transform((v) => v || ""),
-  ssn: z.string().or(z.null()).optional().transform((v) => v || ""),
-  passportNumber: z.string().or(z.null()).optional().transform((v) => v || ""),
-  licenseNumber: z.string().or(z.null()).optional().transform((v) => v || ""),
-  email: z.string().or(z.null()).optional().transform((v) => v || ""),
-  phone: z.string().or(z.null()).optional().transform((v) => v || ""),
-  address1: z.string().or(z.null()).optional().transform((v) => v || ""),
-  address2: z.string().or(z.null()).optional().transform((v) => v || ""),
-  address3: z.string().or(z.null()).optional().transform((v) => v || ""),
-  city: z.string().or(z.null()).optional().transform((v) => v || ""),
-  state: z.string().or(z.null()).optional().transform((v) => v || ""),
-  postalCode: z.string().or(z.null()).optional().transform((v) => v || ""),
-  country: z.string().or(z.null()).optional().transform((v) => v || ""),
-});
+  title: nullableString(),
+  firstName: nullableString(),
+  middleName: nullableString(),
+  lastName: nullableString(),
+  username: nullableString(),
+  company: nullableString(),
+  ssn: nullableString(),
+  passportNumber: nullableString(),
+  licenseNumber: nullableString(),
+  email: nullableString(),
+  phone: nullableString(),
+  address1: nullableString(),
+  address2: nullableString(),
+  address3: nullableString(),
+  city: nullableString(),
+  state: nullableString(),
+  postalCode: nullableString(),
+  country: nullableString(),
+}).readonly();
 export type IdentityDetails = z.infer<typeof IdentitySchema>;
 
 export const IdentityVaultItemSchema = BaseVaultItemSchema.extend({
   type: z.literal(VaultItemType.Identity),
   identity: IdentitySchema,
-});
+}).readonly();
 export type IdentityVaultItem = z.infer<typeof IdentityVaultItemSchema>;
 
 export const CardVaultItemSchema = BaseVaultItemSchema.extend({
   type: z.literal(VaultItemType.Card),
   card: CardSchema,
-});
+}).readonly();
 export type CardVaultItem = z.infer<typeof CardVaultItemSchema>;
 
 export const SshKeySchema = z.object({
-  privateKey: z.string().or(z.null()).optional().transform((v) => v || ""),
-  publicKey: z.string().or(z.null()).optional().transform((v) => v || ""),
-  keyFingerprint: z.string().or(z.null()).optional().transform((v) => v || ""),
-});
+  privateKey: nullableString(),
+  publicKey: nullableString(),
+  keyFingerprint: nullableString(),
+}).readonly();
 export type SshKeyDetails = z.infer<typeof SshKeySchema>;
 
 export const SshKeyVaultItemSchema = BaseVaultItemSchema.extend({
   type: z.literal(VaultItemType.SshKey),
   sshKey: SshKeySchema,
-});
+}).readonly();
 export type SshKeyVaultItem = z.infer<typeof SshKeyVaultItemSchema>;
+
+
 
 const BaseVaultItemUnionSchema = z.discriminatedUnion("type", [
   LoginVaultItemSchema,

@@ -346,12 +346,12 @@ export const checkHIBPRoute = defineRoute({
   payloadSchema: z.object({
     type: z.literal("CHECK_PASSWORD_HIBP"),
     password: z.string(),
-  }),
+  }).readonly(),
   responseSchema: z.object({
     success: z.boolean(),
     count: z.number(),
     errorKey: TranslationKeySchema.optional(),
-  }),
+  }).readonly(),
 });
 
 export const checkDataBreachRoute = defineRoute({
@@ -359,11 +359,12 @@ export const checkDataBreachRoute = defineRoute({
   payloadSchema: z.object({
     type: z.literal("CHECK_EMAIL_BREACH"),
     email: z.string(),
-  }),
+  }).readonly(),
   responseSchema: z.object({
     success: z.boolean(),
     status: z.enum(["clean", "exposed", "rate_limited", "error"]),
     breaches: z.array(z.string()).optional(),
     errorKey: TranslationKeySchema.optional(),
-  }),
+  }).readonly(),
 });
+

@@ -1,17 +1,20 @@
 import { type Component, Show } from "solid-js";
 import { VaultItemType } from "@gistwarden/domain";
-import type { VaultItem } from "@gistwarden/domain";
+import type { VaultItem, VaultItemId } from "@gistwarden/domain";
 import { CopyIcon } from "@/icons/svg/index.ts";
 import { t } from "@/core/i18n.ts";
 import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
 
 interface VaultItemCopyMenuProps {
   item: VaultItem;
-  activeMenuId: string;
-  onToggleMenu: (itemId: string, e: MouseEvent) => void;
+  activeMenuId: VaultItemId | "";
+  onToggleMenu: (itemId: VaultItemId, e: MouseEvent) => void;
+
   onCopyText: (text: string, type: string, e: MouseEvent) => void;
   onCopyTotpDirect: (item: VaultItem, e: MouseEvent) => void;
 }
+
+
 
 export const VaultItemCopyMenu: Component<VaultItemCopyMenuProps> = (
   props,

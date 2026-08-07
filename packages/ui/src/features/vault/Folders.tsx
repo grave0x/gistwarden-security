@@ -1,7 +1,7 @@
 import { type Component, createSignal, For } from "solid-js";
 import { accountStore } from "@/core/store.ts";
 import { View } from "@/core/types.ts";
-import { type Folder } from "@gistwarden/domain";
+import { type Folder, type FolderId } from "@gistwarden/domain";
 import { navigate } from "@/core/navigation.ts";
 import {
   addFolder,
@@ -23,12 +23,12 @@ export const Folders: Component = () => {
     navigate(View.VaultOptions);
   };
 
-  const handleEditFolder = (folder: Folder) => {
+  const handleOpenEditFolder = (folder: Folder) => {
     setEditingFolder(folder);
     setShowFolderModal(true);
   };
 
-  const handleNewFolder = () => {
+  const handleOpenAddFolder = () => {
     setEditingFolder(null);
     setShowFolderModal(true);
   };
@@ -36,12 +36,9 @@ export const Folders: Component = () => {
   const handleSaveFolder = async (name: string): Promise<boolean> => {
     const current = editingFolder();
     setGlobalLoading(true);
-    let res;
-    if (current) {
-      res = await renameFolder(current.id, name);
-    } else {
-      res = await addFolder(name);
-    }
+    const res = current
+      ? await renameFolder(current.id, name)
+      : await addFolder(name);
     setGlobalLoading(false);
 
     if (res.isOk()) {
@@ -58,7 +55,7 @@ export const Folders: Component = () => {
     }
   };
 
-  const handleDeleteFolder = async (folderId: string): Promise<boolean> => {
+  const handleDeleteFolder = async (folderId: FolderId): Promise<boolean> => {
     setGlobalLoading(true);
     const res = await deleteFolder(folderId);
     setGlobalLoading(false);
@@ -85,7 +82,7 @@ export const Folders: Component = () => {
           rightActions={
             <Button
               variant="primary"
-              onClick={handleNewFolder}
+              onClick={handleOpenAddFolder}
               class="d-flex align-items-center gap-4 py-4 px-12"
             >
               <PlusIcon class="icon-inline" />
@@ -106,7 +103,7 @@ export const Folders: Component = () => {
             {(folder) => (
               <div
                 class="setting-row"
-                onClick={() => handleEditFolder(folder)}
+                onClick={() => handleOpenEditFolder(folder)}
               >
                 <div class="setting-row-left">
                   <div class="setting-label font-w-500">{folder.name}</div>
@@ -116,10 +113,11 @@ export const Folders: Component = () => {
                   class="action-btn p-8"
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleEditFolder(folder);
+                    handleOpenEditFolder(folder);
                   }}
                   title={t("btn_edit")}
                 >
+
                   <EditIcon class="icon-inline" />
                 </button>
               </div>

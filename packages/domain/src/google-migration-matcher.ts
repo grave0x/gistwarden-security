@@ -1,14 +1,15 @@
 import type { GoogleOtpAccount } from "./google-migration-parser.ts";
 import { isLoginItem } from "./vault-types.ts";
-import type { LoginVaultItem, VaultItem } from "./vault-schemas.ts";
+import type { LoginVaultItem, VaultItem, VaultItemId } from "./vault-schemas.ts";
 
 export type GoogleMigrationAction = "link" | "create" | "skip";
 
 export interface GoogleMigrationAccountMapping {
   account: GoogleOtpAccount;
   action: GoogleMigrationAction;
-  targetItemId: string | null;
+  targetItemId: VaultItemId | null;
 }
+
 
 export function findMatchingVaultItem(
   account: GoogleOtpAccount,

@@ -1,5 +1,11 @@
 import { type Result } from "neverthrow";
-import type { TranslationKey } from "@gistwarden/domain";
+import {
+  asGistId,
+  asGitHubAccessToken,
+  type GistId,
+  type GitHubAccessToken,
+  type TranslationKey,
+} from "@gistwarden/domain";
 import {
   deleteGist,
   downloadFromGist,
@@ -32,15 +38,15 @@ export class GithubGistProvider implements ISyncProvider {
   }
 
   async delete(
-    targetId?: string,
+    targetId?: GistId,
     options?: SyncOptions,
   ): Promise<Result<void, TranslationKey>> {
-    return await deleteGist(targetId || "", options?.token);
+    return await deleteGist(targetId || asGistId(""), options?.token);
   }
 
   async validateConfig(
-    configToken?: string,
+    configToken?: GitHubAccessToken,
   ): Promise<Result<SyncValidationResult, TranslationKey>> {
-    return await validateToken(configToken || "");
+    return await validateToken(configToken || asGitHubAccessToken(""));
   }
 }

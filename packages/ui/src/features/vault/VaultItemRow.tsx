@@ -1,6 +1,6 @@
 import { type Component, Show } from "solid-js";
 import { View } from "@/core/types.ts";
-import { type VaultItem, VaultItemType } from "@gistwarden/domain";
+import { type VaultItem, type VaultItemId, VaultItemType } from "@gistwarden/domain";
 import { ExternalLinkIcon } from "@/icons/svg/index.ts";
 import { openItem } from "@/core/navigation.ts";
 import { openTab } from "@/core/tabs.ts";
@@ -12,10 +12,11 @@ import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-regis
 
 interface VaultItemRowProps {
   item: VaultItem;
-  activeMenuId: string;
-  activeOptionsMenuId: string;
-  onToggleMenu: (itemId: string, e: MouseEvent) => void;
-  onToggleOptionsMenu: (itemId: string, e: MouseEvent) => void;
+  activeMenuId: VaultItemId | "";
+  activeOptionsMenuId: VaultItemId | "";
+  onToggleMenu: (itemId: VaultItemId, e: MouseEvent) => void;
+
+  onToggleOptionsMenu: (itemId: VaultItemId, e: MouseEvent) => void;
   onCopyText: (text: string, type: string, e: MouseEvent) => void;
   onCopyTotpDirect: (item: VaultItem, e: MouseEvent) => void;
   onFavoriteItem: (item: VaultItem, e: MouseEvent) => void;
@@ -25,11 +26,13 @@ interface VaultItemRowProps {
   onFillItem?: (item: VaultItem, e: MouseEvent) => void;
   isSelectMode?: boolean;
   isSelected?: boolean;
-  onToggleSelect?: (itemId: string, e: MouseEvent) => void;
-  onSelectFromMenu?: (itemId: string, e: MouseEvent) => void;
+  onToggleSelect?: (itemId: VaultItemId, e: MouseEvent) => void;
+  onSelectFromMenu?: (itemId: VaultItemId, e: MouseEvent) => void;
   contextMenuPos?: { x: number; y: number } | null;
-  onContextMenuRow?: (itemId: string, e: MouseEvent) => void;
+  onContextMenuRow?: (itemId: VaultItemId, e: MouseEvent) => void;
 }
+
+
 
 export const VaultItemRow: Component<VaultItemRowProps> = (props) => {
   const strategy = () => getVaultItemStrategy(props.item.type);

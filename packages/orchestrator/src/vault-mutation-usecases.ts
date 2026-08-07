@@ -1,7 +1,14 @@
 import {
+  asFolderId,
+  asGistId,
+  asVaultItemId,
   createDefaultVaultItem,
   encryptData,
   type Folder,
+  type FolderId,
+  type VaultItemId,
+
+
   getBaseDomain,
   getDomainFromItem,
   type GoogleMigrationAccountMapping,
@@ -13,6 +20,7 @@ import {
   SESSION_KEY_ENCRYPTED_VAULT,
   type TranslationKey,
   type TrashVaultItem,
+
   type VaultItem,
   VaultItemType,
   type VaultPayload,
@@ -72,9 +80,10 @@ export async function addFolderUseCase(
     return err("folder_error_duplicate_name");
   }
   const newFolder: Folder = {
-    id: crypto.randomUUID(),
+    id: asFolderId(crypto.randomUUID()),
     name: trimmedName,
   };
+
 
   const res = await executeVaultMutationUseCase(
     currentPayload,
@@ -91,7 +100,7 @@ export async function addFolderUseCase(
 export async function renameFolderUseCase(
   currentPayload: VaultPayload,
   salt: string,
-  id: string,
+  id: FolderId,
   newName: string,
 ): Promise<Result<VaultPayload, TranslationKey>> {
   const trimmedName = newName.trim();
@@ -117,7 +126,7 @@ export async function renameFolderUseCase(
 export async function deleteFolderUseCase(
   currentPayload: VaultPayload,
   salt: string,
-  id: string,
+  id: FolderId,
 ): Promise<Result<VaultPayload, TranslationKey>> {
   return await executeVaultMutationUseCase(currentPayload, salt, (payload) => ({
     folders: payload.folders.filter((f) => f.id !== id),
@@ -154,7 +163,7 @@ export async function saveItemUseCase(
 export async function deleteVaultItemsUseCase(
   currentPayload: VaultPayload,
   salt: string,
-  ids: string[],
+  ids: VaultItemId[],
 ): Promise<Result<VaultPayload, TranslationKey>> {
   if (ids.length === 0) {
     return ok(currentPayload);
@@ -180,25 +189,28 @@ export async function deleteVaultItemsUseCase(
 export async function moveVaultItemsToFolderUseCase(
   currentPayload: VaultPayload,
   salt: string,
-  ids: string[],
-  folderId: string | null,
+  ids: VaultItemId[],
+  folderId: FolderId | null,
 ): Promise<Result<VaultPayload, TranslationKey>> {
+
   if (ids.length === 0) {
     return ok(currentPayload);
   }
 
   return await executeVaultMutationUseCase(currentPayload, salt, (payload) => {
     const idSet = new Set(ids);
+    const targetFolderId = folderId ? asFolderId(folderId) : (folderId === null ? null : undefined);
     const updatedItems = payload.items.map((item) => {
       if (idSet.has(item.id)) {
         return {
           ...item,
-          folderId,
+          folderId: targetFolderId,
           revisionDate: new Date().toISOString(),
         };
       }
       return item;
     });
+
 
     return {
       ...payload,
@@ -210,7 +222,7 @@ export async function moveVaultItemsToFolderUseCase(
 export async function restoreVaultItemUseCase(
   currentPayload: VaultPayload,
   salt: string,
-  id: string,
+  id: VaultItemId,
 ): Promise<Result<VaultPayload, TranslationKey>> {
   return await executeVaultMutationUseCase(currentPayload, salt, (payload) => {
     const trashEntry = payload.trash.find((t) => t.item.id === id);
@@ -231,13 +243,14 @@ export async function restoreVaultItemUseCase(
 export async function purgeTrashItemUseCase(
   currentPayload: VaultPayload,
   salt: string,
-  id: string,
+  id: VaultItemId,
 ): Promise<Result<VaultPayload, TranslationKey>> {
   return await executeVaultMutationUseCase(currentPayload, salt, (payload) => ({
     ...payload,
     trash: payload.trash.filter((t) => t.item.id !== id),
   }));
 }
+
 
 export async function purgeAllTrashUseCase(
   currentPayload: VaultPayload,
@@ -272,7 +285,7 @@ export async function clearVaultUseCase(
 
   const updateSettingsRes = await updateAccountSettings({
     githubConfig: {
-      gistId: "",
+      gistId: asGistId(""),
       githubTokenEncrypted: "",
       githubTokenIv: "",
       username: "",
@@ -333,8 +346,9 @@ export async function batchSavePayloads(
       }
     } else {
       const newItem: LoginVaultItem = {
-        id: crypto.randomUUID(),
+        id: asVaultItemId(crypto.randomUUID()),
         type: VaultItemType.Login,
+
         name: payload.domain || "New Login",
         login: {
           username: payload.username,
@@ -414,8 +428,9 @@ export async function batchImportGoogleMigrationAccountsUseCase(
           : itemMap.account.name || "Google Authenticator Import";
 
         const newItem: LoginVaultItem = {
-          id: crypto.randomUUID(),
+          id: asVaultItemId(crypto.randomUUID()),
           type: VaultItemType.Login,
+
           name: titleName,
           login: {
             username: itemMap.account.name || "",

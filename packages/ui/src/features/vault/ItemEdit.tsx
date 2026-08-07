@@ -2,7 +2,9 @@ import { type Component, createSignal, onMount, Show } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
 import { accountStore, uiStore } from "@/core/store.ts";
 import { View } from "@/core/types.ts";
-import { VaultItemType } from "@gistwarden/domain";
+import { asFolderId, type Fido2CredentialId, VaultItemType } from "@gistwarden/domain";
+
+
 import { navigate, selectItem } from "@/core/navigation.ts";
 import { saveItem } from "@/features/vault/vault-service.ts";
 import { confirm, setGlobalLoading, showToast } from "@gistwarden/ui";
@@ -128,7 +130,8 @@ export const ItemEdit: Component = () => {
     }
   };
 
-  const handleDeleteFidoCredential = async (credId: string) => {
+  const handleDeleteFidoCredential = async (credId: Fido2CredentialId) => {
+
     if (
       !(await confirm(
         t("edit_confirm_delete_passkey_title"),
@@ -227,7 +230,8 @@ export const ItemEdit: Component = () => {
                 id="item-folder"
                 value={formState.folderId || ""}
                 onChange={(e) =>
-                  updateForm("folderId", e.currentTarget.value || null)}
+                  updateForm("folderId", e.currentTarget.value ? asFolderId(e.currentTarget.value) : null)}
+
                 options={[
                   { value: "", label: t("folder_no_folder_option") },
                   ...(accountStore.folders || []).map((f) => ({

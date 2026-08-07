@@ -3,12 +3,12 @@ import {
   exportToBitwardenCsv,
   exportToBrowserCsv,
 } from "../packages/ui/src/features/sync/csv-export.ts";
-import { parseCSV, type VaultItem, VaultItemType } from "@gistwarden/domain";
+import { asVaultItemId, parseCSV, type VaultItem, VaultItemType } from "@gistwarden/domain";
 
 test("Export CSV - Browser CSV format", () => {
   const items: VaultItem[] = [
     {
-      id: "1",
+      id: asVaultItemId("1"),
       type: VaultItemType.Login,
       name: "Google, Inc.",
       notes: "Line1\nLine2",
@@ -23,39 +23,42 @@ test("Export CSV - Browser CSV format", () => {
         passwordRevisionDate: null,
         passwordHistory: [],
       },
-      creationDate: "",
-      revisionDate: "",
+      creationDate: "2024-01-01T00:00:00Z",
+      revisionDate: "2024-01-01T00:00:00Z",
     },
     {
-      id: "2",
-      type: VaultItemType.SecureNote,
-      name: "My Note",
-      notes: "note content",
-      favorite: true,
+      id: asVaultItemId("2"),
+      type: VaultItemType.Login,
+      name: "GitHub",
+      notes: "",
+      favorite: false,
       reprompt: 0,
       fields: [],
-      creationDate: "",
-      revisionDate: "",
+      login: {
+        username: "user2",
+        password: "password2",
+        uris: [{ uri: "https://github.com" }],
+        fido2Credentials: [],
+        passwordRevisionDate: null,
+        passwordHistory: [],
+      },
+      creationDate: "2024-01-01T00:00:00Z",
+      revisionDate: "2024-01-01T00:00:00Z",
     },
   ];
 
   const csv = exportToBrowserCsv(items);
   const rows = parseCSV(csv);
-  assertEquals(rows.length, 2); // Header + 1 login row (note is ignored)
+  assertEquals(rows.length, 3); // Header + 2 login rows
   assertEquals(rows[0], ["name", "url", "username", "password", "note"]);
-
-  const loginRow = rows[1];
-  assertEquals(loginRow[0], "Google, Inc.");
-  assertEquals(loginRow[1], "https://google.com");
-  assertEquals(loginRow[2], "user1");
-  assertEquals(loginRow[3], 'password"123');
-  assertEquals(loginRow[4], "Line1\nLine2");
+  assertEquals(rows[1], ["Google, Inc.", "https://google.com", "user1", 'password"123', "Line1\nLine2"]);
+  assertEquals(rows[2], ["GitHub", "https://github.com", "user2", "password2", ""]);
 });
 
 test("Export CSV - Bitwarden CSV format", () => {
   const items: VaultItem[] = [
     {
-      id: "1",
+      id: asVaultItemId("3"),
       type: VaultItemType.Login,
       name: "Google",
       notes: "Note 1",
@@ -74,19 +77,19 @@ test("Export CSV - Bitwarden CSV format", () => {
         passwordRevisionDate: null,
         passwordHistory: [],
       },
-      creationDate: "",
-      revisionDate: "",
+      creationDate: "2024-01-01T00:00:00Z",
+      revisionDate: "2024-01-01T00:00:00Z",
     },
     {
-      id: "2",
+      id: asVaultItemId("4"),
       type: VaultItemType.SecureNote,
       name: "Note Name",
       notes: "Note Content",
       favorite: false,
       reprompt: 0,
       fields: [],
-      creationDate: "",
-      revisionDate: "",
+      creationDate: "2024-01-01T00:00:00Z",
+      revisionDate: "2024-01-01T00:00:00Z",
     },
   ];
 

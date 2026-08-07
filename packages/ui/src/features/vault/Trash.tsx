@@ -16,7 +16,7 @@ import {
 import { RefreshIcon, TrashIcon } from "@/icons/svg/index.ts";
 import { t } from "@/core/i18n.ts";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
-import type { TrashVaultItem } from "@gistwarden/domain";
+import type { TrashVaultItem, VaultItemId } from "@gistwarden/domain";
 import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
 
 export const Trash: Component = () => {
@@ -26,7 +26,7 @@ export const Trash: Component = () => {
     navigate(View.VaultOptions);
   };
 
-  const handleRestore = async (id: string) => {
+  const handleRestore = async (id: VaultItemId) => {
     setGlobalLoading(true, t("dialog_loading"));
     setError("");
     const res = await restoreVaultItem(id);
@@ -39,7 +39,8 @@ export const Trash: Component = () => {
     }
   };
 
-  const handlePurge = async (id: string) => {
+  const handlePurge = async (id: VaultItemId) => {
+
     if (
       !(await confirm(
         t("trash_purge"),

@@ -24,7 +24,11 @@ import {
 import { Header } from "@/components/ui/Header.tsx";
 import FolderModal from "@/components/ui/FolderModal.tsx";
 import MoveToFolderModal from "@/features/vault/components/MoveToFolderModal.tsx";
-import { type Folder, VaultItemType } from "@gistwarden/domain";
+import { asFolderId, asVaultItemId, type Folder, type FolderId, type VaultItemId, VaultItemType } from "@gistwarden/domain";
+
+
+
+
 import { createDefaultVaultItem } from "@/features/vault/item-edit/vault-edit-helper.ts";
 import { VaultBatchActionBar } from "@/features/vault/components/VaultBatchActionBar.tsx";
 import { getCurrentTab, sendMessageToTab } from "@/core/tabs.ts";
@@ -62,7 +66,8 @@ import {
 
 const AutofillResponseSchema = z.object({
   success: z.boolean(),
-});
+}).readonly();
+
 
 const VaultItemTypeSchema = z.nativeEnum(VaultItemType);
 
@@ -71,8 +76,11 @@ export const Vault: Component = () => {
     SESSION_KEY_VAULT_SEARCH_QUERY,
     "",
   );
-  const [activeMenuId, setActiveMenuId] = createSignal("");
-  const [activeOptionsMenuId, setActiveOptionsMenuId] = createSignal("");
+  const [activeMenuId, setActiveMenuId] = createSignal<VaultItemId | "">("");
+  const [activeOptionsMenuId, setActiveOptionsMenuId] = createSignal<
+    VaultItemId | ""
+  >("");
+
   const [contextMenuPos, setContextMenuPos] = createSignal<
     {
       x: number;
@@ -101,8 +109,9 @@ export const Vault: Component = () => {
   );
 
   const [selectedFolderId, setSelectedFolderId] = createSignal<
-    string | "no_folder"
+    FolderId | "no_folder"
   >("no_folder");
+
 
   const [showFolderModal, setShowFolderModal] = createSignal(false);
   const [editingFolder, setEditingFolder] = createSignal<Folder | null>(null);
@@ -143,17 +152,17 @@ export const Vault: Component = () => {
   };
 
   const [isSelectMode, setIsSelectMode] = createSignal(false);
-  const [selectedItemIds, setSelectedItemIds] = createSignal<Set<string>>(
-    new Set<string>(),
+  const [selectedItemIds, setSelectedItemIds] = createSignal<Set<VaultItemId>>(
+    new Set<VaultItemId>(),
   );
 
   const toggleSelectMode = () => {
     const nextVal = !isSelectMode();
     setIsSelectMode(nextVal);
-    setSelectedItemIds(new Set<string>());
+    setSelectedItemIds(new Set<VaultItemId>());
   };
 
-  const toggleSelectItem = (id: string) => {
+  const toggleSelectItem = (id: VaultItemId) => {
     const current = new Set(selectedItemIds());
     if (current.has(id)) {
       current.delete(id);
@@ -163,8 +172,8 @@ export const Vault: Component = () => {
     setSelectedItemIds(current);
   };
 
-  const getAllVisibleItemIds = (): string[] => {
-    const ids: string[] = [];
+  const getAllVisibleItemIds = (): VaultItemId[] => {
+    const ids: VaultItemId[] = [];
     if (!search() && matchingItems().length > 0) {
       matchingItems().forEach((item) => ids.push(item.id));
     }
@@ -178,7 +187,7 @@ export const Vault: Component = () => {
   const handleSelectAll = () => {
     const visibleIds = getAllVisibleItemIds();
     if (selectedItemIds().size >= visibleIds.length && visibleIds.length > 0) {
-      setSelectedItemIds(new Set<string>());
+      setSelectedItemIds(new Set<VaultItemId>());
     } else {
       setSelectedItemIds(new Set(visibleIds));
     }
@@ -201,7 +210,8 @@ export const Vault: Component = () => {
 
     if (res.isOk()) {
       showToast(t("toast_success"), "success");
-      setSelectedItemIds(new Set<string>());
+
+      setSelectedItemIds(new Set<VaultItemId>());
       setIsSelectMode(false);
     } else {
       showToast(t(res.error), "error");
@@ -209,13 +219,15 @@ export const Vault: Component = () => {
   };
 
   const handleMoveSelectedToFolder = async (
-    targetFolderId: string | null,
+    targetFolderId: FolderId | null,
   ): Promise<boolean> => {
+
     const selected = Array.from(selectedItemIds());
     if (selected.length === 0) return false;
 
     setGlobalLoading(true);
-    const res = await moveVaultItemsToFolder(selected, targetFolderId);
+    const parsedFolderId = targetFolderId ? asFolderId(targetFolderId) : null;
+    const res = await moveVaultItemsToFolder(selected, parsedFolderId);
     setGlobalLoading(false);
 
     if (res.isOk()) {
@@ -223,7 +235,7 @@ export const Vault: Component = () => {
         t("vault_move_to_folder_success", { count: selected.length }),
         "success",
       );
-      setSelectedItemIds(new Set<string>());
+      setSelectedItemIds(new Set<VaultItemId>());
       setIsSelectMode(false);
       setShowMoveToFolderModal(false);
       return true;
@@ -358,7 +370,7 @@ export const Vault: Component = () => {
     setActiveMenuId(""); // Close menu
   };
 
-  const handleToggleMenu = (itemId: string, e: MouseEvent) => {
+  const handleToggleMenu = (itemId: VaultItemId, e: MouseEvent) => {
     e.stopPropagation();
     setActiveOptionsMenuId(""); // Close options menu
     if (activeMenuId() === itemId) {
@@ -368,7 +380,7 @@ export const Vault: Component = () => {
     }
   };
 
-  const handleToggleOptionsMenu = (itemId: string, e: MouseEvent) => {
+  const handleToggleOptionsMenu = (itemId: VaultItemId, e: MouseEvent) => {
     e.stopPropagation();
     setActiveMenuId(""); // Close copy dropdown
     if (activeOptionsMenuId() === itemId) {
@@ -380,7 +392,7 @@ export const Vault: Component = () => {
     }
   };
 
-  const handleContextMenuRow = (itemId: string, e: MouseEvent) => {
+  const handleContextMenuRow = (itemId: VaultItemId, e: MouseEvent) => {
     e.stopPropagation();
     setActiveMenuId(""); // Close copy dropdown
     if (activeOptionsMenuId() === itemId) {
@@ -392,7 +404,7 @@ export const Vault: Component = () => {
     }
   };
 
-  const handleSelectFromMenu = (itemId: string, e: MouseEvent) => {
+  const handleSelectFromMenu = (itemId: VaultItemId, e: MouseEvent) => {
     e.stopPropagation();
     if (!isSelectMode()) {
       setIsSelectMode(true);
@@ -402,6 +414,7 @@ export const Vault: Component = () => {
     setSelectedItemIds(current);
     setActiveOptionsMenuId("");
   };
+
 
   const handleFavoriteItem = async (item: VaultItem, e: MouseEvent) => {
     e.stopPropagation();
@@ -426,12 +439,13 @@ export const Vault: Component = () => {
 
     const clonedItem: VaultItem = {
       ...item,
-      id: "",
+      id: asVaultItemId(""),
       name: `${item.name} - ${t("vault_item_clone_suffix")}`,
     };
 
     await openItem(clonedItem, View.ItemEdit);
   };
+
 
   const handleDeleteItem = async (item: VaultItem, e: MouseEvent) => {
     e.stopPropagation();

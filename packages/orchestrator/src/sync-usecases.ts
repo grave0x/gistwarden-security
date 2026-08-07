@@ -17,7 +17,7 @@ import {
   type ValidateTokenMsg,
   type ValidateTokenResponse,
 } from "@gistwarden/repository";
-import { SESSION_KEY_PENDING_GITHUB_TOKEN } from "@gistwarden/domain";
+import { asGistId, SESSION_KEY_PENDING_GITHUB_TOKEN } from "@gistwarden/domain";
 
 export async function uploadToGistUseCase(
   payload: UploadToGistMsg,
@@ -57,7 +57,7 @@ export async function deleteGistUseCase(
   payload: DeleteGistMsg,
 ): Promise<SyncActionResponse> {
   const token = await getGithubToken();
-  const gistId = payload.content || "";
+  const gistId = payload.content ? asGistId(payload.content) : undefined;
   const res = await getSyncProvider().delete(gistId, {
     token: token || undefined,
   });
@@ -97,8 +97,10 @@ export async function downloadFromGistUseCase(): Promise<DownloadGistResponse> {
 export async function validateTokenUseCase(
   payload: ValidateTokenMsg,
 ): Promise<ValidateTokenResponse> {
-  const token = payload.token || "";
-  const res = await validateToken(token);
+  if (!payload.token) {
+    return { success: false, error: "login_error_invalid_token" };
+  }
+  const res = await validateToken(payload.token);
   if (res.isOk()) {
     return {
       success: true,

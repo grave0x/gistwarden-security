@@ -20,10 +20,14 @@ import {
 } from "@/core/store.ts";
 import {
   type Folder,
+  type FolderId,
   type TrashVaultItem,
   type VaultItem,
+  type VaultItemId,
   type VaultPayload,
 } from "@gistwarden/domain";
+
+
 import { err, ok, Result } from "neverthrow";
 import type { TranslationKey } from "@/core/i18n.ts";
 
@@ -83,7 +87,7 @@ export async function addFolder(
 }
 
 export async function renameFolder(
-  id: string,
+  id: FolderId,
   newName: string,
 ): Promise<Result<void, TranslationKey>> {
   const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
@@ -97,7 +101,7 @@ export async function renameFolder(
 }
 
 export async function deleteFolder(
-  id: string,
+  id: FolderId,
 ): Promise<Result<void, TranslationKey>> {
   const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
   const res = await deleteFolderUseCase(payload, salt, id);
@@ -123,13 +127,13 @@ export async function saveItem(
 }
 
 export async function deleteItem(
-  id: string,
+  id: VaultItemId,
 ): Promise<Result<void, TranslationKey>> {
   return await deleteVaultItems([id]);
 }
 
 export async function deleteVaultItems(
-  ids: string[],
+  ids: VaultItemId[],
 ): Promise<Result<void, TranslationKey>> {
   const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
   const res = await deleteVaultItemsUseCase(payload, salt, ids);
@@ -142,9 +146,11 @@ export async function deleteVaultItems(
 }
 
 export async function moveVaultItemsToFolder(
-  ids: string[],
-  folderId: string | null,
+  ids: VaultItemId[],
+  folderId: FolderId | null,
 ): Promise<Result<void, TranslationKey>> {
+
+
   const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
   const res = await moveVaultItemsToFolderUseCase(payload, salt, ids, folderId);
   if (res.isErr()) {
@@ -156,7 +162,7 @@ export async function moveVaultItemsToFolder(
 }
 
 export async function restoreVaultItem(
-  id: string,
+  id: VaultItemId,
 ): Promise<Result<void, TranslationKey>> {
   const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
   const res = await restoreVaultItemUseCase(payload, salt, id);
@@ -169,8 +175,9 @@ export async function restoreVaultItem(
 }
 
 export async function purgeTrashItem(
-  id: string,
+  id: VaultItemId,
 ): Promise<Result<void, TranslationKey>> {
+
   const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
   const res = await purgeTrashItemUseCase(payload, salt, id);
   if (res.isErr()) {

@@ -1,6 +1,10 @@
 import { z } from "zod";
 import {
   APP_NAME,
+  asGistId,
+  asGitHubAccessToken,
+  type GistId,
+  type GitHubAccessToken,
   safeJsonParse,
   safeParseUrl,
   type TranslationKey,
@@ -17,28 +21,29 @@ const GIST_FILE_NAME = `${APP_NAME.toLowerCase()}.json`;
 const GithubUserSchema = z.object({
   login: z.string(),
   avatar_url: z.string(),
-});
+}).readonly();
 
 const GistFileSchema = z.object({
   content: z.string().optional(),
   raw_url: z.string(),
-});
+}).readonly();
 
 const GistSchema = z.object({
   id: z.string(),
   description: z.string().nullable(),
   updated_at: z.string(),
   files: z.record(z.string(), GistFileSchema),
-});
+}).readonly();
 
-const GistArraySchema = z.array(GistSchema);
+const GistArraySchema = z.array(GistSchema).readonly();
+
 
 export type GistType = z.infer<typeof GistSchema>;
 
 async function githubRequest(
   path: string,
   options: RequestInit = {},
-  authToken?: string,
+  authToken?: GitHubAccessToken,
 ): Promise<Result<unknown, TranslationKey>> {
   if (!authToken) return err("github_error_missing_token");
 
@@ -65,7 +70,7 @@ async function githubRequest(
 }
 
 export async function validateToken(
-  token: string,
+  token: GitHubAccessToken,
 ): Promise<Result<{ username: string; avatarUrl: string }, TranslationKey>> {
   const fetchRes = await fetchText(`${GITHUB_API_BASE}/user`, {
     cache: "no-store",
@@ -96,8 +101,8 @@ export async function validateToken(
 }
 
 export async function findGistId(
-  token: string,
-): Promise<Result<string, TranslationKey>> {
+  token: GitHubAccessToken,
+): Promise<Result<GistId | undefined, TranslationKey>> {
   const reqRes = await githubRequest("/gists", {}, token);
   if (reqRes.isErr()) {
     return err(reqRes.error);
@@ -109,12 +114,12 @@ export async function findGistId(
   const target = parsed.data.find(
     (g) => g.description === GIST_DESCRIPTION && GIST_FILE_NAME in g.files,
   );
-  return ok(target ? target.id : "");
+  return ok(target ? asGistId(target.id) : undefined);
 }
 
 export async function createGist(
   content: string,
-  token: string,
+  token: GitHubAccessToken,
 ): Promise<Result<GistType, TranslationKey>> {
   const reqRes = await githubRequest(
     "/gists",
@@ -143,9 +148,9 @@ export async function createGist(
 }
 
 export async function updateGist(
-  gistId: string,
+  gistId: GistId,
   content: string,
-  token: string,
+  token: GitHubAccessToken,
 ): Promise<Result<unknown, TranslationKey>> {
   return await githubRequest(
     `/gists/${gistId}`,
@@ -191,15 +196,15 @@ export async function uploadToGist(
     if (createRes.isErr()) {
       return err(createRes.error);
     }
-    gistId = createRes.value.id;
+    gistId = asGistId(createRes.value.id);
   }
 
   return ok({ gistId });
 }
 
 export async function getGist(
-  gistId: string,
-  token?: string,
+  gistId: GistId,
+  token?: GitHubAccessToken,
 ): Promise<Result<string, TranslationKey>> {
   if (!gistId) return err("github_error_missing_gist_id");
 
@@ -244,9 +249,9 @@ export async function getGist(
  * Giúp tối ưu tốc độ và không tiêu tốn giới hạn Rate Limit REST API (5000 lượt/giờ).
  */
 export async function downloadFromGistPublic(
-  gistId: string,
+  gistId: GistId,
   username?: string,
-  token?: string,
+  token?: GitHubAccessToken,
 ): Promise<Result<string, TranslationKey>> {
   if (!gistId) return err("github_error_missing_gist_id");
 
@@ -278,7 +283,7 @@ export async function downloadFromGist(
   apiOpts?: SyncOptions,
 ): Promise<Result<SyncResult, TranslationKey>> {
   const token = apiOpts?.token;
-  let gistId = apiOpts?.gistId || "";
+  let gistId: GistId | undefined = apiOpts?.gistId;
   const username = apiOpts?.username || "";
 
   // 1. Nếu đã có gistId -> Thử tải qua Raw Gist CDN URL trước
@@ -317,8 +322,8 @@ export async function downloadFromGist(
 }
 
 export async function deleteGist(
-  gistId: string,
-  token?: string,
+  gistId: GistId,
+  token?: GitHubAccessToken,
 ): Promise<Result<void, TranslationKey>> {
   const reqRes = await githubRequest(
     `/gists/${gistId}`,
@@ -338,7 +343,7 @@ export async function deleteGist(
  */
 export function launchGithubOauthFlow(
   clientId: string,
-): Promise<Result<string, TranslationKey>> {
+): Promise<Result<GitHubAccessToken, TranslationKey>> {
   return new Promise((resolve) => {
     if (
       typeof chrome === "undefined" ||
@@ -378,7 +383,7 @@ export function launchGithubOauthFlow(
           return;
         }
 
-        resolve(ok(token));
+        resolve(ok(asGitHubAccessToken(token)));
       },
     );
   });

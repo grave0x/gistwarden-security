@@ -1,4 +1,4 @@
-import { encryptData } from "@gistwarden/domain";
+import { asGitHubAccessToken, encryptData } from "@gistwarden/domain";
 import { getSessionKey } from "@gistwarden/orchestrator";
 import {
   removeSessionItem,
@@ -16,7 +16,7 @@ export async function setupGithub(
   token: string,
 ): Promise<Result<void, TranslationKey>> {
   const sendResult = await sendBackgroundMessage(validateTokenRoute, {
-    token,
+    token: asGitHubAccessToken(token),
   });
   if (sendResult.isErr()) {
     return err(sendResult.error);

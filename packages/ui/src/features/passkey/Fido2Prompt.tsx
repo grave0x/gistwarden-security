@@ -17,7 +17,7 @@ import { setGlobalLoading } from "@gistwarden/ui";
 import { APP_NAME, MSG_FIDO2_HEARTBEAT } from "@/core/constants.ts";
 import { getPendingFido2RequestRoute } from "@gistwarden/orchestrator";
 import { notifyBackground, sendBackgroundMessage } from "@/core/messaging.ts";
-import { type LoginVaultItem, safeParseUrl } from "@gistwarden/domain";
+import { asRpId, type LoginVaultItem, type RpId, safeParseUrl } from "@gistwarden/domain";
 
 import {
   assertFido2Passkey,
@@ -96,15 +96,15 @@ export const Fido2Prompt: Component = () => {
     const items = accountStore.vaultItems;
     if (!accountStore.isLocked && req) {
       if (req.type === "get") {
-        let rpId = req.options.rpId;
+        let rpId: RpId | undefined = req.options.rpId;
         if (!rpId) {
           const parsed = safeParseUrl(req.origin);
-          rpId = parsed.isOk() ? parsed.value.hostname : req.origin;
+          rpId = asRpId(parsed.isOk() ? parsed.value.hostname : req.origin);
         }
         const list = findMatchingFido2Credentials(items, rpId);
         setMatchingCredentials(list);
       } else if (req.type === "create") {
-        const rpId = req.options.rp?.id || req.options.rp?.name || "";
+        const rpId = asRpId(req.options.rp?.id || req.options.rp?.name || "");
         const matches = findMatchingFido2Accounts(items, rpId, req.origin);
         setMatchingAccounts(matches);
         if (matches.length > 0) {
@@ -135,7 +135,7 @@ export const Fido2Prompt: Component = () => {
   });
 
   const findMatchingAccounts = (
-    rpId: string,
+    rpId: RpId,
     origin: string,
   ) => {
     const matches = findMatchingFido2Accounts(
@@ -172,14 +172,14 @@ export const Fido2Prompt: Component = () => {
         origin: res.origin,
       });
       if (res.type === "get") {
-        let rpId = res.options.rpId;
+        let rpId: RpId | undefined = res.options.rpId;
         if (!rpId) {
           const parsed = safeParseUrl(res.origin);
-          rpId = parsed.isOk() ? parsed.value.hostname : res.origin;
+          rpId = asRpId(parsed.isOk() ? parsed.value.hostname : res.origin);
         }
         findMatchingPasskeys(rpId);
       } else if (res.type === "create") {
-        const rpId = res.options.rp?.id || res.options.rp?.name || "";
+        const rpId = asRpId(res.options.rp?.id || res.options.rp?.name || "");
         findMatchingAccounts(rpId, res.origin);
       }
     } else {
@@ -187,7 +187,7 @@ export const Fido2Prompt: Component = () => {
     }
   };
 
-  const findMatchingPasskeys = (rpId: string) => {
+  const findMatchingPasskeys = (rpId: RpId) => {
     const list = findMatchingFido2Credentials(accountStore.vaultItems, rpId);
     setMatchingCredentials(list);
   };

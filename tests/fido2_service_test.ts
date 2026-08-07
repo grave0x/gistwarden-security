@@ -3,11 +3,11 @@ import {
   findMatchingFido2Accounts,
   findMatchingFido2Credentials,
 } from "../packages/ui/src/features/passkey/fido2-service.ts";
-import { type VaultItem, VaultItemType } from "@gistwarden/domain";
+import { asFido2CredentialId, asRpId, asVaultItemId, type VaultItem, VaultItemType } from "@gistwarden/domain";
 
 const mockVaultItems: VaultItem[] = [
   {
-    id: "1",
+    id: asVaultItemId("1"),
     type: VaultItemType.Login,
     name: "GitHub",
     favorite: false,
@@ -21,19 +21,20 @@ const mockVaultItems: VaultItem[] = [
       uris: [{ uri: "https://github.com" }],
       fido2Credentials: [
         {
-          credentialId: "cred1",
+          credentialId: asFido2CredentialId("cred1"),
           keyType: "public-key",
           keyAlgorithm: "ES256",
           keyCurve: "P-256",
           keyValue: "pub1",
-          rpId: "github.com",
+          rpId: asRpId("github.com"),
           counter: 0,
         },
       ],
     },
   },
   {
-    id: "2",
+    id: asVaultItemId("2"),
+
     type: VaultItemType.Login,
     name: "example.com",
     favorite: false,
@@ -52,7 +53,7 @@ const mockVaultItems: VaultItem[] = [
 test("fido2-service: findMatchingFido2Accounts matches by URI", () => {
   const matches = findMatchingFido2Accounts(
     mockVaultItems,
-    "github.com",
+    asRpId("github.com"),
     "https://github.com",
   );
   assertEquals(matches.length, 1);
@@ -62,7 +63,7 @@ test("fido2-service: findMatchingFido2Accounts matches by URI", () => {
 test("fido2-service: findMatchingFido2Accounts ignores items without matching URI", () => {
   const matches = findMatchingFido2Accounts(
     mockVaultItems,
-    "example.com",
+    asRpId("example.com"),
     "https://example.com",
   );
   // Item 2 has name "example.com" but no URIs -> must return 0 matches
@@ -70,7 +71,7 @@ test("fido2-service: findMatchingFido2Accounts ignores items without matching UR
 });
 
 test("fido2-service: findMatchingFido2Credentials matches rpId", () => {
-  const creds = findMatchingFido2Credentials(mockVaultItems, "github.com");
+  const creds = findMatchingFido2Credentials(mockVaultItems, asRpId("github.com"));
   assertEquals(creds.length, 1);
   assertEquals(creds[0].credential.credentialId, "cred1");
 });

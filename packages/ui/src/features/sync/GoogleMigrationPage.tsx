@@ -24,6 +24,7 @@ import Input from "@/components/ui/Input.tsx";
 import Select from "@/components/ui/Select.tsx";
 import CopyableField from "@/components/ui/CopyableField.tsx";
 import {
+  asVaultItemId,
   type GoogleMigrationAccountMapping,
   type GoogleMigrationAction,
   type GoogleOtpAccount,
@@ -31,7 +32,9 @@ import {
   matchGoogleMigrationAccounts,
   parseGoogleMigrationUri,
   safeDecodeQr,
+  type VaultItemId,
 } from "@gistwarden/domain";
+
 import { batchImportGoogleMigrationAccountsUseCase } from "@gistwarden/orchestrator";
 import { generateTotpSafe } from "@gistwarden/domain";
 
@@ -181,8 +184,8 @@ export const GoogleMigrationPage: Component = () => {
     }
   };
 
-  const handleTargetItemChange = (index: number, itemId: string) => {
-    setMappings(index, "targetItemId", itemId);
+  const handleTargetItemChange = (index: number, itemId: VaultItemId) => {
+    setMappings(index, "targetItemId", itemId ? asVaultItemId(itemId) : null);
   };
 
   const handleCopyUri = (text: string) => {
@@ -194,8 +197,10 @@ export const GoogleMigrationPage: Component = () => {
 
   const loginItemOptions = (
     currentIndex: number,
-    currentTargetItemId?: string | null,
+    currentTargetItemId?: VaultItemId | null,
   ) => {
+
+
     const usedIds = getUsedTargetItemIds(currentIndex);
 
     return accountStore.vaultItems
@@ -420,7 +425,8 @@ export const GoogleMigrationPage: Component = () => {
                             value={mapping.targetItemId || ""}
                             searchable={true}
                             onChange={(e) =>
-                              handleTargetItemChange(index(), e.target.value)}
+                              handleTargetItemChange(index(), asVaultItemId(e.target.value))}
+
                           />
                         </div>
                       </Show>

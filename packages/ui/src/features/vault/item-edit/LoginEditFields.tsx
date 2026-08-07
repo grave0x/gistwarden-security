@@ -11,7 +11,7 @@ import {
 } from "@/icons/svg/index.ts";
 import FormField from "@/components/ui/FormField.tsx";
 import type { ItemEditFormState } from "@/features/vault/item-edit/vault-edit-helper.ts";
-import { UriMatchMode } from "@gistwarden/domain";
+import { type Fido2CredentialId, UriMatchMode } from "@gistwarden/domain";
 import { confirm } from "@gistwarden/ui";
 
 interface LoginEditFieldsProps {
@@ -20,7 +20,8 @@ interface LoginEditFieldsProps {
     key: K,
     val: ItemEditFormState[K],
   ) => void;
-  onDeleteFido: (id: string) => void;
+  onDeleteFido: (id: Fido2CredentialId) => void;
+
   scanning: boolean;
   onScanQr: () => void;
 }

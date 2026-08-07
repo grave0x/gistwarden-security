@@ -1,5 +1,5 @@
 import type { Result } from "neverthrow";
-import type { TranslationKey } from "@gistwarden/domain";
+import type { GistId, GitHubAccessToken, TranslationKey } from "@gistwarden/domain";
 
 export type SyncProviderId = "github_gist";
 
@@ -9,14 +9,14 @@ export interface SyncValidationResult {
 }
 
 export interface SyncOptions {
-  token?: string;
-  gistId?: string;
+  token?: GitHubAccessToken;
+  gistId?: GistId;
   username?: string;
 }
 
 export interface SyncResult {
   content?: string;
-  gistId?: string;
+  gistId?: GistId;
 }
 
 export interface ISyncProvider {
@@ -31,10 +31,10 @@ export interface ISyncProvider {
     options?: SyncOptions,
   ): Promise<Result<SyncResult, TranslationKey>>;
   delete(
-    targetId?: string,
+    targetId?: GistId,
     options?: SyncOptions,
   ): Promise<Result<void, TranslationKey>>;
   validateConfig(
-    configToken?: string,
+    configToken?: GitHubAccessToken,
   ): Promise<Result<SyncValidationResult, TranslationKey>>;
 }

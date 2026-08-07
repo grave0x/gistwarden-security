@@ -1,5 +1,5 @@
 import type { Component, JSX } from "solid-js";
-import type { VaultItem, VaultItemType } from "@gistwarden/domain";
+import type { Fido2CredentialId, VaultItem, VaultItemType } from "@gistwarden/domain";
 import type { ItemEditFormState } from "@/features/vault/item-edit/vault-edit-helper.ts";
 
 export interface DetailComponentProps {
@@ -13,7 +13,8 @@ export interface EditComponentProps {
     key: K,
     value: ItemEditFormState[K],
   ) => void;
-  onDeleteFido?: (credId: string) => void;
+  onDeleteFido?: (credId: Fido2CredentialId) => void;
+
   scanning?: boolean;
   onScanQr?: () => void;
 }

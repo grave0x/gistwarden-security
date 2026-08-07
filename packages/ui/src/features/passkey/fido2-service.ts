@@ -1,7 +1,7 @@
 import { err, ok, Result } from "neverthrow";
 import type { TranslationKey } from "@/core/i18n.ts";
 import { VaultItemType } from "@gistwarden/domain";
-import type { LoginVaultItem, VaultItem } from "@gistwarden/domain";
+import type { LoginVaultItem, RpId, VaultItem, VaultItemId } from "@gistwarden/domain";
 import type { Fido2Credential } from "@gistwarden/domain";
 import { isMatchingDomain } from "@gistwarden/domain";
 
@@ -23,9 +23,9 @@ export interface Fido2Request {
   type: "create" | "get";
   origin: string;
   options: {
-    rpId?: string;
+    rpId?: RpId;
     rp?: {
-      id?: string;
+      id?: RpId;
       name: string;
     };
     user?: {
@@ -45,12 +45,13 @@ export interface Fido2Request {
 export interface MatchingPasskey {
   credential: Fido2Credential;
   vaultItemName: string;
-  vaultItemId: string;
+  vaultItemId: VaultItemId;
 }
+
 
 export function findMatchingFido2Accounts(
   vaultItems: VaultItem[],
-  rpId: string,
+  rpId: RpId,
   origin: string,
 ): LoginVaultItem[] {
   const rpIdNormalized = rpId.toLowerCase().trim();
@@ -66,7 +67,7 @@ export function findMatchingFido2Accounts(
 
 export function findMatchingFido2Credentials(
   vaultItems: VaultItem[],
-  rpId: string,
+  rpId: RpId,
 ): MatchingPasskey[] {
   const list: MatchingPasskey[] = [];
   const targetRpId = rpId?.trim().toLowerCase() || "";

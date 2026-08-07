@@ -26,7 +26,8 @@ const SubmittedCredentialsSchema = z.object({
   url: z.string(),
   username: z.string(),
   password: z.string(),
-});
+}).readonly();
+
 
 export async function processSubmittedCredentialsUseCase(
   rawCreds: unknown,

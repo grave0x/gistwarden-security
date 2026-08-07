@@ -235,7 +235,7 @@ export async function init(): Promise<void> {
     !!decryptedToken || !!accountStore.githubToken;
 
   setAccountStore({
-    githubToken: decryptedToken,
+    githubToken: decryptedToken || undefined,
     githubConfigured,
     sessionUnlocked: sessionUnlockedVal,
   });

@@ -31,10 +31,11 @@ import type { MessageContext } from "@/extension/message-router.ts";
 
 const PendingFido2RequestSchema = z.object({
   type: z.enum(["create", "get"]),
-  options: GetPendingFido2RequestResponseSchema.shape.options,
+  options: GetPendingFido2RequestResponseSchema.unwrap().shape.options,
   origin: z.string(),
   senderTabId: z.number(),
 });
+
 
 async function handleFido2CredentialRequestInternal(
   reqType: "create" | "get",

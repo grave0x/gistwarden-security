@@ -1,12 +1,15 @@
 import { z } from "zod";
 import {
+  asFolderId,
   createBaseVaultItem,
   createDefaultVaultItem as createDomainDefaultVaultItem,
   Fido2CredentialSchema,
+  FolderIdSchema,
   LoginUriSchema,
   VaultFieldSchema,
   VaultItemType,
 } from "@gistwarden/domain";
+
 import type {
   CardVaultItem,
   IdentityVaultItem,
@@ -19,8 +22,8 @@ import { unwrap } from "solid-js/store";
 import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
 
 export const ItemEditFormSchema = z.object({
-  itemType: z.nativeEnum(VaultItemType),
-  folderId: z.string().nullable().optional(),
+  itemType: z.enum(VaultItemType),
+  folderId: FolderIdSchema.nullable().optional(),
   name: z.string(),
   notes: z.string(),
   favorite: z.boolean(),
@@ -59,6 +62,8 @@ export const ItemEditFormSchema = z.object({
   postalCode: z.string(),
   country: z.string(),
 });
+
+
 
 export type ItemEditFormState = z.infer<typeof ItemEditFormSchema>;
 
@@ -134,8 +139,9 @@ export function mapFormStateToVaultItem(
 
   const commonData = {
     id: selectedItem?.id ?? undefined,
-    folderId: validatedForm.folderId ?? null,
+    folderId: validatedForm.folderId ? asFolderId(validatedForm.folderId) : (validatedForm.folderId === null ? null : undefined),
     name: validatedForm.name.trim(),
+
     notes: validatedForm.notes.trim(),
     favorite: validatedForm.favorite,
     reprompt: validatedForm.reprompt,

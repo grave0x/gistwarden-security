@@ -1,5 +1,5 @@
 import { createEffect, createSignal, Show } from "solid-js";
-import { type Folder } from "@gistwarden/domain";
+import { type Folder, type FolderId } from "@gistwarden/domain";
 import { t } from "@/core/i18n.ts";
 import { confirm } from "@gistwarden/ui";
 import Input from "@/components/ui/Input.tsx";
@@ -12,8 +12,9 @@ export interface FolderModalProps {
   folder?: Folder | null;
   onClose: () => void;
   onSave: (name: string) => Promise<boolean>;
-  onDelete?: (folderId: string) => Promise<boolean>;
+  onDelete?: (folderId: FolderId) => Promise<boolean>;
 }
+
 
 export default function FolderModal(props: FolderModalProps) {
   const [name, setName] = createSignal("");

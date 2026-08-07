@@ -1,5 +1,8 @@
 import { z } from "zod";
 import {
+  FolderIdSchema,
+  GistIdSchema,
+  GitHubAccessTokenSchema,
   MSG_DELETE_GIST,
   MSG_DOWNLOAD_FROM_GIST,
   MSG_START_GITHUB_OAUTH,
@@ -7,19 +10,20 @@ import {
   MSG_VALIDATE_TOKEN,
   type TranslationKey,
   VaultFieldSchema,
+  VaultItemIdSchema,
   VaultItemType,
 } from "@gistwarden/domain";
 import { Fido2CredentialSchema } from "@gistwarden/domain";
 
 export const ImportFolderSchema = z.object({
-  id: z.string(),
+  id: FolderIdSchema,
   name: z.string(),
-});
+}).readonly();
 export type ImportFolder = z.infer<typeof ImportFolderSchema>;
 
 export const ImportLoginItemSchema = z.object({
-  id: z.string().nullish(),
-  folderId: z.string().nullish(),
+  id: VaultItemIdSchema.nullish(),
+  folderId: FolderIdSchema.nullish(),
   type: z.literal(VaultItemType.Login),
   name: z.string(),
   notes: z.string().nullish(),
@@ -43,11 +47,11 @@ export const ImportLoginItemSchema = z.object({
       password: z.string().nullish(),
     })).nullish(),
   }),
-});
+}).readonly();
 
 export const ImportSecureNoteItemSchema = z.object({
-  id: z.string().nullish(),
-  folderId: z.string().nullish(),
+  id: VaultItemIdSchema.nullish(),
+  folderId: FolderIdSchema.nullish(),
   type: z.literal(VaultItemType.SecureNote),
   name: z.string(),
   notes: z.string().nullish(),
@@ -59,11 +63,11 @@ export const ImportSecureNoteItemSchema = z.object({
   secureNote: z.object({
     type: z.number(),
   }).nullish(),
-});
+}).readonly();
 
 export const ImportCardItemSchema = z.object({
-  id: z.string().nullish(),
-  folderId: z.string().nullish(),
+  id: VaultItemIdSchema.nullish(),
+  folderId: FolderIdSchema.nullish(),
   type: z.literal(VaultItemType.Card),
   name: z.string(),
   notes: z.string().nullish(),
@@ -80,11 +84,11 @@ export const ImportCardItemSchema = z.object({
     expYear: z.string().nullish(),
     code: z.string().nullish(),
   }).nullish(),
-});
+}).readonly();
 
 export const ImportIdentityItemSchema = z.object({
-  id: z.string().nullish(),
-  folderId: z.string().nullish(),
+  id: VaultItemIdSchema.nullish(),
+  folderId: FolderIdSchema.nullish(),
   type: z.literal(VaultItemType.Identity),
   name: z.string(),
   notes: z.string().nullish(),
@@ -113,11 +117,11 @@ export const ImportIdentityItemSchema = z.object({
     postalCode: z.string().nullish(),
     country: z.string().nullish(),
   }).nullish(),
-});
+}).readonly();
 
 export const ImportSshKeyItemSchema = z.object({
-  id: z.string().nullish(),
-  folderId: z.string().nullish(),
+  id: VaultItemIdSchema.nullish(),
+  folderId: FolderIdSchema.nullish(),
   type: z.literal(VaultItemType.SshKey),
   name: z.string(),
   notes: z.string().nullish(),
@@ -131,7 +135,8 @@ export const ImportSshKeyItemSchema = z.object({
     publicKey: z.string().nullish(),
     keyFingerprint: z.string().nullish(),
   }).nullish(),
-});
+}).readonly();
+
 
 export const ImportItemSchema = z.discriminatedUnion("type", [
   ImportLoginItemSchema,
@@ -142,11 +147,11 @@ export const ImportItemSchema = z.discriminatedUnion("type", [
 ]);
 export type ImportItem = z.infer<typeof ImportItemSchema>;
 
-export const ImportArraySchema = z.array(ImportItemSchema);
+export const ImportArraySchema = z.array(ImportItemSchema).readonly();
 export const ImportObjectSchema = z.object({
   folders: z.array(ImportFolderSchema).nullish(),
   items: z.array(ImportItemSchema),
-});
+}).readonly();
 
 export const GistPayloadSchema = z.object({
   ciphertext: z.string(),
@@ -160,13 +165,14 @@ export type EncryptedPayload = z.infer<typeof EncryptedPayloadSchema>;
 
 export const GistContentPayloadSchema = EncryptedPayloadSchema.extend({
   rawContent: z.string(),
-});
+}).readonly();
 export type GistContentPayload = z.infer<typeof GistContentPayloadSchema>;
+
 
 // --- Sync Extension Message & Response Schemas ---
 export const SimpleSuccessResponseSchema = z.object({
   success: z.literal(true),
-});
+}).readonly();
 export type SimpleSuccessResponse = z.infer<typeof SimpleSuccessResponseSchema>;
 
 export const SyncActionResponseSchema = z.discriminatedUnion("success", [
@@ -208,7 +214,7 @@ export type ValidateTokenResponse = z.infer<typeof ValidateTokenResponseSchema>;
 export const StartGithubOauthResponseSchema = z.discriminatedUnion("success", [
   z.object({
     success: z.literal(true),
-    token: z.string(),
+    token: GitHubAccessTokenSchema,
   }),
   z.object({
     success: z.literal(false),
@@ -222,28 +228,29 @@ export type StartGithubOauthResponse = z.infer<
 export const UploadToGistMsgSchema = z.object({
   type: z.literal(MSG_UPLOAD_TO_GIST),
   content: z.string().optional(),
-});
+}).readonly();
 export type UploadToGistMsg = z.infer<typeof UploadToGistMsgSchema>;
 
 export const DeleteGistMsgSchema = z.object({
   type: z.literal(MSG_DELETE_GIST),
   content: z.string().optional(),
-});
+}).readonly();
 export type DeleteGistMsg = z.infer<typeof DeleteGistMsgSchema>;
 
 export const DownloadFromGistMsgSchema = z.object({
   type: z.literal(MSG_DOWNLOAD_FROM_GIST),
-});
+}).readonly();
 export type DownloadFromGistMsg = z.infer<typeof DownloadFromGistMsgSchema>;
 
 export const ValidateTokenMsgSchema = z.object({
   type: z.literal(MSG_VALIDATE_TOKEN),
-  token: z.string().optional(),
-});
+  token: GitHubAccessTokenSchema.optional(),
+}).readonly();
 export type ValidateTokenMsg = z.infer<typeof ValidateTokenMsgSchema>;
 
 export const StartGithubOauthMsgSchema = z.object({
   type: z.literal(MSG_START_GITHUB_OAUTH),
   content: z.string().optional(),
-});
+}).readonly();
 export type StartGithubOauthMsg = z.infer<typeof StartGithubOauthMsgSchema>;
+

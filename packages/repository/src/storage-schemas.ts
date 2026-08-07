@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { SupportLanguage, ThemeMode } from "@gistwarden/domain";
+import { asGistId, GistIdSchema, SupportLanguage, ThemeMode } from "@gistwarden/domain";
 
 export const SupportLanguageSchema = z.enum(["en", "vi"]);
 
@@ -13,7 +13,7 @@ export const GeneratedPasswordHistoryItemSchema = z.object({
   password: z.string(),
   copiedAt: z.number(),
   domain: z.string(),
-});
+}).readonly();
 export type GeneratedPasswordHistoryItem = z.infer<
   typeof GeneratedPasswordHistoryItemSchema
 >;
@@ -21,6 +21,7 @@ export type GeneratedPasswordHistoryItem = z.infer<
 export const GeneratedPasswordHistoryListSchema = z.array(
   GeneratedPasswordHistoryItemSchema,
 );
+
 export type GeneratedPasswordHistoryList = z.infer<
   typeof GeneratedPasswordHistoryListSchema
 >;
@@ -51,7 +52,7 @@ export type LoginViewMode = z.infer<typeof LoginViewModeSchema>;
 export const GithubUserSchema = z.object({
   login: z.string(),
   avatar_url: z.string(),
-});
+}).readonly();
 export type GithubUser = z.infer<typeof GithubUserSchema>;
 
 export const ExtensionSettingsSchema = z.object({
@@ -65,7 +66,7 @@ export const ExtensionSettingsSchema = z.object({
   autoSubmitOnAutofill: z.boolean().default(true),
   showAutofillSuggestionsOnFocus: z.boolean().default(true),
   enablePageAnimations: z.boolean().default(true),
-});
+}).readonly();
 export type ExtensionSettings = z.infer<typeof ExtensionSettingsSchema>;
 
 export const PinUnlockConfigSchema = z.object({
@@ -75,7 +76,7 @@ export const PinUnlockConfigSchema = z.object({
   salt: z.string().default(""),
   failedAttempts: z.number().default(0),
   failedMac: z.string().default(""),
-});
+}).readonly();
 export type PinUnlockConfig = z.infer<typeof PinUnlockConfigSchema>;
 
 export const DEFAULT_PIN_CONFIG: PinUnlockConfig = Object.freeze({
@@ -92,7 +93,7 @@ export const MasterPasswordSecurityConfigSchema = z.object({
   failedAttempts: z.number().default(0),
   lockoutUntil: z.number().default(0),
   failedMac: z.string().default(""),
-});
+}).readonly();
 export type MasterPasswordSecurityConfig = z.infer<
   typeof MasterPasswordSecurityConfigSchema
 >;
@@ -106,16 +107,16 @@ export const DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG:
   });
 
 export const GithubConfigSchema = z.object({
-  gistId: z.string().default(""),
+  gistId: GistIdSchema.or(z.string()).transform((v) => asGistId(v)).default(asGistId("")),
   githubTokenEncrypted: z.string().default(""),
   githubTokenIv: z.string().default(""),
   username: z.string().default(""),
   avatarUrl: z.string().default(""),
-});
+}).readonly();
 export type GithubConfig = z.infer<typeof GithubConfigSchema>;
 
 export const DEFAULT_GITHUB_CONFIG: GithubConfig = Object.freeze({
-  gistId: "",
+  gistId: asGistId(""),
   githubTokenEncrypted: "",
   githubTokenIv: "",
   username: "",
@@ -129,5 +130,6 @@ export const AccountSettingsSchema = z.object({
   masterPasswordConfig: MasterPasswordSecurityConfigSchema.default(
     DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
   ),
-});
+}).readonly();
 export type AccountSettings = z.infer<typeof AccountSettingsSchema>;
+

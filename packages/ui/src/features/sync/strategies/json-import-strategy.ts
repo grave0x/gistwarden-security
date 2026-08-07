@@ -1,4 +1,4 @@
-import { type Folder, FolderSchema, VaultItemType } from "@gistwarden/domain";
+import { type Folder, FolderSchema, VaultItemType, asFido2CredentialId, asRpId } from "@gistwarden/domain";
 import { type ImportItem, ImportItemSchema } from "@gistwarden/repository";
 import {
   createBaseVaultItem,
@@ -167,13 +167,14 @@ export const jsonImportStrategy: ImportStrategy = {
               }))
               : [],
             fido2Credentials: rawFido?.map((c) => ({
-              credentialId: c.credentialId || "",
+              credentialId: asFido2CredentialId(c.credentialId || ""),
               keyType: c.keyType || "",
+
               keyAlgorithm: c.keyAlgorithm || "",
               keyCurve: c.keyCurve || "",
               keyValue: c.keyValue || "",
               counter: c.counter ?? 0,
-              rpId: c.rpId || "",
+              rpId: asRpId(c.rpId || ""),
               userHandle: c.userHandle || "",
               userName: c.userName || "",
               userDisplayName: c.userDisplayName || "",

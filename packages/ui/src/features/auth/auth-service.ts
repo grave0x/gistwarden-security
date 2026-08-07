@@ -125,7 +125,7 @@ async function setupUnlockedSession(
     trash: vaultPayload.trash || [],
   });
   setAccountStore({
-    githubToken: finalToken,
+    githubToken: finalToken || undefined,
     githubConfigured: true,
     isLocked: false,
     sessionUnlocked: true,

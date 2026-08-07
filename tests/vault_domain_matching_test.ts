@@ -6,18 +6,23 @@ import {
 } from "../packages/domain/mod.ts";
 
 import {
+  asVaultItemId,
   type LoginVaultItem,
+  type VaultItemId,
   UriMatchMode,
   VaultItemType,
 } from "@gistwarden/domain";
 
 function createMockLoginItem(
-  id: string,
+  id: VaultItemId,
   name: string,
   uris?: { uri: string; match?: UriMatchMode | null }[],
 ): LoginVaultItem {
+
+
   return {
-    id,
+    id: asVaultItemId(id),
+
     type: VaultItemType.Login,
     name,
     favorite: false,
@@ -34,23 +39,24 @@ function createMockLoginItem(
 }
 
 test("Vault Domain Matching - Strictly uses item.login.uris, ignores item.name", () => {
-  const noUriItem = createMockLoginItem("1", "panel.io", []);
+  const noUriItem = createMockLoginItem(asVaultItemId("1"), "panel.io", []);
   assertEquals(
     isMatchingDomain(noUriItem, "panel.io"),
     false,
     "Item without URIs must NOT match domain even if item.name equals domain",
   );
 
-  const linkedinItem = createMockLoginItem("2", "My Linkedin", []);
+  const linkedinItem = createMockLoginItem(asVaultItemId("2"), "My Linkedin", []);
   assertEquals(
     isMatchingDomain(linkedinItem, "https://site.in"),
     false,
     "Item without URIs must NOT match site.in",
   );
 
-  const githubItem = createMockLoginItem("3", "panel.io", [
+  const githubItem = createMockLoginItem(asVaultItemId("3"), "panel.io", [
     { uri: "https://github.com" },
   ]);
+
   assertEquals(
     isMatchingDomain(githubItem, "panel.io"),
     false,
@@ -190,7 +196,7 @@ test("Vault Domain Matching - Single URI Match Engine (isSingleUriMatch)", () =>
 });
 
 test("Vault Domain Matching - Vault item with multiple URIs and custom match policies", () => {
-  const itemWithPolicies = createMockLoginItem("item-1", "Multi-URI Item", [
+  const itemWithPolicies = createMockLoginItem(asVaultItemId("item-1"), "Multi-URI Item", [
     { uri: "https://never-match.com", match: UriMatchMode.Never },
     { uri: "https://exact.com/login", match: UriMatchMode.Exact },
     { uri: "https://host.example.com", match: UriMatchMode.Host },
@@ -216,11 +222,11 @@ test("Vault Domain Matching - Vault item with multiple URIs and custom match pol
 
 test("Vault Domain Matching - filterMatchingDomainItems strictly matches by URI and sorts exact matches first", () => {
   const items = [
-    createMockLoginItem("1", "panel.io", []), // No URI
-    createMockLoginItem("2", "Base Match Item", [{
+    createMockLoginItem(asVaultItemId("1"), "panel.io", []), // No URI
+    createMockLoginItem(asVaultItemId("2"), "Base Match Item", [{
       uri: "https://sub.panel.io",
     }]), // Base domain match
-    createMockLoginItem("3", "Exact Host Match Item", [{
+    createMockLoginItem(asVaultItemId("3"), "Exact Host Match Item", [{
       uri: "https://panel.io",
     }]), // Exact host match
   ];
@@ -229,6 +235,7 @@ test("Vault Domain Matching - filterMatchingDomainItems strictly matches by URI 
 
   // Only item 2 and item 3 are returned, and item 3 (exact host match) is sorted first
   assertEquals(matched.length, 2);
-  assertEquals(matched[0].id, "3");
-  assertEquals(matched[1].id, "2");
+  assertEquals(matched[0].id, asVaultItemId("3"));
+  assertEquals(matched[1].id, asVaultItemId("2"));
 });
+

@@ -1,20 +1,23 @@
 import { type Component, Show } from "solid-js";
 import { View } from "@/core/types.ts";
-import type { VaultItem } from "@gistwarden/domain";
+import type { VaultItem, VaultItemId } from "@gistwarden/domain";
 import { MoreVerticalIcon } from "@/icons/svg/index.ts";
 import { openItem } from "@/core/navigation.ts";
 import { t } from "@/core/i18n.ts";
 
 interface VaultItemOptionsMenuProps {
   item: VaultItem;
-  activeOptionsMenuId: string;
+  activeOptionsMenuId: VaultItemId | "";
   contextMenuPos?: { x: number; y: number } | null;
-  onToggleOptionsMenu: (itemId: string, e: MouseEvent) => void;
-  onSelectFromMenu?: (itemId: string, e: MouseEvent) => void;
+
+  onToggleOptionsMenu: (itemId: VaultItemId, e: MouseEvent) => void;
+  onSelectFromMenu?: (itemId: VaultItemId, e: MouseEvent) => void;
   onFavoriteItem: (item: VaultItem, e: MouseEvent) => void;
   onCloneItem: (item: VaultItem, e: MouseEvent) => void;
   onDeleteItem: (item: VaultItem, e: MouseEvent) => void;
 }
+
+
 
 export const VaultItemOptionsMenu: Component<VaultItemOptionsMenuProps> = (
   props,

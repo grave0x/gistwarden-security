@@ -148,7 +148,8 @@ export async function updateTheme(newTheme: "dark" | "light") {
 
 const TimeServerResponseSchema = z.object({
   unixtime: z.number(),
-});
+}).readonly();
+
 
 export async function syncTimeOffset(): Promise<Result<void, TranslationKey>> {
   const textRes = await fetchText(`${OAUTH_WORKER_URL}/time`);

@@ -1,8 +1,12 @@
 import {
+  asFolderId,
+  asVaultItemId,
   type BaseVaultItem,
   CustomFieldTypeSchema,
+  type FolderId,
   type VaultField,
   type VaultItem,
+  type VaultItemId,
   VaultItemSchema,
 } from "./vault-schemas.ts";
 import { CustomFieldType, VaultItemType } from "./vault-types.ts";
@@ -27,8 +31,8 @@ export function mapCustomFields(
 }
 
 export interface CreateBaseVaultItemInput {
-  id?: string;
-  folderId?: string | null;
+  id?: VaultItemId | string;
+  folderId?: FolderId | string | null;
   name?: string | null;
   notes?: string | null;
   favorite?: boolean | null;
@@ -47,9 +51,11 @@ export function createBaseVaultItem(
   input: CreateBaseVaultItemInput,
 ): BaseVaultItem {
   const now = new Date().toISOString();
+  const rawId = input.id !== undefined ? input.id : crypto.randomUUID();
+  const rawFolderId = input.folderId !== undefined ? input.folderId : null;
   return {
-    id: input.id !== undefined ? input.id : crypto.randomUUID(),
-    folderId: input.folderId !== undefined ? input.folderId : null,
+    id: asVaultItemId(rawId),
+    folderId: rawFolderId != null ? asFolderId(rawFolderId) : rawFolderId,
     name: (input.name ?? "").trim() || (input.fallbackName ?? ""),
     notes: (input.notes ?? "").trim(),
     favorite: !!input.favorite,
@@ -222,8 +228,9 @@ export function createDefaultVaultItem(
     return parsed.data;
   }
   return {
-    id: crypto.randomUUID(),
+    id: asVaultItemId(crypto.randomUUID()),
     type: VaultItemType.Login,
+
     name: t("fallback_name_default"),
     notes: "",
     favorite: false,

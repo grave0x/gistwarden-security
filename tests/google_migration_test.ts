@@ -1,5 +1,6 @@
 import { assertEquals, assert } from "./assert.ts";
 import {
+  asVaultItemId,
   matchGoogleMigrationAccounts,
   parseGoogleMigrationUri,
   VaultItemType,
@@ -51,7 +52,7 @@ const test4 = () => {
 
   const existingVaultItems: LoginVaultItem[] = [
     {
-      id: "vault-item-1",
+      id: asVaultItemId("vault-item-1"),
       type: VaultItemType.Login,
       name: "Sophos SFOS Portal",
       login: {

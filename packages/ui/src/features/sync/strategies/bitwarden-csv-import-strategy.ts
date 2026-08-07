@@ -1,4 +1,5 @@
 import {
+  asFolderId,
   createBaseVaultItem,
   getVaultItemFallbackName,
   type Folder,
@@ -77,7 +78,7 @@ export const bitwardenCsvImportStrategy: ImportStrategy = {
         let existingFolder = folderMap.get(key);
         if (!existingFolder) {
           existingFolder = {
-            id: crypto.randomUUID(),
+            id: asFolderId(crypto.randomUUID()),
             name: folderNameVal,
           };
           folderMap.set(key, existingFolder);
