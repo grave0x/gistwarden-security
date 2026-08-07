@@ -1,5 +1,5 @@
 import { type Component, createSignal, onMount, Show } from "solid-js";
-import { createStore } from "solid-js/store";
+import { createStore, reconcile } from "solid-js/store";
 import { accountStore, uiStore } from "@/core/store.ts";
 import { View } from "@/core/types.ts";
 import { VaultItemType } from "@gistwarden/domain";
@@ -33,7 +33,7 @@ export const ItemEdit: Component = () => {
   const isEdit = () => !!uiStore.selectedItem?.id;
 
   const [formState, setFormState] = createStore<ItemEditFormState>(
-    getInitialFormState(),
+    getInitialFormState(uiStore.selectedItem),
   );
 
   const updateForm = <K extends keyof ItemEditFormState>(
@@ -49,7 +49,9 @@ export const ItemEdit: Component = () => {
 
   onMount(async () => {
     const item = uiStore.selectedItem;
-    setFormState(getInitialFormState(item));
+    if (item) {
+      setFormState(reconcile(getInitialFormState(item)));
+    }
 
     if (!item?.id) {
       const tabRes = await getCurrentTab();

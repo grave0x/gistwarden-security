@@ -15,6 +15,7 @@ import type {
   SshKeyVaultItem,
   VaultItem,
 } from "@gistwarden/domain";
+import { unwrap } from "solid-js/store";
 import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
 
 export const ItemEditFormSchema = z.object({
@@ -116,7 +117,7 @@ export function getInitialFormState(
     notes: item.notes ?? "",
     favorite: item.favorite ?? false,
     reprompt: item.reprompt ?? 0,
-    fields: item.fields ? structuredClone(item.fields) : [],
+    fields: item.fields ? structuredClone(unwrap(item.fields)) : [],
   };
 
   const strategy = getVaultItemStrategy(item.type);
