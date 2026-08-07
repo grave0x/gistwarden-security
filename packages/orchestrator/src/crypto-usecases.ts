@@ -8,17 +8,26 @@ import {
 } from "@gistwarden/domain";
 import { getAccountSettings, getSessionItem } from "@gistwarden/repository";
 import { err, ok, Result } from "neverthrow";
-import {
-  persistSessionKey,
-  restoreSessionKeyFromStorage,
-} from "./session-usecases.ts";
+import { vaultSecurityContext } from "./vault-security-state.ts";
+
+export {
+  LockedVaultState,
+  SessionExpiredVaultState,
+  UnlockedVaultState,
+  VaultSecurityContext,
+  vaultSecurityContext,
+} from "./vault-security-state.ts";
 
 export async function clearDerivedKey(): Promise<void> {
-  await persistSessionKey(null);
+  await vaultSecurityContext.lock();
 }
 
 export async function setDerivedKey(key: CryptoKey | null): Promise<void> {
-  await persistSessionKey(key);
+  if (key) {
+    await vaultSecurityContext.setUnlockedKey(key);
+  } else {
+    await vaultSecurityContext.lock();
+  }
 }
 
 export async function getOrDeriveKey(
@@ -34,13 +43,13 @@ export async function getOrDeriveKey(
     return err(deriveRes.error);
   }
   const key = deriveRes.value;
-  await persistSessionKey(key);
+  await vaultSecurityContext.setUnlockedKey(key);
 
   return ok(key);
 }
 
 export async function getSessionKey(): Promise<CryptoKey | null> {
-  return await restoreSessionKeyFromStorage();
+  return await vaultSecurityContext.getKey();
 }
 
 export async function verifyMasterPassword(password: string): Promise<boolean> {

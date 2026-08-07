@@ -6,6 +6,7 @@ import {
   encodeCoseEC2PublicKey,
   packAttestationObject,
 } from "@/core/cbor-utils.ts";
+import { getCoseAlgorithmStrategy } from "./cose-strategy.ts";
 
 // IANA COSE Key Parameters & Algorithm Identifiers (RFC 8152 / RFC 9052)
 export const COSE_KEY_PARAM_KTY = 1;
@@ -276,7 +277,8 @@ export async function generateAuthData(
     const keyY = keyYRes.value;
 
     // Mã hóa cấu trúc COSE EC2 Key (RFC 8152 / RFC 9052) theo chuẩn CBOR Map
-    const coseBytes = encodeCoseEC2PublicKey(keyX, keyY);
+    const coseStrategy = getCoseAlgorithmStrategy(COSE_ALG_ES256);
+    const coseBytes = coseStrategy.encodePublicKey(keyX, keyY);
     authData.push(...coseBytes);
   }
 
