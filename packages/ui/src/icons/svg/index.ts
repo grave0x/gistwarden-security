@@ -54,6 +54,7 @@ import {
   User,
   Vault,
   WandSparkles,
+  Wrench,
   X,
 } from "lucide-solid";
 
@@ -126,5 +127,6 @@ export const GlobeUnlockIcon = wrapLucide(Globe);
 export const Shield2FAIcon = wrapLucide(ShieldCheck);
 export const DatabaseBreachIcon = wrapLucide(Database);
 export const SshKeyIcon = wrapLucide(Terminal);
+export const ToolsIcon = wrapLucide(Wrench);
 
 export * from "@/icons/svg/types.ts";

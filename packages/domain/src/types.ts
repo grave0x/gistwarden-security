@@ -30,6 +30,7 @@ export enum View {
   ReportUnsecure = "ReportUnsecure",
   ReportInactive2FA = "ReportInactive2FA",
   ReportDataBreach = "ReportDataBreach",
+  GoogleAuthTool = "GoogleAuthTool",
 }
 
 export enum SupportLanguage {

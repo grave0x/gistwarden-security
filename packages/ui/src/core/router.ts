@@ -2,18 +2,21 @@ import { createSignal } from "solid-js";
 import { View } from "@gistwarden/domain";
 
 const pathToViewMap = new Map<string, View>([
+  // Auth & Onboarding
   ["/login", View.Login],
   ["/welcome", View.Welcome],
+  ["/fido2-prompt", View.Fido2Prompt],
+
+  // Vault Items
   ["/vault", View.Vault],
   ["/vault/detail", View.ItemDetail],
   ["/vault/edit", View.ItemEdit],
-  ["/settings/vault-options", View.VaultOptions],
-  ["/settings/vault-options/import", View.ImportAccounts],
-  ["/settings/vault-options/export", View.ExportAccounts],
-  ["/settings/vault-options/folders", View.Folders],
-  ["/settings/vault-options/trash", View.Trash],
+
+  // Generator
   ["/generator", View.Generator],
   ["/generator/history", View.PasswordHistory],
+
+  // Reports
   ["/reports", View.Reports],
   ["/reports/exposed", View.ReportExposed],
   ["/reports/reused", View.ReportReused],
@@ -21,16 +24,31 @@ const pathToViewMap = new Map<string, View>([
   ["/reports/unsecure", View.ReportUnsecure],
   ["/reports/inactive-2fa", View.ReportInactive2FA],
   ["/reports/databreach", View.ReportDataBreach],
+
+  // Settings Root
   ["/settings", View.Settings],
+
+  // Settings -> Vault Options
+  ["/settings/vault-options", View.VaultOptions],
+  ["/settings/vault-options/import", View.ImportAccounts],
+  ["/settings/vault-options/google-auth", View.GoogleAuthTool],
+  ["/settings/vault-options/export", View.ExportAccounts],
+  ["/settings/vault-options/folders", View.Folders],
+  ["/settings/vault-options/trash", View.Trash],
+
+  // Settings -> Appearance
   ["/settings/appearance", View.Appearance],
   ["/settings/appearance/language", View.Language],
   ["/settings/appearance/theme", View.Theme],
+
+  // Settings -> Security
   ["/settings/security", View.AccountSecurity],
   ["/settings/security/change-password", View.ChangeMasterPassword],
+
+  // Settings -> Autofill & About
   ["/settings/autofill", View.AutofillOptions],
   ["/settings/about", View.About],
   ["/settings/about/troubleshooting", View.Troubleshooting],
-  ["/fido2-prompt", View.Fido2Prompt],
 ]);
 
 const viewToPathMap = new Map<View, string>(

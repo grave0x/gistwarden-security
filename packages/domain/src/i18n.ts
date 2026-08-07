@@ -473,6 +473,9 @@ const LangSchema = z.object({
   vault_import_error_fail: z.string(),
   vault_export_error_fail: z.string(),
   vault_options_sync_manual: z.string(),
+  vault_options_group_sync_import: z.string(),
+  vault_options_group_management: z.string(),
+  vault_options_group_danger: z.string(),
   vault_options_import: z.string(),
   vault_options_import_sub: z.string(),
   vault_options_export: z.string(),
@@ -804,6 +807,28 @@ const LangSchema = z.object({
   match_detection_desc: z.string(),
   match_mode_header_advanced: z.string(),
   match_warning_learn_more: z.string(),
+
+  // Tools Page
+  select_search_placeholder: z.string(),
+  select_no_results: z.string(),
+  settings_tools_title: z.string(),
+  settings_tools_sub: z.string(),
+  settings_tools_google_auth: z.string(),
+  settings_tools_google_auth_sub: z.string(),
+  google_tool_paste_label: z.string(),
+  google_tool_btn_parse: z.string(),
+  google_tool_btn_upload_qr: z.string(),
+  import_google_migration_invalid: z.string(),
+  google_migration_title: z.string(),
+  google_migration_subtitle: z.string(),
+  google_migration_raw_uri: z.string(),
+  google_migration_live_otp: z.string(),
+  google_migration_action_link: z.string(),
+  google_migration_action_create: z.string(),
+  google_migration_action_skip: z.string(),
+  google_migration_select_target: z.string(),
+  google_migration_save_batch: z.string(),
+  google_migration_save_success: z.string(),
 });
 
 type Lang = z.infer<typeof LangSchema>;

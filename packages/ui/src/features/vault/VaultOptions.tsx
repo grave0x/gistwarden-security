@@ -14,6 +14,7 @@ import {
   ChevronRightIcon,
   DownloadIcon,
   FolderIcon,
+  QrIcon,
   SyncIcon,
   TrashIcon,
   UploadIcon,
@@ -104,6 +105,10 @@ export const VaultOptions: Component = () => {
           <div class="alert alert-danger">{error()}</div>
         </Show>
 
+        {/* Group 1: Sync, Import/Export & Migration */}
+        <div class="setting-group-title">
+          {t("vault_options_group_sync_import")}
+        </div>
         <div class="card card-list">
           {/* Sync */}
           <div class="setting-row" onClick={handleSync}>
@@ -150,6 +155,35 @@ export const VaultOptions: Component = () => {
             <ChevronRightIcon />
           </div>
 
+          {/* Google Authenticator Decoder Tool */}
+          <div
+            class="setting-row"
+            onClick={async () => {
+              if (isFirefox() && !isPopout()) {
+                await setSessionItem(
+                  SESSION_KEY_LAST_VIEW,
+                  View.GoogleAuthTool,
+                );
+                handlePopout();
+              } else {
+                navigate(View.GoogleAuthTool);
+              }
+            }}
+          >
+            <div class="setting-row-left">
+              <QrIcon />
+              <div>
+                <div class="setting-label">
+                  {t("settings_tools_google_auth")}
+                </div>
+                <div class="setting-sub">
+                  {t("settings_tools_google_auth_sub")}
+                </div>
+              </div>
+            </div>
+            <ChevronRightIcon />
+          </div>
+
           {/* Export */}
           <div
             class="setting-row"
@@ -166,7 +200,13 @@ export const VaultOptions: Component = () => {
             </div>
             <ChevronRightIcon />
           </div>
+        </div>
 
+        {/* Group 2: Storage & Organization */}
+        <div class="setting-group-title">
+          {t("vault_options_group_management")}
+        </div>
+        <div class="card card-list">
           {/* Folders */}
           <div
             class="setting-row"
@@ -205,7 +245,13 @@ export const VaultOptions: Component = () => {
             </div>
             <ChevronRightIcon />
           </div>
+        </div>
 
+        {/* Group 3: Danger Zone */}
+        <div class="setting-group-title">
+          {t("vault_options_group_danger")}
+        </div>
+        <div class="card card-list">
           {/* Clear Vault */}
           <div class="setting-row" onClick={handleClearVault}>
             <div class="setting-row-left">

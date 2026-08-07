@@ -107,3 +107,14 @@
     stroke: currentColor;
   }
 }
+
+.btn-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-margin-right {
+  margin-right: 8px !important;
+}
+

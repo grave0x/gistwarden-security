@@ -18,6 +18,7 @@
 @import "./components/password-strength.css";
 @import "./components/trash.css";
 @import "./components/reports.css";
+@import "./components/google-migration.css";
 
 :root {
   /* Constant colors */

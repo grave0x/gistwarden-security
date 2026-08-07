@@ -4,6 +4,7 @@ import {
   type Folder,
   getBaseDomain,
   getDomainFromItem,
+  type GoogleMigrationAccountMapping,
   isLoginItem,
   type LoginVaultItem,
   mergeVaultItem,
@@ -376,3 +377,67 @@ export async function batchSavePayloads(
   broadcastMessage({ type: MSG_VAULT_ITEMS_UPDATED });
   return uploadRes.isOk();
 }
+
+export async function batchImportGoogleMigrationAccountsUseCase(
+  currentPayload: VaultPayload,
+  salt: string,
+  mappings: GoogleMigrationAccountMapping[],
+): Promise<Result<VaultPayload, TranslationKey>> {
+  const nowStr = new Date().toISOString();
+
+  return executeVaultMutationUseCase(currentPayload, salt, (payload) => {
+    const updatedItems = [...payload.items];
+
+    for (const itemMap of mappings) {
+      if (itemMap.action === "skip") continue;
+
+      if (itemMap.action === "link" && itemMap.targetItemId) {
+        const targetIndex = updatedItems.findIndex(
+          (item) => item.id === itemMap.targetItemId,
+        );
+        if (targetIndex !== -1) {
+          const existingItem = updatedItems[targetIndex];
+          if (isLoginItem(existingItem)) {
+            updatedItems[targetIndex] = {
+              ...existingItem,
+              login: {
+                ...existingItem.login,
+                totp: itemMap.account.otpauthUrl,
+              },
+              revisionDate: nowStr,
+            };
+          }
+        }
+      } else if (itemMap.action === "create") {
+        const titleName = itemMap.account.issuer
+          ? `${itemMap.account.issuer} (${itemMap.account.name})`
+          : itemMap.account.name || "Google Authenticator Import";
+
+        const newItem: LoginVaultItem = {
+          id: crypto.randomUUID(),
+          type: VaultItemType.Login,
+          name: titleName,
+          login: {
+            username: itemMap.account.name || "",
+            password: "",
+            totp: itemMap.account.otpauthUrl,
+            uris: [],
+          },
+          notes: "",
+          favorite: false,
+          reprompt: 0,
+          fields: [],
+          creationDate: nowStr,
+          revisionDate: nowStr,
+        };
+        updatedItems.push(newItem);
+      }
+    }
+
+    return {
+      ...payload,
+      items: updatedItems,
+    };
+  });
+}
+

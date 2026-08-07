@@ -98,7 +98,8 @@ export const Settings: Component = () => {
             </div>
             <ChevronRightIcon />
           </div>
-        </div>
+
+          </div>
 
         {/* Group 1: General & Personalization */}
         <div class="card card-list">

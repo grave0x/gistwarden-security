@@ -1,11 +1,13 @@
 import {
   type Component,
+  createEffect,
   createSignal,
   For,
   onCleanup,
   onMount,
   Show,
 } from "solid-js";
+import { t } from "@/core/i18n.ts";
 
 export interface SelectOption {
   value: string | number;
@@ -24,11 +26,15 @@ interface SelectProps {
   class?: string;
   disabled?: boolean;
   inFlow?: boolean;
+  searchable?: boolean;
+  searchPlaceholder?: string;
 }
 
 export const Select: Component<SelectProps> = (props) => {
   const [isOpen, setIsOpen] = createSignal(false);
+  const [searchQuery, setSearchQuery] = createSignal("");
   let containerRef: HTMLDivElement | undefined;
+  let searchInputRef: HTMLInputElement | undefined;
 
   const handleClickOutside = (e: MouseEvent) => {
     const target = e.target;
@@ -36,8 +42,17 @@ export const Select: Component<SelectProps> = (props) => {
       containerRef && target instanceof Node && !containerRef.contains(target)
     ) {
       setIsOpen(false);
+      setSearchQuery("");
     }
   };
+
+  createEffect(() => {
+    if (isOpen()) {
+      setTimeout(() => searchInputRef?.focus(), 50);
+    } else {
+      setSearchQuery("");
+    }
+  });
 
   onMount(() => {
     document.addEventListener("click", handleClickOutside);
@@ -53,14 +68,27 @@ export const Select: Component<SelectProps> = (props) => {
     ) || props.options.find((opt) => !opt.isHeader) || props.options[0];
   };
 
+  const filteredOptions = () => {
+    const query = searchQuery().toLowerCase().trim();
+    if (!query) return props.options;
+    return props.options.filter(
+      (opt) => opt.isHeader || opt.label.toLowerCase().includes(query),
+    );
+  };
+
   const handleSelect = (val: string | number) => {
     setIsOpen(false);
+    setSearchQuery("");
     if (props.onChange) {
       props.onChange({
         currentTarget: { value: String(val) },
         target: { value: String(val) },
       });
     }
+  };
+
+  const shouldShowSearch = () => {
+    return Boolean(props.searchable);
   };
 
   return (
@@ -97,7 +125,21 @@ export const Select: Component<SelectProps> = (props) => {
       >
         <div class="select-dropdown-inner">
           <div class="select-dropdown-options">
-            <For each={props.options}>
+            <Show when={shouldShowSearch()}>
+              <div class="select-search-wrapper">
+                <input
+                  ref={searchInputRef}
+                  type="text"
+                  class="select-search-input"
+                  placeholder={props.searchPlaceholder || t("select_search_placeholder")}
+                  value={searchQuery()}
+                  onInput={(e) => setSearchQuery(e.currentTarget.value)}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+            </Show>
+
+            <For each={filteredOptions()}>
               {(opt) => (
                 <Show
                   when={!opt.isHeader}
@@ -118,6 +160,14 @@ export const Select: Component<SelectProps> = (props) => {
                 </Show>
               )}
             </For>
+
+            <Show
+              when={filteredOptions().filter((o) => !o.isHeader).length === 0}
+            >
+              <div class="select-dropdown-no-results">
+                {t("select_no_results")}
+              </div>
+            </Show>
           </div>
         </div>
       </div>

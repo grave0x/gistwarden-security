@@ -18,3 +18,5 @@ export * from "./src/password-strength.ts";
 export * from "./src/vietnamese-wordlist.ts";
 export * from "./src/vault-domain-matching.ts";
 export * from "./src/vault-item-utils.ts";
+export * from "./src/google-migration-parser.ts";
+export * from "./src/google-migration-matcher.ts";

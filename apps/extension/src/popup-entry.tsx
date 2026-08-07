@@ -56,6 +56,7 @@ import Generator from "@/features/generator/Generator.tsx";
 import Settings from "@/features/settings/Settings.tsx";
 import VaultOptions from "@/features/vault/VaultOptions.tsx";
 import ImportAccounts from "@/features/sync/ImportAccounts.tsx";
+import GoogleMigrationPage from "@/features/sync/GoogleMigrationPage.tsx";
 import ExportAccounts from "@/features/sync/ExportAccounts.tsx";
 import Fido2Prompt from "@/features/passkey/Fido2Prompt.tsx";
 import Language from "@/features/settings/Language.tsx";
@@ -290,6 +291,7 @@ const App: Component = () => {
     { view: View.ChangeMasterPassword, component: ChangeMasterPassword },
     { view: View.VaultOptions, component: VaultOptions },
     { view: View.ImportAccounts, component: ImportAccounts },
+    { view: View.GoogleAuthTool, component: GoogleMigrationPage },
     { view: View.ExportAccounts, component: ExportAccounts },
     { view: View.Folders, component: Folders },
     { view: View.Trash, component: Trash },

@@ -18,6 +18,7 @@ import {
 } from "@gistwarden/repository";
 import type {
   Folder,
+  GoogleMigrationPayload,
   TrashVaultItem,
   VaultItem,
   VaultPayload,
@@ -59,6 +60,7 @@ export interface AccountStore {
 export interface UiSessionStore {
   view: View;
   selectedItem: VaultItem | null;
+  pendingGoogleMigrationPayload: GoogleMigrationPayload | null;
 
   syncing: boolean;
   syncError: string;
@@ -119,6 +121,7 @@ export const initialAccountState: Omit<AccountStore, "isLoaded"> = {
 export const initialUiState: UiSessionStore = {
   view: View.Login,
   selectedItem: null,
+  pendingGoogleMigrationPayload: null,
   syncing: false,
   syncError: "",
   toastMessage: "",
