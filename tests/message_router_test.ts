@@ -1,6 +1,6 @@
 import { assertEquals, test } from "./assert.ts";
 import { z } from "zod";
-import { MessageRouter } from "../apps/extension/src/extension/message-router.ts";
+import { MessageRouter, createCommand } from "../apps/extension/src/extension/message-router.ts";
 import { defineRoute } from "@gistwarden/orchestrator";
 
 // Setup global mock for chrome.runtime in test environment
@@ -22,9 +22,14 @@ test("MessageRouter - route registration and payload validation", async () => {
     domain: z.string().min(1),
   });
 
+  const testRoute = defineRoute({
+    type: "TEST_MSG",
+    payloadSchema: TestMsgSchema,
+    responseSchema: z.object({ success: z.boolean(), echoedDomain: z.string() }),
+  });
+
   router.register(
-    "TEST_MSG",
-    TestMsgSchema,
+    testRoute,
     (payload: z.infer<typeof TestMsgSchema>) => {
       return { success: true, echoedDomain: payload.domain };
     },
@@ -97,13 +102,14 @@ test("MessageRouter - internalOnly authorization check", async () => {
     type: z.literal("INTERNAL_MSG"),
   });
 
-  router.register("INTERNAL_MSG", {
+  router.registerCommand(createCommand({
+    type: "INTERNAL_MSG",
     schema: InternalMsgSchema,
     internalOnly: true,
-    handler: () => {
+    execute: () => {
       return { success: true };
     },
-  });
+  }));
 
   // External sender (content script on webpage)
   const externalSender: chrome.runtime.MessageSender = {
