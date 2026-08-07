@@ -207,14 +207,14 @@ export type VaultList = z.infer<typeof VaultListSchema>;
 export const TrashVaultItemSchema = z.object({
   item: VaultItemSchema,
   deletedDate: z.string(),
-});
+}).readonly();
 export type TrashVaultItem = z.infer<typeof TrashVaultItemSchema>;
 
 export const VaultPayloadSchema = z.object({
   folders: z.array(FolderSchema).optional().default([]),
   items: z.array(VaultItemSchema).default([]),
   trash: z.array(TrashVaultItemSchema).optional().default([]),
-});
+}).readonly();
 export type VaultPayload = z.infer<typeof VaultPayloadSchema>;
 
 // --- Notification & Autofill Messaging Schemas ---
@@ -224,7 +224,7 @@ export const AddCredentialPayloadSchema = z.object({
   username: z.string(),
   password: z.string().optional(),
   onDismiss: z.custom<() => void>().optional(),
-});
+}).readonly();
 export type AddCredentialPayload = z.infer<typeof AddCredentialPayloadSchema>;
 
 export const UpdateCredentialPayloadSchema = z.object({
@@ -234,7 +234,7 @@ export const UpdateCredentialPayloadSchema = z.object({
   password: z.string().optional(),
   itemId: z.string(),
   onDismiss: z.custom<() => void>().optional(),
-});
+}).readonly();
 export type UpdateCredentialPayload = z.infer<
   typeof UpdateCredentialPayloadSchema
 >;
@@ -249,7 +249,7 @@ export const AccountItemSchema = z.object({
   username: z.string(),
   password: z.string().optional(),
   totp: z.string().optional(),
-});
+}).readonly();
 export type AutofillMatchingAccount = z.infer<typeof AccountItemSchema>;
 
 export const AutofillSuggestionPayloadSchema = z.object({
@@ -263,7 +263,7 @@ export const AutofillSuggestionPayloadSchema = z.object({
   onFill: z.custom<(selectedAcc?: AutofillMatchingAccount) => void>()
     .optional(),
   onDismiss: z.custom<() => void>().optional(),
-});
+}).readonly();
 export type AutofillSuggestionPayload = z.infer<
   typeof AutofillSuggestionPayloadSchema
 >;
@@ -280,14 +280,14 @@ export const AddActionPayloadSchema = z.object({
   domain: z.string(),
   username: z.string(),
   password: z.string(),
-});
+}).readonly();
 export const UpdateActionPayloadSchema = z.object({
   actionType: z.literal("update"),
   domain: z.string(),
   username: z.string(),
   password: z.string(),
   itemId: z.string(),
-});
+}).readonly();
 export const SaveActionPayloadSchema = z.discriminatedUnion("actionType", [
   AddActionPayloadSchema,
   UpdateActionPayloadSchema,
@@ -297,7 +297,7 @@ export type SaveActionPayload = z.infer<typeof SaveActionPayloadSchema>;
 export const CheckAutofillSuggestionMsgSchema = z.object({
   type: z.literal(MSG_CHECK_AUTOFILL_SUGGESTION),
   domain: z.string().optional(),
-});
+}).readonly();
 export type CheckAutofillSuggestionMsg = z.infer<
   typeof CheckAutofillSuggestionMsgSchema
 >;
@@ -322,7 +322,7 @@ export type CheckAutofillSuggestionResponse = z.infer<
 export const CheckPendingNotificationMsgSchema = z.object({
   type: z.literal(MSG_CHECK_PENDING_NOTIFICATION),
   content: z.string().optional(),
-});
+}).readonly();
 export type CheckPendingNotificationMsg = z.infer<
   typeof CheckPendingNotificationMsgSchema
 >;
@@ -336,7 +336,7 @@ export type CheckPendingNotificationResponse = z.infer<
 export const CredentialsSubmittedMsgSchema = z.object({
   type: z.literal(MSG_CREDENTIALS_SUBMITTED),
   credentials: z.unknown().optional(),
-});
+}).readonly();
 export type CredentialsSubmittedMsg = z.infer<
   typeof CredentialsSubmittedMsgSchema
 >;
@@ -345,19 +345,19 @@ export const SaveCredentialActionMsgSchema = z.object({
   type: z.literal(MSG_SAVE_CREDENTIAL_ACTION),
   choice: z.string().optional(),
   payload: z.unknown().optional(),
-});
+}).readonly();
 export type SaveCredentialActionMsg = z.infer<
   typeof SaveCredentialActionMsgSchema
 >;
 
 export const SaveCredentialActionResponseSchema = z.object({
   success: z.boolean(),
-});
+}).readonly();
 export type SaveCredentialActionResponse = z.infer<
   typeof SaveCredentialActionResponseSchema
 >;
 
 export const UserActivityMsgSchema = z.object({
   type: z.literal(MSG_USER_ACTIVITY),
-});
+}).readonly();
 export type UserActivityMsg = z.infer<typeof UserActivityMsgSchema>;

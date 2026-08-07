@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { Options, ZxcvbnFactory } from "@zxcvbn-ts/core";
 import { ENGLISH_WORDLIST } from "./wordlist.ts";
 import { VIETNAMESE_WORDLIST } from "./vietnamese-wordlist.ts";
@@ -14,12 +15,21 @@ export const zxcvbnOptions = options;
 export const zxcvbn = (pass: string, userInputs?: string[]) =>
   zxcvbnFactory.check(pass, userInputs);
 
-export interface PasswordStrengthResult {
-  score: 0 | 1 | 2 | 3 | 4;
-  entropy: number;
-  guesses: number;
-  warning?: string;
-}
+export const PasswordStrengthResultSchema = z.object({
+  score: z.union([
+    z.literal(0),
+    z.literal(1),
+    z.literal(2),
+    z.literal(3),
+    z.literal(4),
+  ]),
+  entropy: z.number(),
+  guesses: z.number(),
+  warning: z.string().optional(),
+}).readonly();
+export type PasswordStrengthResult = z.infer<
+  typeof PasswordStrengthResultSchema
+>;
 
 export function evaluatePasswordStrength(
   pass: string,

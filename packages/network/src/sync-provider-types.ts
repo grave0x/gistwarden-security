@@ -1,23 +1,27 @@
+import { z } from "zod";
 import type { Result } from "neverthrow";
-import type { GistId, GitHubAccessToken, TranslationKey } from "@gistwarden/domain";
+import { GistIdSchema, GitHubAccessTokenSchema, type GistId, type GitHubAccessToken, type TranslationKey } from "@gistwarden/domain";
 
 export type SyncProviderId = "github_gist";
 
-export interface SyncValidationResult {
-  username: string;
-  avatarUrl: string;
-}
+export const SyncValidationResultSchema = z.object({
+  username: z.string(),
+  avatarUrl: z.string(),
+}).readonly();
+export type SyncValidationResult = z.infer<typeof SyncValidationResultSchema>;
 
-export interface SyncOptions {
-  token?: GitHubAccessToken;
-  gistId?: GistId;
-  username?: string;
-}
+export const SyncOptionsSchema = z.object({
+  token: GitHubAccessTokenSchema.optional(),
+  gistId: GistIdSchema.optional(),
+  username: z.string().optional(),
+}).readonly();
+export type SyncOptions = z.infer<typeof SyncOptionsSchema>;
 
-export interface SyncResult {
-  content?: string;
-  gistId?: GistId;
-}
+export const SyncResultSchema = z.object({
+  content: z.string().optional(),
+  gistId: GistIdSchema.optional(),
+}).readonly();
+export type SyncResult = z.infer<typeof SyncResultSchema>;
 
 export interface ISyncProvider {
   readonly id: SyncProviderId;

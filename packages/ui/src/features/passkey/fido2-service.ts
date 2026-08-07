@@ -1,8 +1,8 @@
+import { z } from "zod";
 import { err, ok, Result } from "neverthrow";
 import type { TranslationKey } from "@/core/i18n.ts";
 import { VaultItemType } from "@gistwarden/domain";
-import type { LoginVaultItem, RpId, VaultItem, VaultItemId } from "@gistwarden/domain";
-import type { Fido2Credential } from "@gistwarden/domain";
+import { Fido2CredentialSchema, RpIdSchema, VaultItemIdSchema, type Fido2Credential, type LoginVaultItem, type RpId, type VaultItem, type VaultItemId } from "@gistwarden/domain";
 import { isMatchingDomain } from "@gistwarden/domain";
 
 import { saveItem } from "@/features/vault/vault-service.ts";
@@ -18,35 +18,37 @@ import {
 import { sendBackgroundMessage } from "@/core/messaging.ts";
 import { getBaseDomain } from "@/core/domain-utils.ts";
 
-export interface Fido2Request {
-  success: boolean;
-  type: "create" | "get";
-  origin: string;
-  options: {
-    rpId?: RpId;
-    rp?: {
-      id?: RpId;
-      name: string;
-    };
-    user?: {
-      id: string;
-      name: string;
-      displayName?: string;
-    };
-    challenge: string;
-    userVerification?: "required" | "preferred" | "discouraged";
-    allowCredentials?: Array<{
-      id: string;
-      type: string;
-    }>;
-  };
-}
+export const Fido2RequestSchema = z.object({
+  success: z.boolean(),
+  type: z.enum(["create", "get"]),
+  origin: z.string(),
+  options: z.object({
+    rpId: RpIdSchema.optional(),
+    rp: z.object({
+      id: RpIdSchema.optional(),
+      name: z.string(),
+    }).optional(),
+    user: z.object({
+      id: z.string(),
+      name: z.string(),
+      displayName: z.string().optional(),
+    }).optional(),
+    challenge: z.string(),
+    userVerification: z.enum(["required", "preferred", "discouraged"]).optional(),
+    allowCredentials: z.array(z.object({
+      id: z.string(),
+      type: z.string(),
+    })).optional(),
+  }),
+}).readonly();
+export type Fido2Request = z.infer<typeof Fido2RequestSchema>;
 
-export interface MatchingPasskey {
-  credential: Fido2Credential;
-  vaultItemName: string;
-  vaultItemId: VaultItemId;
-}
+export const MatchingPasskeySchema = z.object({
+  credential: Fido2CredentialSchema,
+  vaultItemName: z.string(),
+  vaultItemId: VaultItemIdSchema,
+}).readonly();
+export type MatchingPasskey = z.infer<typeof MatchingPasskeySchema>;
 
 
 export function findMatchingFido2Accounts(

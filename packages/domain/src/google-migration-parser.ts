@@ -1,26 +1,31 @@
+import { z } from "zod";
 import { err, ok, Result } from "neverthrow";
 import * as OTPAuth from "otpauth";
 import type { TranslationKey } from "./i18n.ts";
 
-export interface GoogleOtpAccount {
-  id: string;
-  name: string;
-  issuer: string;
-  secretBase32: string;
-  algorithm: "SHA1" | "SHA256" | "SHA512" | "MD5";
-  digits: number;
-  type: "TOTP" | "HOTP";
-  counter: number;
-  otpauthUrl: string;
-}
+export const GoogleOtpAccountSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  issuer: z.string(),
+  secretBase32: z.string(),
+  algorithm: z.enum(["SHA1", "SHA256", "SHA512", "MD5"]),
+  digits: z.number(),
+  type: z.enum(["TOTP", "HOTP"]),
+  counter: z.number(),
+  otpauthUrl: z.string(),
+}).readonly();
+export type GoogleOtpAccount = z.infer<typeof GoogleOtpAccountSchema>;
 
-export interface GoogleMigrationPayload {
-  accounts: GoogleOtpAccount[];
-  version: number;
-  batchSize: number;
-  batchIndex: number;
-  batchId: number;
-}
+export const GoogleMigrationPayloadSchema = z.object({
+  accounts: z.array(GoogleOtpAccountSchema),
+  version: z.number(),
+  batchSize: z.number(),
+  batchIndex: z.number(),
+  batchId: z.number(),
+}).readonly();
+export type GoogleMigrationPayload = z.infer<
+  typeof GoogleMigrationPayloadSchema
+>;
 
 interface VarintReadResult {
   value: number;

@@ -1,3 +1,4 @@
+import { z } from "zod";
 import {
   fetchPwnedPasswordsRange,
   fetchXposedOrNotBreach,
@@ -7,10 +8,11 @@ import {
   type TranslationKey,
 } from "@gistwarden/domain";
 
-export interface PasswordBreachResult {
-  count: number;
-  errorKey?: TranslationKey;
-}
+export const PasswordBreachResultSchema = z.object({
+  count: z.number(),
+  errorKey: z.custom<TranslationKey>().optional(),
+}).readonly();
+export type PasswordBreachResult = z.infer<typeof PasswordBreachResultSchema>;
 
 export async function checkPasswordHIBPUseCase(
   password: string,
@@ -36,12 +38,13 @@ export async function checkPasswordHIBPUseCase(
   }
 }
 
-export interface EmailBreachResult {
-  success: boolean;
-  status: "clean" | "exposed" | "rate_limited" | "error";
-  breaches?: string[];
-  errorKey?: TranslationKey;
-}
+export const EmailBreachResultSchema = z.object({
+  success: z.boolean(),
+  status: z.enum(["clean", "exposed", "rate_limited", "error"]),
+  breaches: z.array(z.string()).optional(),
+  errorKey: z.custom<TranslationKey>().optional(),
+}).readonly();
+export type EmailBreachResult = z.infer<typeof EmailBreachResultSchema>;
 
 export async function checkEmailBreachUseCase(
   email: string,
