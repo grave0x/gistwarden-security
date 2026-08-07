@@ -3,9 +3,8 @@ import { err, ok, Result } from "neverthrow";
 import type { TranslationKey } from "./i18n.ts";
 
 /**
- * Triển khai thuật toán Rejection Sampling (CSPRNG Unbiased Uniform Integer)
- * để sinh số nguyên ngẫu nhiên đều thuộc khoảng [0, max - 1].
- * Thuật toán loại bỏ hoàn toàn Modulo Bias bằng cách loại bỏ phần dư vượt ngưỡng giới hạn.
+ * CSPRNG Rejection Sampling (RFC 8949 / Standard CSPRNG Unbiased Uniform Integer)
+ * Sinh số nguyên ngẫu nhiên thuộc khoảng [0, max - 1] không bị lỗi Modulo Bias.
  */
 export function getRandomBoundedInt(max: number): number {
   if (max <= 1) return 0;
@@ -31,32 +30,55 @@ export interface GeneratePasswordOptions {
   minSpecials: number;
 }
 
+const UPPERCASE_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const LOWERCASE_CHARS = "abcdefghijklmnopqrstuvwxyz";
+const NUMBER_CHARS = "0123456789";
+const SPECIAL_CHARS = "!@#$%^&*()_+-=[]{}|;:,.<>?";
+const AMBIGUOUS_REGEX = /[Il1O0o]/g;
+
+export class PasswordCharsetBuilder {
+  private uSet = UPPERCASE_CHARS;
+  private lSet = LOWERCASE_CHARS;
+  private nSet = NUMBER_CHARS;
+  private sSet = SPECIAL_CHARS;
+
+  constructor(avoidAmbiguous: boolean) {
+    if (avoidAmbiguous) {
+      this.uSet = this.uSet.replace(AMBIGUOUS_REGEX, "");
+      this.lSet = this.lSet.replace(AMBIGUOUS_REGEX, "");
+      this.nSet = this.nSet.replace(AMBIGUOUS_REGEX, "");
+      this.sSet = this.sSet.replace(AMBIGUOUS_REGEX, "");
+    }
+  }
+
+  get uppercase(): string {
+    return this.uSet;
+  }
+  get lowercase(): string {
+    return this.lSet;
+  }
+  get numbers(): string {
+    return this.nSet;
+  }
+  get specials(): string {
+    return this.sSet;
+  }
+
+  buildCombinedCharset(options: GeneratePasswordOptions): string {
+    let charset = "";
+    if (options.uppercase) charset += this.uSet;
+    if (options.lowercase) charset += this.lSet;
+    if (options.numbers) charset += this.nSet;
+    if (options.specials) charset += this.sSet;
+    return charset;
+  }
+}
+
 export function generatePassword(
   options: GeneratePasswordOptions,
 ): Result<string, TranslationKey> {
-  const uSet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const lSet = "abcdefghijklmnopqrstuvwxyz";
-  const nSet = "0123456789";
-  const sSet = "!@#$%^&*()_+-=[]{}|;:,.<>?";
-
-  let availableU = uSet;
-  let availableL = lSet;
-  let availableN = nSet;
-  let availableS = sSet;
-
-  if (options.avoidAmbiguous) {
-    const regex = /[Il1O0o]/g;
-    availableU = availableU.replace(regex, "");
-    availableL = availableL.replace(regex, "");
-    availableN = availableN.replace(regex, "");
-    availableS = availableS.replace(regex, "");
-  }
-
-  let charset = "";
-  if (options.uppercase) charset += availableU;
-  if (options.lowercase) charset += availableL;
-  if (options.numbers) charset += availableN;
-  if (options.specials) charset += availableS;
+  const charsetBuilder = new PasswordCharsetBuilder(options.avoidAmbiguous);
+  const charset = charsetBuilder.buildCombinedCharset(options);
 
   if (!charset) {
     return err("gen_error_charset_empty");
@@ -76,15 +98,15 @@ export function generatePassword(
     return str[getRandomBoundedInt(str.length)];
   };
 
-  if (options.numbers && minNum > 0 && availableN.length > 0) {
+  if (options.numbers && minNum > 0 && charsetBuilder.numbers.length > 0) {
     for (let i = 0; i < minNum; i++) {
-      resultChars.push(getRandomChar(availableN));
+      resultChars.push(getRandomChar(charsetBuilder.numbers));
     }
   }
 
-  if (options.specials && minSpec > 0 && availableS.length > 0) {
+  if (options.specials && minSpec > 0 && charsetBuilder.specials.length > 0) {
     for (let i = 0; i < minSpec; i++) {
-      resultChars.push(getRandomChar(availableS));
+      resultChars.push(getRandomChar(charsetBuilder.specials));
     }
   }
 
@@ -93,7 +115,7 @@ export function generatePassword(
     resultChars.push(getRandomChar(charset));
   }
 
-  // Shuffle the result characters using Fisher-Yates with CSPRNG rejection sampling
+  // Fisher-Yates CSPRNG shuffle
   for (let i = resultChars.length - 1; i > 0; i--) {
     const j = getRandomBoundedInt(i + 1);
     const temp = resultChars[i];
