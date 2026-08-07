@@ -486,8 +486,7 @@ export const Vault: Component = () => {
   };
 
   const handleAddNewItem = (type: VaultItemType) => {
-    selectItem(createDefaultVaultItem(type));
-    navigate(View.ItemEdit);
+    selectItem(createDefaultVaultItem(type), View.ItemEdit);
   };
 
   return (

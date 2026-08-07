@@ -187,6 +187,7 @@ export const ItemEdit: Component = () => {
     if (isEdit()) {
       navigate(View.ItemDetail);
     } else {
+      selectItem(null);
       navigate(View.Vault);
     }
   };

@@ -1,7 +1,7 @@
 import { type Component, createSignal, For, onMount, Show } from "solid-js";
 import { accountStore, uiStore } from "@/core/store.ts";
 import { View } from "@/core/types.ts";
-import { navigate } from "@/core/navigation.ts";
+import { navigate, selectItem } from "@/core/navigation.ts";
 import { copyToClipboardWithMessage } from "@gistwarden/ui";
 import { CustomFieldType, VaultItemType } from "@gistwarden/domain";
 import type { VaultField } from "@gistwarden/domain";
@@ -32,10 +32,13 @@ export const ItemDetail: Component = () => {
   // Populate form states on mount
   onMount(() => {
     const item = uiStore.selectedItem;
-    if (item) {
-      setNotes(item.notes || "");
-      setFields(item.fields || []);
+    if (!item || !accountStore.vaultItems.some((v) => v.id === item.id)) {
+      selectItem(null);
+      navigate(View.Vault);
+      return;
     }
+    setNotes(item.notes || "");
+    setFields(item.fields || []);
   });
 
   const toggleFieldVisibility = (index: number) => {
@@ -56,6 +59,7 @@ export const ItemDetail: Component = () => {
   };
 
   const handleBackToVault = () => {
+    selectItem(null);
     navigate(View.Vault);
   };
 

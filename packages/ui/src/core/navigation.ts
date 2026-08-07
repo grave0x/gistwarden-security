@@ -69,8 +69,11 @@ function setCurrentSelectedItem(
   }
 }
 
-export function selectItem(item: VaultItem | null): void {
-  setCurrentSelectedItem(item);
+export function selectItem(
+  item: VaultItem | null,
+  targetView: View = View.ItemDetail,
+): void {
+  setCurrentSelectedItem(item, targetView);
 }
 
 export async function openItem(
