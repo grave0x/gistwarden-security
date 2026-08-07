@@ -287,6 +287,8 @@ async function runVerifications() {
 }
 
 async function buildTargetDirectory(outputDir: string) {
+  const enableSourcemap = !isFastDev;
+
   const esmEntryPoints = [
     { in: join(extSrcDir, "extension/background.ts"), out: "background" },
     { in: join(extSrcDir, "popup-entry.tsx"), out: "popup" },
@@ -307,6 +309,7 @@ async function buildTargetDirectory(outputDir: string) {
     target: "es2022",
     plugins: [solidPlugin()],
     define: { "process.env.NODE_ENV": '"production"' },
+    sourcemap: enableSourcemap,
   });
 
   await esbuild.build({
@@ -317,6 +320,7 @@ async function buildTargetDirectory(outputDir: string) {
     target: "es2022",
     plugins: [solidPlugin()],
     define: { "process.env.NODE_ENV": '"production"' },
+    sourcemap: enableSourcemap,
   });
 }
 
@@ -337,6 +341,7 @@ async function runBuild() {
         target: "es2022",
         plugins: [solidPlugin()],
         define: { "process.env.NODE_ENV": '"production"' },
+        sourcemap: false,
       });
     }
 
