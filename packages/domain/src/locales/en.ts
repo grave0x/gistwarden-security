@@ -21,6 +21,14 @@ export default {
   badge_status_locked: "{APP_NAME} (Locked)",
   badge_status_unlocked: "{APP_NAME} (Unlocked)",
 
+  // Fallback Item Names
+  fallback_name_default: "Untitled",
+  fallback_name_login: "Untitled Login",
+  fallback_name_note: "Untitled Note",
+  fallback_name_card: "Untitled Card",
+  fallback_name_identity: "Untitled Identity",
+  fallback_name_ssh_key: "Untitled SSH Key",
+
   // Detailed Error Messages
   github_error_missing_token: "GitHub access token is missing.",
   github_error_user_parse_failed: "Failed to authenticate GitHub user info.",

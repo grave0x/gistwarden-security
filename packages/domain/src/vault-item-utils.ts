@@ -6,6 +6,7 @@ import {
   VaultItemSchema,
 } from "./vault-schemas.ts";
 import { CustomFieldType, VaultItemType } from "./vault-types.ts";
+import { t } from "./i18n.ts";
 
 export function mapCustomFields(
   fields?:
@@ -57,6 +58,26 @@ export function createBaseVaultItem(
     creationDate: input.creationDate || now,
     revisionDate: input.revisionDate || now,
   };
+}
+
+export function getVaultItemFallbackName(
+  type?: VaultItemType | number | string | null,
+): string {
+  const numType = Number(type);
+  switch (numType) {
+    case VaultItemType.SecureNote:
+      return t("fallback_name_note");
+    case VaultItemType.Card:
+      return t("fallback_name_card");
+    case VaultItemType.Identity:
+      return t("fallback_name_identity");
+    case VaultItemType.SshKey:
+      return t("fallback_name_ssh_key");
+    case VaultItemType.Login:
+      return t("fallback_name_login");
+    default:
+      return t("fallback_name_default");
+  }
 }
 
 function isVaultItemType(val: number): val is VaultItemType {
@@ -180,7 +201,7 @@ export function createDefaultVaultItem(
     id: patch.id || crypto.randomUUID(),
     folderId: patch.folderId || null,
     type: targetType,
-    name: patch.name || "Chưa đặt tên",
+    name: patch.name || t("fallback_name_default"),
     notes: patch.notes || "",
     favorite: patch.favorite || false,
     reprompt: patch.reprompt || 0,
@@ -203,7 +224,7 @@ export function createDefaultVaultItem(
   return {
     id: crypto.randomUUID(),
     type: VaultItemType.Login,
-    name: "Chưa đặt tên",
+    name: t("fallback_name_default"),
     notes: "",
     favorite: false,
     reprompt: 0,

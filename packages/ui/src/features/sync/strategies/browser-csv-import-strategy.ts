@@ -1,5 +1,6 @@
 import {
   createBaseVaultItem,
+  getVaultItemFallbackName,
   type Folder,
   type VaultItem,
   VaultItemType,
@@ -74,7 +75,7 @@ export const browserCsvImportStrategy: ImportStrategy = {
       const base = createBaseVaultItem({
         name: nameVal,
         notes: noteVal,
-        fallbackName: "Chưa đặt tên login",
+        fallbackName: getVaultItemFallbackName(VaultItemType.Login),
       });
 
       newVaultItems.push({

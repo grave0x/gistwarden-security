@@ -38,7 +38,10 @@ export const CustomFieldTypeSchema = z.nativeEnum(CustomFieldType);
 export const VaultFieldSchema = z.object({
   type: CustomFieldTypeSchema.default(CustomFieldType.Text),
   name: z.string().or(z.null()).optional().transform((v) => v || ""),
-  value: z.string().or(z.null()).optional().transform((v) => v || ""),
+  value: z
+    .union([z.string(), z.number(), z.boolean(), z.null()])
+    .optional()
+    .transform((v) => (v == null ? "" : String(v))),
 });
 export type VaultField = z.infer<typeof VaultFieldSchema>;
 

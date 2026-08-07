@@ -1,5 +1,6 @@
 import {
   createBaseVaultItem,
+  getVaultItemFallbackName,
   type Folder,
   type VaultField,
   type VaultItem,
@@ -125,8 +126,8 @@ export const bitwardenCsvImportStrategy: ImportStrategy = {
         reprompt: repromptVal,
         fields: customFields,
         fallbackName: typeVal === "note" || typeVal === "securenote"
-          ? "Chưa đặt tên note"
-          : extractDomain(uriVal) || "Chưa đặt tên login",
+          ? getVaultItemFallbackName(VaultItemType.SecureNote)
+          : extractDomain(uriVal) || getVaultItemFallbackName(VaultItemType.Login),
       });
 
       if (typeVal === "note" || typeVal === "securenote") {

@@ -1,6 +1,11 @@
 import { type Folder, FolderSchema, VaultItemType } from "@gistwarden/domain";
 import { type ImportItem, ImportItemSchema } from "@gistwarden/repository";
-import { createBaseVaultItem, type VaultItem, VaultListSchema } from "@gistwarden/domain";
+import {
+  createBaseVaultItem,
+  getVaultItemFallbackName,
+  type VaultItem,
+  VaultListSchema,
+} from "@gistwarden/domain";
 import { APP_NAME } from "@/core/constants.ts";
 import { err, ok, Result } from "neverthrow";
 import type { TranslationKey } from "@/core/i18n.ts";
@@ -88,13 +93,7 @@ export const jsonImportStrategy: ImportStrategy = {
         fields: item.fields,
         creationDate: item.creationDate || undefined,
         revisionDate: item.revisionDate || undefined,
-        fallbackName: item.type === VaultItemType.SecureNote
-          ? "Chưa đặt tên note"
-          : item.type === VaultItemType.Card
-          ? "Chưa đặt tên card"
-          : item.type === VaultItemType.Identity
-          ? "Chưa đặt tên danh tính"
-          : "Chưa đặt tên",
+        fallbackName: getVaultItemFallbackName(item.type),
       });
 
       if (item.type === VaultItemType.SecureNote) {
@@ -140,6 +139,17 @@ export const jsonImportStrategy: ImportStrategy = {
             state: identityData.state || "",
             postalCode: identityData.postalCode || "",
             country: identityData.country || "",
+          },
+        };
+      } else if (item.type === VaultItemType.SshKey) {
+        const sshData = item.sshKey || {};
+        return {
+          ...base,
+          type: VaultItemType.SshKey,
+          sshKey: {
+            privateKey: sshData.privateKey || "",
+            publicKey: sshData.publicKey || "",
+            keyFingerprint: sshData.keyFingerprint || "",
           },
         };
       } else {

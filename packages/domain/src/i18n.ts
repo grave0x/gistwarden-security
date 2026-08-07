@@ -28,6 +28,14 @@ const LangSchema = z.object({
   badge_status_locked: z.string(),
   badge_status_unlocked: z.string(),
 
+  // Fallback Item Names
+  fallback_name_default: z.string(),
+  fallback_name_login: z.string(),
+  fallback_name_note: z.string(),
+  fallback_name_card: z.string(),
+  fallback_name_identity: z.string(),
+  fallback_name_ssh_key: z.string(),
+
   // Detailed Error Messages
   github_error_missing_token: z.string(),
   github_error_user_parse_failed: z.string(),

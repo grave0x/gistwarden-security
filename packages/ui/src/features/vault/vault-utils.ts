@@ -1,6 +1,12 @@
 import { t } from "@/core/i18n.ts";
 import { View } from "@/core/types.ts";
-import { type VaultItem, VaultItemType } from "@gistwarden/domain";
+import {
+  getVaultItemFallbackName,
+  type VaultItem,
+  VaultItemType,
+} from "@gistwarden/domain";
+
+export { getVaultItemFallbackName };
 import { confirm, setGlobalLoading, showToast } from "../../core/ui-service.ts";
 import { deleteItem } from "@/features/vault/vault-service.ts";
 import { navigate } from "@/core/navigation.ts";

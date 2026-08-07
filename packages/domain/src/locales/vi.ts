@@ -22,6 +22,14 @@ export default {
   badge_status_locked: "{APP_NAME} (Đã khóa)",
   badge_status_unlocked: "{APP_NAME} (Đã mở khóa)",
 
+  // Fallback Item Names
+  fallback_name_default: "Chưa đặt tên",
+  fallback_name_login: "Chưa đặt tên login",
+  fallback_name_note: "Chưa đặt tên note",
+  fallback_name_card: "Chưa đặt tên card",
+  fallback_name_identity: "Chưa đặt tên danh tính",
+  fallback_name_ssh_key: "Chưa đặt tên SSH Key",
+
   // Detailed Error Messages
   github_error_missing_token: "Không tìm thấy token truy cập GitHub.",
   github_error_user_parse_failed:
