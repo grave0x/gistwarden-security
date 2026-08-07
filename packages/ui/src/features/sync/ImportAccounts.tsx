@@ -1,41 +1,37 @@
-import { type Component, createSignal, Show } from "solid-js";
+import { type Component, createSignal, For, Show } from "solid-js";
 import { View } from "@/core/types.ts";
 import { navigate } from "@/core/navigation.ts";
-import {
-  importCsvData,
-  importJsonData,
-} from "@/features/sync/import-service.ts";
+import { importVaultData } from "@/features/sync/import-service.ts";
 import { setGlobalLoading, showToast } from "@gistwarden/ui";
 import { ChevronRightIcon, UploadIcon } from "@/icons/svg/index.ts";
 import { t } from "@/core/i18n.ts";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
+import {
+  getAllImportStrategies,
+} from "./import-export-registry.ts";
+import type { ImportStrategy } from "./import-export-types.ts";
 
 export const ImportAccounts: Component = () => {
   const [error, setError] = createSignal("");
-
-  let browserInputRef: HTMLInputElement | undefined;
-  let bitwardenInputRef: HTMLInputElement | undefined;
-  let jsonInputRef: HTMLInputElement | undefined;
+  const [activeStrategy, setActiveStrategy] = createSignal<ImportStrategy | null>(null);
+  let fileInputRef: HTMLInputElement | undefined;
 
   const handleBack = () => {
     navigate(View.VaultOptions);
   };
 
-  const handleImportClick = (type: "browser" | "bitwarden" | "json") => {
+  const handleStrategyClick = (strategy: ImportStrategy) => {
     setError("");
-    if (type === "browser") {
-      browserInputRef?.click();
-    } else if (type === "bitwarden") {
-      bitwardenInputRef?.click();
-    } else {
-      jsonInputRef?.click();
+    setActiveStrategy(strategy);
+    if (fileInputRef) {
+      fileInputRef.accept = strategy.extension;
+      fileInputRef.click();
     }
   };
 
-  const handleFileChange = (
-    e: Event,
-    type: "browser" | "bitwarden" | "json",
-  ) => {
+  const handleFileChange = (e: Event) => {
+    const strategy = activeStrategy();
+    if (!strategy) return;
     const target = e.target;
     if (!(target instanceof HTMLInputElement)) return;
     const file = target.files?.[0];
@@ -47,14 +43,9 @@ export const ImportAccounts: Component = () => {
     reader.onload = async (event) => {
       const result = event.target?.result;
       if (typeof result !== "string") return;
-      const text = result;
-      let res;
+
       setGlobalLoading(true, t("vault_importing"));
-      if (type === "json") {
-        res = await importJsonData(text);
-      } else {
-        res = await importCsvData(text, type);
-      }
+      const res = await importVaultData(result, strategy.id);
       setGlobalLoading(false);
 
       if (res.isOk()) {
@@ -67,10 +58,7 @@ export const ImportAccounts: Component = () => {
         setError(t(res.error));
       }
 
-      // Reset file inputs
-      if (browserInputRef) browserInputRef.value = "";
-      if (bitwardenInputRef) bitwardenInputRef.value = "";
-      if (jsonInputRef) jsonInputRef.value = "";
+      if (fileInputRef) fileInputRef.value = "";
     };
     reader.readAsText(file);
   };
@@ -88,70 +76,35 @@ export const ImportAccounts: Component = () => {
           <div class="alert alert-danger">{error()}</div>
         </Show>
 
+        <input
+          type="file"
+          ref={fileInputRef}
+          class="d-none"
+          onChange={handleFileChange}
+        />
+
         <div class="card card-list">
-          {/* Browser CSV */}
-          <div class="setting-row" onClick={() => handleImportClick("browser")}>
-            <div class="setting-row-left">
-              <UploadIcon />
-              <div>
-                <div class="setting-label">{t("import_option_browser")}</div>
-                <div class="setting-sub">{t("import_option_browser_sub")}</div>
-              </div>
-            </div>
-            <ChevronRightIcon />
-            <input
-              type="file"
-              ref={browserInputRef}
-              accept=".csv"
-              class="d-none"
-              onChange={(e) => handleFileChange(e, "browser")}
-            />
-          </div>
-
-          {/* Bitwarden CSV */}
-          <div
-            class="setting-row"
-            onClick={() => handleImportClick("bitwarden")}
-          >
-            <div class="setting-row-left">
-              <UploadIcon />
-              <div>
-                <div class="setting-label">
-                  {t("import_option_bitwarden_csv")}
+          <For each={getAllImportStrategies()}>
+            {(strategy) => (
+              <div
+                class="setting-row"
+                onClick={() => handleStrategyClick(strategy)}
+              >
+                <div class="setting-row-left">
+                  <UploadIcon />
+                  <div>
+                    <div class="setting-label">
+                      {t(strategy.nameKey)}
+                    </div>
+                    <div class="setting-sub">
+                      {t(strategy.subKey)}
+                    </div>
+                  </div>
                 </div>
-                <div class="setting-sub">
-                  {t("import_option_bitwarden_csv_sub")}
-                </div>
+                <ChevronRightIcon />
               </div>
-            </div>
-            <ChevronRightIcon />
-            <input
-              type="file"
-              ref={bitwardenInputRef}
-              accept=".csv"
-              class="d-none"
-              onChange={(e) => handleFileChange(e, "bitwarden")}
-            />
-          </div>
-
-          {/* JSON Backup */}
-          <div class="setting-row" onClick={() => handleImportClick("json")}>
-            <div class="setting-row-left">
-              <UploadIcon />
-              <div>
-                <div class="setting-label">{t("import_option_json")}</div>
-                <div class="setting-sub">{t("import_option_json_sub")}</div>
-              </div>
-            </div>
-            <ChevronRightIcon />
-            <input
-              type="file"
-              ref={jsonInputRef}
-              accept=".json"
-              class="d-none"
-              onChange={(e) => handleFileChange(e, "json")}
-            />
-          </div>
+            )}
+          </For>
         </div>
       </div>
     </div>
