@@ -24,7 +24,26 @@ import {
 import { fetchText } from "@gistwarden/network";
 import { writeClipboardText } from "@/core/clipboard-utils.ts";
 
+import { logout } from "@/features/auth/auth-service.ts";
+
 let toastTimeoutId: ReturnType<typeof setTimeout> | null = null;
+
+export function handleGlobalApiError(errorKey?: TranslationKey): boolean {
+  if (errorKey === "github_error_unauthorized") {
+    showToast(t("github_error_unauthorized"), "error");
+    setTimeout(async () => {
+      await logout();
+      if (
+        typeof window !== "undefined" &&
+        window.location.search.includes("mode=fido2-prompt")
+      ) {
+        window.close();
+      }
+    }, 1500);
+    return true;
+  }
+  return false;
+}
 
 export function showToast(message: string, type: ToastType = "success") {
   if (toastTimeoutId) {

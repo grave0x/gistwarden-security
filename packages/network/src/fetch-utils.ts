@@ -29,6 +29,9 @@ export async function fetchText(
   }
 
   if (!res.ok) {
+    if (res.status === 401) {
+      return err("github_error_unauthorized");
+    }
     if (res.status === 413 || res.status === 422) {
       return err("github_error_gist_size_limit");
     }

@@ -32,6 +32,8 @@ export default {
 
   // Detailed Error Messages
   github_error_missing_token: "Không tìm thấy token truy cập GitHub.",
+  github_error_unauthorized:
+    "Token truy cập GitHub đã hết hạn hoặc bị thu hồi (Lỗi 401). Hệ thống đang tự động đăng xuất...",
   github_error_user_parse_failed:
     "Không thể xác thực thông tin người dùng GitHub.",
   github_error_gist_not_found:

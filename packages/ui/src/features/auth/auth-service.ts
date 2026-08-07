@@ -259,12 +259,17 @@ export async function fetchEncryptedVaultContent(): Promise<
   }
 
   const sendResult = await sendBackgroundMessage(downloadFromGistRoute);
-  if (
-    sendResult.isOk() && sendResult.value.success && sendResult.value.content
-  ) {
-    const content = sendResult.value.content;
-    await setSessionItem(SESSION_KEY_ENCRYPTED_VAULT, content);
-    return ok(content);
+  if (sendResult.isOk()) {
+    if (sendResult.value.success && sendResult.value.content) {
+      const content = sendResult.value.content;
+      await setSessionItem(SESSION_KEY_ENCRYPTED_VAULT, content);
+      return ok(content);
+    }
+    if (!sendResult.value.success && sendResult.value.error === "github_error_unauthorized") {
+      return err("github_error_unauthorized");
+    }
+  } else if (sendResult.error === "github_error_unauthorized") {
+    return err("github_error_unauthorized");
   }
 
   return ok(null);

@@ -31,6 +31,8 @@ export default {
 
   // Detailed Error Messages
   github_error_missing_token: "GitHub access token is missing.",
+  github_error_unauthorized:
+    "GitHub access token has expired or been revoked (401). Auto logging out...",
   github_error_user_parse_failed: "Failed to authenticate GitHub user info.",
   github_error_gist_not_found: "Vault Gist not found on GitHub.",
   github_error_create_gist_failed: "Failed to create a new Gist on GitHub.",

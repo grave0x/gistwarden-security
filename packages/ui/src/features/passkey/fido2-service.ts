@@ -215,7 +215,7 @@ export async function assertFido2Passkey(
 
   const saveRes = await saveItem(updatedItem);
   if (saveRes.isErr()) {
-    return err("fido2_error_counter_update_failed");
+    return err(saveRes.error);
   }
 
   const assertRes = await generatePasskeyAssertResponse(

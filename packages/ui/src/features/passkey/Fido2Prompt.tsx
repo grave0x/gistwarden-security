@@ -11,7 +11,7 @@ import {
 } from "solid-js";
 import { accountStore, settingsStore } from "@/core/store.ts";
 
-import { unlock } from "@/features/auth/auth-service.ts";
+import { logout, unlock } from "@/features/auth/auth-service.ts";
 import { unlockWithPin } from "@/features/auth/pin-service.ts";
 import { setGlobalLoading } from "@gistwarden/ui";
 import { APP_NAME, MSG_FIDO2_HEARTBEAT } from "@/core/constants.ts";

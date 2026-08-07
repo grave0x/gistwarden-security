@@ -38,6 +38,7 @@ const LangSchema = z.object({
 
   // Detailed Error Messages
   github_error_missing_token: z.string(),
+  github_error_unauthorized: z.string(),
   github_error_user_parse_failed: z.string(),
   github_error_gist_not_found: z.string(),
   github_error_create_gist_failed: z.string(),

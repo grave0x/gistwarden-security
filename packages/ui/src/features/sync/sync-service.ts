@@ -6,6 +6,8 @@ import type { TranslationKey } from "@/core/i18n.ts";
 import { err, ok, Result } from "neverthrow";
 import { syncVaultToGist } from "@gistwarden/orchestrator";
 
+import { handleGlobalApiError } from "@/core/ui-service.ts";
+
 export async function syncVault(): Promise<Result<void, TranslationKey>> {
   const key = await getSessionKey();
   if (!key || !accountStore.masterPasswordConfig.salt) {
@@ -20,6 +22,7 @@ export async function syncVault(): Promise<Result<void, TranslationKey>> {
   );
 
   if (uploadRes.isErr()) {
+    handleGlobalApiError(uploadRes.error);
     return err(uploadRes.error);
   }
 
