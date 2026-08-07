@@ -825,7 +825,10 @@ export default {
   // Guide Import / Export Tab
   guide_ie_title: "Nhập xuất dữ liệu",
   guide_ie_subtitle:
-    "{APP_NAME} hoàn toàn tương thích với định dạng dữ liệu xuất từ Bitwarden. Bạn có thể dễ dàng chuyển dữ liệu két sắt của mình sang {APP_NAME}.",
+    "{APP_NAME} hỗ trợ giải mã mã TOTP từ Google Authenticator và tương thích hoàn toàn với file dữ liệu Bitwarden.",
+  guide_ie_subtab_google: "🔑 Google Authenticator",
+  guide_ie_subtab_bitwarden: "📥 Nhập Bitwarden",
+  guide_ie_subtab_export: "📤 Xuất dữ liệu",
   guide_ie_import_title: "Cách nhập dữ liệu từ Bitwarden",
   guide_ie_import_step1_title: "Bước 1: Xuất file JSON từ Bitwarden",
   guide_ie_import_step1_desc:
@@ -844,6 +847,26 @@ export default {
   guide_ie_export_step2: "Nhập mật khẩu Master để giải mã cơ sở dữ liệu.",
   guide_ie_export_step3:
     "Bấm 'Giải mã & Tải xuống' để lưu file `accounts.json` chưa mã hóa về máy. Hãy bảo vệ file này cẩn thận vì nó chứa toàn bộ mật khẩu dạng chữ rõ!",
+  guide_ie_google_title: "Nhập & Giải mã TOTP từ Google Authenticator",
+  guide_ie_google_desc:
+    "Giải mã dễ dàng mã QR hoặc chuỗi URI xuất từ Google Authenticator và ghép nối hàng loạt vào các tài khoản trong Két sắt.",
+  guide_ie_google_step1_title: "Bước 1: Mở ứng dụng & Ấn nút Menu",
+  guide_ie_google_step1_desc:
+    "Mở ứng dụng Google Authenticator trên điện thoại và ấn vào biểu tượng Menu ≡ ở góc trên bên trái màn hình.",
+  guide_ie_google_step2_title: "Bước 2: Chọn 'Transfer codes' (Chuyển tài khoản)",
+  guide_ie_google_step2_desc:
+    "Trong danh sách menu thả xuống, chọn mục 'Transfer codes' (hoặc Chuyển tài khoản) ➔ chọn 'Export codes' (Xuất mã).",
+  guide_ie_google_step3_title: "Bước 3: Chọn các tài khoản TOTP muốn xuất",
+  guide_ie_google_step3_desc:
+    "Xác thực mã PIN/vân tay thiết bị, sau đó tích chọn các tài khoản 2FA bạn muốn chuyển đổi và nhấn nút 'Next' (Tiếp tục).",
+  guide_ie_google_step4_title: "Bước 4: Sử dụng mã QR xuất dữ liệu",
+  guide_ie_google_step4_desc:
+    "Màn hình sẽ hiển thị mã QR chứa toàn bộ dữ liệu 2FA đã chọn. Chụp ảnh màn hình mã QR này lại để tải vào Gistwarden.",
+  guide_ie_google_step5_title: "Bước 5: Nhập vào Gistwarden & Đồng bộ Két sắt",
+  guide_ie_google_step5_desc:
+    "Mở Gistwarden ➔ Cài đặt ➔ Tùy chọn Két sắt ➔ Công cụ Giải mã Google Authenticator. Tải ảnh QR vừa chụp lên (hoặc dán chuỗi `otpauth-migration://`), kiểm tra mã đếm ngược 30s, chọn ghép nối tài khoản và bấm 'Lưu hàng loạt'.",
+
+
 
   // Guide FAQ Tab
   guide_faq_title: "Câu hỏi thường gặp",

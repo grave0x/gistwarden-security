@@ -42,12 +42,12 @@ tuyệt đối với dữ liệu xuất ra từ Bitwarden.
 - **Tự động sinh mã:** Tính toán và hiển thị mã bảo mật 2 lớp cập nhật tự động
   sau mỗi 30 giây.
 
-### 4. 🔄 Nhập xuất dữ liệu từ Bitwarden dễ dàng
+### 4. 🔄 Nhập xuất dữ liệu & Chuyển đổi mã TOTP dễ dàng
 
-- **Nhập dữ liệu mượt mà:** Nhập trực tiếp tệp JSON không mã hóa từ Bitwarden
-  (bao gồm cả mật khẩu, ghi chú, custom fields và khóa TOTP).
-- **Sao lưu ngoại tuyến:** Giải mã và tải xuống cơ sở dữ liệu két sắt dưới dạng
-  file JSON backup bất cứ lúc nào.
+- **Nhập dữ liệu từ Bitwarden:** Nhập trực tiếp tệp JSON không mã hóa từ Bitwarden (bao gồm cả mật khẩu, ghi chú, custom fields và khóa TOTP).
+- **Giải mã Google Authenticator (Migration Tool):** Bóc tách nhị phân Protobuf trực tiếp từ ảnh mã QR hoặc chuỗi `otpauth-migration://` xuất từ Google Authenticator, hỗ trợ xem mã TOTP đếm ngược và ghép nối tự động vào tài khoản Két sắt.
+- **Sao lưu ngoại tuyến:** Giải mã và tải xuống cơ sở dữ liệu két sắt dưới dạng file JSON backup bất cứ lúc nào.
+
 
 ### 5. 🌐 Hỗ trợ đa ngôn ngữ
 

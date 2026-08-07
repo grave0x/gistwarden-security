@@ -817,7 +817,10 @@ export default {
   // Guide Import / Export Tab
   guide_ie_title: "Import / Export Data",
   guide_ie_subtitle:
-    "{APP_NAME} is fully compatible with data exports from Bitwarden. You can easily migrate your vault data to {APP_NAME}.",
+    "{APP_NAME} supports Google Authenticator migration decoding and is fully compatible with Bitwarden JSON exports.",
+  guide_ie_subtab_google: "🔑 Google Authenticator",
+  guide_ie_subtab_bitwarden: "📥 Import Bitwarden",
+  guide_ie_subtab_export: "📤 Export Data",
   guide_ie_import_title: "Importing from Bitwarden",
   guide_ie_import_step1_title: "Step 1: Export JSON from Bitwarden",
   guide_ie_import_step1_desc:
@@ -837,6 +840,26 @@ export default {
     "Enter your Master Password to decrypt the local database.",
   guide_ie_export_step3:
     "Click 'Decrypt & Download' to save the unencrypted `accounts.json` file. Protect this file carefully as it contains all passwords in clear text!",
+  guide_ie_google_title: "Importing TOTP 2FA from Google Authenticator",
+  guide_ie_google_desc:
+    "Easily decode binary Protobuf migration QR codes or URIs exported from Google Authenticator and batch link them to your vault accounts.",
+  guide_ie_google_step1_title: "Step 1: Open App & Tap Menu Button",
+  guide_ie_google_step1_desc:
+    "Open Google Authenticator on your phone and tap the Menu icon ≡ at the top-left corner of the screen.",
+  guide_ie_google_step2_title: "Step 2: Select 'Transfer codes'",
+  guide_ie_google_step2_desc:
+    "From the dropdown menu, select 'Transfer codes' ➔ choose 'Export codes'.",
+  guide_ie_google_step3_title: "Step 3: Select TOTP Accounts to Export",
+  guide_ie_google_step3_desc:
+    "Authenticate with your device PIN or fingerprint, select the 2FA accounts you want to transfer, and tap 'Next'.",
+  guide_ie_google_step4_title: "Step 4: Use Export QR Code",
+  guide_ie_google_step4_desc:
+    "The app will generate an export QR code containing your accounts. Take a screenshot of this QR code.",
+  guide_ie_google_step5_title: "Step 5: Import into {APP_NAME} & Batch Sync",
+  guide_ie_google_step5_desc:
+    "In {APP_NAME}, go to Settings ➔ Vault Options ➔ Google Authenticator Migration tool. Upload the QR screenshot (or paste the `otpauth-migration://` URI), match accounts, and click 'Save Selected Accounts'.",
+
+
 
   // Guide FAQ Tab
   guide_faq_title: "Frequently Asked Questions",

@@ -721,7 +721,11 @@ const LangSchema = z.object({
   // Guide Import / Export Tab
   guide_ie_title: z.string(),
   guide_ie_subtitle: z.string(),
+  guide_ie_subtab_google: z.string(),
+  guide_ie_subtab_bitwarden: z.string(),
+  guide_ie_subtab_export: z.string(),
   guide_ie_import_title: z.string(),
+
   guide_ie_import_step1_title: z.string(),
   guide_ie_import_step1_desc: z.string(),
   guide_ie_import_step2_title: z.string(),
@@ -733,6 +737,20 @@ const LangSchema = z.object({
   guide_ie_export_step1: z.string(),
   guide_ie_export_step2: z.string(),
   guide_ie_export_step3: z.string(),
+  guide_ie_google_title: z.string(),
+  guide_ie_google_desc: z.string(),
+  guide_ie_google_step1_title: z.string(),
+  guide_ie_google_step1_desc: z.string(),
+  guide_ie_google_step2_title: z.string(),
+  guide_ie_google_step2_desc: z.string(),
+  guide_ie_google_step3_title: z.string(),
+  guide_ie_google_step3_desc: z.string(),
+  guide_ie_google_step4_title: z.string(),
+  guide_ie_google_step4_desc: z.string(),
+  guide_ie_google_step5_title: z.string(),
+  guide_ie_google_step5_desc: z.string(),
+
+
 
   // Guide FAQ Tab
   guide_faq_title: z.string(),
