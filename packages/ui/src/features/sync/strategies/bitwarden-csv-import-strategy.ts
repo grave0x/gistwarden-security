@@ -21,7 +21,7 @@ function extractDomain(urlStr: string): string {
 
 export const bitwardenCsvImportStrategy: ImportStrategy = {
   id: "bitwarden_csv",
-  nameKey: "export_option_bitwarden_csv",
+  nameKey: "import_option_bitwarden_csv",
   subKey: "import_option_bitwarden_csv_sub",
   extension: ".csv",
   parseAndValidate(

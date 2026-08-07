@@ -19,7 +19,7 @@ function extractDomain(urlStr: string): string {
 
 export const browserCsvImportStrategy: ImportStrategy = {
   id: "browser_csv",
-  nameKey: "export_option_browser",
+  nameKey: "import_option_browser",
   subKey: "import_option_browser_sub",
   extension: ".csv",
   parseAndValidate(

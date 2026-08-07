@@ -15,7 +15,7 @@ import type { ImportResult, ImportStrategy } from "../import-export-types.ts";
 
 export const jsonImportStrategy: ImportStrategy = {
   id: "json",
-  nameKey: "export_option_json",
+  nameKey: "import_option_json",
   subKey: "import_option_json_sub",
   extension: ".json",
   parseAndValidate(
