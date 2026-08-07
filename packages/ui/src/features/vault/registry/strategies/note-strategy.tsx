@@ -31,6 +31,7 @@ export const NoteCopyMenu: Component<CopyMenuProps> = (props) => {
 
 export const noteStrategy: VaultItemStrategy = {
   type: VaultItemType.SecureNote,
+  getTypeName: () => t("vault_item_note"),
   getAddTitle: () => t("edit_title_add_note"),
   getEditTitle: () => t("edit_title_edit_note"),
   getDetailTitle: () => t("detail_title_note"),

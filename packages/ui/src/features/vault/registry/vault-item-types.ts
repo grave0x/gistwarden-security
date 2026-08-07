@@ -26,6 +26,7 @@ export interface CopyMenuProps {
 
 export interface VaultItemStrategy {
   readonly type: VaultItemType;
+  getTypeName(): string;
   getAddTitle(): string;
   getEditTitle(): string;
   getDetailTitle(): string;

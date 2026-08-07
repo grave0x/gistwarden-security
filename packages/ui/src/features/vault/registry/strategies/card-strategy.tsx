@@ -61,6 +61,7 @@ export const CardCopyMenu: Component<CopyMenuProps> = (props) => {
 
 export const cardStrategy: VaultItemStrategy = {
   type: VaultItemType.Card,
+  getTypeName: () => t("vault_item_card"),
   getAddTitle: () => t("edit_title_add_card"),
   getEditTitle: () => t("edit_title_edit_card"),
   getDetailTitle: () => t("detail_title_card"),

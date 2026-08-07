@@ -30,7 +30,11 @@ import { getHostname, safeParseUrl } from "@/core/domain-utils.ts";
 import { safeDecodeQr } from "@/core/totp-utils.ts";
 
 export const ItemEdit: Component = () => {
-  const isEdit = () => !!uiStore.selectedItem?.id;
+  const isEdit = () => {
+    const id = uiStore.selectedItem?.id;
+    if (!id) return false;
+    return accountStore.vaultItems.some((item) => item.id === id);
+  };
 
   const [formState, setFormState] = createStore<ItemEditFormState>(
     getInitialFormState(uiStore.selectedItem),

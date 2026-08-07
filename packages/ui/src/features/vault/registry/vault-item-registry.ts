@@ -43,7 +43,7 @@ export function getVaultItemTypeLabel(
   }
   const numType = Number(type);
   if (numType in vaultItemRegistry) {
-    return vaultItemRegistry[numType as VaultItemType].getDetailTitle();
+    return vaultItemRegistry[numType as VaultItemType].getTypeName();
   }
   return t("vault_filter_type");
 }

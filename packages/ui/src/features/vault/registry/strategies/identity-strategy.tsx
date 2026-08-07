@@ -18,6 +18,7 @@ import type {
 
 export const identityStrategy: VaultItemStrategy = {
   type: VaultItemType.Identity,
+  getTypeName: () => t("vault_item_identity"),
   getAddTitle: () => t("edit_title_add_identity"),
   getEditTitle: () => t("edit_title_edit_identity"),
   getDetailTitle: () => t("detail_title_identity"),

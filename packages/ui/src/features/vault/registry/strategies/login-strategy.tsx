@@ -63,6 +63,7 @@ export const LoginCopyMenu: Component<CopyMenuProps> = (props) => {
 
 export const loginStrategy: VaultItemStrategy = {
   type: VaultItemType.Login,
+  getTypeName: () => t("vault_item_login"),
   getAddTitle: () => t("edit_title_add_login"),
   getEditTitle: () => t("edit_title_edit_login"),
   getDetailTitle: () => t("detail_title_login"),

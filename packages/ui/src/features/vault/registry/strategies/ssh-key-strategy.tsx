@@ -75,6 +75,7 @@ export const SshKeyCopyMenu: Component<CopyMenuProps> = (props) => {
 
 export const sshKeyStrategy: VaultItemStrategy = {
   type: VaultItemType.SshKey,
+  getTypeName: () => t("vault_item_ssh_key"),
   getAddTitle: () => t("edit_title_add_ssh_key"),
   getEditTitle: () => t("edit_title_edit_ssh_key"),
   getDetailTitle: () => t("detail_title_ssh_key"),
