@@ -116,7 +116,7 @@ export function getInitialFormState(
     notes: item.notes ?? "",
     favorite: item.favorite ?? false,
     reprompt: item.reprompt ?? 0,
-    fields: item.fields ? JSON.parse(JSON.stringify(item.fields)) : [],
+    fields: item.fields ? structuredClone(item.fields) : [],
   };
 
   const strategy = getVaultItemStrategy(item.type);
@@ -148,11 +148,12 @@ export function mapFormStateToVaultItem(
   const strategy = getVaultItemStrategy(validatedForm.itemType);
   const specificPayload = strategy.mapToPayload?.(validatedForm, selectedItem) ?? {};
 
-  return {
+  const result: Partial<VaultItem> = {
     ...commonData,
     type: validatedForm.itemType,
     ...specificPayload,
-  } as Partial<VaultItem>;
+  };
+  return result;
 }
 
 export function createDefaultVaultItem(type: VaultItemType): VaultItem {

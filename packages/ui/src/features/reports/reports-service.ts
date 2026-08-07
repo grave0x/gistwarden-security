@@ -6,10 +6,50 @@ import {
 import { safeFetch } from "@gistwarden/network";
 import {
   hashPasswordSHA1PrefixSuffix,
+  isLoginItem,
   type LoginVaultItem,
   type TranslationKey,
+  type VaultItem,
 } from "@gistwarden/domain";
 import { t } from "@/core/i18n.ts";
+import { saveItem } from "@/features/vault/vault-service.ts";
+
+export function getUnsecureLoginItems(vaultItems?: VaultItem[] | null): LoginVaultItem[] {
+  const items = (vaultItems || []).filter(isLoginItem);
+  return items.filter((item) => {
+    const uris = item.login?.uris || [];
+    return uris.some((u) =>
+      u.uri && u.uri.trim().toLowerCase().startsWith("http://")
+    );
+  });
+}
+
+export async function upgradeLoginItemToHttpsUseCase(
+  item: LoginVaultItem,
+): Promise<void> {
+  if (!item.login?.uris) return;
+
+  const updatedUris = item.login.uris.map((u) => {
+    if (u.uri && u.uri.trim().toLowerCase().startsWith("http://")) {
+      return {
+        ...u,
+        uri: u.uri.replace(/^http:\/\//i, "https://"),
+      };
+    }
+    return u;
+  });
+
+  const updatedItem: LoginVaultItem = {
+    ...item,
+    revisionDate: new Date().toISOString(),
+    login: {
+      ...item.login,
+      uris: updatedUris,
+    },
+  };
+
+  await saveItem(updatedItem);
+}
 
 export function formatVaultItemUsername(item: LoginVaultItem): string {
   return item.login?.username || t("report_no_username");

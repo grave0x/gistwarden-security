@@ -19,44 +19,40 @@ interface StrengthResult {
   className: string;
 }
 
+const STRENGTH_LOOKUP: readonly StrengthResult[] = [
+  {
+    score: 0,
+    label: "pwd_strength_very_weak",
+    className: "pwd-strength-very-weak",
+  },
+  {
+    score: 1,
+    label: "pwd_strength_weak",
+    className: "pwd-strength-weak",
+  },
+  {
+    score: 2,
+    label: "pwd_strength_fair",
+    className: "pwd-strength-fair",
+  },
+  {
+    score: 3,
+    label: "pwd_strength_strong",
+    className: "pwd-strength-strong",
+  },
+  {
+    score: 4,
+    label: "pwd_strength_very_strong",
+    className: "pwd-strength-very-strong",
+  },
+];
+
 export const PasswordStrengthMeter: Component<PasswordStrengthMeterProps> = (
   props,
 ) => {
   const strength = createMemo<StrengthResult>(() => {
     const res = evaluatePasswordStrength(props.password);
-    switch (res.score) {
-      case 0:
-        return {
-          score: 0,
-          label: "pwd_strength_very_weak",
-          className: "pwd-strength-very-weak",
-        };
-      case 1:
-        return {
-          score: 1,
-          label: "pwd_strength_weak",
-          className: "pwd-strength-weak",
-        };
-      case 2:
-        return {
-          score: 2,
-          label: "pwd_strength_fair",
-          className: "pwd-strength-fair",
-        };
-      case 3:
-        return {
-          score: 3,
-          label: "pwd_strength_strong",
-          className: "pwd-strength-strong",
-        };
-      case 4:
-      default:
-        return {
-          score: 4,
-          label: "pwd_strength_very_strong",
-          className: "pwd-strength-very-strong",
-        };
-    }
+    return STRENGTH_LOOKUP[res.score] ?? STRENGTH_LOOKUP[4];
   });
 
   return (

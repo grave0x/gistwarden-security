@@ -1,48 +1,24 @@
 import { type Component, createMemo } from "solid-js";
-import { isLoginItem, type LoginVaultItem, View } from "@gistwarden/domain";
+import { type LoginVaultItem, View } from "@gistwarden/domain";
 import { accountStore } from "@/core/store.ts";
 import { navigate, selectItem } from "@/core/navigation.ts";
 import { t } from "@/core/i18n.ts";
-import { saveItem } from "@/features/vault/vault-service.ts";
 import { setGlobalLoading } from "@gistwarden/ui";
 import { ReportLayout } from "./components/ReportLayout.tsx";
+import {
+  getUnsecureLoginItems,
+  upgradeLoginItemToHttpsUseCase,
+} from "./reports-service.ts";
 
 export const ReportUnsecure: Component = () => {
-  const unsecureItems = createMemo<LoginVaultItem[]>(() => {
-    const items = (accountStore.vaultItems || []).filter(isLoginItem);
-    return items.filter((item) => {
-      const uris = item.login?.uris || [];
-      return uris.some((u) =>
-        u.uri && u.uri.trim().toLowerCase().startsWith("http://")
-      );
-    });
-  });
+  const unsecureItems = createMemo<LoginVaultItem[]>(() =>
+    getUnsecureLoginItems(accountStore.vaultItems)
+  );
 
   const handleUpgradeHttps = async (item: LoginVaultItem) => {
-    if (!item.login?.uris) return;
-
     setGlobalLoading(true);
     try {
-      const updatedUris = item.login.uris.map((u) => {
-        if (u.uri && u.uri.trim().toLowerCase().startsWith("http://")) {
-          return {
-            ...u,
-            uri: u.uri.replace(/^http:\/\//i, "https://"),
-          };
-        }
-        return u;
-      });
-
-      const updatedItem: LoginVaultItem = {
-        ...item,
-        revisionDate: new Date().toISOString(),
-        login: {
-          ...item.login,
-          uris: updatedUris,
-        },
-      };
-
-      await saveItem(updatedItem);
+      await upgradeLoginItemToHttpsUseCase(item);
     } catch (err) {
       console.error("[ReportUnsecure] Upgrade to HTTPS failed:", err);
     } finally {
