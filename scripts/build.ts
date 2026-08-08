@@ -8,7 +8,7 @@ import {
   statSync,
   writeFileSync,
 } from "node:fs";
-import { join, relative } from "node:path";
+import { dirname, join, relative } from "node:path";
 import { zipSync } from "fflate";
 import * as esbuild from "esbuild";
 import { solidPlugin } from "esbuild-plugin-solid";
@@ -46,7 +46,7 @@ if (buildWeb) {
 
 function bundleCss(entryPath: string): string {
   if (!existsSync(entryPath)) return "";
-  const dir = join(entryPath, "..");
+  const dir = dirname(entryPath);
   let content = readFileSync(entryPath, "utf8");
   content = content.replace(/@import\s+["'](\.\/[^"']+)["'];/g, (_, relPath) => {
     const importedFilePath = join(dir, relPath);

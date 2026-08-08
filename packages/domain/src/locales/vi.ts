@@ -48,8 +48,6 @@ export default {
     "Kích thước Két sắt vượt quá giới hạn của GitHub Gist (10MB). Vui lòng giảm bớt dữ liệu hoặc chia nhỏ két sắt.",
   github_error_rate_limit:
     "Đã vượt quá giới hạn lượt gọi GitHub API (Rate Limit). Vui lòng thử lại sau ít phút.",
-  github_warning_gist_size_near_limit:
-    "Cảnh báo: Dung lượng Két sắt ({sizeMB}MB) đang tiệm cận giới hạn 10MB của GitHub Gist.",
   sync_error_corrupted_payload:
     "Dữ liệu đồng bộ bị lỗi cấu trúc hoặc không giải mã được.",
   sync_error_remote_password_changed:
@@ -68,7 +66,6 @@ export default {
   trash_deleted_date: "Đã xóa",
   vault_options_trash_sub: "Xem và khôi phục các mục đã xóa",
 
-  sync_error_invalid_response: "Phản hồi từ tiến trình đồng bộ không hợp lệ.",
   tab_error_get_current: "Không thể lấy thông tin thẻ trình duyệt hiện tại.",
   tab_error_send_message: "Không thể gửi dữ liệu tới thẻ trình duyệt.",
   tab_error_capture: "Không thể chụp hình thẻ trình duyệt.",
@@ -101,60 +98,43 @@ export default {
   login_title_setup: "Cấu hình bộ lưu trữ đám mây GitHub Gist",
   login_method_oauth: "Đăng nhập GitHub (OAuth)",
   login_method_pat: "Dùng Token (PAT)",
-  login_placeholder_pat: "Nhập Personal Access Token GitHub của bạn...",
   login_pat_help:
     "Token cần có quyền truy cập <strong>gist</strong>. Tiện ích sẽ tạo một Gist bí mật (secret gist) để lưu trữ két sắt đã mã hóa của bạn.",
   login_oauth_help:
     "Kết nối tự động và an toàn với tài khoản GitHub của bạn để đồng bộ két sắt tự động qua máy chủ Cloudflare Worker Proxy.",
-  login_oauth_hide: "Ẩn cấu hình OAuth",
-  login_oauth_show: "Hiện cấu hình OAuth",
-  login_oauth_alert_save: "Đã lưu thông số cấu hình OAuth!",
-  login_loading_auth: "Đang xác thực...",
-  login_loading_connect: "Đang kết nối...",
-  login_loading_unlock: "Đang mở khóa...",
   login_btn_save_token: "Kết nối GitHub (PAT)",
   login_btn_oauth: "Đăng nhập bằng GitHub",
-  login_oauth_config: "Cấu hình OAuth",
-  login_oauth_client_id: "Client ID của GitHub App",
-  login_oauth_worker_url: "URL Cloudflare Worker Proxy",
-  login_btn_save_config: "Lưu cấu hình",
-  login_master_password: "Mật khẩu Master",
+  login_master_password: "Mật khẩu chính",
   pwd_strength_very_weak: "Rất yếu",
   pwd_strength_weak: "Yếu",
   pwd_strength_fair: "Trung bình",
-  pwd_strength_good: "Tốt",
   pwd_strength_strong: "Mạnh",
   pwd_strength_very_strong: "Rất mạnh",
-  login_placeholder_mp: "Nhập mật khẩu Master...",
+  login_placeholder_mp: "Nhập Mật khẩu chính...",
   login_btn_unlock: "Mở khóa",
-  login_forgot_password: "Quên mật khẩu Master?",
-  login_reset_token: "Đổi tài khoản GitHub",
+  login_forgot_password: "Quên Mật khẩu chính?",
   login_error_empty_pat: "Vui lòng nhập Personal Access Token",
   login_error_invalid_token: "Token không hợp lệ hoặc lỗi kết nối",
-  login_error_any: "Đã xảy ra lỗi",
-  login_error_oauth_missing_config:
-    "Vui lòng mở mục 'Cấu hình OAuth' để nhập Client ID và Worker URL trước khi đăng nhập.",
   login_error_oauth_no_token: "Không nhận được token từ GitHub",
   login_error_oauth_fail: "Lỗi đăng nhập OAuth",
-  login_error_empty_mp: "Vui lòng nhập Mật khẩu Master",
-  login_error_wrong_mp: "Mật khẩu Master không đúng",
+  login_error_empty_mp: "Vui lòng nhập Mật khẩu chính",
+  login_error_wrong_mp: "Mật khẩu chính không đúng",
   caps_lock_on: "Caps Lock đang bật",
   login_error_changed_mp_hint:
-    "Nếu bạn vừa đổi Mật khẩu Master trên một thiết bị khác, bạn cần phải Đăng xuất và đăng nhập lại.",
+    "Nếu bạn vừa đổi Mật khẩu chính trên một thiết bị khác, bạn cần phải Đăng xuất và đăng nhập lại.",
   login_error_mp_cooldown:
-    "Nhập sai Mật khẩu Master nhiều lần. Vui lòng thử lại sau.",
+    "Nhập sai Mật khẩu chính nhiều lần. Vui lòng thử lại sau.",
   login_error_mp_tampered:
-    "Dữ liệu bảo vệ Mật khẩu Master bị thay đổi trái phép. Hệ thống đã đăng xuất để bảo vệ tài khoản.",
-  login_error_unlock_fail: "Lỗi mở khóa",
-  login_forgot_password_title: "Quên mật khẩu Master",
+    "Dữ liệu bảo vệ Mật khẩu chính bị thay đổi trái phép. Hệ thống đã đăng xuất để bảo vệ tài khoản.",
+  login_forgot_password_title: "Quên Mật khẩu chính",
   login_forgot_password_msg:
-    "{APP_NAME} sử dụng cơ chế mã hóa đầu-cuối (Zero-Knowledge). Mật khẩu Master không bao giờ được gửi đi hay lưu trữ trên máy chủ, do đó <strong class='text-error'>KHÔNG CÓ CÁCH NÀO</strong> để khôi phục hoặc đặt lại.<br/><br/>Để bắt đầu lại, hệ thống sẽ <strong>ĐĂNG XUẤT</strong> và <strong>XÓA DỮ LIỆU CỤC BỘ</strong>.<br/><br/>Nếu bạn muốn tiếp tục sử dụng tài khoản GitHub này, hệ thống sẽ mở trang GitHub Gist chứa két sắt cũ để bạn có thể <strong>SAO LƯU</strong> dữ liệu hoặc tiến hành <strong class='text-error'>XÓA THỦ CÔNG</strong> Gist này trên GitHub trước khi đăng nhập lại.<br/><br/>Bạn có chắc chắn muốn đăng xuất và mở trang Gist cũ không?",
+    "{APP_NAME} sử dụng cơ chế mã hóa đầu-cuối (Zero-Knowledge). Mật khẩu chính không bao giờ được gửi đi hay lưu trữ trên máy chủ, do đó <strong class='text-error'>KHÔNG CÓ CÁCH NÀO</strong> để khôi phục hoặc đặt lại.<br/><br/>Để bắt đầu lại, hệ thống sẽ <strong>ĐĂNG XUẤT</strong> và <strong>XÓA DỮ LIỆU CỤC BỘ</strong>.<br/><br/>Nếu bạn muốn tiếp tục sử dụng tài khoản GitHub này, hệ thống sẽ mở trang GitHub Gist chứa két sắt cũ để bạn có thể <strong>SAO LƯU</strong> dữ liệu hoặc tiến hành <strong class='text-error'>XÓA THỦ CÔNG</strong> Gist này trên GitHub trước khi đăng nhập lại.<br/><br/>Bạn có chắc chắn muốn đăng xuất và mở trang Gist cũ không?",
   app_loading: "Đang tải {APP_NAME}...",
   login_or: "Hoặc",
   login_error_password_mismatch: "Mật khẩu xác nhận không khớp",
-  login_enter_master_password: "Nhập master password",
+  login_enter_master_password: "Nhập Mật khẩu chính",
   login_confirm_master_password: "Nhập lại để xác nhận",
-  login_btn_create_master_password: "Tạo master password",
+  login_btn_create_master_password: "Tạo Mật khẩu chính",
   login_checking_gist: "Đang kiểm tra dữ liệu...",
 
   // Vault Page
@@ -162,8 +142,6 @@ export default {
   vault_filter_title: "Bộ lọc",
   vault_filter_type: "Loại",
   vault_filter_all_types: "Tất cả các loại",
-  vault_filter_folder: "Thư mục",
-  vault_filter_all_folders: "Tất cả thư mục",
   items_with_no_folder: "Tài khoản không có thư mục",
   vault_item_folder: "Thư mục",
   folder_new_title: "Thêm thư mục",
@@ -182,12 +160,9 @@ export default {
     "Bạn có chắc chắn muốn xóa thư mục này? Các phần tử trong thư mục sẽ không bị xóa.",
   folder_management_title: "Quản lý thư mục",
   vault_options_folders_sub: "Tạo, chỉnh sửa và quản lý các thư mục",
-  vault_empty_title: "Chưa có tài khoản nào",
   vault_empty_subtitle:
-    "Két sắt của bạn trống rỗng. Thêm mới tài khoản bằng nút + bên dưới.",
+    "Két sắt của bạn chưa có dữ liệu. Hãy thêm mới tài khoản bằng nút + bên dưới.",
   vault_btn_sync: "Đồng bộ",
-  vault_btn_settings: "Cài đặt",
-  vault_btn_generator: "Sinh mã",
   vault_btn_add: "Thêm mới",
   vault_popout_title: "Mở cửa sổ riêng",
   vault_lock_title: "Khóa két sắt",
@@ -197,9 +172,6 @@ export default {
   vault_section_identities: "Danh tính",
   vault_search_results: "Kết quả tìm kiếm",
   vault_no_search_matches: "Không tìm thấy tài khoản nào khớp",
-  vault_menu_all: "Tất cả các mục",
-  vault_menu_logins: "Đăng nhập",
-  vault_menu_notes: "Ghi chú bảo mật",
   vault_menu_favorites: "Yêu thích",
   vault_item_login: "Đăng nhập",
   vault_item_note: "Ghi chú",
@@ -249,14 +221,13 @@ export default {
   edit_label_totp: "Khóa xác thực (TOTP)",
   edit_placeholder_totp: "Dán khóa bí mật (Base32) hoặc otpauth://...",
   edit_label_website: "Website",
-  edit_placeholder_website: "https://example.com",
   edit_label_notes: "Ghi chú",
   edit_placeholder_notes: "Nhập ghi chú tại đây...",
-  edit_label_reprompt: "Yêu cầu nhập lại mật khẩu Master cho mục này",
-  reprompt_modal_title: "Xác nhận mật khẩu Master",
+  edit_label_reprompt: "Yêu cầu nhập lại Mật khẩu chính cho mục này",
+  reprompt_modal_title: "Xác nhận Mật khẩu chính",
   reprompt_modal_desc:
-    "Hành động này được bảo vệ. Để tiếp tục, vui lòng nhập lại mật khẩu Master của bạn để xác minh danh tính.",
-  reprompt_modal_label: "Mật khẩu Master",
+    "Hành động này được bảo vệ. Để tiếp tục, vui lòng nhập lại Mật khẩu chính của bạn để xác minh danh tính.",
+  reprompt_modal_label: "Mật khẩu chính",
   reprompt_modal_placeholder: "",
   reprompt_modal_confirm: "Ok",
   edit_section_additional_options: "Tùy chọn bổ sung",
@@ -264,31 +235,18 @@ export default {
   edit_label_fields: "Các trường tùy chỉnh",
   edit_field_type_text: "Văn bản",
   edit_field_type_hidden: "Ẩn",
-  edit_field_type_boolean: "Boolean (Đúng/Sai)",
+  edit_field_type_boolean: "Bật / Tắt (Boolean)",
   edit_field_type_linked: "Liên kết",
   edit_field_name_placeholder: "Tên trường",
   edit_field_val_placeholder: "Giá trị trường",
   edit_btn_add_field: "Thêm trường",
   edit_btn_add_website: "Thêm website",
   edit_btn_delete_website: "Xóa website",
-  edit_label_passkeys: "Mã khóa (Passkeys)",
-  edit_passkey_creation_date: "Ngày tạo: {date}",
-  edit_passkey_counter: "Bộ đếm: {count}",
-  edit_passkey_rp_id: "Tên miền (RP ID): {rpId}",
-  edit_passkey_username: "Tên người dùng: {name}",
-  edit_passkey_user_handle: "User Handle: {handle}",
-  edit_passkey_discoverable: "Discoverable: {val}",
-  edit_passkey_yes: "Có",
-  edit_passkey_no: "Không",
   edit_error_empty_name: "Vui lòng nhập tên",
-  edit_error_save_failed: "Lỗi lưu tài khoản",
   edit_confirm_delete_title: "Xóa tài khoản",
   edit_confirm_delete_msg:
     "Bạn có chắc chắn muốn xóa mục '{name}' không? Hành động này không thể hoàn tác.",
-  edit_error_delete_failed: "Lỗi xóa tài khoản",
-  edit_label_type: "Loại",
-  edit_type_login: "Mật khẩu",
-  edit_type_note: "Ghi chú an toàn",
+  edit_type_note: "Ghi chú bảo mật",
   edit_placeholder_name_note: "Ví dụ: Mã khẩn cấp, Cấu hình...",
   edit_placeholder_name_login: "Ví dụ: Google, Facebook...",
   edit_field_modal_title_add: "Thêm trường tùy chỉnh",
@@ -332,7 +290,6 @@ export default {
   detail_copy_card_code: "Sao chép mã bảo mật (CVV)",
   detail_copied: "Đã sao chép!",
   detail_passkey_webauthn: "Mã khóa đăng nhập (Passkey)",
-  detail_fields: "Các trường tùy chỉnh",
   detail_creation_date: "Ngày tạo",
   detail_revision_date: "Ngày cập nhật",
   detail_card_expired_title: "Thẻ đã hết hạn",
@@ -384,19 +341,15 @@ export default {
 
   // Settings Page
   settings_header: "Cài đặt",
-  settings_change_mp: "Đổi mật khẩu Master",
+  settings_change_mp: "Đổi Mật khẩu chính",
   settings_export: "Xuất mật khẩu (JSON)",
   settings_clear_vault: "Xóa sạch két sắt",
   settings_logout: "Đăng xuất tài khoản GitHub",
   settings_label_language: "Language / Ngôn ngữ",
   settings_lang_vi: "Tiếng Việt",
   settings_lang_en: "English",
-  settings_github_account: "Tài khoản GitHub",
-  settings_connected_as: "Đã kết nối với {user}",
-  settings_gist_id: "Gist ID",
   settings_last_sync: "Đồng bộ lần cuối",
   settings_sync_never: "Chưa bao giờ",
-  settings_label_oauth: "Cơ chế đăng nhập",
   settings_version: "Phiên bản: {ver}",
   settings_theme_label: "Chủ đề",
   settings_theme_sub: "Hiện tại: {theme}",
@@ -416,7 +369,7 @@ export default {
   settings_troubleshooting_sub: "Khắc phục các lỗi về đồng bộ và thời gian",
   settings_theme_dark: "Tối",
   settings_theme_light: "Sáng",
-  settings_vault_options_label: "Tùy chọn két sắt",
+  settings_vault_options_label: "Quản lý dữ liệu",
   settings_vault_options_sub: "Đồng bộ, nhập và xuất dữ liệu",
   settings_enable_animations_label: "Hiệu ứng chuyển trang",
   settings_enable_animations_sub:
@@ -437,8 +390,7 @@ export default {
   unlock_options_header: "Tùy chọn mở khóa",
   unlock_with_pin: "Mở khóa bằng mã PIN",
   require_master_password_on_restart:
-    "Yêu cầu mật khẩu master khi khởi động lại trình duyệt",
-  session_timeout_header: "Thời gian chờ phiên",
+    "Yêu cầu mật khẩu chính khi khởi động lại trình duyệt",
   timeout_label: "Thời gian chờ",
   timeout_action_label: "Hành động khi chờ",
   timeout_action_lock: "Khóa",
@@ -450,16 +402,13 @@ export default {
   timeout_30min: "30 phút",
   timeout_1hr: "1 giờ",
   timeout_4hr: "4 giờ",
-  timeout_never: "Không bao giờ",
   set_pin_title: "Thiết lập mã PIN",
   set_pin_desc:
     "Bạn có thể sử dụng mã PIN này để mở khóa {APP_NAME}. Mã PIN của bạn sẽ bị thiết lập lại nếu bạn đăng xuất hoàn toàn khỏi ứng dụng.",
   set_pin_label: "Mã PIN",
-  set_pin_confirm_label: "Xác nhận mã PIN",
-  set_pin_error_mismatch: "Mã PIN xác nhận không khớp.",
   set_pin_error_length: "Mã PIN phải có ít nhất 4 ký tự.",
   login_unlock_with_pin: "Mở khóa bằng mã PIN",
-  login_unlock_with_mp: "Mở khóa bằng Mật khẩu Master",
+  login_unlock_with_mp: "Mở khóa bằng Mật khẩu chính",
   login_pin_placeholder: "Nhập mã PIN của bạn...",
   login_error_wrong_pin: "Mã PIN không chính xác.",
   login_error_wrong_pin_2_left: "Mã PIN không chính xác. Bạn còn 2 lần thử.",
@@ -469,51 +418,38 @@ export default {
     "Đã nhập sai Mã PIN 3 lần. Hệ thống đã đăng xuất để bảo vệ tài khoản.",
   login_error_pin_tampered:
     "Dữ liệu mã PIN bị thay đổi trái phép. Hệ thống đã đăng xuất để bảo vệ an toàn.",
-  settings_change_mp_title: "Đổi mật khẩu Master",
+  settings_change_mp_title: "Đổi Mật khẩu chính",
   vault_options_group_sync_import: "Đồng bộ & Nhập xuất dữ liệu",
   vault_options_group_management: "Quản lý dữ liệu",
   vault_options_group_danger: "Thao tác nguy hiểm",
   settings_change_mp_sub: "Mã hóa lại két sắt bằng mật khẩu mới",
-  settings_lock_sub: "Mở lại bằng Mật khẩu Master",
   settings_clear_vault_sub: "Xóa vĩnh viễn mọi dữ liệu trong két sắt",
-  settings_logout_sub: "Ngắt kết nối và xóa cấu hình Gist",
   settings_open_gist_title: "Mở Gist lưu trữ trên GitHub",
   settings_change_mp_current: "Mật khẩu hiện tại",
   settings_change_mp_new: "Mật khẩu mới",
   settings_change_mp_confirm: "Xác nhận mật khẩu mới",
-  settings_change_mp_btn: "Đổi mật khẩu",
-  settings_error_mp_wrong_current: "Mật khẩu Master hiện tại không đúng",
-  settings_error_mp_empty_new: "Mật khẩu Master mới không được để trống",
+  settings_error_mp_wrong_current: "Mật khẩu chính hiện tại không đúng",
+  settings_error_mp_empty_new: "Mật khẩu chính mới không được để trống",
   settings_error_mp_mismatch: "Mật khẩu xác nhận không khớp",
   settings_error_mp_fail: "Lỗi đổi mật khẩu",
   settings_error_fields_required: "Vui lòng điền đầy đủ tất cả các trường",
-  settings_mp_success: "Đổi mật khẩu Master thành công!",
-  settings_export_title: "Xuất dữ liệu két sắt",
-  settings_export_placeholder: "Nhập mật khẩu Master để xuất...",
-  settings_export_btn: "Giải mã & Tải xuống",
+  settings_mp_success: "Đổi Mật khẩu chính thành công!",
   settings_export_success: "Đã tải xuống file sao lưu!",
-  settings_clear_vault_title: "Xóa sạch két sắt",
   settings_clear_vault_msg:
     "Bạn có chắc chắn muốn xóa TOÀN BỘ tài khoản trong két sắt? Hành động này không thể hoàn tác và toàn bộ dữ liệu trên Gist sẽ bị xóa sạch.",
   settings_clear_vault_confirm_title: "Xác nhận xóa vĩnh viễn",
   settings_clear_vault_confirm_msg:
     "XÁC NHẬN LẦN CUỐI: Xóa vĩnh viễn toàn bộ dữ liệu tài khoản? Vui lòng đảm bảo bạn đã xuất dữ liệu sao lưu (backup) trước khi tiếp tục.",
-  settings_clear_vault_placeholder: "Nhập mật khẩu Master để xác nhận xóa...",
-  settings_clear_vault_btn: "XÓA VĨNH VIỄN",
   settings_clear_vault_success:
     "Đã xóa toàn bộ tài khoản trong két sắt thành công!",
-  settings_clear_vault_fail: "Lỗi xóa két sắt",
   settings_logout_title: "Đăng xuất",
   settings_logout_msg:
     "Bạn có chắc chắn muốn ngắt kết nối tài khoản GitHub? Thao tác này sẽ xóa toàn bộ cấu hình cục bộ.",
-  settings_logout_success: "Đăng xuất thành công",
   vault_sync_success: "Đồng bộ dữ liệu thành công!",
   vault_import_success:
     "Nhập thành công {count} tài khoản! Két sắt đã được đồng bộ lên Gist.",
   vault_import_error_invalid:
     "Định dạng file không hợp lệ hoặc xác thực thất bại",
-  vault_import_error_fail: "Lỗi nhập file JSON",
-  vault_export_error_fail: "Lỗi xuất file JSON",
   vault_options_sync_manual: "Đồng bộ thủ công",
   vault_options_import: "Nhập dữ liệu (Import)",
   vault_options_import_sub: "Nhập tài khoản từ trình duyệt hoặc file sao lưu",
@@ -543,28 +479,18 @@ export default {
   export_option_json_sub: "Xuất tệp sao lưu JSON không mã hóa",
 
   // Password Generator View
-  gen_title: "Bộ sinh mật khẩu",
   gen_label_length: "Độ dài",
-  gen_opt_uppercase: "Chữ hoa (A-Z)",
-  gen_opt_lowercase: "Chữ thường (a-z)",
-  gen_opt_numbers: "Số (0-9)",
-  gen_opt_symbols: "Ký tự đặc biệt (!@#...)",
   gen_opt_avoid_ambiguous: "Tránh ký tự dễ nhầm lẫn (O, 0, l, 1)",
   gen_error_charset_empty: "Hãy chọn ít nhất một loại ký tự!",
   gen_error_invalid_words_count: "Số lượng từ phải từ 3 đến 20!",
   gen_btn_generate: "Tạo mật khẩu",
-  gen_btn_copy: "Sao chép",
   gen_tab_password: "Mật khẩu",
   gen_tab_passphrase: "Cụm mật khẩu",
-  gen_tab_username: "Tên đăng nhập",
   gen_options_title: "Tùy chọn",
   gen_include_title: "Bao gồm",
   gen_min_numbers: "Tối thiểu chữ số",
   gen_min_specials: "Tối thiểu ký tự đặc biệt",
   gen_error_min_exceeds_length: "Số lượng tối thiểu vượt quá độ dài mật khẩu!",
-  gen_tab_passphrase_placeholder:
-    "Bộ sinh cụm mật khẩu đang được phát triển...",
-  gen_tab_username_placeholder: "Bộ sinh tên đăng nhập đang được phát triển...",
   gen_label_num_words: "Số lượng từ",
   gen_label_word_separator: "Ký tự phân tách từ",
   gen_opt_capitalize: "Viết hoa chữ cái đầu",
@@ -574,26 +500,15 @@ export default {
   gen_btn_password_history: "Lịch sử mật khẩu",
   history_title: "Lịch sử mật khẩu",
   history_empty: "Chưa có mật khẩu nào trong lịch sử sao chép.",
-  history_domain: "Tên miền",
-  history_copied_at: "Thời gian copy",
   history_clear_btn: "Xóa lịch sử",
   history_confirm_clear_msg:
     "Bạn có chắc chắn muốn xóa toàn bộ lịch sử mật khẩu?",
   history_copied_toast: "Đã sao chép mật khẩu!",
 
   // FIDO2 Prompt View
-  fido2_title: "Xác thực Passkey",
-  fido2_rp: "Website: {rp}",
-  fido2_username: "Tài khoản: {user}",
-  fido2_btn_approve: "Phê duyệt",
-  fido2_btn_deny: "Từ chối",
-  fido2_unlock_required: "Mở khóa két sắt để dùng Passkey",
   fido2_error_no_request: "Không có yêu cầu xác thực nào đang chờ xử lý.",
   fido2_error_load_failed: "Lỗi tải yêu cầu xác thực",
-  fido2_error_save_failed: "Không thể lưu Passkey vào két sắt",
   fido2_error_create_failed: "Lỗi tạo Passkey",
-  fido2_error_counter_update_failed:
-    "Không thể cập nhật số lần sử dụng Passkey",
   fido2_error_assert_failed: "Lỗi xác thực Passkey",
   fido2_register_title: "Đăng ký Passkey mới",
   fido2_register_subtitle_new:
@@ -611,7 +526,7 @@ export default {
     "Không tìm thấy Passkey nào khớp cho tên miền <strong>{rp}</strong> trong két sắt của bạn.",
   fido2_vault_locked_title: "Két sắt đang Khóa",
   fido2_vault_locked_subtitle:
-    "Mở khóa {APP_NAME} bằng mật khẩu Master để tiếp tục xác thực Passkey.",
+    "Mở khóa {APP_NAME} bằng Mật khẩu chính để tiếp tục xác thực Passkey.",
   fido2_not_logged_in_title: "Chưa Đăng Nhập",
   fido2_not_logged_in_subtitle:
     "Vui lòng mở extension và đăng nhập vào Gistwarden trước khi sử dụng Passkey.",
@@ -640,7 +555,7 @@ export default {
     "Mật khẩu bị rò rỉ trong các vụ vi phạm dữ liệu là mục tiêu dễ dàng cho kẻ tấn công. Thay đổi các mật khẩu này để ngăn chặn nguy cơ xâm nhập.",
   report_exposed_btn_check: "Kiểm tra mật khẩu rò rỉ",
   report_exposed_clean_msg:
-    "Tuyệt vời! Không tìm thấy mật khẩu rò rỉ nào trong kho lưu trữ của bạn.",
+    "Tuyệt vời! Không tìm thấy mật khẩu rò rỉ nào trong két sắt của bạn.",
   report_exposed_found_msg:
     "Cảnh báo: Phát hiện {count} mật khẩu đã bị rò rỉ dữ liệu trên internet!",
   report_reused_title: "Mật khẩu dùng lại",
@@ -648,7 +563,7 @@ export default {
     "Sử dụng lại mật khẩu giúp kẻ tấn công dễ dàng đột nhập vào nhiều tài khoản. Thay đổi để mỗi tài khoản có mật khẩu duy nhất.",
   report_reused_group_title: "Nhóm Mật Khẩu #{index} ({count} tài khoản)",
   report_reused_clean_msg:
-    "Xuất sắc! Không có mật khẩu nào bị dùng lặp lại trong kho lưu trữ.",
+    "Xuất sắc! Không có mật khẩu nào bị dùng lặp lại trong két sắt.",
   report_weak_title: "Mật khẩu yếu",
   report_weak_desc:
     "Mật khẩu yếu có thể bị kẻ tấn công dễ dàng đoán ra. Thay đổi thành mật khẩu mạnh hơn bằng trình tạo mật khẩu.",
@@ -684,11 +599,9 @@ export default {
   report_score_label: "Điểm {score}/5",
   report_weak_btn_upgrade: "Nâng cấp mật khẩu",
   report_reused_btn_change: "Đổi mật khẩu",
-  report_inactive_2fa_badge: "Chưa có TOTP hoặc Passkey",
   report_inactive_2fa_btn_setup: "Thiết lập 2FA",
   report_databreach_btn_checking: "Đang kiểm tra...",
   report_scanning_progress: "Đang quét ({progress}%)...",
-  report_exposed_found_count: "Phát hiện {count} tài khoản bị rò rỉ",
   report_exposed_times: "Đã rò rỉ {count} lần",
   report_export_btn: "Xuất HTML",
   report_export_title: "Báo Cáo Bảo Mật Mật Khẩu Rò Rỉ - Gistwarden",
@@ -709,243 +622,325 @@ export default {
     "Tìm hiểu cách sử dụng, kiến trúc bảo mật và FIDO2 Passkeys",
   settings_homepage: "Trang chủ dự án",
   settings_homepage_sub: "Ghé thăm GitHub để báo lỗi và góp ý",
-  guide_homepage_btn: "Trang chủ",
-  guide_title: "Hướng dẫn sử dụng {APP_NAME}",
-  guide_welcome: "Chào mừng bạn đến với {APP_NAME}!",
-  guide_subtitle:
-    "Két sắt mật khẩu cá nhân, mã hóa Zero-Knowledge đồng bộ GitHub Gist.",
-  guide_close_page: "Đóng hướng dẫn",
-  guide_quick_action_desc:
-    "Mở nhanh trang Github Gist để quản lý các file dữ liệu két sắt của bạn.",
-  guide_open_github_btn: "Mở GitHub Gist",
-  guide_tab_general: "Giới thiệu chung",
-  guide_tab_gist: "Đồng bộ GitHub Gist",
-  guide_tab_security: "Kiến trúc bảo mật",
-  guide_tab_passkey: "Sử dụng Passkeys (FIDO2)",
-  guide_tab_totp: "Mã TOTP (2FA)",
-  guide_tab_import_export: "Nhập xuất dữ liệu",
-  guide_tab_faq: "Câu hỏi thường gặp",
-  guide_tab_privacy: "Chính sách bảo mật",
+  guide_search_placeholder: "Tìm kiếm chủ đề hướng dẫn...",
+  guide_search_no_results: "Không tìm thấy nội dung hướng dẫn phù hợp",
+
+  // New Guide Tree Navigation
+  guide_nav_getting_started: "Khởi Đầu & Cấu Hình",
+  guide_nav_vault_management: "Quản Lý Két Mật Khẩu",
+  guide_nav_passkey_auth: "Passkey & Xác Thực 2FA",
+  guide_nav_autofill_tools: "Tự Động Điền & Công Cụ",
+  guide_nav_sync_data: "Đồng Bộ Cloud & Dữ Liệu",
+  guide_nav_reports_settings: "Báo Cáo & Cài Đặt",
+
+  guide_item_overview: "Tổng quan & Mã hóa E2EE",
+  guide_item_master_password: "Mật khẩu chính (Master Password)",
+  guide_item_github_gist: "Tạo GitHub Token & Cấu hình Gist",
+  guide_item_auto_lock: "Khóa Két & Tự Động Khóa",
+
+  guide_item_logins: "Mật khẩu Đăng nhập & Tên miền",
+  guide_item_secure_notes: "Ghi chú Bảo mật",
+  guide_item_cards_identities: "Thẻ Ngân hàng & Danh tính",
+  guide_item_ssh_keys: "Quản lý Khóa SSH (OpenSSH)",
+  guide_item_custom_fields: "Trường Tùy chỉnh (Custom Fields)",
+  guide_item_folders_trash: "Thư mục & Thùng rác (Trash)",
+
+  guide_item_passkey_concept: "Passkey (FIDO2/WebAuthn) là gì?",
+  guide_item_passkey_register: "Đăng ký Passkey FIDO2 mới",
+  guide_item_passkey_login: "Đăng nhập bằng Passkey",
+  guide_item_totp_authenticator: "Mã 2FA (TOTP RFC 6238)",
+  guide_item_google_migration: "Nhập từ Google Authenticator",
+
+  guide_item_autofill_usage: "Tự động điền & Auto-Submit",
+  guide_item_password_generator: "Trình tạo Mật khẩu CSPRNG",
+  guide_item_password_history: "Lịch sử Mật khẩu đã tạo",
+
+  guide_item_gist_sync: "Cơ chế Đồng bộ Cloud 2 chiều",
+  guide_item_import_csv: "Nhập dữ liệu từ tệp CSV",
+  guide_item_import_json: "Nhập tệp Sao lưu JSON",
+  guide_item_export_csv: "Xuất dữ liệu ra tệp CSV",
+  guide_item_export_json: "Xuất tệp Sao lưu JSON",
+
+  guide_item_security_reports: "Báo cáo Bảo mật & HIBP",
+  guide_item_appearance_lang: "Giao diện & Ngôn ngữ",
+  guide_item_faq_troubleshooting: "Hỏi đáp & Khắc phục sự cố",
+
+  guide_app_lead: "Tùy chỉnh giao diện Sáng/Tối (Light/Dark Mode) và Ngôn ngữ ứng dụng.",
+  guide_app_theme_title: "Chủ đề Giao diện (Theme)",
+  guide_app_theme_desc: "Chuyển đổi linh hoạt giữa giao diện Tối (Dark) và Sáng (Light) với bảng màu Bitwarden hài hòa.",
+  guide_app_lang_title: "Đa ngôn ngữ (English / Tiếng Việt)",
+  guide_app_lang_desc: "Hỗ trợ 100% giao diện và nội dung hướng dẫn bằng Tiếng Việt và Tiếng Anh.",
+
+  guide_report_lead: "Kiểm tra tình trạng sức khỏe két sắt và quét lỗ hổng mật khẩu rò rỉ (HIBP).",
+  guide_report_step1_title: "Báo cáo Mật khẩu Bị rò rỉ (Exposed Passwords)",
+  guide_report_step1_desc: "Quét toàn bộ mật khẩu trong két sắt bằng công nghệ HIBP k-Anonymity (SHA-1 5 ký tự đầu). Mật khẩu của bạn hoàn toàn không bị lộ ra ngoài internet nhưng vẫn phát hiện chính xác nếu mật khẩu đã xuất hiện trong các vụ rò rỉ dữ liệu lớn trên thế giới.",
+  guide_report_step2_title: "Báo cáo Mật khẩu Dùng trùng (Reused Passwords)",
+  guide_report_step2_desc: "Phát hiện các tài khoản đang dùng chung một mật khẩu trên nhiều website khác nhau. Việc dùng trùng mật khẩu tạo nên rủi ro hiệu ứng dây chuyền khi 1 dịch vụ bị hack.",
+  guide_report_step3_title: "Báo cáo Mật khẩu Yếu (Weak Passwords)",
+  guide_report_step3_desc: "Đánh giá độ mạnh mật khẩu dựa trên độ dài, tính đa dạng ký tự (chữ hoa, chữ thường, số, ký tự đặc biệt) và phát hiện các chuỗi mật khẩu dễ đoán.",
+  guide_report_step4_title: "Báo cáo Trang web Không An toàn (Unsecured HTTP Sites)",
+  guide_report_step4_desc: "Cảnh báo các địa chỉ website lưu trong két sắt vẫn sử dụng giao thức http:// chưa mã hóa thay vì https:// bảo mật.",
+  guide_report_step5_title: "Báo cáo Chưa bật Mã 2FA (Inactive 2FA Accounts)",
+  guide_report_step5_desc: "Liệt kê các dịch vụ quan trọng (bancassurance, email, mạng xã hội) chưa được cấu hình mã xác thực 2 yếu tố TOTP để bạn nhanh chóng bổ sung bảo vệ.",
+
+  // Vault Management Guides
+  guide_vm_logins_lead: "Quản lý tài khoản đăng nhập web, địa chỉ URIs, chế độ khớp tên miền và bảo mật từng mục.",
+  guide_vm_logins_card1_title: "Chế độ khớp Tên miền (Domain Match Modes)",
+  guide_vm_logins_card1_item1: "Base Domain (Mặc định): Khớp tất cả subdomains (ví dụ app.github.com khớp với github.com).",
+  guide_vm_logins_card1_item2: "Host / Exact Host: Chỉ khớp đúng hostname chính xác (ví dụ login.github.com).",
+  guide_vm_logins_card1_item3: "Exact / Full URL: Khớp toàn bộ đường dẫn URL bao gồm port và path.",
+  guide_vm_logins_card1_item4: "RegEx Pattern: Khớp theo biểu thức chính quy linh hoạt.",
+  guide_vm_logins_card1_item5: "Never: Tuyệt đối không bao giờ tự động gợi ý điền tài khoản này cho bất kỳ trang web nào.",
+  guide_vm_logins_card2_title: "Lưu Nhiều Địa Chỉ URIs",
+  guide_vm_logins_card2_desc: "Mỗi tài khoản đăng nhập cho phép thêm nhiều địa chỉ URI khác nhau với các chế độ khớp riêng biệt cho từng URI.",
+  guide_vm_logins_card3_title: "Yêu cầu Mật khẩu chính (Mật khẩu chính Re-prompt)",
+  guide_vm_logins_card3_desc: "Bật tùy chọn này cho các tài khoản tài chính hoặc ứng dụng nhạy cảm. Mỗi khi mở xem, chỉnh sửa hoặc sao chép mật khẩu, hệ thống sẽ buộc bạn gõ lại Mật khẩu chính để xác minh danh tính.",
+  guide_vm_logins_card4_title: "Lịch sử Mật khẩu Tài khoản (Item Password History)",
+  guide_vm_logins_card4_desc: "Mỗi khi bạn thay đổi mật khẩu của một tài khoản, {APP_NAME} sẽ tự động lưu bản ghi mật khẩu cũ vào lịch sử riêng của mục đó. Bạn có thể mở xem chi tiết tài khoản ➔ chọn 'Lịch sử mật khẩu' để tra cứu hoặc khôi phục lại mật khẩu cũ bất cứ lúc nào.",
+
+  guide_vm_notes_lead: "Lưu trữ an toàn các văn bản bí mật, mã khôi phục tài khoản, số sê-ri phần mềm hoặc thông tin cá nhân quan trọng.",
+  guide_vm_notes_card_title: "Bảo mật nội dung ghi chú",
+  guide_vm_notes_card_desc: "Tất cả văn bản trong Ghi chú bảo mật được mã hóa trực tiếp trên thiết bị trước khi đồng bộ. Bạn cũng có thể bật tùy chọn Yêu cầu nhập lại Mật khẩu chính khi mở xem nội dung này.",
+
+  guide_vm_cards_lead: "Lưu giữ thông tin thẻ thanh toán (Credit Card) và danh tính cá nhân để tự động điền form đăng ký, thanh toán nhanh chóng.",
+  guide_vm_cards_card1_title: "Thẻ Thanh Toán (Credit Cards)",
+  guide_vm_cards_card1_desc: "Lưu số thẻ, mã CVV, ngày hết hạn và chủ thẻ. Dữ liệu CVV luôn được bảo vệ bằng lớp mã hóa an toàn.",
+  guide_vm_cards_card2_title: "Danh Tính Cá Nhân (Identities)",
+  guide_vm_cards_card2_desc: "Lưu họ tên, số điện thoại, địa chỉ, số CMND/CCCD/Passport để tự động điền các biểu mẫu mua hàng hoặc đăng ký dịch vụ trực tuyến.",
+
+  guide_vm_ssh_lead: "Quản lý các cặp khóa SSH Public/Private Key dùng để truy cập máy chủ từ xa an toàn.",
+  guide_vm_ssh_card_title: "Quản lý SSH Key chuyên nghiệp",
+  guide_vm_ssh_card_desc: "Lưu trữ khóa riêng tư (Private Key) dạng OpenSSH/PEM cùng với Fingerprint và Mật khẩu bảo vệ của khóa.",
+
+  guide_vm_fields_lead: "Mở rộng trường dữ liệu cho mục két sắt với các kiểu dữ liệu phong phú.",
+  guide_vm_fields_card_title: "Các kiểu trường tùy chỉnh (Custom Fields)",
+  guide_vm_fields_item1: "Text: Trường văn bản thông thường.",
+  guide_vm_fields_item2: "Hidden: Văn bản ẩn (mã PIN, đáp án câu hỏi bảo mật).",
+  guide_vm_fields_item3: "Boolean: Công tắc Bật/Tắt (True/False).",
+  guide_vm_fields_item4: "Linked: Liên kết tự động lấy dữ liệu từ trường khác.",
+
+  guide_vm_folders_lead: "Phân loại dữ liệu theo Thư mục và quản lý các mục đã xóa trong Thùng rác.",
+  guide_vm_folders_card1_title: "Thư Mục (Folders)",
+  guide_vm_folders_card1_desc: "Tạo các thư mục cá nhân để sắp xếp tài khoản công việc, cá nhân, tài chính khoa học.",
+  guide_vm_folders_card2_title: "Thùng Rác (Trash)",
+  guide_vm_folders_card2_desc: "Các mục xóa sẽ được chuyển vào Thùng Rác. Bạn có thể khôi phục lại hoặc xóa vĩnh viễn bất kỳ lúc nào.",
+
+  // Getting Started Guides
+  guide_start_ov_lead: "{APP_NAME} là giải pháp két mật khẩu cá nhân mã hóa Zero-Knowledge, tự động đồng bộ hóa đám mây riêng tư thông qua GitHub Gist.",
+  guide_start_ov_card1_title: "Mã Hóa Bảo Mật Tuyệt Đối (Zero-Knowledge)",
+  guide_start_ov_card1_desc: "Toàn bộ dữ liệu mật khẩu của bạn đều được mã hóa trực tiếp trên thiết bị của bạn trước khi truyền đi hoặc lưu trữ. Tuyệt đối không ai (kể cả nhà phát triển hay GitHub) có thể đọc được dữ liệu nếu không có Mật khẩu chính của bạn.",
+  guide_start_ov_card2_title: "Đồng Bộ Đám Mây Cá Nhân Riêng Tư",
+  guide_start_ov_card2_desc: "Thay vì gửi dữ liệu về máy chủ trung gian của bên thứ 3, {APP_NAME} trực tiếp đồng bộ dữ liệu vào một tệp bí mật (Private Gist) trên tài khoản GitHub cá nhân của chính bạn.",
+  guide_start_ov_card3_title: "Đăng Nhập Không Mật Khẩu (Passkeys)",
+  guide_start_ov_card3_desc: "Hỗ trợ lưu trữ và đăng nhập nhanh chóng bằng Passkey (FIDO2 / WebAuthn) với vân tay, khuôn mặt hoặc mã PIN thiết bị, loại bỏ hoàn toàn rủi ro lộ mật khẩu.",
+
+  guide_start_mp_lead: "Mật khẩu chính (Mật khẩu chính) là chìa khóa duy nhất dùng để giải mã và bảo vệ toàn bộ dữ liệu két sắt của bạn.",
+  guide_start_mp_step1_title: "1. Vai trò của Mật khẩu chính",
+  guide_start_mp_step1_desc: "Mật khẩu chính vừa đóng vai trò mở khóa két sắt, vừa dùng làm chìa khóa gốc để mã hóa toàn bộ mật khẩu, ghi chú và tài khoản. Hãy tạo Mật khẩu chính đủ dài, dễ nhớ với bạn nhưng khó đoán với người khác.",
+  guide_start_mp_step2_title: "2. Nguyên tắc Không lưu trữ Mật khẩu chính",
+  guide_start_mp_step2_desc: "{APP_NAME} tuân thủ nguyên tắc Zero-Knowledge: ứng dụng tuyệt đối không bao giờ lưu trữ hay gửi Mật khẩu chính lên bất kỳ máy chủ nào. Nếu bạn quên Mật khẩu chính, dữ liệu sẽ không thể khôi phục.",
+  guide_start_mp_step3_title: "3. Cách thay đổi Mật khẩu chính",
+  guide_start_mp_step3_desc: "Bạn có thể đổi Mật khẩu chính bất cứ lúc nào bằng cách mở ứng dụng → chọn Cài đặt → An toàn tài khoản → Thay đổi Mật khẩu chính. Khi đổi, hệ thống sẽ tự động giải mã và mã hóa lại toàn bộ két sắt bằng chìa khóa mới.",
+
+  guide_start_lock_lead: "Tự động bảo vệ dữ liệu két mật khẩu khi bạn không thao tác hoặc khi khởi động lại trình duyệt.",
+  guide_start_lock_step1_title: "1. Mở Cài đặt An toàn tài khoản",
+  guide_start_lock_step1_desc: "Mở ứng dụng {APP_NAME} → truy cập mục Cài đặt → An toàn tài khoản (Account Security).",
+  guide_start_lock_step2_title: "2. Tùy chỉnh Thời gian chờ (Vault Timeout)",
+  guide_start_lock_step2_desc: "Lựa chọn thời gian tự động xử lý khi không có thao tác: Khi khởi động lại trình duyệt (On Restart), 1 phút, 5 phút, 15 phút, 30 phút, 1 giờ, hoặc 4 giờ.",
+  guide_start_lock_step3_title: "3. Lựa chọn Hành động khi hết thời gian (Timeout Action)",
+  guide_start_lock_step3_lock: "Khóa két (Lock): Xóa chìa khóa giải mã khỏi bộ nhớ RAM. Yêu cầu nhập Mật khẩu chính hoặc Mã PIN để mở lại.",
+  guide_start_lock_step3_logout: "Đăng xuất (Log out): Xóa toàn bộ trạng thái phiên và yêu cầu đăng nhập lại từ đầu.",
+  guide_start_lock_step4_title: "4. Mã PIN mở khóa nhanh & Yêu cầu Mật khẩu chính",
+  guide_start_lock_step4_desc: "Kích hoạt tùy chọn Mở khóa bằng Mã PIN (Unlock with PIN) để mở két mượt mà. Đánh dấu chọn Yêu cầu Mật khẩu chính khi khởi động lại trình duyệt để đảm bảo an toàn tuyệt đối khi tắt mở trình duyệt.",
+
+  guide_start_pin_title: "Cấu hình & Sử dụng Mã PIN Mở Khóa Nhanh",
+  guide_start_pin_lead: "Mã PIN giúp bạn mở khóa két nhanh chóng bằng một chuỗi số ngắn mà không cần nhập lại Mật khẩu chính dài phức tạp mỗi lần sử dụng.",
+  guide_start_pin_step1_title: "1. Bật tùy chọn Mở khóa bằng Mã PIN",
+  guide_start_pin_step1_desc: "Mở ứng dụng {APP_NAME} ➔ chọn Cài đặt ➔ Bảo mật tài khoản. Tích chọn vào ô 'Mở khóa bằng mã PIN' (Unlock with PIN).",
+  guide_start_pin_step2_title: "2. Thiết lập Mã PIN mới (Tối thiểu 4 chữ số)",
+  guide_start_pin_step2_desc: "Cửa sổ Thiết lập mã PIN sẽ xuất hiện. Hãy nhập mã PIN dễ nhớ với bạn (tối thiểu 4 ký tự/chữ số) và bấm 'Xác nhận' để lưu cấu hình.",
+  guide_start_pin_step3_title: "3. Mở khóa nhanh bằng PIN khi két bị khóa",
+  guide_start_pin_step3_desc: "Khi két mật khẩu bị khóa theo thời gian chờ, bạn chỉ cần gõ Mã PIN và nhấn 'Mở khóa'. Chìa khóa mã hóa sẽ tự động mở mà không cần gõ lại Mật khẩu chính.",
+  guide_start_pin_note_title: "Lưu ý bảo mật quan trọng về Mã PIN:",
+  guide_start_pin_note_desc: "Mã PIN chỉ được lưu an toàn trong bộ nhớ thiết bị. Nếu bạn nhập sai Mã PIN 3 lần liên tiếp, hệ thống sẽ tự động hủy Mã PIN và đăng xuất để bảo vệ an toàn. Đồng thời, khi bạn Đăng xuất tài khoản GitHub, Mã PIN cũng sẽ tự động được xóa bỏ.",
+
+  // Passkey & TOTP Authenticator Guides
+  guide_passkey_concept_lead: "Passkey (chuẩn FIDO2 / WebAuthn) là giải pháp đăng nhập không dùng mật khẩu bảo mật nhất hiện nay, chống lừa đảo (Anti-Phishing) tuyệt đối.",
+  guide_passkey_concept_card1_title: "Chống Phishing Tuyệt Đối",
+  guide_passkey_concept_card1_desc: "Passkey gắn liền với tên miền chính xác của trang web. Dù bạn vô tình truy cập một trang web lừa đảo giả mạo, Passkey sẽ không bao giờ phản hồi.",
+  guide_passkey_concept_card2_title: "Công Nghệ Cặp Khóa Bảo Mật Bất Đối Xứng",
+  guide_passkey_concept_card2_desc: "Mỗi Passkey bao gồm khóa công khai gửi lên trang web và khóa riêng tư được bảo vệ mã hóa an toàn trong két sắt {APP_NAME} của bạn.",
+
+  guide_passkey_gmig_lead: "Chuyển đổi dữ liệu mã 2FA từ ứng dụng Google Authenticator sang {APP_NAME}.",
+  guide_passkey_gmig_step1_title: "1. Mở ứng dụng Google Authenticator",
+  guide_passkey_gmig_step1_desc: "Mở Google Authenticator trên điện thoại của bạn.",
+  guide_passkey_gmig_step2_title: "2. Mở Menu Chuyển tài khoản",
+  guide_passkey_gmig_step2_desc: "Nhấn vào nút Menu góc trên và chọn Chuyển tài khoản (Transfer accounts).",
+  guide_passkey_gmig_step3_title: "3. Chọn Xuất tài khoản",
+  guide_passkey_gmig_step3_desc: "Chọn Xuất tài khoản (Export accounts).",
+  guide_passkey_gmig_step4_title: "4. Chọn các mã tài khoản muốn xuất",
+  guide_passkey_gmig_step4_desc: "Tích chọn các tài khoản 2FA bạn muốn chuyển sang {APP_NAME}.",
+  guide_passkey_gmig_step5_title: "5. Quét mã QR Migration vào {APP_NAME}",
+  guide_passkey_gmig_step5_desc: "Mã QR xuất tài khoản sẽ hiển thị. Mở {APP_NAME} → Cài đặt → Quản lý dữ liệu → Chuyển đổi Google Authenticator để quét hoặc tải ảnh mã QR này lên.",
+
+  // Autofill & Password Generator Guides
+  guide_auto_lead: "Tự động nhận diện biểu mẫu và điền Tên đăng nhập / Mật khẩu trên các trang web.",
+  guide_auto_card1_title: "Biểu tượng Gistwarden trên ô nhập liệu",
+  guide_auto_card1_desc: "Khi bấm vào ô đăng nhập trên bất kỳ trang web nào, biểu tượng {APP_NAME} sẽ xuất hiện cho phép bạn chọn tài khoản và tự động điền ngay lập tức.",
+  guide_auto_card2_title: "Tự động gửi biểu mẫu (Auto-Submit)",
+  guide_auto_card2_desc: "Bạn có thể bật tùy chọn Tự động gửi biểu mẫu sau khi điền tại mục Cài đặt → Tùy chọn Tự động điền để đăng nhập nhanh 1-click.",
+
+  guide_pwdgen_lead: "Tạo mật khẩu ngẫu nhiên hoặc cụm từ mật khẩu an toàn cao, chống lại mọi đòn tấn công dò tìm.",
+  guide_pwdgen_step1_title: "1. Vị trí Công cụ Tạo Mật khẩu",
+  guide_pwdgen_step1_desc: "Mở ứng dụng {APP_NAME} → chuyển tới tab Công cụ (Tools) → Trình tạo mật khẩu (Generator) (hoặc nhấn biểu tượng Tạo mật khẩu khi đang thêm/sửa tài khoản).",
+  guide_pwdgen_step2_title: "2. Chế độ Mật khẩu Ngẫu nhiên (Random Password)",
+  guide_pwdgen_step2_length: "Tùy chỉnh độ dài: Kéo chọn độ dài mật khẩu từ 5 đến 128 ký tự (khuyên dùng từ 16 ký tự trở lên).",
+  guide_pwdgen_step2_charset: "Tập ký tự: Tùy chọn bật/tắt Chữ hoa (A-Z), Chữ thường (a-z), Chữ số (0-9) và Ký tự đặc biệt (!@#$%^...).",
+  guide_pwdgen_step2_ambiguous: "Tránh ký tự dễ nhầm (Avoid Ambiguous): Bật tùy chọn này để loại bỏ các ký tự khó phân biệt khi đọc hoặc gõ tay như I, l, 1, O, 0.",
+  guide_pwdgen_step3_title: "3. Chế độ Cụm Từ Mật Khẩu (Passphrase)",
+  guide_pwdgen_step3_desc: "Tạo mật khẩu bằng cách ghép nhiều từ vựng tiếng Anh lại với nhau. Giúp bạn tạo mật khẩu có độ dài lớn nhưng cực kỳ dễ ghi nhớ trong đầu. Cho phép chọn số lượng từ (từ 3 đến 20 từ), ký tự nối (dấu -), viết hoa chữ cái đầu và chèn chữ số.",
+  guide_pwdgen_step4_title: "4. Thanh đánh giá Độ mạnh Mật khẩu",
+  guide_pwdgen_step4_desc: "Thanh màu sắc bên dưới sẽ đánh giá trực quan độ an toàn của mật khẩu theo các mức: Yếu, Trung bình, Mạnh hoặc Cực mạnh để bạn yên tâm sử dụng.",
+
+  guide_hist_lead: "Lịch sử các mật khẩu đã được tạo gần đây.",
+  guide_hist_card_title: "Tra cứu mật khẩu đã tạo",
+  guide_hist_card_desc: "Tất cả mật khẩu ngẫu nhiên được tạo bằng bộ Generator sẽ được lưu vào lịch sử ngắn hạn để bạn khôi phục lại trong trường hợp quên chưa lưu vào két.",
+
+  // Sync & Import/Export Data Guides
+  guide_sync_lead: "Đồng bộ dữ liệu hai chiều riêng tư giữa thiết bị và GitHub Gist cá nhân.",
+  guide_sync_card1_title: "Tự động Hợp nhất Dữ liệu Mới nhất",
+  guide_sync_card1_desc: "Khi đồng bộ trên nhiều thiết bị khác nhau, {APP_NAME} tự động so sánh thời gian chỉnh sửa để hợp nhất dữ liệu mới nhất của từng tài khoản mà không gây mất mát thông tin.",
+  guide_sync_card2_title: "Lưu trữ Đám mây Cá nhân Bí mật",
+  guide_sync_card2_desc: "Dữ liệu két sắt được lưu trữ trên tệp GitHub Gist cá nhân của bạn dưới dạng mã hóa hoàn toàn. Nếu mở xem trên GitHub, người khác chỉ thấy chuỗi ký tự mã hóa vô nghĩa.",
+
+  guide_imp_csv_lead: "Nhập danh sách mật khẩu từ tệp CSV của các Trình duyệt Web và Bitwarden vào {APP_NAME}.",
+  guide_imp_csv_step1_title: "1. Nhập tệp CSV từ Trình duyệt Web (Chrome, Firefox, Edge, Brave, Safari)",
+  guide_imp_csv_step1_desc: "Xuất tệp CSV từ phần Cài đặt mật khẩu của trình duyệt web bạn đang dùng. {APP_NAME} sẽ tự động nhận diện và nạp toàn bộ danh sách tài khoản đăng nhập vào két sắt.",
+  guide_imp_csv_step2_title: "2. Nhập tệp CSV từ Bitwarden",
+  guide_imp_csv_step2_desc: "Xuất tệp CSV từ Bitwarden để chuyển sang {APP_NAME}. Ứng dụng sẽ nạp toàn bộ mật khẩu, ghi chú và tự động tái tạo lại các Thư mục tương ứng.",
+  guide_imp_csv_step3_title: "3. Các bước thao tác trong ứng dụng",
+  guide_imp_csv_step3_desc: "Mở {APP_NAME} → chọn Cài đặt → Quản lý dữ liệu → Nhập dữ liệu (Import). Chọn chuẩn tệp (Browser CSV hoặc Bitwarden CSV), chọn tệp từ máy tính và nhấn Xác nhận nhập.",
+
+  guide_imp_json_lead: "Khôi phục 100% trọn vẹn cấu trúc dữ liệu két mật khẩu từ tệp Sao lưu định dạng JSON.",
+  guide_imp_json_step1_title: "1. Vị trí chức năng Nhập dữ liệu",
+  guide_imp_json_step1_desc: "Mở ứng dụng {APP_NAME} → chọn menu Cài đặt → Quản lý dữ liệu → Nhập dữ liệu (Import Data).",
+  guide_imp_json_step2_title: "2. Chọn định dạng tệp JSON",
+  guide_imp_json_step2_desc: "Tại danh sách chọn định dạng tệp, chọn Gistwarden / Bitwarden JSON (.json).",
+  guide_imp_json_step3_title: "3. Tải tệp JSON & Xem trước kết quả",
+  guide_imp_json_step3_desc: "Nhấn nút chọn tệp JSON từ máy tính. {APP_NAME} sẽ hiển thị bảng Xem trước kết quả (Preview) số lượng tài khoản chuẩn bị nạp vào két.",
+  guide_imp_json_step4_title: "4. Khôi phục đầy đủ cả 5 nhóm dữ liệu & Thư mục",
+  guide_imp_json_step4_desc: "Tệp JSON giúp khôi phục trọn vẹn 100% cả 5 nhóm dữ liệu: Mật khẩu, Ghi chú bảo mật, Thẻ thanh toán, Danh tính, Khóa SSH cùng Thư mục, Trường tùy chỉnh và mã 2FA.",
+  guide_imp_json_step5_title: "5. Tự động Hợp nhất Dữ liệu & Thư mục",
+  guide_imp_json_step5_desc: "Hệ thống tự động gộp các Thư mục trùng tên, loại bỏ bản ghi trùng lặp và giữ lại dữ liệu mới nhất.",
+
+  guide_exp_csv_lead: "Xuất danh sách mật khẩu ra tệp định dạng CSV để dễ dàng xem hoặc chuyển đổi ứng dụng.",
+  guide_exp_csv_step1_title: "1. Truy cập tính năng Xuất dữ liệu",
+  guide_exp_csv_step1_desc: "Mở ứng dụng {APP_NAME} → chọn menu Cài đặt → Quản lý dữ liệu → Xuất dữ liệu (Export Data).",
+  guide_exp_csv_step2_title: "2. Nhập Mật khẩu chính để xác minh bảo mật",
+  guide_exp_csv_step2_desc: "Để bảo vệ an toàn, ứng dụng yêu cầu bạn nhập lại Mật khẩu chính (Mật khẩu chính) để xác nhận quyền truy cập trước khi tạo tệp CSV.",
+  guide_exp_csv_step3_title: "3. Lựa chọn định dạng tệp CSV",
+  guide_exp_csv_step3_browser: "Browser CSV: Xuất dạng định dạng cơ bản để nạp trực tiếp vào Google Chrome, Firefox, Edge, Safari, Brave.",
+  guide_exp_csv_step3_bitwarden: "Bitwarden CSV: Xuất đầy đủ thông tin tài khoản và cấu trúc Thư mục.",
+  guide_exp_csv_step4_title: "4. Cảnh báo bảo mật tệp CSV chữ rõ (Plaintext)",
+  guide_exp_csv_step4_desc: "Tệp CSV chứa mật khẩu chưa mã hóa (chỉ bao gồm các mục Mật khẩu & Ghi chú, không chứa Passkey hay Khóa SSH). Hãy bảo quản tệp cẩn thận hoặc xóa sau khi di chuyển xong.",
+
+  guide_exp_json_lead: "Tạo bản sao lưu toàn bộ két mật khẩu dưới dạng tệp JSON.",
+  guide_exp_json_step1_title: "1. Sao lưu 100% cấu trúc Vault",
+  guide_exp_json_step1_desc: "Tệp JSON sao lưu toàn bộ 5 nhóm phần tử (Mật khẩu, Ghi chú, Thẻ, Danh tính, Khóa SSH), Thư mục, Yêu thích và Trường tùy chỉnh.",
+  guide_exp_json_step2_title: "2. Tùy chọn Xuất Mã hóa hoặc Không Mã hóa",
+  guide_exp_json_step2_desc: "Nên chọn Xuất mã hóa (Encrypted JSON) để tệp sao lưu được bảo vệ bằng Mật khẩu chính của bạn. Người khác không thể mở nếu không có Mật khẩu chính.",
+  guide_exp_json_step3_title: "3. Các bước xuất tệp sao lưu JSON",
+  guide_exp_json_step3_desc: "Mở {APP_NAME} → chọn Cài đặt → Quản lý dữ liệu → Xuất dữ liệu (Export) → nhập Mật khẩu chính → chọn định dạng JSON và nhấn Tải tệp Sao lưu JSON.",
+
 
   // Guide Gist Token Steps
-  guide_token_title: "Cách tạo GitHub Token để đồng bộ",
   guide_token_desc:
     "Để đồng bộ đám mây, {APP_NAME} sẽ lưu két sắt đã mã hóa vào mục GitHub Gist cá nhân của bạn. Bạn cần tạo một mã Token có quyền Gist.",
   guide_token_step1_title: "Bước 1: Đặt tên và hạn dùng",
   guide_token_step1_desc:
     "Đăng nhập GitHub, bấm nút màu xanh bên dưới để mở nhanh trang tạo Token. Hãy đặt một cái tên dễ nhớ (ví dụ: '{APP_NAME}') và chọn hạn dùng là 'No expiration' (Không hết hạn) để không bị lỗi đồng bộ sau này.",
-  guide_token_step1_btn: "Mở trang tạo Token trên GitHub",
-  guide_token_step1_img_info: "Đặt tên Token và chọn thời gian hết hạn",
   guide_token_step2_title: "Bước 2: Tích chọn quyền Gist",
   guide_token_step2_desc:
     "Tìm và tích chọn vào ô 'gist' (để đồng bộ két sắt). Quyền này chỉ cho phép {APP_NAME} truy cập gist, hoàn toàn không xem được các repository code riêng tư khác của bạn.",
-  guide_token_step2_img_info: "Đảm bảo đã tích chọn quyền 'gist'",
   guide_token_step3_title: "Bước 3: Tạo mã Token",
   guide_token_step3_desc:
     "Cuộn xuống cuối trang rồi nhấn nút 'Generate token' màu xanh lá để tạo mã.",
-  guide_token_step3_img_info: "Nhấn nút 'Generate token' ở cuối trang",
   guide_token_step4_title: "Bước 4: Copy và dán vào cài đặt",
   guide_token_step4_desc:
     "Copy mã Token vừa hiển thị (dãy ký tự bắt đầu bằng ghp_). Sau đó mở {APP_NAME}, chọn 'Dùng Token (PAT)', dán vào ô GitHub Token rồi nhấn nút Lưu.",
-  guide_token_step4_img_info: "Sao chép Token và dán vào phần cài đặt",
   guide_token_important_note: "Lưu ý quan trọng:",
   guide_token_note_desc:
     " Tuyệt đối KHÔNG đưa mã Token này cho bất kỳ ai. Extension chỉ lưu Token ngay trên máy tính của bạn và gửi trực tiếp tới GitHub, không đi qua máy chủ trung gian nào khác.",
 
   // Guide Passkey Registration Steps
-  guide_pk_reg_title: "Cách đăng ký Passkey mới",
   guide_pk_reg_desc:
     "Để bắt đầu sử dụng đăng nhập không mật khẩu, hãy làm theo hướng dẫn 3 bước dưới đây để lưu Passkey mới vào két sắt của bạn.",
   guide_pk_reg_step1_title: "Bước 1: Bấm đăng ký trên trang web",
   guide_pk_reg_step1_desc:
     "Khi bạn đang ở trang quản lý bảo mật của trang web (ví dụ: Google, GitHub, webauthn.me), hãy bấm nút đăng ký Passkey mới (hoặc 'Add a passkey').",
-  guide_pk_reg_step1_img_info: "Yêu cầu đăng ký Passkey trên trang web",
   guide_pk_reg_step2_title: "Bước 2: Chọn tài khoản lưu trữ",
   guide_pk_reg_step2_desc:
     "{APP_NAME} sẽ tự động phát hiện và chặn yêu cầu của trình duyệt để hiển thị popup. Hãy chọn tài khoản khớp có sẵn trong két sắt để liên kết, hoặc chọn 'Tạo tài khoản mới' để lưu như một mục riêng biệt.",
-  guide_pk_reg_step2_img_info: "Lựa chọn tài khoản hoặc chọn tạo tài khoản mới",
   guide_pk_reg_step3_title: "Bước 3: Xác nhận lưu Passkey",
   guide_pk_reg_step3_desc:
     "Sau khi chọn, bấm nút 'Lưu Passkey' để lưu khóa riêng tư đã mã hóa vào két sắt. Extension sẽ tự động đồng bộ lên GitHub Gist nếu bạn đã thiết lập đồng bộ.",
-  guide_pk_reg_step3_img_info: "Xác nhận lưu Passkey thành công",
 
   // Guide Passkey Login Steps
-  guide_pk_login_title: "Cách đăng nhập bằng Passkey",
   guide_pk_login_desc:
     "Khi đã lưu trữ Passkey, bạn không cần nhập mật khẩu hay mã 2FA để đăng nhập nữa. Quy trình đăng nhập nhanh chóng chỉ với 2 bước:",
   guide_pk_login_step1_title: "Bước 1: Chọn đăng nhập bằng Passkey",
   guide_pk_login_step1_desc:
     "Tại trang đăng nhập của trang web, chọn hình thức đăng nhập bằng Passkey (hoặc biểu tượng hình chiếc chìa khóa/face ID).",
-  guide_pk_login_step1_img_info:
-    "Bấm nút đăng nhập bằng Passkey trên trang web",
   guide_pk_login_step2_title: "Bước 2: Xác nhận tài khoản trên popup",
   guide_pk_login_step2_desc:
     "Popup của {APP_NAME} sẽ hiện ra danh sách các tài khoản Passkey đã lưu cho trang web này. Hãy chọn tài khoản tương ứng và bấm 'Xác nhận đăng nhập' để truy cập ngay lập tức.",
-  guide_pk_login_step2_img_info:
-    "Lựa chọn tài khoản Passkey tương ứng để đăng nhập",
 
   // Guide TOTP Steps
   guide_totp_step1_title: "Bước 1: Quét mã QR 2FA trên trang web",
   guide_totp_step1_desc:
     "Khi trang web (ví dụ: Google, GitHub, Facebook) hiển thị mã QR cấu hình bảo mật 2 lớp, mở {APP_NAME} ra và bấm vào biểu tượng chiếc máy ảnh/quét QR ở góc bên cạnh trường TOTP để quét. Nếu không quét được QR hoặc trang web chỉ cung cấp mã chữ (Secret Key), bạn có thể sao chép đoạn mã đó rồi dán thủ công vào trường TOTP và lưu lại.",
-  guide_totp_step1_img_info: "Nhấn vào biểu tượng quét mã QR trên ứng dụng",
   guide_totp_step2_title: "Bước 2: Tự động lưu và hiển thị mã OTP",
   guide_totp_step2_desc:
     "Sau khi quét, khóa bí mật sẽ tự động được giải mã và lưu lại. {APP_NAME} sẽ bắt đầu sinh mã xác thực 6 chữ số và đếm ngược 30 giây. Bạn chỉ cần click chuột vào mã này để sao chép nhanh và dán vào ô xác thực của website.",
-  guide_totp_step2_img_info:
-    "Mã xác thực tự động tạo và có nút click sao chép tiện lợi",
-  guide_totp_step3_title: "Bước 3: Sửa lỗi mã bị sai (Đồng bộ thời gian)",
-  guide_totp_step3_desc:
-    "Nếu mã 2FA sinh ra bị báo không chính xác trên website, có thể đồng hồ máy tính của bạn bị lệch. Bạn có thể tự sửa nhanh bằng cách vào Cài đặt -> Giới thiệu -> Xử lý sự cố -> nhấn 'Đồng bộ thời gian' để lấy lại giờ chuẩn từ máy chủ.",
-
-  // Guide Security Tab
-  guide_sec_title: "Kiến trúc Bảo mật",
-  guide_sec_subtitle:
-    "Để bảo vệ thông tin cá nhân của bạn, {APP_NAME} được thiết kế với cơ chế bảo mật tối ưu giúp dữ liệu luôn an toàn trước mọi nguy cơ.",
-  guide_sec_card1_title: "Mã hóa Zero-Knowledge (Kiến thức bằng Không)",
-  guide_sec_card1_desc:
-    "Mọi mật khẩu và ghi chú của bạn đều được mã hóa ngay trên thiết bị của bạn trước khi đồng bộ. Mật khẩu Master chỉ chạy cục bộ trong trình duyệt và KHÔNG bao giờ gửi đi bất cứ đâu. Không ai (kể cả nhà phát triển hay GitHub) có thể đọc được mật khẩu của bạn.",
-  guide_sec_card2_title: "Bảo vệ mật khẩu cực kỳ mạnh mẽ",
-  guide_sec_card2_desc:
-    "{APP_NAME} sử dụng các công nghệ mã hóa hiện đại và an toàn nhất hiện nay để bảo vệ két sắt của bạn, giúp ngăn chặn hiệu quả mọi hành vi cố gắng dò tìm hoặc bẻ khóa mật khẩu Master của bạn ngay cả khi sử dụng siêu máy tính.",
-  guide_sec_card3_title: "Đồng bộ đám mây an toàn tuyệt đối",
-  guide_sec_card3_desc:
-    "Dữ liệu két sắt lưu trên GitHub Gist cá nhân của bạn hoàn toàn được mã hóa thành các ký tự vô nghĩa. Dữ liệu này chỉ có thể giải mã và đọc được khi chính bạn nhập đúng mật khẩu Master của mình trên ứng dụng.",
-
-  // Guide General Tab
-  guide_gen_title: "3 Bước khởi đầu nhanh",
-  guide_gen_step1_title: "Thiết lập Mật khẩu Master",
-  guide_gen_step1_desc:
-    "Tạo mật khẩu Master cực kỳ an toàn để mã hóa toàn bộ dữ liệu két sắt của bạn cục bộ. Mật khẩu này tuyệt đối không được quên vì không thể khôi phục.",
-  guide_gen_step2_title: "Kết nối đồng bộ GitHub",
-  guide_gen_step2_desc:
-    "Đăng nhập nhanh qua OAuth hoặc dán Personal Access Token (PAT) có quyền 'gist' để {APP_NAME} tự tạo một Gist bí mật đồng bộ két sắt mật khẩu.",
-  guide_gen_step3_title: "Sử dụng an toàn",
-  guide_gen_step3_desc:
-    "Bắt đầu lưu trữ tài khoản, ghi chú bảo mật, tự động điền (autofill) và giả lập/lưu Passkey (FIDO2) an toàn ngay tại trình duyệt của bạn.",
-
-  // Guide Import / Export Tab
-  guide_ie_title: "Nhập xuất dữ liệu",
-  guide_ie_subtitle:
-    "{APP_NAME} hỗ trợ giải mã mã TOTP từ Google Authenticator và tương thích hoàn toàn với file dữ liệu Bitwarden.",
-  guide_ie_subtab_google: "🔑 Google Authenticator",
-  guide_ie_subtab_bitwarden: "📥 Nhập Bitwarden",
-  guide_ie_subtab_export: "📤 Xuất dữ liệu",
-  guide_ie_import_title: "Cách nhập dữ liệu từ Bitwarden",
-  guide_ie_import_step1_title: "Bước 1: Xuất file JSON từ Bitwarden",
-  guide_ie_import_step1_desc:
-    "Mở ứng dụng hoặc tiện ích Bitwarden -> Vào Cài đặt -> Xuất két sắt -> Chọn định dạng '.json (Không mã hóa)' và tải về máy tính.",
-  guide_ie_import_step2_title: "Bước 2: Nạp vào {APP_NAME}",
-  guide_ie_import_step2_desc:
-    "Mở {APP_NAME} -> Vào mục Cài đặt -> Tùy chọn két sắt (Vault Options) -> Nhập dữ liệu (Import) -> Chọn file JSON vừa tải về ở Bước 1.",
-  guide_ie_import_step3_title: "Bước 3: Lưu trữ và đồng bộ",
-  guide_ie_import_step3_desc:
-    "Hệ thống sẽ mã hóa toàn bộ dữ liệu này bằng Master Password của bạn và đẩy trực tiếp lên GitHub Gist. File JSON thô của Bitwarden trên máy tính nên được xóa đi ngay lập tức để bảo mật.",
-  guide_ie_export_title: "Cách xuất dữ liệu sao lưu",
-  guide_ie_export_desc:
-    "Để có thêm bản lưu trữ offline đề phòng trường hợp mất tài khoản GitHub hoặc hỏng máy:",
-  guide_ie_export_step1:
-    "Vào Cài đặt của {APP_NAME} -> Tùy chọn két sắt (Vault Options) -> Chọn 'Xuất dữ liệu (Export)'.",
-  guide_ie_export_step2: "Nhập mật khẩu Master để giải mã cơ sở dữ liệu.",
-  guide_ie_export_step3:
-    "Bấm 'Giải mã & Tải xuống' để lưu file `accounts.json` chưa mã hóa về máy. Hãy bảo vệ file này cẩn thận vì nó chứa toàn bộ mật khẩu dạng chữ rõ!",
-  guide_ie_google_title: "Nhập & Giải mã TOTP từ Google Authenticator",
-  guide_ie_google_desc:
-    "Giải mã dễ dàng mã QR hoặc chuỗi URI xuất từ Google Authenticator và ghép nối hàng loạt vào các tài khoản trong Két sắt.",
-  guide_ie_google_step1_title: "Bước 1: Mở ứng dụng & Ấn nút Menu",
-  guide_ie_google_step1_desc:
-    "Mở ứng dụng Google Authenticator trên điện thoại và ấn vào biểu tượng Menu ≡ ở góc trên bên trái màn hình.",
-  guide_ie_google_step2_title: "Bước 2: Chọn 'Transfer codes' (Chuyển tài khoản)",
-  guide_ie_google_step2_desc:
-    "Trong danh sách menu thả xuống, chọn mục 'Transfer codes' (hoặc Chuyển tài khoản) ➔ chọn 'Export codes' (Xuất mã).",
-  guide_ie_google_step3_title: "Bước 3: Chọn các tài khoản TOTP muốn xuất",
-  guide_ie_google_step3_desc:
-    "Xác thực mã PIN/vân tay thiết bị, sau đó tích chọn các tài khoản 2FA bạn muốn chuyển đổi và nhấn nút 'Next' (Tiếp tục).",
-  guide_ie_google_step4_title: "Bước 4: Sử dụng mã QR xuất dữ liệu",
-  guide_ie_google_step4_desc:
-    "Màn hình sẽ hiển thị mã QR chứa toàn bộ dữ liệu 2FA đã chọn. Chụp ảnh màn hình mã QR này lại để tải vào Gistwarden.",
-  guide_ie_google_step5_title: "Bước 5: Nhập vào Gistwarden & Đồng bộ Két sắt",
-  guide_ie_google_step5_desc:
-    "Mở Gistwarden ➔ Cài đặt ➔ Tùy chọn Két sắt ➔ Công cụ Giải mã Google Authenticator. Tải ảnh QR vừa chụp lên (hoặc dán chuỗi `otpauth-migration://`), kiểm tra mã đếm ngược 30s, chọn ghép nối tài khoản và bấm 'Lưu hàng loạt'.",
-
-
 
   // Guide FAQ Tab
-  guide_faq_title: "Câu hỏi thường gặp",
   guide_faq_subtitle:
     "Giải đáp một số thắc mắc phổ biến về cơ chế đồng bộ, bảo mật và mật khẩu của {APP_NAME}.",
-  guide_faq_q1_title: "❓ Mật khẩu Master của tôi có an toàn không?",
+  guide_faq_q1_title: "Mật khẩu chính của tôi có an toàn không?",
   guide_faq_q1_desc:
-    "Cực kỳ an toàn. {APP_NAME} áp dụng cơ chế Zero-Knowledge (Kiến thức bằng Không). Mật khẩu Master của bạn chỉ dùng để sinh khóa mã hóa cục bộ ngay tại trình duyệt, không bao giờ được lưu lại hay gửi qua Internet.",
-  guide_faq_q2_title: "❓ Tôi quên mật khẩu Master thì phải làm sao?",
+    "Cực kỳ an toàn. {APP_NAME} áp dụng cơ chế Zero-Knowledge (Kiến thức bằng Không). Mật khẩu chính của bạn chỉ dùng để sinh khóa mã hóa cục bộ ngay tại trình duyệt, không bao giờ được lưu lại hay gửi qua Internet.",
+  guide_faq_q2_title: "Tôi quên Mật khẩu chính thì phải làm sao?",
   guide_faq_q2_desc:
-    "Không có cách nào khôi phục mật khẩu Master. Nếu quên, bạn buộc phải đặt lại extension để bắt đầu lại từ đầu. Hãy ghi nhớ hoặc ghi mật khẩu Master ra giấy cất ở nơi an toàn.",
+    "Không có cách nào khôi phục Mật khẩu chính. Nếu quên, bạn buộc phải đặt lại extension để bắt đầu lại từ đầu. Hãy ghi nhớ hoặc ghi Mật khẩu chính ra giấy cất ở nơi an toàn.",
   guide_faq_q3_title:
-    "❓ Tôi có thể đồng bộ mật khẩu trên nhiều máy tính không?",
+    "Tôi có thể đồng bộ mật khẩu trên nhiều máy tính không?",
   guide_faq_q3_desc:
-    "Có. Chỉ cần cài đặt {APP_NAME} lên máy tính khác, đăng nhập cùng tài khoản GitHub (hoặc cấu hình cùng mã Token) và điền ĐÚNG mật khẩu Master đã dùng ở máy cũ. Dữ liệu sẽ tự động tải về và giải mã mượt mà.",
+    "Có. Chỉ cần cài đặt {APP_NAME} lên máy tính khác, đăng nhập cùng tài khoản GitHub (hoặc cấu hình cùng mã Token) và điền ĐÚNG Mật khẩu chính đã dùng ở máy cũ. Dữ liệu sẽ tự động tải về và giải mã mượt mà.",
   guide_faq_q4_title:
-    "❓ Két sắt lưu trên GitHub Gist dưới dạng bí mật (Secret Gist) có thực sự riêng tư?",
+    "Két sắt lưu trên GitHub Gist dưới dạng bí mật (Secret Gist) có thực sự riêng tư?",
   guide_faq_q4_desc:
-    "Có. Secret Gist không được index bởi các công cụ tìm kiếm và không hiện công khai trên profile GitHub của bạn. Ngay cả khi có ai đó đoán được URL của Gist, họ cũng chỉ nhìn thấy một chuỗi ký tự mã hóa vô nghĩa. Không có Master Password, dữ liệu đó hoàn toàn không thể giải mã.",
-
-  // Guide Passkey Headers & sub-tabs
-  guide_pk_header_title: "Sử dụng Passkeys (FIDO2)",
-  guide_pk_header_desc:
-    "{APP_NAME} hỗ trợ giả lập và quản lý khóa đăng nhập không mật khẩu (Passkeys / WebAuthn) để thay thế cho mật khẩu truyền thống.",
-  guide_pk_subtab_reg: "📝 Hướng dẫn Đăng ký",
-  guide_pk_subtab_login: "🔑 Hướng dẫn Đăng nhập",
-
-  // Guide TOTP Headers
-  guide_totp_header_title: "Sử dụng mã xác thực hai lớp (TOTP / 2FA)",
-  guide_totp_header_desc:
-    "{APP_NAME} hỗ trợ lưu trữ mã bảo mật 2 lớp (TOTP) giúp bảo vệ tài khoản của bạn. Mã xác thực sẽ tự động thay đổi sau mỗi 30 giây.",
+    "Có. Secret Gist không được index bởi các công cụ tìm kiếm và không hiện công khai trên profile GitHub của bạn. Ngay cả khi có ai đó đoán được URL của Gist, họ cũng chỉ nhìn thấy một chuỗi ký tự mã hóa vô nghĩa. Không có Mật khẩu chính, dữ liệu đó hoàn toàn không thể giải mã.",
 
   // Welcome View
-  welcome_header_title: "Chào mừng đến với {APP_NAME}",
-  welcome_desc:
-    "Trình quản lý mật khẩu, giả lập Passkey và mã xác thực hai lớp (TOTP/2FA) bảo mật, hoạt động hoàn toàn trên GitHub Gist cá nhân của bạn.",
-  welcome_subtitle_intro:
-    "Trước khi bắt đầu, hãy cùng điểm qua một số tính năng nổi bật của {APP_NAME}:",
   welcome_feat_security_title: "Mã hóa Zero-Knowledge",
   welcome_feat_security_desc:
-    "Dữ liệu được mã hóa cục bộ bằng Master Password trước khi đồng bộ lên GitHub Gist cá nhân. Tuyệt đối không ai khác có thể đọc được dữ liệu của bạn.",
+    "Dữ liệu được mã hóa cục bộ bằng Mật khẩu chính trước khi đồng bộ lên GitHub Gist cá nhân. Tuyệt đối không ai khác có thể đọc được dữ liệu của bạn.",
   welcome_feat_passkeys_title: "Đăng nhập không mật khẩu (Passkey)",
   welcome_feat_passkeys_desc:
     "Đăng ký và xác thực an toàn bằng tiêu chuẩn WebAuthn/Passkey hiện đại, loại bỏ hoàn toàn mật khẩu truyền thống.",
   welcome_feat_totp_title: "Mã xác thực hai lớp (TOTP/2FA)",
   welcome_feat_totp_desc:
     "Lưu trữ và tự động tạo mã OTP 6 số cập nhật liên tục mỗi 30 giây giúp nâng cao bảo mật tài khoản.",
-  welcome_feat_backup_title: "Nhập xuất dữ liệu dễ dàng",
-  welcome_feat_backup_desc:
-    "Dễ dàng sao lưu két sắt hoặc di chuyển dữ liệu từ Bitwarden thông qua tính năng nhập xuất file JSON tương thích tốt.",
   welcome_security_notice_title: "⚠️ LƯU Ý BẢO MẬT QUAN TRỌNG",
   welcome_warning_bold:
-    "Quên mật khẩu Master sẽ làm MẤT DỮ LIỆU VĨNH VIỄN, KHÔNG thể khôi phục.",
+    "Quên Mật khẩu chính sẽ làm MẤT DỮ LIỆU VĨNH VIỄN, KHÔNG thể khôi phục.",
   welcome_warning_sub:
-    "Chúng tôi không lưu trữ mật khẩu của bạn trên bất kỳ máy chủ nào và GitHub cũng chỉ thấy dữ liệu két sắt dưới dạng các ký tự mã hóa vô nghĩa. (Lưu ý: Bạn vẫn có thể đổi Mật khẩu Master trong phần Cài đặt bất cứ lúc nào nếu muốn).",
+    "Chúng tôi không lưu trữ mật khẩu của bạn trên bất kỳ máy chủ nào và GitHub cũng chỉ thấy dữ liệu két sắt dưới dạng các ký tự mã hóa vô nghĩa. (Lưu ý: Bạn vẫn có thể đổi Mật khẩu chính trong phần Cài đặt bất cứ lúc nào nếu muốn).",
   welcome_checkbox_label:
-    "Tôi đã hiểu rằng nếu quên Mật khẩu Master, tôi chấp nhận mất toàn bộ dữ liệu vĩnh viễn và không thể khôi phục.",
+    "Tôi đã hiểu rằng nếu quên Mật khẩu chính, tôi chấp nhận mất toàn bộ dữ liệu vĩnh viễn và không thể khôi phục.",
   welcome_btn_continue: "Bắt đầu thiết lập",
   welcome_btn_next: "Tiếp tục",
   welcome_btn_prev: "Quay lại",
-
-  // Privacy & Policy
-  guide_privacy_title: "Chính sách Quyền riêng tư & Dữ liệu",
-  guide_privacy_subtitle:
-    "Quyền riêng tư của bạn là ưu tiên hàng đầu của chúng tôi. Tìm hiểu cách {APP_NAME} bảo vệ và xử lý dữ liệu của bạn.",
-  guide_privacy_sec1_title: "🔒 Riêng tư Tuyệt đối (Zero-Knowledge)",
-  guide_privacy_sec1_desc:
-    "Mọi tính toán, khởi tạo mật khẩu và quá trình mã hóa đều diễn ra hoàn toàn cục bộ trong trình duyệt của bạn. Chúng tôi tuyệt đối không thu thập, lưu trữ, theo dõi hoặc truyền tải bất kỳ mật khẩu, ghi chú, tài khoản hay cấu hình cá nhân nào của bạn về bất kỳ máy chủ nào của chúng tôi.",
-  guide_privacy_sec2_title: "☁️ Đồng bộ qua Gist cá nhân bảo mật",
-  guide_privacy_sec2_desc:
-    "Cơ sở dữ liệu két sắt của bạn được mã hóa bằng thuật toán tiêu chuẩn quân sự AES-256-GCM trước khi đồng bộ. Dữ liệu được truyền trực tiếp đến tài khoản GitHub Gist cá nhân của chính bạn. GitHub hay bất kỳ bên thứ ba nào chỉ nhìn thấy chuỗi ký tự mã hóa vô nghĩa; nếu không có Master Password, việc giải mã dữ liệu là bất khả thi về mặt toán học.",
-  guide_privacy_sec3_title: "🚫 Không theo dõi, Quảng cáo hay Analytics",
-  guide_privacy_sec3_desc:
-    "Chúng tôi không tích hợp bất kỳ mã theo dõi người dùng, mạng lưới quảng cáo, mã phân tích hành vi (analytics) hay cookie theo dõi trình duyệt nào. Trải nghiệm sử dụng tiện ích của bạn là hoàn toàn riêng tư 100% đối với chúng tôi.",
-  guide_privacy_sec4_title: "🔌 Quyền hạn của Tiện ích mở rộng",
-  guide_privacy_sec4_desc:
-    "Tiện ích chỉ yêu cầu các quyền tối thiểu cần thiết để hoạt động: quyền 'storage' để lưu cấu hình tiện ích cục bộ (như ngôn ngữ hay giao diện), quyền 'webNavigation' và 'activeTab' để hỗ trợ điền thông tin đăng nhập tự động, và quyền kết nối API đến GitHub để thực hiện đồng bộ két sắt.",
 
   // URI Match Detection
   match_mode_default: "Mặc định ({mode})",
@@ -955,16 +950,11 @@ export default {
   match_mode_exact: "Khớp hoàn toàn (Exact)",
   match_mode_regex: "Biểu thức chính quy (Regex)",
   match_mode_never: "Không bao giờ gợi ý (Never)",
-  match_mode_setting_title: "Tùy chọn Khớp Tên miền Mặc định",
-  match_mode_setting_desc:
-    "Chọn chính sách mặc định để so sánh địa chỉ website với gợi ý tự động điền.",
   match_warning_modal_title: "Cảnh báo Bảo mật",
   match_warning_modal_msg:
     "'{mode}' là tùy chọn nâng cao có rủi ro cao làm lộ thông tin đăng nhập nếu cấu hình không đúng cách.",
   match_warning_inline:
     "Cảnh báo: '{mode}' là tùy chọn nâng cao có rủi ro làm lộ thông tin đăng nhập.",
-  match_warning_modal_continue: "Tiếp tục",
-  match_warning_modal_cancel: "Hủy",
   match_detection_label: "Chế độ khớp tên miền",
   match_detection_desc:
     "Chế độ khớp URI xác định cách {APP_NAME} nhận diện các gợi ý tự động điền.",
@@ -974,22 +964,17 @@ export default {
   // Tools Page
   select_search_placeholder: "Tìm kiếm...",
   select_no_results: "Không tìm thấy kết quả",
-  settings_tools_title: "Công cụ & Tiện ích",
-  settings_tools_sub: "Các công cụ giải mã, công cụ hỗ trợ két sắt",
   settings_tools_google_auth: "Công cụ Giải mã Google Authenticator",
   settings_tools_google_auth_sub: "Giải mã QR offline export, hiển thị otpauth:// và ghép vào Vault",
   google_tool_paste_label: "Dán chuỗi offline export hoặc tải file ảnh QR:",
   google_tool_btn_parse: "Giải mã & Phân tích",
   google_tool_btn_upload_qr: "Tải file ảnh QR Code",
   import_google_migration_invalid: "Mã QR hoặc dữ liệu Google Authenticator không hợp lệ",
-  google_migration_title: "Công cụ Giải Mã Google Authenticator",
   google_migration_subtitle: "Phát hiện {count} tài khoản 2FA. Vui lòng chọn thao tác lưu:",
   google_migration_raw_uri: "Raw URI",
-  google_migration_live_otp: "Mã OTP xem trước",
   google_migration_action_link: "Ghép vào tài khoản Vault sẵn có",
   google_migration_action_create: "Tạo tài khoản Vault mới",
   google_migration_action_skip: "Bỏ qua không import",
-  google_migration_select_target: "Chọn tài khoản Vault...",
   google_migration_save_batch: "Lưu hàng loạt ({count})",
   google_migration_save_success: "Đã import và cập nhật thành công {count} tài khoản 2FA",
 };

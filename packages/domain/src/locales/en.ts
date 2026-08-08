@@ -44,8 +44,6 @@ export default {
     "Vault payload size exceeds GitHub Gist limit (10MB). Please reduce items or split your vault.",
   github_error_rate_limit:
     "GitHub API rate limit exceeded. Please try again in a few minutes.",
-  github_warning_gist_size_near_limit:
-    "Warning: Vault size ({sizeMB}MB) is approaching GitHub Gist's 10MB limit.",
   sync_error_corrupted_payload:
     "Sync data is corrupted or cannot be decrypted.",
   sync_error_remote_password_changed:
@@ -64,7 +62,6 @@ export default {
   trash_deleted_date: "Deleted",
   vault_options_trash_sub: "View and restore deleted items",
 
-  sync_error_invalid_response: "Invalid response received from sync process.",
   tab_error_get_current: "Failed to query current browser tab.",
   tab_error_send_message: "Failed to send message to browser tab.",
   tab_error_capture: "Failed to capture browser tab.",
@@ -98,39 +95,23 @@ export default {
   login_title_setup: "Configure GitHub Gist Cloud Storage",
   login_method_oauth: "Login with GitHub (OAuth)",
   login_method_pat: "Use Token (PAT)",
-  login_placeholder_pat: "Enter your GitHub Personal Access Token...",
   login_pat_help:
     "Token needs <strong>gist</strong> scope. The extension will create a secret Gist to store your encrypted vault.",
   login_oauth_help:
     "Connect securely to your GitHub account to sync your vault automatically via Cloudflare Worker Proxy.",
-  login_oauth_hide: "Hide OAuth Configuration",
-  login_oauth_show: "Show OAuth Configuration",
-  login_oauth_alert_save: "OAuth configuration saved!",
-  login_loading_auth: "Authenticating...",
-  login_loading_connect: "Connecting...",
-  login_loading_unlock: "Unlocking...",
   login_btn_save_token: "Connect GitHub (PAT)",
   login_btn_oauth: "Sign in with GitHub",
-  login_oauth_config: "OAuth Configuration",
-  login_oauth_client_id: "GitHub App Client ID",
-  login_oauth_worker_url: "Cloudflare Worker Proxy URL",
-  login_btn_save_config: "Save Configuration",
   login_master_password: "Master Password",
   pwd_strength_very_weak: "Very Weak",
   pwd_strength_weak: "Weak",
   pwd_strength_fair: "Fair",
-  pwd_strength_good: "Good",
   pwd_strength_strong: "Strong",
   pwd_strength_very_strong: "Very Strong",
   login_placeholder_mp: "Enter your Master Password...",
   login_btn_unlock: "Unlock",
   login_forgot_password: "Forgot Master Password?",
-  login_reset_token: "Change GitHub Account",
   login_error_empty_pat: "Please enter your Personal Access Token",
   login_error_invalid_token: "Invalid token or connection error",
-  login_error_any: "An error occurred",
-  login_error_oauth_missing_config:
-    "Please open 'OAuth Configuration' to enter Client ID and Worker URL before logging in.",
   login_error_oauth_no_token: "Did not receive access token from GitHub",
   login_error_oauth_fail: "OAuth Login failed",
   login_error_empty_mp: "Please enter Master Password",
@@ -142,7 +123,6 @@ export default {
     "Too many failed Master Password attempts. Please try again later.",
   login_error_mp_tampered:
     "Master Password security data has been tampered with. System logged out for protection.",
-  login_error_unlock_fail: "Unlock failed",
   login_forgot_password_title: "Forgot Master Password",
   login_forgot_password_msg:
     "{APP_NAME} uses end-to-end encryption (Zero-Knowledge). The Master Password is never sent or stored on any server, hence there is <strong class='text-error'>NO WAY</strong> to recover or reset it.<br/><br/>To start over, the system will <strong>LOG OUT</strong> and <strong>CLEAR LOCAL DATA</strong>.<br/><br/>If you want to continue using this GitHub account, the system will open the GitHub Gist page containing the old vault so you can <strong>BACK UP</strong> the data or <strong class='text-error'>MANUALLY DELETE</strong> this Gist on GitHub before logging in again.<br/><br/>Are you sure you want to log out and open the old Gist page?",
@@ -159,8 +139,6 @@ export default {
   vault_filter_title: "Filter",
   vault_filter_type: "Type",
   vault_filter_all_types: "All types",
-  vault_filter_folder: "Folder",
-  vault_filter_all_folders: "All folders",
   items_with_no_folder: "Items with no folder",
   vault_item_folder: "Folder",
   folder_new_title: "New folder",
@@ -179,12 +157,9 @@ export default {
     "Are you sure you want to delete this folder? Items in this folder will not be deleted.",
   folder_management_title: "Folders",
   vault_options_folders_sub: "Create, edit, and organize folders",
-  vault_empty_title: "No accounts yet",
   vault_empty_subtitle:
     "Your vault is empty. Click the + button below to add a new account.",
   vault_btn_sync: "Sync",
-  vault_btn_settings: "Settings",
-  vault_btn_generator: "Generator",
   vault_btn_add: "Add Item",
   vault_popout_title: "Open in separate window",
   vault_lock_title: "Lock vault",
@@ -194,9 +169,6 @@ export default {
   vault_section_identities: "Identities",
   vault_search_results: "Search Results",
   vault_no_search_matches: "No matching accounts found",
-  vault_menu_all: "All Items",
-  vault_menu_logins: "Logins",
-  vault_menu_notes: "Secure Notes",
   vault_menu_favorites: "Favorites",
   vault_item_login: "Login",
   vault_item_note: "Secure Note",
@@ -246,7 +218,6 @@ export default {
   edit_label_totp: "Authenticator Key (TOTP)",
   edit_placeholder_totp: "Paste secret key (Base32) or otpauth:// URI...",
   edit_label_website: "Website URI",
-  edit_placeholder_website: "https://example.com",
   edit_label_notes: "Notes",
   edit_placeholder_notes: "Enter notes here...",
   edit_label_reprompt: "Require master password re-prompt for this item",
@@ -268,23 +239,10 @@ export default {
   edit_btn_add_field: "Add field",
   edit_btn_add_website: "Add website",
   edit_btn_delete_website: "Delete website",
-  edit_label_passkeys: "Passkeys",
-  edit_passkey_creation_date: "Created: {date}",
-  edit_passkey_counter: "Counter: {count}",
-  edit_passkey_rp_id: "Domain (RP ID): {rpId}",
-  edit_passkey_username: "Username: {name}",
-  edit_passkey_user_handle: "User Handle: {handle}",
-  edit_passkey_discoverable: "Discoverable: {val}",
-  edit_passkey_yes: "Yes",
-  edit_passkey_no: "No",
   edit_error_empty_name: "Please enter a name",
-  edit_error_save_failed: "Failed to save item",
   edit_confirm_delete_title: "Delete Item",
   edit_confirm_delete_msg:
     "Are you sure you want to delete '{name}'? This action cannot be undone.",
-  edit_error_delete_failed: "Failed to delete item",
-  edit_label_type: "Type",
-  edit_type_login: "Login",
   edit_type_note: "Secure Note",
   edit_placeholder_name_note: "e.g., Recovery codes, config...",
   edit_placeholder_name_login: "e.g., Google, Facebook...",
@@ -329,7 +287,6 @@ export default {
   detail_copy_card_code: "Copy security code",
   detail_copied: "Copied!",
   detail_passkey_webauthn: "Passkey",
-  detail_fields: "Custom Fields",
   detail_creation_date: "Created",
   detail_revision_date: "Modified",
   detail_card_expired_title: "Expired card",
@@ -388,12 +345,8 @@ export default {
   settings_label_language: "Language / Ngôn ngữ",
   settings_lang_vi: "Tiếng Việt",
   settings_lang_en: "English",
-  settings_github_account: "GitHub Account",
-  settings_connected_as: "Connected as {user}",
-  settings_gist_id: "Gist ID",
   settings_last_sync: "Last Synced",
   settings_sync_never: "Never",
-  settings_label_oauth: "Auth Mechanism",
   settings_version: "Version: {ver}",
   settings_theme_label: "Theme",
   settings_theme_sub: "Current: {theme}",
@@ -436,7 +389,6 @@ export default {
   unlock_with_pin: "Unlock with PIN",
   require_master_password_on_restart:
     "Require master password on browser restart",
-  session_timeout_header: "Session timeout",
   timeout_label: "Timeout",
   timeout_action_label: "Timeout action",
   timeout_action_lock: "Lock",
@@ -448,13 +400,10 @@ export default {
   timeout_30min: "30 minutes",
   timeout_1hr: "1 hour",
   timeout_4hr: "4 hours",
-  timeout_never: "Never",
   set_pin_title: "Set PIN",
   set_pin_desc:
     "You can use this PIN to unlock {APP_NAME}. Your PIN will be reset if you ever fully log out of the application.",
   set_pin_label: "PIN",
-  set_pin_confirm_label: "Confirm PIN",
-  set_pin_error_mismatch: "PIN confirmation does not match.",
   set_pin_error_length: "PIN must be at least 4 characters.",
   login_unlock_with_pin: "Unlock with PIN",
   login_unlock_with_mp: "Unlock with Master Password",
@@ -471,44 +420,31 @@ export default {
   vault_options_group_management: "Storage & Management",
   vault_options_group_danger: "Danger Zone",
   settings_change_mp_sub: "Re-encrypt vault with a new master password",
-  settings_lock_sub: "Re-open with Master Password",
   settings_clear_vault_sub: "Permanently delete all vault data",
-  settings_logout_sub: "Disconnect and remove Gist configuration",
   settings_open_gist_title: "Open storage Gist on GitHub",
   settings_change_mp_current: "Current Master Password",
   settings_change_mp_new: "New Master Password",
   settings_change_mp_confirm: "Confirm New Master Password",
-  settings_change_mp_btn: "Change Password",
   settings_error_mp_wrong_current: "Current Master Password is incorrect",
   settings_error_mp_empty_new: "New Master Password cannot be empty",
   settings_error_mp_mismatch: "Password confirmation does not match",
   settings_error_mp_fail: "Failed to change password",
   settings_error_fields_required: "Please fill in all fields",
   settings_mp_success: "Master Password changed successfully!",
-  settings_export_title: "Export Vault Data",
-  settings_export_placeholder: "Enter Master Password to export...",
-  settings_export_btn: "Decrypt & Download",
   settings_export_success: "Backup file downloaded!",
-  settings_clear_vault_title: "Clear Vault",
   settings_clear_vault_msg:
     "Are you sure you want to delete ALL items in the vault? This action cannot be undone and all data on GitHub Gist will be deleted.",
   settings_clear_vault_confirm_title: "Confirm Permanent Deletion",
   settings_clear_vault_confirm_msg:
     "FINAL CONFIRMATION: Permanently delete all account data? Please ensure you have exported your backup data before proceeding.",
-  settings_clear_vault_placeholder: "Enter Master Password to confirm...",
-  settings_clear_vault_btn: "PERMANENTLY DELETE",
   settings_clear_vault_success: "All vault accounts deleted successfully!",
-  settings_clear_vault_fail: "Failed to clear vault",
   settings_logout_title: "Logout",
   settings_logout_msg:
     "Are you sure you want to disconnect your GitHub account? This will remove all local configurations.",
-  settings_logout_success: "Logged out successfully",
   vault_sync_success: "Vault synced successfully!",
   vault_import_success:
     "Successfully imported {count} accounts! The vault has been synced to Gist.",
   vault_import_error_invalid: "Invalid file format or validation failed",
-  vault_import_error_fail: "Failed to import JSON file",
-  vault_export_error_fail: "Failed to export JSON file",
   vault_options_sync_manual: "Manual Sync",
   vault_options_import: "Import Data",
   vault_options_import_sub: "Import passwords from browsers or backups",
@@ -538,27 +474,18 @@ export default {
   export_option_json_sub: "Export unencrypted backup JSON file",
 
   // Password Generator View
-  gen_title: "Password Generator",
   gen_label_length: "Length",
-  gen_opt_uppercase: "Uppercase (A-Z)",
-  gen_opt_lowercase: "Lowercase (a-z)",
-  gen_opt_numbers: "Numbers (0-9)",
-  gen_opt_symbols: "Special Characters (!@#...)",
   gen_opt_avoid_ambiguous: "Avoid ambiguous characters (O, 0, l, 1)",
   gen_error_charset_empty: "Choose at least one character type!",
   gen_error_invalid_words_count: "Number of words must be between 3 and 20!",
   gen_btn_generate: "Generate Password",
-  gen_btn_copy: "Copy",
   gen_tab_password: "Password",
   gen_tab_passphrase: "Passphrase",
-  gen_tab_username: "Username",
   gen_options_title: "Options",
   gen_include_title: "Include",
   gen_min_numbers: "Minimum numbers",
   gen_min_specials: "Minimum special",
   gen_error_min_exceeds_length: "Min options exceed length!",
-  gen_tab_passphrase_placeholder: "Passphrase generator is coming soon...",
-  gen_tab_username_placeholder: "Username generator is coming soon...",
   gen_label_num_words: "Number of words",
   gen_label_word_separator: "Word separator",
   gen_opt_capitalize: "Capitalize",
@@ -568,25 +495,15 @@ export default {
   gen_btn_password_history: "Password History",
   history_title: "Password History",
   history_empty: "No copied password history yet.",
-  history_domain: "Domain",
-  history_copied_at: "Copied time",
   history_clear_btn: "Clear History",
   history_confirm_clear_msg:
     "Are you sure you want to clear all password history?",
   history_copied_toast: "Password copied!",
 
   // FIDO2 Prompt View
-  fido2_title: "Passkey Authentication",
-  fido2_rp: "Website: {rp}",
-  fido2_username: "Account: {user}",
-  fido2_btn_approve: "Approve",
-  fido2_btn_deny: "Deny",
-  fido2_unlock_required: "Unlock vault to use Passkeys",
   fido2_error_no_request: "No pending authentication requests found.",
   fido2_error_load_failed: "Failed to load authentication request",
-  fido2_error_save_failed: "Failed to save Passkey to vault",
   fido2_error_create_failed: "Failed to create Passkey",
-  fido2_error_counter_update_failed: "Failed to update Passkey counter",
   fido2_error_assert_failed: "Passkey authentication failed",
   fido2_register_title: "Register New Passkey",
   fido2_register_subtitle_new:
@@ -675,11 +592,9 @@ export default {
   report_score_label: "Score {score}/5",
   report_weak_btn_upgrade: "Upgrade Password",
   report_reused_btn_change: "Change Password",
-  report_inactive_2fa_badge: "No TOTP or Passkey",
   report_inactive_2fa_btn_setup: "Setup 2FA",
   report_databreach_btn_checking: "Checking...",
   report_scanning_progress: "Scanning ({progress}%)...",
-  report_exposed_found_count: "Found {count} exposed accounts",
   report_exposed_times: "Exposed {count} times",
   report_export_btn: "Export HTML",
   report_export_title: "Exposed Passwords Security Report - Gistwarden",
@@ -701,203 +616,304 @@ export default {
   settings_homepage: "Project Homepage",
   settings_homepage_sub:
     "Visit GitHub repository for bug reports and suggestions",
-  guide_homepage_btn: "Homepage",
-  guide_title: "{APP_NAME} User Guide",
-  guide_welcome: "Welcome to {APP_NAME}!",
-  guide_subtitle:
-    "Personal password vault, Zero-Knowledge encrypted, synced to GitHub Gist.",
-  guide_close_page: "Close Guide",
-  guide_quick_action_desc:
-    "Open GitHub Gist to manage your password database files.",
-  guide_open_github_btn: "Open GitHub Gist",
-  guide_tab_general: "General",
-  guide_tab_gist: "GitHub Gist Sync",
-  guide_tab_security: "Security Architecture",
-  guide_tab_passkey: "Using Passkeys (FIDO2)",
-  guide_tab_totp: "TOTP (2FA) Codes",
-  guide_tab_import_export: "Import / Export Data",
-  guide_tab_faq: "FAQ",
-  guide_tab_privacy: "Privacy Policy",
+  guide_search_placeholder: "Search guide topics...",
+  guide_search_no_results: "No matching guide topics found",
+
+  // New Guide Tree Navigation
+  guide_nav_getting_started: "Getting Started & Setup",
+  guide_nav_vault_management: "Vault Management",
+  guide_nav_passkey_auth: "Passkeys & 2FA Auth",
+  guide_nav_autofill_tools: "Autofill & Tools",
+  guide_nav_sync_data: "Cloud Sync & Data",
+  guide_nav_reports_settings: "Reports & Settings",
+
+  guide_item_overview: "Overview & E2EE Encryption",
+  guide_item_master_password: "Master Password & PBKDF2",
+  guide_item_github_gist: "GitHub Token & Gist Setup",
+  guide_item_auto_lock: "Vault Lock & Auto-Lock Timer",
+
+  guide_item_logins: "Login Accounts & Domain Matching",
+  guide_item_secure_notes: "Secure Notes",
+  guide_item_cards_identities: "Payment Cards & Identities",
+  guide_item_ssh_keys: "SSH Keys (OpenSSH)",
+  guide_item_custom_fields: "Custom Fields",
+  guide_item_folders_trash: "Folders & Trash Management",
+
+  guide_item_passkey_concept: "What is a Passkey (FIDO2)?",
+  guide_item_passkey_register: "Register New Passkey",
+  guide_item_passkey_login: "Login With Passkey",
+  guide_item_totp_authenticator: "2FA Codes (TOTP RFC 6238)",
+  guide_item_google_migration: "Import from Google Authenticator",
+
+  guide_item_autofill_usage: "Autofill & Auto-Submit",
+  guide_item_password_generator: "Password & Passphrase Generator",
+  guide_item_password_history: "Generated Password History",
+
+  guide_item_gist_sync: "Two-Way Cloud Sync (LWW)",
+  guide_item_import_csv: "Import Data from CSV File",
+  guide_item_import_json: "Import Vault JSON Backup File",
+  guide_item_export_csv: "Export Data to CSV File",
+  guide_item_export_json: "Export Vault JSON Backup File",
+
+  guide_item_security_reports: "Security & HIBP Breach Reports",
+  guide_item_appearance_lang: "Appearance & Language",
+  guide_item_faq_troubleshooting: "FAQ & Troubleshooting",
+
+  guide_app_lead: "Customize Light/Dark Mode themes and application languages.",
+  guide_app_theme_title: "Appearance Theme",
+  guide_app_theme_desc: "Seamlessly switch between Dark and Light themes with balanced Bitwarden color palettes.",
+  guide_app_lang_title: "Multilingual Support (English / Vietnamese)",
+  guide_app_lang_desc: "100% supported interface and user guides in both English and Vietnamese.",
+
+  guide_report_lead: "Check overall vault health and scan for breached passwords (HIBP).",
+  guide_report_step1_title: "Exposed Passwords Report",
+  guide_report_step1_desc: "Scan all vault passwords using HIBP k-Anonymity (first 5 SHA-1 hash chars). Your raw password never leaves your browser, yet accurately identifies if any password appeared in major data breaches.",
+  guide_report_step2_title: "Reused Passwords Report",
+  guide_report_step2_desc: "Detect accounts using identical passwords across multiple websites. Reusing passwords creates chain-reaction risks when a single service gets breached.",
+  guide_report_step3_title: "Weak Passwords Report",
+  guide_report_step3_desc: "Evaluate password strength based on length, character diversity (uppercase, lowercase, numbers, symbols), and detect easily guessable patterns.",
+  guide_report_step4_title: "Unsecured HTTP Websites Report",
+  guide_report_step4_desc: "Alert on website URIs stored in your vault that still use unencrypted http:// protocols instead of secure https://.",
+  guide_report_step5_title: "Inactive 2FA Accounts Report",
+  guide_report_step5_desc: "List important accounts (financial, email, social media) that lack two-factor TOTP configuration so you can promptly add 2FA protection.",
+
+  // Vault Management Guides
+  guide_vm_logins_lead: "Manage web login accounts, URIs, smart domain matching options, and item security.",
+  guide_vm_logins_card1_title: "Domain Match Modes",
+  guide_vm_logins_card1_item1: "Base Domain (Default): Matches all subdomains (e.g. app.github.com matches github.com).",
+  guide_vm_logins_card1_item2: "Host / Exact Host: Matches the exact hostname only (e.g. login.github.com).",
+  guide_vm_logins_card1_item3: "Exact / Full URL: Matches the full URL path including port and path.",
+  guide_vm_logins_card1_item4: "RegEx Pattern: Matches via flexible regular expressions.",
+  guide_vm_logins_card1_item5: "Never: Never automatically offers or suggests autofill for this item on any website.",
+  guide_vm_logins_card2_title: "Multiple URIs Support",
+  guide_vm_logins_card2_desc: "Each login item allows storing multiple URIs with distinct match options.",
+  guide_vm_logins_card3_title: "Master Password Re-prompt",
+  guide_vm_logins_card3_desc: "Enable this protection for sensitive financial or high-risk accounts. Every time you view, edit, or copy the password, {APP_NAME} will require re-entering your Master Password to verify identity.",
+  guide_vm_logins_card4_title: "Item Password Revision History",
+  guide_vm_logins_card4_desc: "Whenever you update an item's password, {APP_NAME} automatically saves previous passwords into the item's revision history. Open item details ➔ click 'Password History' to view or restore previous passwords anytime.",
+
+  guide_vm_notes_lead: "Securely store private text, account recovery codes, software keys, or sensitive notes.",
+  guide_vm_notes_card_title: "Secure Note Privacy",
+  guide_vm_notes_card_desc: "All text in Secure Notes is encrypted directly on your device before syncing. You can also turn on Master Password Reprompt when opening.",
+
+  guide_vm_cards_lead: "Store credit card details and personal identity information for 1-click form autofill and payments.",
+  guide_vm_cards_card1_title: "Credit Cards",
+  guide_vm_cards_card1_desc: "Store card number, CVV code, expiration date, and cardholder name under full encryption.",
+  guide_vm_cards_card2_title: "Identities",
+  guide_vm_cards_card2_desc: "Store full name, phone number, address, and ID/passport details for instant checkout autofill.",
+
+  guide_vm_ssh_lead: "Manage SSH Public/Private Key pairs used for secure remote server access.",
+  guide_vm_ssh_card_title: "Professional SSH Key Management",
+  guide_vm_ssh_card_desc: "Store OpenSSH/PEM private keys along with Key Fingerprint and Passphrases.",
+
+  guide_vm_fields_lead: "Extend vault item fields with flexible custom data types.",
+  guide_vm_fields_card_title: "Custom Field Types",
+  guide_vm_fields_item1: "Text: Standard text field.",
+  guide_vm_fields_item2: "Hidden: Obfuscated text (PIN codes, security answers).",
+  guide_vm_fields_item3: "Boolean: Toggle switch (True/False).",
+  guide_vm_fields_item4: "Linked: Automatically references values from another field.",
+
+  guide_vm_folders_lead: "Organize item data with Folders and manage deleted items in Trash.",
+  guide_vm_folders_card1_title: "Folders",
+  guide_vm_folders_card1_desc: "Create custom folders to organize work, personal, and financial credentials.",
+  guide_vm_folders_card2_title: "Trash",
+  guide_vm_folders_card2_desc: "Deleted items move to Trash. Restore or permanently delete items anytime.",
+
+  // Getting Started Guides
+  guide_start_ov_lead: "{APP_NAME} is a Zero-Knowledge encrypted personal password vault solution, automatically syncing to your private personal cloud via GitHub Gist.",
+  guide_start_ov_card1_title: "Zero-Knowledge Encryption Security",
+  guide_start_ov_card1_desc: "All vault data is encrypted directly on your device before transmission or storage. Absolutely no one (including developers or GitHub) can read your data without your Master Password.",
+  guide_start_ov_card2_title: "Private Personal Cloud Sync",
+  guide_start_ov_card2_desc: "Instead of sending data to third-party servers, {APP_NAME} syncs data directly into a Private Gist on your personal GitHub account.",
+  guide_start_ov_card3_title: "Passwordless Login (Passkeys)",
+  guide_start_ov_card3_desc: "Support storing and logging in with Passkeys (FIDO2 / WebAuthn) using biometrics or device PIN, eliminating password leaks.",
+
+  guide_start_mp_lead: "The Master Password is the sole key used to decrypt and protect your entire vault data.",
+  guide_start_mp_step1_title: "1. Master Password Role",
+  guide_start_mp_step1_desc: "The Master Password unlocks your vault and acts as the root key encrypting all items. Make it strong and memorable.",
+  guide_start_mp_step2_title: "2. No Master Password Storage Principle",
+  guide_start_mp_step2_desc: "{APP_NAME} adheres to Zero-Knowledge: the app never stores or sends your Master Password anywhere. If forgotten, data cannot be recovered.",
+  guide_start_mp_step3_title: "3. How to Change Master Password",
+  guide_start_mp_step3_desc: "Change your Master Password anytime in Settings → Account Security → Change Master Password. Re-encrypts your entire vault with the new key.",
+
+  guide_start_lock_lead: "Automatically lock vault data when inactive or on browser restart.",
+  guide_start_lock_step1_title: "1. Open Account Security Settings",
+  guide_start_lock_step1_desc: "Open {APP_NAME} → navigate to Settings → Account Security.",
+  guide_start_lock_step2_title: "2. Customize Vault Timeout",
+  guide_start_lock_step2_desc: "Choose timeout duration: On Restart, 1 minute, 5 minutes, 15 minutes, 30 minutes, 1 hour, or 4 hours.",
+  guide_start_lock_step3_title: "3. Choose Timeout Action",
+  guide_start_lock_step3_lock: "Lock: Clears decryption keys from RAM. Requires Master Password or PIN to unlock.",
+  guide_start_lock_step3_logout: "Log out: Clears session state and requires logging in again.",
+  guide_start_lock_step4_title: "4. PIN Unlock & Master Password Requirements",
+  guide_start_lock_step4_desc: "Enable Unlock with PIN for smooth access. Check Require Master Password on Restart for maximum security.",
+
+  guide_start_pin_title: "Configure & Use PIN Quick Unlock",
+  guide_start_pin_lead: "PIN code allows unlocking your vault quickly with a short numeric code without re-typing a long Master Password every time.",
+  guide_start_pin_step1_title: "1. Turn on Unlock with PIN option",
+  guide_start_pin_step1_desc: "Open {APP_NAME} ➔ go to Settings ➔ Account Security. Check the 'Unlock with PIN' option.",
+  guide_start_pin_step2_title: "2. Set up your new PIN code (Minimum 4 digits)",
+  guide_start_pin_step2_desc: "A PIN setup dialog will appear. Enter your preferred PIN (at least 4 digits) and click Confirm to save.",
+  guide_start_pin_step3_title: "3. Quick unlock with PIN when vault locks",
+  guide_start_pin_step3_desc: "When the vault is locked due to timeout, simply type your PIN code and click Unlock. Encryption keys will be restored smoothly without typing your full Master Password.",
+  guide_start_pin_note_title: "Important Security Note on PIN:",
+  guide_start_pin_note_desc: "PIN code is stored securely in local device storage. If you enter incorrect PIN 3 times, PIN mode is automatically disabled and you will be logged out to prevent brute-force attempts. Logging out of GitHub also removes PIN data automatically.",
+
+  // Passkey & TOTP Authenticator Guides
+  guide_passkey_concept_lead: "Passkey (FIDO2 / WebAuthn standard) is the most secure passwordless login solution today, providing absolute Anti-Phishing protection.",
+  guide_passkey_concept_card1_title: "Absolute Anti-Phishing",
+  guide_passkey_concept_card1_desc: "Passkeys are bound to the exact domain name of a website. Even if you visit a phishing site, Passkey will never authenticate.",
+  guide_passkey_concept_card2_title: "Asymmetric Key Pair Security",
+  guide_passkey_concept_card2_desc: "Each Passkey consists of a public key sent to the site and a private key stored safely in your encrypted {APP_NAME} vault.",
+
+  guide_passkey_gmig_lead: "Migrate 2FA codes from Google Authenticator to {APP_NAME}.",
+  guide_passkey_gmig_step1_title: "1. Open Google Authenticator App",
+  guide_passkey_gmig_step1_desc: "Open Google Authenticator on your phone.",
+  guide_passkey_gmig_step2_title: "2. Open Transfer Accounts Menu",
+  guide_passkey_gmig_step2_desc: "Tap the top menu icon and select Transfer accounts.",
+  guide_passkey_gmig_step3_title: "3. Select Export Accounts",
+  guide_passkey_gmig_step3_desc: "Select Export accounts.",
+  guide_passkey_gmig_step4_title: "4. Select Accounts to Export",
+  guide_passkey_gmig_step4_desc: "Check the 2FA accounts you wish to transfer to {APP_NAME}.",
+  guide_passkey_gmig_step5_title: "5. Scan Migration QR Code into {APP_NAME}",
+  guide_passkey_gmig_step5_desc: "The export QR code displays. Open {APP_NAME} → Settings → Vault Options → Google Authenticator Migration to scan or upload the QR image.",
+
+  // Autofill & Password Generator Guides
+  guide_auto_lead: "Automatically detect forms and autofill Username / Password on websites.",
+  guide_auto_card1_title: "Gistwarden Icon in Input Fields",
+  guide_auto_card1_desc: "Clicking any login field on a website displays the {APP_NAME} icon, allowing 1-click account selection and instant autofill.",
+  guide_auto_card2_title: "Auto-Submit Forms",
+  guide_auto_card2_desc: "Enable Auto-Submit after autofill in Settings → Autofill Options for seamless 1-click logins.",
+
+  guide_pwdgen_lead: "Generate high-security random passwords or passphrases resistant to brute-force attacks.",
+  guide_pwdgen_step1_title: "1. Password Generator Location",
+  guide_pwdgen_step1_desc: "Open {APP_NAME} → navigate to Tools tab → Password Generator (or click the Generator icon when editing an item).",
+  guide_pwdgen_step2_title: "2. Random Password Mode",
+  guide_pwdgen_step2_length: "Custom Length: Adjust password length from 5 to 128 characters (16+ characters recommended).",
+  guide_pwdgen_step2_charset: "Character Sets: Toggle Uppercase (A-Z), Lowercase (a-z), Numbers (0-9), and Special Symbols (!@#$%^...).",
+  guide_pwdgen_step2_ambiguous: "Avoid Ambiguous Characters: Toggle to exclude confusing characters like I, l, 1, O, 0.",
+  guide_pwdgen_step3_title: "3. Passphrase Mode",
+  guide_pwdgen_step3_desc: "Generate passphrases combining multiple words into memorable yet highly secure passwords. Choose word counts (3-20), separator character (-), capitalize words, and insert numbers.",
+  guide_pwdgen_step4_title: "4. Password Strength Meter",
+  guide_pwdgen_step4_desc: "The strength indicator visually rates security from Weak, Good, Strong, to Fantastic.",
+
+  guide_hist_lead: "History of recently generated passwords.",
+  guide_hist_card_title: "View Generated Password History",
+  guide_hist_card_desc: "All passwords generated using the Generator are stored in temporary history so you can retrieve them if forgotten before saving.",
+
+  // Sync & Import/Export Data Guides
+  guide_sync_lead: "Private two-way cloud data synchronization between devices and your personal GitHub Gist.",
+  guide_sync_card1_title: "Automatic Data Merge",
+  guide_sync_card1_desc: "When syncing across multiple devices, {APP_NAME} automatically compares edit timestamps to merge the latest account data without data loss.",
+  guide_sync_card2_title: "Private Personal Cloud Storage",
+  guide_sync_card2_desc: "Vault data is stored in your personal GitHub Gist under full encryption. Anyone viewing it on GitHub will only see meaningless cipher text.",
+
+  guide_imp_csv_lead: "Import login passwords from Browser and Bitwarden CSV files into {APP_NAME}.",
+  guide_imp_csv_step1_title: "1. Import CSV file from Web Browsers (Chrome, Firefox, Edge, Brave, Safari)",
+  guide_imp_csv_step1_desc: "Export a CSV file from your web browser password settings. {APP_NAME} automatically parses and imports all login credentials into your vault.",
+  guide_imp_csv_step2_title: "2. Import CSV file from Bitwarden",
+  guide_imp_csv_step2_desc: "Export a CSV file from Bitwarden to migrate to {APP_NAME}. The app imports passwords, notes, and automatically recreates matching Folder structures.",
+  guide_imp_csv_step3_title: "3. Steps in the Application",
+  guide_imp_csv_step3_desc: "Open {APP_NAME} → navigate to Settings → Vault Options → Import Data. Select your file format (Browser CSV or Bitwarden CSV), pick your file, and click Confirm Import.",
+
+  guide_imp_json_lead: "Restore 100% complete vault structure from a JSON backup file.",
+  guide_imp_json_step1_title: "1. Import Feature Location",
+  guide_imp_json_step1_desc: "Open {APP_NAME} → navigate to Settings → Vault Options → Import Data.",
+  guide_imp_json_step2_title: "2. Select JSON File Format",
+  guide_imp_json_step2_desc: "In the file format selector, choose Gistwarden / Bitwarden JSON (.json).",
+  guide_imp_json_step3_title: "3. Upload JSON File & Preview Results",
+  guide_imp_json_step3_desc: "Select your JSON file from your computer. {APP_NAME} displays a Preview window showing the number of items about to be imported.",
+  guide_imp_json_step4_title: "4. Full Restoration of All 5 Data Types & Folders",
+  guide_imp_json_step4_desc: "JSON files restore 100% of all 5 data types: Logins, Secure Notes, Credit Cards, Identities, and SSH Keys alongside Folders, Custom Fields, and 2FA TOTP codes.",
+  guide_imp_json_step5_title: "5. Automatic Data & Folder Merge",
+  guide_imp_json_step5_desc: "The app automatically merges folders with duplicate names, eliminates duplicates, and retains the newest data entries.",
+
+  guide_exp_csv_lead: "Export password entries to a CSV file for viewing or application migration.",
+  guide_exp_csv_step1_title: "1. Access Export Feature",
+  guide_exp_csv_step1_desc: "Open {APP_NAME} → navigate to Settings → Vault Options → Export Data.",
+  guide_exp_csv_step2_title: "2. Enter Master Password for Security Verification",
+  guide_exp_csv_step2_desc: "For security reasons, the app prompts for your Master Password to verify access before generating the CSV file.",
+  guide_exp_csv_step3_title: "3. Choose CSV File Format",
+  guide_exp_csv_step3_browser: "Browser CSV: Basic format for direct import into Google Chrome, Firefox, Edge, Safari, Brave.",
+  guide_exp_csv_step3_bitwarden: "Bitwarden CSV: Comprehensive export including item fields and Folder structures.",
+  guide_exp_csv_step4_title: "4. Plaintext CSV Security Warning",
+  guide_exp_csv_step4_desc: "CSV files contain unencrypted passwords (including only Logins & Secure Notes, excluding Passkeys and SSH Keys). Keep the file safe or delete it after migration.",
+
+  guide_exp_json_lead: "Create a full backup of your entire password vault in JSON format.",
+  guide_exp_json_step1_title: "1. Backup 100% Vault Structure",
+  guide_exp_json_step1_desc: "JSON backup captures all 5 item types (Logins, Secure Notes, Cards, Identities, SSH Keys), Folders, Favorites, and Custom Fields.",
+  guide_exp_json_step2_title: "2. Encrypted or Unencrypted Export Options",
+  guide_exp_json_step2_desc: "Encrypted JSON is recommended so your backup remains protected by your Master Password. Others cannot read it without your Master Password.",
+  guide_exp_json_step3_title: "3. Steps to Export JSON Backup",
+  guide_exp_json_step3_desc: "Open {APP_NAME} → navigate to Settings → Vault Options → Export Data → enter Master Password → choose JSON format and click Download JSON Backup.",
+
 
   // Guide Gist Token Steps
-  guide_token_title: "How to Create a GitHub Token for Sync",
   guide_token_desc:
     "To sync your data, {APP_NAME} stores your encrypted vault in your personal GitHub Gists. You need to create a Token with the 'gist' scope.",
   guide_token_step1_title: "Step 1: Set Name and Expiration",
   guide_token_step1_desc:
     "Log in to GitHub and click the green button below to open the token creation page. Give it a descriptive note (e.g., '{APP_NAME}') and select 'No expiration' so sync doesn't break later.",
-  guide_token_step1_btn: "Open GitHub Token Creation Page",
-  guide_token_step1_img_info: "Name the Token and choose expiration time",
   guide_token_step2_title: "Step 2: Check 'gist' Scope",
   guide_token_step2_desc:
     "Find and select the 'gist' checkbox (to sync your vault). This scope only permits {APP_NAME} to access Gists, and doesn't grant access to any of your private repositories.",
-  guide_token_step2_img_info: "Ensure 'gist' scope is checked",
   guide_token_step3_title: "Step 3: Generate Token",
   guide_token_step3_desc:
     "Scroll to the bottom of the page and click the green 'Generate token' button to create your token.",
-  guide_token_step3_img_info:
-    "Click 'Generate token' at the bottom of the page",
   guide_token_step4_title: "Step 4: Copy and Paste into Settings",
   guide_token_step4_desc:
     "Copy the generated token (a string starting with ghp_). Then open {APP_NAME}, select 'Use Token (PAT)', paste it into the token field, and click Save.",
-  guide_token_step4_img_info: "Copy token and paste it into the settings page",
   guide_token_important_note: "Important Note:",
   guide_token_note_desc:
     " NEVER share this token with anyone. The extension stores the token locally on your computer and sends it directly to GitHub without any intermediary servers.",
 
   // Guide Passkey Registration Steps
-  guide_pk_reg_title: "How to Register a New Passkey",
   guide_pk_reg_desc:
     "To start using passwordless login, follow this 3-step guide to save a new Passkey into your vault.",
   guide_pk_reg_step1_title: "Step 1: Click Register on Website",
   guide_pk_reg_step1_desc:
     "When you are on a website's security settings page (e.g., Google, GitHub, webauthn.me), click the register passkey button (often 'Add a passkey' or similar).",
-  guide_pk_reg_step1_img_info: "Passkey registration request on the website",
   guide_pk_reg_step2_title: "Step 2: Choose Account to Store",
   guide_pk_reg_step2_desc:
     "{APP_NAME} will automatically intercept the request and show a popup. Select an existing matching account in your vault to link, or click 'Create new account' to save it separately.",
-  guide_pk_reg_step2_img_info: "Select account or choose to create a new one",
   guide_pk_reg_step3_title: "Step 3: Confirm Saving Passkey",
   guide_pk_reg_step3_desc:
     "After selecting your option, click 'Save Passkey' to store the encrypted private credential. The extension will automatically sync it to GitHub Gist if sync is configured.",
-  guide_pk_reg_step3_img_info: "Confirm saving passkey successfully",
 
   // Guide Passkey Login Steps
-  guide_pk_login_title: "How to Log In with a Passkey",
   guide_pk_login_desc:
     "Once a Passkey is stored, you no longer need to type passwords or 2FA codes. The login process is simple and takes just 2 steps:",
   guide_pk_login_step1_title: "Step 1: Choose Login with Passkey",
   guide_pk_login_step1_desc:
     "On the website's login page, select the option to log in using a Passkey (often represented by a key icon or Face ID symbol).",
-  guide_pk_login_step1_img_info: "Click log in with passkey on the website",
   guide_pk_login_step2_title: "Step 2: Select Account on Popup",
   guide_pk_login_step2_desc:
     "The {APP_NAME} popup will list saved Passkeys compatible with this website. Select the corresponding account and click 'Confirm Login' to gain instant access.",
-  guide_pk_login_step2_img_info:
-    "Select the corresponding Passkey account to log in",
 
   // Guide TOTP Steps
   guide_totp_step1_title: "Step 1: Scan 2FA QR Code on Website",
   guide_totp_step1_desc:
     "When a website (e.g., Google, GitHub, Facebook) displays a QR code for two-factor authentication setup, open {APP_NAME} and click the camera/QR scan icon next to the TOTP field to scan it. If you cannot scan the QR code or the website only provides a text key (Secret Key), you can copy that text key and paste it manually into the TOTP field and save.",
-  guide_totp_step1_img_info: "Click the QR code scan icon in the app",
   guide_totp_step2_title: "Step 2: Automatically Save & Display OTP Codes",
   guide_totp_step2_desc:
     "After scanning, the secret key is decoded and saved. {APP_NAME} will start generating 6-digit authentication codes that refresh every 30 seconds. Click on the code to copy it, then paste it directly into the website's verification box.",
-  guide_totp_step2_img_info:
-    "Verification code is generated automatically with a one-click copy button",
-  guide_totp_step3_title: "Step 3: Fix incorrect codes (Time Sync)",
-  guide_totp_step3_desc:
-    "If the generated 2FA codes are rejected by websites, your computer clock might be out of sync. You can easily fix this by going to Settings -> About -> Troubleshooting -> Sync Time to align your extension with the correct server time.",
-
-  // Guide Security Tab
-  guide_sec_title: "Security Architecture",
-  guide_sec_subtitle:
-    "To protect your personal information, {APP_NAME} is built with optimal security mechanisms to keep your data safe at all times.",
-  guide_sec_card1_title: "Zero-Knowledge Encryption",
-  guide_sec_card1_desc:
-    "All your passwords and notes are encrypted on your device before syncing. Your Master Password runs locally in your browser and is NEVER sent anywhere. No one (neither us nor GitHub) can read your passwords.",
-  guide_sec_card2_title: "Extremely Powerful Password Protection",
-  guide_sec_card2_desc:
-    "{APP_NAME} uses the most modern and secure encryption technologies available today to protect your vault, effectively preventing any attempts to brute-force or guess your Master Password, even using supercomputers.",
-  guide_sec_card3_title: "100% Secure Cloud Sync",
-  guide_sec_card3_desc:
-    "Your vault data stored on your personal GitHub Gist is completely encrypted into meaningless characters. This data can only be decrypted and read when you enter the correct Master Password on the app.",
-
-  // Guide General Tab
-  guide_gen_title: "3 Quick Start Steps",
-  guide_gen_step1_title: "Set Master Password",
-  guide_gen_step1_desc:
-    "Create a highly secure Master Password to encrypt your entire vault locally. Do not forget this password, as it cannot be recovered.",
-  guide_gen_step2_title: "Connect GitHub Sync",
-  guide_gen_step2_desc:
-    "Log in quickly via OAuth or paste a Personal Access Token (PAT) with 'gist' scope to let {APP_NAME} sync your encrypted vault automatically.",
-  guide_gen_step3_title: "Start Using Safely",
-  guide_gen_step3_desc:
-    "Start storing accounts, secure notes, auto-filling logins, and simulating/storing Passkeys (FIDO2) securely right inside your browser.",
-
-  // Guide Import / Export Tab
-  guide_ie_title: "Import / Export Data",
-  guide_ie_subtitle:
-    "{APP_NAME} supports Google Authenticator migration decoding and is fully compatible with Bitwarden JSON exports.",
-  guide_ie_subtab_google: "🔑 Google Authenticator",
-  guide_ie_subtab_bitwarden: "📥 Import Bitwarden",
-  guide_ie_subtab_export: "📤 Export Data",
-  guide_ie_import_title: "Importing from Bitwarden",
-  guide_ie_import_step1_title: "Step 1: Export JSON from Bitwarden",
-  guide_ie_import_step1_desc:
-    "Open Bitwarden -> Go to Settings -> Export Vault -> Choose '.json (unencrypted)' format and download it to your computer.",
-  guide_ie_import_step2_title: "Step 2: Load into {APP_NAME}",
-  guide_ie_import_step2_desc:
-    "Open {APP_NAME} -> Settings -> Vault Options -> Import Data -> Select the JSON file you downloaded in Step 1.",
-  guide_ie_import_step3_title: "Step 3: Encrypt and Sync",
-  guide_ie_import_step3_desc:
-    "The system will encrypt all imported accounts using your Master Password and push them directly to GitHub Gist. You should delete the unencrypted Bitwarden JSON file from your disk immediately for security.",
-  guide_ie_export_title: "Exporting Local Backups",
-  guide_ie_export_desc:
-    "To have an offline backup copy in case you lose access to your GitHub account:",
-  guide_ie_export_step1:
-    "Go to {APP_NAME} Settings -> Vault Options -> Choose 'Export Data'.",
-  guide_ie_export_step2:
-    "Enter your Master Password to decrypt the local database.",
-  guide_ie_export_step3:
-    "Click 'Decrypt & Download' to save the unencrypted `accounts.json` file. Protect this file carefully as it contains all passwords in clear text!",
-  guide_ie_google_title: "Importing TOTP 2FA from Google Authenticator",
-  guide_ie_google_desc:
-    "Easily decode binary Protobuf migration QR codes or URIs exported from Google Authenticator and batch link them to your vault accounts.",
-  guide_ie_google_step1_title: "Step 1: Open App & Tap Menu Button",
-  guide_ie_google_step1_desc:
-    "Open Google Authenticator on your phone and tap the Menu icon ≡ at the top-left corner of the screen.",
-  guide_ie_google_step2_title: "Step 2: Select 'Transfer codes'",
-  guide_ie_google_step2_desc:
-    "From the dropdown menu, select 'Transfer codes' ➔ choose 'Export codes'.",
-  guide_ie_google_step3_title: "Step 3: Select TOTP Accounts to Export",
-  guide_ie_google_step3_desc:
-    "Authenticate with your device PIN or fingerprint, select the 2FA accounts you want to transfer, and tap 'Next'.",
-  guide_ie_google_step4_title: "Step 4: Use Export QR Code",
-  guide_ie_google_step4_desc:
-    "The app will generate an export QR code containing your accounts. Take a screenshot of this QR code.",
-  guide_ie_google_step5_title: "Step 5: Import into {APP_NAME} & Batch Sync",
-  guide_ie_google_step5_desc:
-    "In {APP_NAME}, go to Settings ➔ Vault Options ➔ Google Authenticator Migration tool. Upload the QR screenshot (or paste the `otpauth-migration://` URI), match accounts, and click 'Save Selected Accounts'.",
-
-
 
   // Guide FAQ Tab
-  guide_faq_title: "Frequently Asked Questions",
   guide_faq_subtitle:
     "Find answers to common questions about {APP_NAME}'s sync, security, and passwords.",
-  guide_faq_q1_title: "❓ Is my Master Password safe?",
+  guide_faq_q1_title: "Is my Master Password safe?",
   guide_faq_q1_desc:
     "Extremely safe. {APP_NAME} utilizes Zero-Knowledge encryption. Your Master Password is only used to derive encryption keys locally in your browser and is never stored or transmitted over the internet.",
-  guide_faq_q2_title: "❓ What if I forget my Master Password?",
+  guide_faq_q2_title: "What if I forget my Master Password?",
   guide_faq_q2_desc:
     "There is no way to recover your Master Password. If forgotten, you will have to reset the extension and start over. Please memorize or write down your Master Password and store it in a safe place.",
-  guide_faq_q3_title: "❓ Can I sync my passwords across multiple computers?",
+  guide_faq_q3_title: "Can I sync my passwords across multiple computers?",
   guide_faq_q3_desc:
     "Yes. Simply install {APP_NAME} on the other computer, sign in with the same GitHub account (or paste the same token), and enter the EXACT Master Password you used on your first computer. Your vault will load and decrypt automatically.",
-  guide_faq_q4_title: "❓ Is storing my vault in a Secret Gist really private?",
+  guide_faq_q4_title: "Is storing my vault in a Secret Gist really private?",
   guide_faq_q4_desc:
     "Yes. Secret Gists are not indexed by search engines and do not appear on your public GitHub profile page. Even if someone happens to guess the direct Gist URL, they will only see meaningless encrypted cipher text. Without your Master Password, it is impossible to decrypt.",
 
-  // Guide Passkey Headers & sub-tabs
-  guide_pk_header_title: "Using Passkeys (FIDO2)",
-  guide_pk_header_desc:
-    "{APP_NAME} supports simulating and managing passwordless login keys (Passkeys / WebAuthn) to replace traditional passwords.",
-  guide_pk_subtab_reg: "📝 Registration Guide",
-  guide_pk_subtab_login: "🔑 Login Guide",
-
-  // Guide TOTP Headers
-  guide_totp_header_title: "Using Two-Factor Authentication (TOTP / 2FA)",
-  guide_totp_header_desc:
-    "{APP_NAME} supports storing two-factor authentication (TOTP) codes to secure your accounts. The codes refresh automatically every 30 seconds.",
-
   // Welcome View
-  welcome_header_title: "Welcome to {APP_NAME}",
-  welcome_desc:
-    "A secure password manager, Passkey simulator, and two-factor authentication (TOTP/2FA) vault running entirely on your personal GitHub Gist.",
-  welcome_subtitle_intro:
-    "Before you get started, let's explore some of {APP_NAME}'s features:",
   welcome_feat_security_title: "Zero-Knowledge Encryption",
   welcome_feat_security_desc:
     "Your data is encrypted locally using your Master Password before syncing to your private GitHub Gist. No one else can read your data.",
@@ -907,9 +923,6 @@ export default {
   welcome_feat_totp_title: "Dynamic TOTP Codes",
   welcome_feat_totp_desc:
     "Store and generate 2-factor authentication codes automatically refreshing every 30 seconds.",
-  welcome_feat_backup_title: "Easy Data Migration",
-  welcome_feat_backup_desc:
-    "Import or export your vault seamlessly via JSON format, fully compatible with Bitwarden exports.",
   welcome_security_notice_title: "⚠️ IMPORTANT SECURITY NOTICE",
   welcome_warning_bold:
     "Forgetting your Master Password results in PERMANENT DATA LOSS with NO recovery.",
@@ -921,23 +934,6 @@ export default {
   welcome_btn_next: "Next",
   welcome_btn_prev: "Back",
 
-  // Privacy & Policy
-  guide_privacy_title: "Privacy & Data Policy",
-  guide_privacy_subtitle:
-    "Your privacy is our highest priority. Learn how {APP_NAME} protects and handles your personal data.",
-  guide_privacy_sec1_title: "🔒 Absolute Zero-Knowledge Privacy",
-  guide_privacy_sec1_desc:
-    "All calculations, password generations, and encryption procedures run completely locally inside your browser. We never collect, store, trace, or transmit any of your passwords, notes, accounts, or personal configurations to any server under our control.",
-  guide_privacy_sec2_title: "☁️ Secure Syncing via GitHub Gist",
-  guide_privacy_sec2_desc:
-    "Your vault database is encrypted with military-grade AES-256-GCM encryption before sync. It is synchronized directly with your personal GitHub Gist account. GitHub or any third party only sees meaningless encrypted cipher text; without your Master Password, it is mathematically impossible to decrypt.",
-  guide_privacy_sec3_title: "🚫 Zero Tracking, Ads, or Analytics",
-  guide_privacy_sec3_desc:
-    "We do not integrate any user-tracking codes, advertising platforms, analytical scripts, or browser-tracking cookies. Your usage of the extension is 100% private and invisible to us.",
-  guide_privacy_sec4_title: "🔌 Extension Permissions",
-  guide_privacy_sec4_desc:
-    "The extension only requests the minimum necessary permissions to function: 'storage' to cache your local extension preferences (like language or theme), 'webNavigation' and 'activeTab' to safely autofill credentials, and connection permission to GitHub APIs for vault syncing.",
-
   // URI Match Detection
   match_mode_default: "Default ({mode})",
   match_mode_domain: "Base domain",
@@ -946,16 +942,11 @@ export default {
   match_mode_exact: "Exact",
   match_mode_regex: "Regular expression",
   match_mode_never: "Never",
-  match_mode_setting_title: "Default URI Match Detection",
-  match_mode_setting_desc:
-    "Choose the default policy for matching website URLs to autofill suggestions.",
   match_warning_modal_title: "Security Warning",
   match_warning_modal_msg:
     "'{mode}' is an advanced option with increased risk of exposing credentials if configured improperly.",
   match_warning_inline:
     "Warning: '{mode}' is an advanced option with increased risk of exposing credentials.",
-  match_warning_modal_continue: "Continue",
-  match_warning_modal_cancel: "Cancel",
   match_detection_label: "Match detection",
   match_detection_desc:
     "URI match detection is how {APP_NAME} identifies autofill suggestions.",
@@ -965,22 +956,17 @@ export default {
   // Tools Page
   select_search_placeholder: "Search...",
   select_no_results: "No results found",
-  settings_tools_title: "Tools & Utilities",
-  settings_tools_sub: "Data decoders and vault utility tools",
   settings_tools_google_auth: "Google Authenticator Decoder Tool",
   settings_tools_google_auth_sub: "Decode offline export QR, display raw otpauth:// URIs and link to Vault",
   google_tool_paste_label: "Paste offline export string or upload QR image:",
   google_tool_btn_parse: "Decode & Parse",
   google_tool_btn_upload_qr: "Upload QR Code Image",
   import_google_migration_invalid: "Invalid Google Authenticator QR or migration data",
-  google_migration_title: "Google Authenticator Decoder Tool",
   google_migration_subtitle: "Found {count} 2FA account(s). Choose how to import each account:",
   google_migration_raw_uri: "Raw URI",
-  google_migration_live_otp: "Live OTP",
   google_migration_action_link: "Attach to existing Vault item",
   google_migration_action_create: "Create new Vault item",
   google_migration_action_skip: "Skip / Do not import",
-  google_migration_select_target: "Select Vault item...",
   google_migration_save_batch: "Save & Import ({count})",
   google_migration_save_success: "Successfully imported/updated {count} 2FA account(s)",
 };

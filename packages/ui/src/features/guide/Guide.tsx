@@ -1,19 +1,14 @@
-import { type Component, createSignal, onMount, Show } from "solid-js";
+import { type Component, onMount, Show } from "solid-js";
 import { t } from "@/core/i18n.ts";
 import { APP_NAME } from "@/core/constants.ts";
 import { accountStore, settingsStore } from "@/core/store.ts";
-import { init } from "@gistwarden/ui";
-import { updateLanguage } from "@gistwarden/ui";
+import { init, updateLanguage } from "@gistwarden/ui";
 import Button from "@/components/ui/Button.tsx";
 import Select from "@/components/ui/Select.tsx";
-import GeneralTab from "@/features/guide/components/GeneralTab.tsx";
-import GistTab from "@/features/guide/components/GistTab.tsx";
-import SecurityTab from "@/features/guide/components/SecurityTab.tsx";
-import PasskeyTab from "@/features/guide/components/PasskeyTab.tsx";
-import ImportExportTab from "@/features/guide/components/ImportExportTab.tsx";
-import FaqTab from "@/features/guide/components/FaqTab.tsx";
-import TotpTab from "@/features/guide/components/TotpTab.tsx";
-import PrivacyTab from "@/features/guide/components/PrivacyTab.tsx";
+import { useGuideRoute } from "@/features/guide/guide-router.ts";
+import { GuideTreeSidebar } from "@/features/guide/components/GuideTreeSidebar.tsx";
+import { GuideContentRenderer } from "@/features/guide/components/GuideContentRenderer.tsx";
+import { ExternalLinkIcon, GlobeIcon } from "@/icons/svg/index.ts";
 
 const LANG_OPTIONS = [
   { value: "en", label: "English" },
@@ -21,23 +16,9 @@ const LANG_OPTIONS = [
 ];
 
 export const Guide: Component = () => {
-  const GuideTab = {
-    General: "general",
-    Gist: "gist",
-    Security: "security",
-    Passkey: "passkey",
-    Totp: "totp",
-    ImportExport: "import_export",
-    Faq: "faq",
-    Privacy: "privacy",
-  } as const;
-
-  type GuideTab = typeof GuideTab[keyof typeof GuideTab];
-
-  const [activeTab, setActiveTab] = createSignal<GuideTab>(GuideTab.General);
+  const { route, navigate } = useGuideRoute();
 
   onMount(async () => {
-    // Add native guide body class for layout
     document.body.classList.add("guide-body-native");
     await init();
   });
@@ -57,7 +38,7 @@ export const Guide: Component = () => {
   return (
     <Show when={accountStore.isLoaded && settingsStore.isLoaded}>
       <div class="guide-wrapper">
-        {/* Top Navigation Bar */}
+        {/* Top Header Bar */}
         <header class="guide-header">
           <div class="logo-area">
             <img
@@ -72,9 +53,9 @@ export const Guide: Component = () => {
           </div>
 
           <div class="header-controls">
-            {/* Quick Language Switcher */}
+            {/* Language Selector */}
             <div class="lang-selector">
-              <span>🌐</span>
+              <GlobeIcon size={14} />
               <Select
                 value={settingsStore.language}
                 onChange={(e) => {
@@ -91,116 +72,22 @@ export const Guide: Component = () => {
               variant="secondary"
               onClick={handleOpenGist}
             >
-              🚀 {t("settings_open_gist_title")}
+              <ExternalLinkIcon size={14} /> {t("settings_open_gist_title")}
             </Button>
           </div>
         </header>
 
-        {/* Main Body */}
+        {/* Main Guide Body */}
         <div class="guide-container">
-          <nav class="guide-sidebar">
-            <div class="tabs-nav">
-              <button
-                class={`nav-tab ${
-                  activeTab() === GuideTab.General ? "active" : ""
-                }`}
-                onClick={() => setActiveTab(GuideTab.General)}
-              >
-                <span class="tab-icon">📌</span>
-                <span class="tab-label">{t("guide_tab_general")}</span>
-              </button>
-              <button
-                class={`nav-tab ${
-                  activeTab() === GuideTab.Gist ? "active" : ""
-                }`}
-                onClick={() => setActiveTab(GuideTab.Gist)}
-              >
-                <span class="tab-icon">🐙</span>
-                <span class="tab-label">{t("guide_tab_gist")}</span>
-              </button>
-              <button
-                class={`nav-tab ${
-                  activeTab() === GuideTab.Security ? "active" : ""
-                }`}
-                onClick={() => setActiveTab(GuideTab.Security)}
-              >
-                <span class="tab-icon">🛡️</span>
-                <span class="tab-label">{t("guide_tab_security")}</span>
-              </button>
-              <button
-                class={`nav-tab ${
-                  activeTab() === GuideTab.Passkey ? "active" : ""
-                }`}
-                onClick={() => setActiveTab(GuideTab.Passkey)}
-              >
-                <span class="tab-icon">🔑</span>
-                <span class="tab-label">{t("guide_tab_passkey")}</span>
-              </button>
-              <button
-                class={`nav-tab ${
-                  activeTab() === GuideTab.Totp ? "active" : ""
-                }`}
-                onClick={() => setActiveTab(GuideTab.Totp)}
-              >
-                <span class="tab-icon">⏱️</span>
-                <span class="tab-label">{t("guide_tab_totp")}</span>
-              </button>
-              <button
-                class={`nav-tab ${
-                  activeTab() === GuideTab.ImportExport ? "active" : ""
-                }`}
-                onClick={() => setActiveTab(GuideTab.ImportExport)}
-              >
-                <span class="tab-icon">📦</span>
-                <span class="tab-label">{t("guide_tab_import_export")}</span>
-              </button>
-              <button
-                class={`nav-tab ${
-                  activeTab() === GuideTab.Faq ? "active" : ""
-                }`}
-                onClick={() => setActiveTab(GuideTab.Faq)}
-              >
-                <span class="tab-icon">❓</span>
-                <span class="tab-label">{t("guide_tab_faq")}</span>
-              </button>
-              <button
-                class={`nav-tab ${
-                  activeTab() === GuideTab.Privacy ? "active" : ""
-                }`}
-                onClick={() => setActiveTab(GuideTab.Privacy)}
-              >
-                <span class="tab-icon">🔒</span>
-                <span class="tab-label">{t("guide_tab_privacy")}</span>
-              </button>
-            </div>
-          </nav>
+          {/* Expandable Accordion Tree Sidebar */}
+          <GuideTreeSidebar
+            currentRoute={route()}
+            onNavigate={navigate}
+          />
 
-          {/* Main Content Pane */}
+          {/* Router Content Renderer */}
           <main class="guide-main-content">
-            <Show when={activeTab() === GuideTab.General}>
-              <GeneralTab />
-            </Show>
-            <Show when={activeTab() === GuideTab.Gist}>
-              <GistTab />
-            </Show>
-            <Show when={activeTab() === GuideTab.Security}>
-              <SecurityTab />
-            </Show>
-            <Show when={activeTab() === GuideTab.Passkey}>
-              <PasskeyTab />
-            </Show>
-            <Show when={activeTab() === GuideTab.Totp}>
-              <TotpTab />
-            </Show>
-            <Show when={activeTab() === GuideTab.ImportExport}>
-              <ImportExportTab />
-            </Show>
-            <Show when={activeTab() === GuideTab.Faq}>
-              <FaqTab />
-            </Show>
-            <Show when={activeTab() === GuideTab.Privacy}>
-              <PrivacyTab />
-            </Show>
+            <GuideContentRenderer route={route()} />
           </main>
         </div>
       </div>

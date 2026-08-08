@@ -2,8 +2,14 @@ import { type Component } from "solid-js";
 import { type IconProps } from "@/icons/svg/types.ts";
 
 export const AppIcon: Component<IconProps> = (props) => {
+  const size = () => props.size || props.width || 16;
   return (
-    <svg viewBox="0 0 512 512" {...props}>
+    <svg
+      width={size()}
+      height={size()}
+      viewBox="0 0 512 512"
+      {...props}
+    >
       {/* Nền hình vuông bo góc màu xanh tối (Dark Slate Blue) */}
       <rect x="0" y="0" width="512" height="512" rx="100" fill="#0c1527" />
 
