@@ -1,4 +1,4 @@
-import { assertEquals, test } from "./assert.ts";
+import { assert, assertEquals, test } from "./assert.ts";
 import { isLoginItem, parseCSV, type VaultItem } from "@gistwarden/domain";
 import {
   parseAndValidateBitwardenCsv,
@@ -20,6 +20,8 @@ test("CSV Parser - RFC 4180 parsing", () => {
     `"url","username","password","note"\n"https://google.com","manh","kien","some, note with, commas"\n"https://facebook.com","kien","manh",""`;
   const parsedQuoted = parseCSV(quotedCsv);
   assertEquals(parsedQuoted.length, 3);
+  assert(parsedQuoted[1]);
+  assert(parsedQuoted[2]);
   assertEquals(parsedQuoted[1][3], "some, note with, commas");
   assertEquals(parsedQuoted[2][3], "");
 
@@ -27,6 +29,7 @@ test("CSV Parser - RFC 4180 parsing", () => {
   const escapedQuotesCsv = `name,note\n"Edge","this is a ""special"" note"`;
   const parsedEscaped = parseCSV(escapedQuotesCsv);
   assertEquals(parsedEscaped.length, 2);
+  assert(parsedEscaped[1]);
   assertEquals(parsedEscaped[1][1], 'this is a "special" note');
 });
 
@@ -45,6 +48,8 @@ test("CSV Import - Parse different password manager exports", () => {
     assertEquals(val.importedCount, 2);
     const item1 = val.combinedItems[0];
     const item2 = val.combinedItems[1];
+    assert(item1);
+    assert(item2);
     if (isLoginItem(item1) && isLoginItem(item2)) {
       assertEquals(item1.name, "facebook.com"); // Domain name extracted
       assertEquals(item1.login.username, "kien");
@@ -68,6 +73,7 @@ test("CSV Import - Parse different password manager exports", () => {
     const val = resChrome.value;
     assertEquals(val.importedCount, 1);
     const item1 = val.combinedItems[0];
+    assert(item1);
     if (isLoginItem(item1)) {
       assertEquals(item1.name, "Facebook");
       assertEquals(item1.login.username, "kien");
@@ -89,6 +95,7 @@ test("CSV Import - Parse different password manager exports", () => {
     const val = resBw.value;
     // Login item
     const item1 = val.combinedItems[0];
+    assert(item1);
     if (isLoginItem(item1)) {
       assertEquals(item1.name, "Facebook");
       assertEquals(item1.favorite, true);

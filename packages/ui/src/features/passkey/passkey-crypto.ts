@@ -38,7 +38,8 @@ function encodeDerInteger(bytes: Uint8Array): Uint8Array {
     start++;
   }
   const trimmed = bytes.subarray(start);
-  const needsZero = (trimmed[0] & 0x80) !== 0;
+  const firstByte = trimmed[0] ?? 0;
+  const needsZero = (firstByte & 0x80) !== 0;
   const len = trimmed.length + (needsZero ? 1 : 0);
   const res = new Uint8Array(2 + len);
   res[0] = 0x02;

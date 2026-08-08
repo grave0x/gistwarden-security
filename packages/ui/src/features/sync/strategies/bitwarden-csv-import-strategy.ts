@@ -36,7 +36,12 @@ export const bitwardenCsvImportStrategy = {
       return err("vault_import_csv_error_fail");
     }
 
-    const headers = rows[0].map((h) =>
+    const firstRow = rows[0];
+    if (!firstRow) {
+      return err("vault_import_csv_error_fail");
+    }
+
+    const headers = firstRow.map((h) =>
       h.trim().toLowerCase().replace(/['"]/g, "")
     );
 
@@ -45,8 +50,8 @@ export const bitwardenCsvImportStrategy = {
     const nameIdx = headers.indexOf("name");
     const notesIdx = headers.indexOf("notes");
     const favoriteIdx = headers.indexOf("favorite");
-    const repromptIdx = headers.indexOf("reprompt");
     const fieldsIdx = headers.indexOf("fields");
+    const repromptIdx = headers.indexOf("reprompt");
     const uriIdx = headers.indexOf("login_uri");
     const usernameIdx = headers.indexOf("login_username");
     const passwordIdx = headers.indexOf("login_password");
@@ -60,18 +65,20 @@ export const bitwardenCsvImportStrategy = {
       return err("import_error_bitwarden_invalid");
     }
 
-    const newVaultItems: VaultItem[] = [];
     const folderMap = new Map<string, Folder>();
     for (const f of existingFolders) {
-      folderMap.set(f.name.toLowerCase().trim(), f);
+      folderMap.set(f.name.toLowerCase(), f);
     }
+
+    const newVaultItems: VaultItem[] = [];
     const combinedFolders: Folder[] = [...existingFolders];
+    let importedCount = 0;
 
     for (let r = 1; r < rows.length; r++) {
       const row = rows[r];
-      if (row.length === 0 || (row.length === 1 && row[0] === "")) continue;
+      if (!row || row.length === 0 || (row.length === 1 && row[0] === "")) continue;
 
-      const folderNameVal = folderIdx !== -1 ? (row[folderIdx] || "").trim() : "";
+      const folderNameVal = (folderIdx !== -1 && row[folderIdx]) ? row[folderIdx]!.trim() : "";
       let folderIdVal: string | null = null;
 
       if (folderNameVal) {
@@ -88,19 +95,19 @@ export const bitwardenCsvImportStrategy = {
         folderIdVal = existingFolder.id;
       }
 
-      const typeVal = (row[typeIdx] || "").trim().toLowerCase();
-      const nameVal = row[nameIdx] || "";
-      const notesVal = notesIdx !== -1 ? row[notesIdx] : "";
-      const favoriteVal = favoriteIdx !== -1
+      const typeVal = (typeIdx !== -1 && row[typeIdx]) ? row[typeIdx]!.trim().toLowerCase() : "";
+      const nameVal = (nameIdx !== -1 && row[nameIdx]) ? row[nameIdx]! : "";
+      const notesVal = (notesIdx !== -1 && row[notesIdx]) ? row[notesIdx]! : "";
+      const favoriteVal = favoriteIdx !== -1 && row[favoriteIdx]
         ? (row[favoriteIdx] === "1" || row[favoriteIdx] === "true")
         : false;
-      const repromptVal = repromptIdx !== -1
+      const repromptVal = repromptIdx !== -1 && row[repromptIdx]
         ? (row[repromptIdx] === "1" || row[repromptIdx] === "true" ? 1 : 0)
         : 0;
 
       const customFields: VaultField[] = [];
-      if (fieldsIdx !== -1 && row[fieldsIdx]) {
-        const fieldsStr = row[fieldsIdx];
+      const fieldsStr = fieldsIdx !== -1 ? row[fieldsIdx] : undefined;
+      if (fieldsStr) {
         const lines = fieldsStr.split(/\r?\n/);
         for (const line of lines) {
           const colonIdx = line.indexOf(":");
@@ -114,10 +121,10 @@ export const bitwardenCsvImportStrategy = {
         }
       }
 
-      const uriVal = uriIdx !== -1 ? row[uriIdx] : "";
-      const usernameVal = usernameIdx !== -1 ? row[usernameIdx] : "";
-      const passwordVal = passwordIdx !== -1 ? row[passwordIdx] : "";
-      const totpVal = totpIdx !== -1 ? row[totpIdx] : "";
+      const uriVal = (uriIdx !== -1 && row[uriIdx]) ? row[uriIdx]! : "";
+      const usernameVal = (usernameIdx !== -1 && row[usernameIdx]) ? row[usernameIdx]! : "";
+      const passwordVal = (passwordIdx !== -1 && row[passwordIdx]) ? row[passwordIdx]! : "";
+      const totpVal = (totpIdx !== -1 && row[totpIdx]) ? row[totpIdx]! : "";
       const uris = uriVal ? [{ uri: uriVal, match: null }] : [];
 
       const base = createBaseVaultItem({

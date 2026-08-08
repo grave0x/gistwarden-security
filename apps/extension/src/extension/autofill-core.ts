@@ -52,8 +52,11 @@ function submitElementFoundAndClicked(container: ParentNode): boolean {
     'button[type="submit"], input[type="submit"]',
   );
   if (submitElements.length > 0) {
-    submitElements[0].click();
-    return true;
+    const firstSubmit = submitElements[0];
+    if (firstSubmit) {
+      firstSubmit.click();
+      return true;
+    }
   }
 
   // 2. Search candidate buttons with login keywords
@@ -62,6 +65,7 @@ function submitElementFoundAndClicked(container: ParentNode): boolean {
   );
   for (let i = 0; i < candidateButtons.length; i++) {
     const btn = candidateButtons[i];
+    if (!btn) continue;
     const btnText =
       (btn.innerText || btn.getAttribute("value") || btn.id || btn.className ||
         "").toLowerCase();
@@ -245,7 +249,7 @@ export function extractSubmittedCredentials(
   let chosenPasswordInput: HTMLInputElement | null = null;
   for (let i = 0; i < passwordInputs.length; i++) {
     const input = passwordInputs[i];
-    if (input.value && input.value.trim().length > 0) {
+    if (input && input.value && input.value.trim().length > 0) {
       chosenPasswordInput = input;
       break;
     }
@@ -264,7 +268,7 @@ export function extractSubmittedCredentials(
     );
     for (let i = 0; i < candidateInputs.length; i++) {
       const input = candidateInputs[i];
-      if (input === chosenPasswordInput) continue;
+      if (!input || input === chosenPasswordInput) continue;
       const pos = input.compareDocumentPosition(chosenPasswordInput);
       if (pos & Node.DOCUMENT_POSITION_FOLLOWING) {
         if (input.value && input.value.trim().length > 0) {
@@ -282,6 +286,7 @@ export function extractSubmittedCredentials(
     if (passIdx > 0) {
       for (let i = passIdx - 1; i >= 0; i--) {
         const input = allInputs[i];
+        if (!input) continue;
         const type = input.type.toLowerCase();
         if (
           type === "text" || type === "email" || type === "tel" ||

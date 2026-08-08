@@ -83,8 +83,9 @@ export const Fido2Prompt: Component = () => {
 
   const initPasskeyOptions = (item: LoginVaultItem) => {
     const creds = item.login.fido2Credentials || [];
-    if (creds.length > 0) {
-      setSelectedPasskeyOption(creds[0].credentialId);
+    const firstCred = creds[0];
+    if (firstCred) {
+      setSelectedPasskeyOption(firstCred.credentialId);
     } else {
       setSelectedPasskeyOption("add");
     }
@@ -107,10 +108,11 @@ export const Fido2Prompt: Component = () => {
         const rpId = asRpId(req.options.rp?.id || req.options.rp?.name || "");
         const matches = findMatchingFido2Accounts(items, rpId, req.origin);
         setMatchingAccounts(matches);
-        if (matches.length > 0) {
+        const firstMatch = matches[0];
+        if (firstMatch) {
           if (selectedAccountIndex() === null) {
             setSelectedAccountIndex(0);
-            initPasskeyOptions(matches[0]);
+            initPasskeyOptions(firstMatch);
           }
         } else {
           setSelectedAccountIndex(null);
@@ -144,9 +146,10 @@ export const Fido2Prompt: Component = () => {
       origin,
     );
     setMatchingAccounts(matches);
-    if (matches.length > 0) {
+    const firstMatch = matches[0];
+    if (firstMatch) {
       setSelectedAccountIndex(0);
-      initPasskeyOptions(matches[0]);
+      initPasskeyOptions(firstMatch);
     } else {
       setSelectedAccountIndex(null);
       setSelectedPasskeyOption("add");
@@ -507,7 +510,8 @@ export const Fido2Prompt: Component = () => {
                     const account = matchingAccounts()[selectedAccountIndex()!];
                     if (!account) return null;
                     const creds = account.login.fido2Credentials || [];
-                    if (creds.length === 0) return null;
+                    const firstCred = creds[0];
+                    if (creds.length === 0 || !firstCred) return null;
 
                     return (
                       <div class="passkey-options-section">
@@ -569,16 +573,16 @@ export const Fido2Prompt: Component = () => {
                               title={t("fido2_register_option_overwrite")}
                               subtitle={t("fido2_register_passkey_info", {
                                 index: 1,
-                                date: creds[0].creationDate
-                                  ? formatDateTime(creds[0].creationDate)
+                                date: firstCred.creationDate
+                                  ? formatDateTime(firstCred.creationDate)
                                   : "N/A",
                               })}
                               active={selectedPasskeyOption() ===
-                                creds[0].credentialId}
+                                firstCred.credentialId}
                               subItem={true}
                               onClick={() =>
                                 setSelectedPasskeyOption(
-                                  creds[0].credentialId,
+                                  firstCred.credentialId,
                                 )}
                             />
 

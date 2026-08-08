@@ -14,8 +14,9 @@ export function getRandomBoundedInt(max: number): number {
   const bytes = new Uint32Array(1);
   while (true) {
     crypto.getRandomValues(bytes);
-    if (bytes[0] < limit) {
-      return bytes[0] % max;
+    const val = bytes[0] ?? 0;
+    if (val < limit) {
+      return val % max;
     }
   }
 }
@@ -99,7 +100,7 @@ export function generatePassword(
   const resultChars: string[] = [];
 
   const getRandomChar = (str: string) => {
-    return str[getRandomBoundedInt(str.length)];
+    return str[getRandomBoundedInt(str.length)] ?? "";
   };
 
   if (options.numbers && minNum > 0 && charsetBuilder.numbers.length > 0) {
@@ -123,8 +124,11 @@ export function generatePassword(
   for (let i = resultChars.length - 1; i > 0; i--) {
     const j = getRandomBoundedInt(i + 1);
     const temp = resultChars[i];
-    resultChars[i] = resultChars[j];
-    resultChars[j] = temp;
+    const target = resultChars[j];
+    if (temp !== undefined && target !== undefined) {
+      resultChars[i] = target;
+      resultChars[j] = temp;
+    }
   }
 
   return ok(resultChars.join(""));
@@ -147,19 +151,22 @@ export function generatePassphrase(
 
   for (let i = 0; i < words; i++) {
     const wordIndex = getRandomBoundedInt(ENGLISH_WORDLIST.length);
-    let word = ENGLISH_WORDLIST[wordIndex];
+    let word = ENGLISH_WORDLIST[wordIndex] ?? "";
 
-    if (options.capitalize) {
+    if (options.capitalize && word) {
       word = word.charAt(0).toUpperCase() + word.slice(1);
     }
 
     chosenWords.push(word);
   }
 
-  if (options.includeNumber) {
+  if (options.includeNumber && chosenWords.length > 0) {
     const targetWordIdx = getRandomBoundedInt(chosenWords.length);
     const randomDigit = getRandomBoundedInt(10);
-    chosenWords[targetWordIdx] = chosenWords[targetWordIdx] + randomDigit;
+    const existing = chosenWords[targetWordIdx];
+    if (existing !== undefined) {
+      chosenWords[targetWordIdx] = existing + randomDigit;
+    }
   }
 
   return ok(chosenWords.join(options.wordSeparator));

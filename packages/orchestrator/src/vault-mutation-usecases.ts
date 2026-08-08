@@ -329,7 +329,7 @@ export async function batchSavePayloads(
 
     if (existingIdx !== -1) {
       const existingItem = updatedItems[existingIdx];
-      if (isLoginItem(existingItem)) {
+      if (existingItem && isLoginItem(existingItem)) {
         if (existingItem.login.password === payload.password) {
           continue;
         }
@@ -411,7 +411,7 @@ export async function batchImportGoogleMigrationAccountsUseCase(
         );
         if (targetIndex !== -1) {
           const existingItem = updatedItems[targetIndex];
-          if (isLoginItem(existingItem)) {
+          if (existingItem && isLoginItem(existingItem)) {
             updatedItems[targetIndex] = {
               ...existingItem,
               login: {

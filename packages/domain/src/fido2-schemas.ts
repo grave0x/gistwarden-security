@@ -44,7 +44,10 @@ export const Fido2CredentialSchema = z.object({
       const bytes = new Uint8Array(v);
       let binary = "";
       for (let i = 0; i < bytes.byteLength; i++) {
-        binary += String.fromCharCode(bytes[i]);
+        const b = bytes[i];
+        if (b !== undefined) {
+          binary += String.fromCharCode(b);
+        }
       }
       return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(
         /=/g,

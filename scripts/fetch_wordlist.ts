@@ -17,7 +17,7 @@ try {
     if (!trimmed) continue;
 
     const parts = trimmed.split(/\s+/);
-    if (parts.length >= 2) {
+    if (parts.length >= 2 && parts[1]) {
       const word = parts[1].toLowerCase();
       if (/^[a-z]+$/.test(word)) {
         words.push(word);

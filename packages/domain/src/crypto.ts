@@ -213,18 +213,21 @@ class Asn1Reader {
 
   readTag(): number | null {
     if (this.remaining < 1) return null;
-    return this.bytes[this.offset++];
+    return this.bytes[this.offset++] ?? null;
   }
 
   readLength(): number | null {
     if (this.remaining < 1) return null;
     let len = this.bytes[this.offset++];
+    if (len === undefined) return null;
     if (len & 0x80) {
       const numBytes = len & 0x7f;
       if (this.remaining < numBytes) return null;
       len = 0;
       for (let i = 0; i < numBytes; i++) {
-        len = (len << 8) | this.bytes[this.offset++];
+        const b = this.bytes[this.offset++];
+        if (b === undefined) return null;
+        len = (len << 8) | b;
       }
     }
     return len;
@@ -261,7 +264,8 @@ function encodeMpint(bytes: Uint8Array): Uint8Array {
     start++;
   }
   const trimmed = bytes.subarray(start);
-  const extraByte = (trimmed[0] & 0x80) ? 1 : 0;
+  const firstByte = trimmed[0] ?? 0;
+  const extraByte = (firstByte & 0x80) ? 1 : 0;
   const result = new Uint8Array(4 + extraByte + trimmed.length);
   const view = new DataView(result.buffer);
   view.setUint32(0, extraByte + trimmed.length, false);
@@ -370,7 +374,7 @@ export async function parseSshKey(privateKeyText: string): Promise<
     trimmed.startsWith("sk-")
   ) {
     const parts = trimmed.split(/\s+/);
-    if (parts.length >= 2) {
+    if (parts.length >= 2 && parts[1]) {
       const pubKeyBlobBufferRes = base64ToArrayBuffer(parts[1]);
       if (pubKeyBlobBufferRes.isOk()) {
         const pubKeyBlobBuffer = pubKeyBlobBufferRes.value;

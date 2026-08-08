@@ -186,6 +186,9 @@ export async function assertFido2Passkey(
   selectedCredIndex: number,
 ): Promise<Result<void, TranslationKey>> {
   const selected = matchingCredentials[selectedCredIndex];
+  if (!selected) {
+    return err("fido2_error_assert_failed");
+  }
   const cred = selected.credential;
 
   const nextCounter = Math.max(cred.counter + 1, 100000);

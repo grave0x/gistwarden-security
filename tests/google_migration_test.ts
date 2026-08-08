@@ -16,6 +16,7 @@ const test1 = () => {
   const payload1 = res1.value;
 
   assertEquals(payload1.accounts.length, 1);
+  assert(payload1.accounts[0]);
   assertEquals(payload1.accounts[0].name, "INS0760");
   assertEquals(payload1.accounts[0].secretBase32, "JFHFGMBXGYYFGN2RK5MVISBWIFFVIUKL");
   assertEquals(payload1.accounts[0].algorithm, "SHA1");
@@ -31,6 +32,8 @@ const test2 = () => {
   const payload2 = res2.value;
 
   assertEquals(payload2.accounts.length, 2);
+  assert(payload2.accounts[0]);
+  assert(payload2.accounts[1]);
 
   assertEquals(payload2.accounts[0].name, "linh.dtt@insmart.com.vn");
   assertEquals(payload2.accounts[0].issuer, "Sophos SFOS");
@@ -73,6 +76,8 @@ const test4 = () => {
   );
 
   assertEquals(mappings.length, 2);
+  assert(mappings[0]);
+  assert(mappings[1]);
   assertEquals(mappings[0].action, "skip");
   assertEquals(mappings[0].targetItemId, "vault-item-1");
 

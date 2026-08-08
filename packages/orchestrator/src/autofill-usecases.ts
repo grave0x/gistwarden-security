@@ -218,11 +218,10 @@ export async function checkAutofillSuggestionUseCase(
       totp: m.login.totp || "",
     }));
 
-  if (matchingAccounts.length === 0) {
+  const bestMatch = matchingAccounts[0];
+  if (matchingAccounts.length === 0 || !bestMatch) {
     return { success: false, reason: "no_matches" };
   }
-
-  const bestMatch = matchingAccounts[0];
 
   return {
     success: true,

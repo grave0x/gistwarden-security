@@ -113,9 +113,11 @@ export const LoginEditFields: Component<LoginEditFieldsProps> = (props) => {
 
     const currentUris = [...(props.formState.uris || [])];
     const item = currentUris.splice(dragged, 1)[0];
-    currentUris.splice(index, 0, item);
-    props.updateForm("uris", currentUris);
-    setDraggedIndex(index);
+    if (item) {
+      currentUris.splice(index, 0, item);
+      props.updateForm("uris", currentUris);
+      setDraggedIndex(index);
+    }
   };
 
   const handleDragEnd = () => {

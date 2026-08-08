@@ -1,4 +1,4 @@
-import { assertEquals, test } from "./assert.ts";
+import { assert, assertEquals, test } from "./assert.ts";
 import {
   filterMatchingDomainItems,
   isMatchingDomain,
@@ -235,6 +235,8 @@ test("Vault Domain Matching - filterMatchingDomainItems strictly matches by URI 
 
   // Only item 2 and item 3 are returned, and item 3 (exact host match) is sorted first
   assertEquals(matched.length, 2);
+  assert(matched[0]);
+  assert(matched[1]);
   assertEquals(matched[0].id, asVaultItemId("3"));
   assertEquals(matched[1].id, asVaultItemId("2"));
 });

@@ -39,6 +39,7 @@ function readVarint(buffer: Uint8Array, startOffset: number): VarintReadResult {
 
   while (offset < buffer.length) {
     const byteVal = buffer[offset];
+    if (byteVal === undefined) break;
     offset += 1;
     res |= (byteVal & 0x7f) << shift;
     if ((byteVal & 0x80) === 0) {

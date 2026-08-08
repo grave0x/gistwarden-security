@@ -20,9 +20,9 @@ export const CustomFieldsEdit: Component<CustomFieldsEditProps> = (props) => {
     number | null
   >(null);
 
-  const initialField = () => {
+  const initialField = (): VaultField | null => {
     const idx = selectedFieldIndex();
-    return idx === null ? null : props.fields[idx];
+    return idx === null ? null : (props.fields[idx] ?? null);
   };
 
   const handleOpenAddField = () => {
@@ -69,9 +69,11 @@ export const CustomFieldsEdit: Component<CustomFieldsEditProps> = (props) => {
 
     const list = [...props.fields];
     const [moved] = list.splice(dragged, 1);
-    list.splice(index, 0, moved);
-    props.onChange(list);
-    setDraggedIndex(index);
+    if (moved) {
+      list.splice(index, 0, moved);
+      props.onChange(list);
+      setDraggedIndex(index);
+    }
   };
 
   const handleDragEnd = () => {

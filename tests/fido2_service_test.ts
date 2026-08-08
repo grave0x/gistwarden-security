@@ -1,4 +1,4 @@
-import { assertEquals, test } from "./assert.ts";
+import { assert, assertEquals, test } from "./assert.ts";
 import {
   findMatchingFido2Accounts,
   findMatchingFido2Credentials,
@@ -57,6 +57,7 @@ test("fido2-service: findMatchingFido2Accounts matches by URI", () => {
     "https://github.com",
   );
   assertEquals(matches.length, 1);
+  assert(matches[0]);
   assertEquals(matches[0].name, "GitHub");
 });
 
@@ -73,5 +74,6 @@ test("fido2-service: findMatchingFido2Accounts ignores items without matching UR
 test("fido2-service: findMatchingFido2Credentials matches rpId", () => {
   const creds = findMatchingFido2Credentials(mockVaultItems, asRpId("github.com"));
   assertEquals(creds.length, 1);
+  assert(creds[0]);
   assertEquals(creds[0].credential.credentialId, "cred1");
 });

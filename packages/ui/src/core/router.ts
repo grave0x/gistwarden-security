@@ -74,8 +74,9 @@ const baseRouteDepths: Record<string, number> = {
 };
 
 export function getPathDepth(path: string): number {
-  if (path in baseRouteDepths) {
-    return baseRouteDepths[path];
+  const depth = baseRouteDepths[path];
+  if (depth !== undefined) {
+    return depth;
   }
 
   const segments = path.split("/").filter((segment) => segment.length > 0);

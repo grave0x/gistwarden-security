@@ -51,10 +51,11 @@ export function getBaseDomain(input: string): string {
  * Lấy hostname hoặc domain từ một VaultItem (áp dụng cho LoginItem)
  */
 export function getDomainFromItem(item: VaultItem): string | null {
-  if (!isLoginItem(item) || !item.login.uris || item.login.uris.length === 0) {
+  const firstUri = isLoginItem(item) ? item.login.uris?.[0] : undefined;
+  if (!firstUri) {
     return null;
   }
-  const uri = item.login.uris[0].uri;
+  const uri = firstUri.uri;
   let hostname = uri;
   if (!/^https?:\/\//i.test(hostname)) {
     hostname = "http://" + hostname;

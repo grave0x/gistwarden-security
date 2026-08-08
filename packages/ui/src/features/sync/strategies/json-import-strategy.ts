@@ -189,7 +189,7 @@ export const jsonImportStrategy = {
     const existingMap = new Map<string, VaultItem>();
     for (const item of existingItems) {
       if (item.type === VaultItemType.Login) {
-        if (item.login?.uris && item.login.uris.length > 0) {
+        if (item.login?.uris && item.login.uris.length > 0 && item.login.uris[0]) {
           const mainUri = item.login.uris[0].uri;
           const key = `${mainUri}|${item.login.username}`;
           existingMap.set(key, item);

@@ -47,6 +47,7 @@ export const ReportExposed: Component = () => {
 
     for (let i = 0; i < total; i++) {
       const item = validItems[i];
+      if (!item) continue;
       const pwd = item.login.password!;
       let count = 0;
 

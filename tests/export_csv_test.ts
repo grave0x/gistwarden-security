@@ -1,4 +1,4 @@
-import { assertEquals, test } from "./assert.ts";
+import { assert, assertEquals, test } from "./assert.ts";
 import {
   exportToBitwardenCsv,
   exportToBrowserCsv,
@@ -114,6 +114,7 @@ test("Export CSV - Bitwarden CSV format", () => {
 
   // Login row verification
   const loginRow = rows[1];
+  assert(loginRow);
   assertEquals(loginRow[0], "");
   assertEquals(loginRow[1], "1");
   assertEquals(loginRow[2], "login");
@@ -129,6 +130,7 @@ test("Export CSV - Bitwarden CSV format", () => {
 
   // Note row verification
   const noteRow = rows[2];
+  assert(noteRow);
   assertEquals(noteRow[0], "");
   assertEquals(noteRow[1], "0");
   assertEquals(noteRow[2], "note");

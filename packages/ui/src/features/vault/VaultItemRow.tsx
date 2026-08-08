@@ -40,11 +40,12 @@ export const VaultItemRow: Component<VaultItemRowProps> = (props) => {
   const getUri = (): string | null => {
     if (
       props.item.type === VaultItemType.Login &&
-      props.item.login.uris &&
-      props.item.login.uris.length > 0 &&
-      props.item.login.uris[0].uri
+      props.item.login.uris
     ) {
-      return props.item.login.uris[0].uri;
+      const firstUri = props.item.login.uris[0];
+      if (firstUri?.uri) {
+        return firstUri.uri;
+      }
     }
     return null;
   };

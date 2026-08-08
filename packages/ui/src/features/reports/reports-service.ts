@@ -88,7 +88,7 @@ export async function checkPasswordHIBPUseCase(
     for (const line of lines) {
       const [lineSuffix, countStr] = line.trim().split(":");
       if (lineSuffix === suffix) {
-        return { count: parseInt(countStr, 10) || 0 };
+        return { count: parseInt(countStr ?? "0", 10) || 0 };
       }
     }
     return { count: 0 };

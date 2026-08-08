@@ -52,7 +52,8 @@ export const PasswordStrengthMeter: Component<PasswordStrengthMeterProps> = (
 ) => {
   const strength = createMemo<StrengthResult>(() => {
     const res = evaluatePasswordStrength(props.password);
-    return STRENGTH_LOOKUP[res.score] ?? STRENGTH_LOOKUP[4];
+    const defaultStrength: StrengthResult = { score: 0, label: "pwd_strength_very_weak", className: "pwd-strength-very-weak" };
+    return STRENGTH_LOOKUP[res.score] ?? STRENGTH_LOOKUP[4] ?? defaultStrength;
   });
 
   return (

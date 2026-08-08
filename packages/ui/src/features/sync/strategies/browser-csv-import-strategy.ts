@@ -34,7 +34,12 @@ export const browserCsvImportStrategy = {
       return err("vault_import_csv_error_fail");
     }
 
-    const headers = rows[0].map((h) =>
+    const firstRow = rows[0];
+    if (!firstRow) {
+      return err("vault_import_csv_error_fail");
+    }
+
+    const headers = firstRow.map((h) =>
       h.trim().toLowerCase().replace(/['"]/g, "")
     );
     const urlIdx = headers.indexOf("url");
@@ -55,13 +60,13 @@ export const browserCsvImportStrategy = {
 
     for (let r = 1; r < rows.length; r++) {
       const row = rows[r];
-      if (row.length === 0 || (row.length === 1 && row[0] === "")) continue;
+      if (!row || row.length === 0 || (row.length === 1 && row[0] === "")) continue;
 
-      const urlVal = row[urlIdx] || "";
-      const usernameVal = row[usernameIdx] || "";
-      const passwordVal = row[passwordIdx] || "";
-      let nameVal = nameIdx !== -1 ? row[nameIdx] : "";
-      const noteVal = noteIdx !== -1 ? row[noteIdx] : "";
+      const urlVal = (urlIdx !== -1 && row[urlIdx]) ? row[urlIdx]! : "";
+      const usernameVal = (usernameIdx !== -1 && row[usernameIdx]) ? row[usernameIdx]! : "";
+      const passwordVal = (passwordIdx !== -1 && row[passwordIdx]) ? row[passwordIdx]! : "";
+      let nameVal = (nameIdx !== -1 && row[nameIdx]) ? row[nameIdx]! : "";
+      const noteVal = (noteIdx !== -1 && row[noteIdx]) ? row[noteIdx]! : "";
 
       if (!urlVal && !usernameVal && !passwordVal) {
         continue;

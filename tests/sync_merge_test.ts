@@ -1,4 +1,4 @@
-import { assertEquals, test } from "./assert.ts";
+import { assert, assertEquals, test } from "./assert.ts";
 import {
   mergeVaultItems,
   mergeVaultPayload,
@@ -162,6 +162,7 @@ test("Vault Merge - Login item revision conflict resolution", () => {
 
   const merged = mergeVaultItems([localLogin], [remoteLogin], 1000);
   assertEquals(merged.length, 1);
+  assert(merged[0]);
   assertEquals(merged[0].name, "Login Local Edit");
 });
 
@@ -181,6 +182,7 @@ test("Vault Merge - SecureNote item remote revision takes precedence when newer"
 
   const merged = mergeVaultItems([localNote], [remoteNote], 1000);
   assertEquals(merged.length, 1);
+  assert(merged[0]);
   assertEquals(merged[0].name, "New Remote Note");
 });
 
@@ -195,6 +197,7 @@ test("Vault Merge - Card item created on local after lastSync is retained", () =
 
   const merged = mergeVaultItems([localCard], [], lastSyncTime);
   assertEquals(merged.length, 1);
+  assert(merged[0]);
   assertEquals(merged[0].id, asVaultItemId("card-1"));
 
   assertEquals(merged[0].type, VaultItemType.Card);
@@ -224,6 +227,7 @@ test("Vault Merge - SshKey item created on remote is automatically added", () =>
 
   const merged = mergeVaultItems([], [remoteSshKey], lastSyncTime);
   assertEquals(merged.length, 1);
+  assert(merged[0]);
   assertEquals(merged[0].id, asVaultItemId("ssh-1"));
 
   assertEquals(merged[0].type, VaultItemType.SshKey);
@@ -353,7 +357,9 @@ test("Vault Merge - Trash array handles deleted items across devices", () => {
   const merged = mergeVaultPayload(localPayload, remotePayload, 0);
 
   assertEquals(merged.items.length, 1);
+  assert(merged.items[0]);
   assertEquals(merged.items[0].id, "item-1");
   assertEquals(merged.trash.length, 1);
+  assert(merged.trash[0]);
   assertEquals(merged.trash[0].item.id, "item-2");
 });

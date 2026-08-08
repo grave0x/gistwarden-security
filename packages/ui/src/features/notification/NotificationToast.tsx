@@ -23,8 +23,9 @@ export function NotificationToast(props: NotificationToastProps) {
   const currentSelectedAccount = (): AutofillMatchingAccount => {
     if (props.payload.actionType === "autofill") {
       const list = props.payload.accounts;
-      if (list && list.length > 0) {
-        return list[0];
+      const firstAccount = list?.[0];
+      if (firstAccount) {
+        return firstAccount;
       }
       return {
         itemId: props.payload.itemId || "",

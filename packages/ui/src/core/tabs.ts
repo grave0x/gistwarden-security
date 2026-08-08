@@ -13,7 +13,8 @@ export async function getCurrentTab(): Promise<
 
   try {
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-    return ok(tabs && tabs.length > 0 ? tabs[0] : null);
+    const tab = tabs[0];
+    return ok(tab ?? null);
   } catch (e: unknown) {
     logger.app.warn("Failed to get current tab:", e);
     return err("tab_error_get_current");

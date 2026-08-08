@@ -170,6 +170,7 @@ export const GoogleMigrationPage: Component = () => {
       const currentMapping = mappings[index];
       const usedIds = getUsedTargetItemIds(index);
       if (
+        !currentMapping ||
         !currentMapping.targetItemId ||
         usedIds.has(currentMapping.targetItemId)
       ) {

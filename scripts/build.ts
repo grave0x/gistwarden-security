@@ -65,7 +65,7 @@ function copyAssets() {
   const appNameMatch = constantsContent.match(
     /export const APP_NAME = "([^"]+)";/,
   );
-  const appName = appNameMatch ? appNameMatch[1] : "Gistwarden";
+  const appName = (appNameMatch && appNameMatch[1]) ? appNameMatch[1] : "Gistwarden";
   const appNameLower = appName.toLowerCase().replace(/[^a-z0-9]/g, "");
   const bundledAppCss = bundleCss(join(uiDir, "styles", "app.css"));
 
@@ -188,7 +188,7 @@ function getFirefoxManifestContent(): string {
   const appNameMatch = constantsContent.match(
     /export const APP_NAME = "([^"]+)";/,
   );
-  const appName = appNameMatch ? appNameMatch[1] : "Gistwarden";
+  const appName = (appNameMatch && appNameMatch[1]) ? appNameMatch[1] : "Gistwarden";
   const appNameLower = appName.toLowerCase().replace(/[^a-z0-9]/g, "");
 
   manifestObj.name = appName;
