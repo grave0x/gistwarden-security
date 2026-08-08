@@ -275,14 +275,17 @@ export const Vault: Component = () => {
     // Query active tab domain
     const fetchTab = async () => {
       const tabRes = await getCurrentTab();
-      if (tabRes.isOk() && tabRes.value && tabRes.value.url) {
-        const urlResult = safeParseUrl(tabRes.value!.url!);
-        if (urlResult.isOk()) {
-          let hostname = urlResult.value.hostname;
-          if (hostname.startsWith("www.")) {
-            hostname = hostname.slice(4);
+      if (tabRes.isOk()) {
+        const url = tabRes.value?.url;
+        if (url) {
+          const urlResult = safeParseUrl(url);
+          if (urlResult.isOk()) {
+            let hostname = urlResult.value.hostname;
+            if (hostname.startsWith("www.")) {
+              hostname = hostname.slice(4);
+            }
+            setCurrentTabDomain(hostname);
           }
-          setCurrentTabDomain(hostname);
         }
       }
     };

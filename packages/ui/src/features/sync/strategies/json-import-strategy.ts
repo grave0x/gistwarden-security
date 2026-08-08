@@ -1,4 +1,4 @@
-import { type Folder, FolderSchema, VaultItemType, asFido2CredentialId, asRpId } from "@gistwarden/domain";
+import { type Folder, FolderSchema, VaultItemType, asFido2CredentialId, asRpId, logger } from "@gistwarden/domain";
 import { type ImportItem, ImportItemSchema } from "@gistwarden/repository";
 import {
   createBaseVaultItem,
@@ -23,11 +23,11 @@ export const jsonImportStrategy: ImportStrategy = {
     existingItems: VaultItem[],
     existingFolders: Folder[] = [],
   ): Result<ImportResult, TranslationKey> {
-    console.log(`[${APP_NAME} Import] Bắt đầu đọc file JSON...`);
+    logger.vault.info(`[${APP_NAME} Import] Bắt đầu đọc file JSON...`);
 
     const parseRes = safeJsonParse(jsonString);
     if (parseRes.isErr()) {
-      console.error(`[${APP_NAME} Import] Lỗi phân tích JSON`);
+      logger.vault.error(`[${APP_NAME} Import] Lỗi phân tích JSON`);
       return err("vault_import_error_invalid");
     }
     const parsed = parseRes.value;
@@ -66,14 +66,14 @@ export const jsonImportStrategy: ImportStrategy = {
       if (parseResult.success) {
         itemsToImport.push(parseResult.data);
       } else {
-        console.warn(
+        logger.vault.warn(
           `[${APP_NAME} Import] Bỏ qua item không hỗ trợ hoặc lỗi định dạng:`,
           parseResult.error.issues,
         );
       }
     }
 
-    console.log(
+    logger.vault.info(
       `[${APP_NAME} Import] Kiểm tra xong! Có ${itemsToImport.length} tài khoản và ${importedFolders.length} thư mục hợp lệ cần import.`,
     );
 
@@ -252,7 +252,7 @@ export const jsonImportStrategy: ImportStrategy = {
 
     const validateResult = VaultListSchema.safeParse(finalItems);
     if (!validateResult.success) {
-      console.error(
+      logger.vault.error(
         `[${APP_NAME} Import] Lỗi kiểm tra dữ liệu sau khi gộp:`,
         validateResult.error,
       );

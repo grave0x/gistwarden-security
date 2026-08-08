@@ -5,6 +5,7 @@ import {
 } from "@gistwarden/network";
 import {
   hashPasswordSHA1PrefixSuffix,
+  logger,
   type TranslationKey,
 } from "@gistwarden/domain";
 
@@ -33,7 +34,8 @@ export async function checkPasswordHIBPUseCase(
       }
     }
     return { count: 0 };
-  } catch {
+  } catch (e: unknown) {
+    logger.network.warn("Failed to check HIBP password breach:", e);
     return { count: 0, errorKey: "report_error_network" };
   }
 }

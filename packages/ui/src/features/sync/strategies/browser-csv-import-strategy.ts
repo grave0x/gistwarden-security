@@ -1,6 +1,7 @@
 import {
   createBaseVaultItem,
   getVaultItemFallbackName,
+  logger,
   type Folder,
   type VaultItem,
   VaultItemType,
@@ -27,7 +28,7 @@ export const browserCsvImportStrategy: ImportStrategy = {
     existingItems: VaultItem[],
     existingFolders: Folder[] = [],
   ): Result<ImportResult, TranslationKey> {
-    console.log(`[${APP_NAME} CSV Import] Bắt đầu đọc file CSV trình duyệt...`);
+    logger.vault.info(`[${APP_NAME} CSV Import] Bắt đầu đọc file CSV trình duyệt...`);
     const rows = parseCSV(csvString);
     if (rows.length < 2) {
       return err("vault_import_csv_error_fail");
@@ -93,7 +94,7 @@ export const browserCsvImportStrategy: ImportStrategy = {
       });
     }
 
-    console.log(`[${APP_NAME} CSV Import] Bắt đầu kiểm tra và lưu...`);
+    logger.vault.info(`[${APP_NAME} CSV Import] Bắt đầu kiểm tra và lưu...`);
     const combinedItems = [...existingItems, ...newVaultItems];
     const validatedListResult = VaultListSchema.safeParse(combinedItems);
     if (!validatedListResult.success) {

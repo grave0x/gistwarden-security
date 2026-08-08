@@ -2,7 +2,7 @@
  * Utility functions for interacting with Chrome tabs
  */
 import { err, ok, Result } from "neverthrow";
-import { type TranslationKey } from "@gistwarden/domain";
+import { logger, type TranslationKey } from "@gistwarden/domain";
 
 export async function getCurrentTab(): Promise<
   Result<chrome.tabs.Tab | null, TranslationKey>
@@ -14,8 +14,8 @@ export async function getCurrentTab(): Promise<
   try {
     const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
     return ok(tabs && tabs.length > 0 ? tabs[0] : null);
-  } catch (e) {
-    console.warn("Failed to get current tab:", e);
+  } catch (e: unknown) {
+    logger.app.warn("Failed to get current tab:", e);
     return err("tab_error_get_current");
   }
 }
@@ -36,8 +36,8 @@ export async function sendMessageToTab(
   try {
     const res = await chrome.tabs.sendMessage(tabId, message);
     return ok(res);
-  } catch (e) {
-    console.warn("Failed to send message to tab:", e);
+  } catch (e: unknown) {
+    logger.app.warn("Failed to send message to tab:", e);
     return err("tab_error_send_message");
   }
 }
@@ -60,8 +60,8 @@ export async function captureVisibleTab(
     const res = await chrome.tabs.captureVisibleTab(opts);
     if (!res) return err("tab_error_capture");
     return ok(res);
-  } catch (e) {
-    console.warn("Failed to capture visible tab:", e);
+  } catch (e: unknown) {
+    logger.app.warn("Failed to capture visible tab:", e);
     return err("tab_error_capture");
   }
 }
@@ -76,8 +76,8 @@ export async function openTab(
     try {
       window.open(url, "_blank");
       return ok(null);
-    } catch (e) {
-      console.warn("Failed to open URL in window.open:", e);
+    } catch (e: unknown) {
+      logger.app.warn("Failed to open URL in window.open:", e);
       return err("tab_error_open");
     }
   }
@@ -85,8 +85,8 @@ export async function openTab(
   try {
     const tab = await chrome.tabs.create({ url });
     return ok(tab);
-  } catch (e) {
-    console.warn("Failed to open tab via chrome.tabs:", e);
+  } catch (e: unknown) {
+    logger.app.warn("Failed to open tab via chrome.tabs:", e);
     return err("tab_error_open");
   }
 }
@@ -105,8 +105,8 @@ export async function openPopup(): Promise<Result<void, TranslationKey>> {
   try {
     await chrome.action.openPopup();
     return ok();
-  } catch (e) {
-    console.warn("Failed to open extension popup:", e);
+  } catch (e: unknown) {
+    logger.app.warn("Failed to open extension popup:", e);
     return err("tab_error_open");
   }
 }

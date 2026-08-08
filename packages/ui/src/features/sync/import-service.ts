@@ -1,6 +1,7 @@
 import { accountStore } from "@/core/store.ts";
 import { APP_NAME } from "@/core/constants.ts";
 import { type TranslationKey } from "@/core/i18n.ts";
+import { logger } from "@gistwarden/domain";
 import { err, ok, Result } from "neverthrow";
 import { persistAndReconcileVault } from "@/features/vault/vault-service.ts";
 import { getImportStrategy } from "./import-export-registry.ts";
@@ -20,7 +21,7 @@ export async function importVaultData(
   }
   const importVal = importRes.value;
 
-  console.log(`[${APP_NAME} Import] Đang tải lên Gist...`);
+  logger.vault.info(`[${APP_NAME} Import] Đang tải lên Gist...`);
   const res = await persistAndReconcileVault(
     importVal.combinedItems,
     accountStore.trashItems,
@@ -30,7 +31,7 @@ export async function importVaultData(
     return err(res.error);
   }
 
-  console.log(`[${APP_NAME} Import] Import HOÀN TẤT thành công!`);
+  logger.vault.info(`[${APP_NAME} Import] Import HOÀN TẤT thành công!`);
   return ok(importVal.importedCount);
 }
 

@@ -1,5 +1,5 @@
 import { err, ok, Result } from "neverthrow";
-import type { TranslationKey } from "@gistwarden/domain";
+import { logger, type TranslationKey } from "@gistwarden/domain";
 
 let autoClearTimerId: ReturnType<typeof setTimeout> | null = null;
 
@@ -38,15 +38,15 @@ export async function writeClipboardText(
             await navigator.clipboard.writeText("");
           }
         }
-      } catch {
-        // Ignore clipboard clear permission errors
+      } catch (e: unknown) {
+        logger.app.warn("Failed to auto-clear clipboard:", e);
       }
       autoClearTimerId = null;
     }, timeoutMs);
 
     return ok();
-  } catch (e) {
-    console.warn("[Clipboard] Failed to write text to clipboard:", e);
+  } catch (e: unknown) {
+    logger.app.warn("Failed to write text to clipboard:", e);
     return err("clipboard_copy_failed");
   }
 }

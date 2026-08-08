@@ -35,9 +35,12 @@ export type PasswordHistory = z.infer<typeof PasswordHistorySchema>;
 
 export const CustomFieldTypeSchema = z.nativeEnum(CustomFieldType);
 
+const nullableString = () =>
+  z.string().or(z.null()).optional().transform((v) => v || "");
+
 export const VaultFieldSchema = z.object({
   type: CustomFieldTypeSchema.default(CustomFieldType.Text),
-  name: z.string().or(z.null()).optional().transform((v) => v || ""),
+  name: nullableString(),
   value: z
     .union([z.string(), z.number(), z.boolean(), z.null()])
     .optional()
@@ -115,8 +118,6 @@ export const SecureNoteVaultItemSchema = BaseVaultItemSchema.extend({
 }).readonly();
 export type SecureNoteVaultItem = z.infer<typeof SecureNoteVaultItemSchema>;
 
-const nullableString = () =>
-  z.string().or(z.null()).optional().transform((v) => v || "");
 
 export const CardSchema = z.object({
   cardholderName: nullableString(),

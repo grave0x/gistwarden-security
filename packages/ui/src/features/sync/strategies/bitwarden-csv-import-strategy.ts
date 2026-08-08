@@ -2,6 +2,7 @@ import {
   asFolderId,
   createBaseVaultItem,
   getVaultItemFallbackName,
+  logger,
   type Folder,
   type VaultField,
   type VaultItem,
@@ -29,7 +30,7 @@ export const bitwardenCsvImportStrategy: ImportStrategy = {
     existingItems: VaultItem[],
     existingFolders: Folder[] = [],
   ): Result<ImportResult, TranslationKey> {
-    console.log(`[${APP_NAME} CSV Import] Bắt đầu đọc file Bitwarden CSV...`);
+    logger.vault.info(`[${APP_NAME} CSV Import] Bắt đầu đọc file Bitwarden CSV...`);
     const rows = parseCSV(csvString);
     if (rows.length < 2) {
       return err("vault_import_csv_error_fail");
@@ -153,7 +154,7 @@ export const bitwardenCsvImportStrategy: ImportStrategy = {
       }
     }
 
-    console.log(`[${APP_NAME} CSV Import] Bắt đầu kiểm tra và lưu...`);
+    logger.vault.info(`[${APP_NAME} CSV Import] Bắt đầu kiểm tra và lưu...`);
     const combinedItems = [...existingItems, ...newVaultItems];
     const validatedListResult = VaultListSchema.safeParse(combinedItems);
     if (!validatedListResult.success) {
