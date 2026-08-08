@@ -7,15 +7,9 @@
 [![Manifest V3](https://img.shields.io/badge/Manifest-V3-4285f4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://developer.chrome.com/docs/extensions/mv3/intro/)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue?style=for-the-badge)](https://opensource.org/licenses/ISC)
 
-Gistwarden là một tiện ích mở rộng (Browser Extension) mã nguồn mở, được thiết
-kế để quản lý mật khẩu, mã OTP (TOTP), ghi chú bảo mật và mã khóa đăng nhập
-(Passkeys) hoàn toàn miễn phí, an toàn và riêng tư tuyệt đối.
+Gistwarden là một tiện ích mở rộng (Browser Extension) mã nguồn mở, được thiết kế để quản lý mật khẩu, mã OTP (TOTP), ghi chú bảo mật, thẻ ngân hàng, định danh, SSH key và mã khóa đăng nhập (Passkeys) hoàn toàn miễn phí, an toàn và riêng tư tuyệt đối.
 
-Thay vì phải trả phí duy trì hàng năm cho server đám mây của bên thứ ba,
-Gistwarden được phát triển nhằm mang lại một giải pháp **thay thế tương đương**,
-hoạt động độc lập, tận dụng kho lưu trữ cá nhân **GitHub Gist** làm cơ sở dữ
-liệu và đặc biệt là tối ưu hóa bảo mật ở mức cao nhất, có khả năng tương thích
-tuyệt đối với dữ liệu xuất ra từ Bitwarden.
+Thay vì phải trả phí duy trì hàng năm cho server đám mây của bên thứ ba, Gistwarden được phát triển nhằm mang lại một giải pháp **thay thế tương đương**, hoạt động độc lập, tận dụng kho lưu trữ cá nhân **GitHub Gist** làm cơ sở dữ liệu và đặc biệt là tối ưu hóa bảo mật ở mức cao nhất, có khả năng tương thích tuyệt đối với dữ liệu xuất ra từ Bitwarden.
 
 ---
 
@@ -23,43 +17,55 @@ tuyệt đối với dữ liệu xuất ra từ Bitwarden.
 
 ### 1. 🔒 Kiến trúc Bảo mật Zero-Knowledge tuyệt đối
 
-- **Mã hóa cục bộ:** Toàn bộ dữ liệu két sắt được mã hóa ngay tại trình duyệt
-  trước khi đồng bộ lên GitHub Gist.
-- **Riêng tư tối đa:** Không một ai — kể cả GitHub hay nhà phát triển tiện ích —
-  có thể đọc được dữ liệu của bạn nếu không có Mật khẩu Master.
+- **Mã hóa cục bộ:** Toàn bộ dữ liệu két sắt được mã hóa ngay tại trình duyệt bằng Argon2id & AES-GCM 256 trước khi đồng bộ lên GitHub Gist.
+- **Riêng tư tối đa:** Không một ai — kể cả GitHub hay nhà phát triển tiện ích — có thể đọc được dữ liệu của bạn nếu không có Mật khẩu Master.
 
-### 2. ⚡ Hỗ trợ Passkeys (FIDO2/WebAuthn)
+### 2. ✨ Tự động điền & Gợi ý lưu mật khẩu thông minh
 
-- **Đăng nhập không mật khẩu:** Khởi tạo, giả lập và lưu trữ các khóa đăng nhập
-  Passkeys hiện đại trực tiếp ngay bên trong extension.
-- **Bảo vệ chống rò rỉ chéo tên miền:** Tích hợp kiểm tra tên miền khớp chéo để
-  bảo vệ tài khoản không bị rò rỉ thông tin khóa.
+- **Tự động điền thông minh:** Nhận diện các ô nhập tài khoản/mật khẩu trên website và hiển thị menu điền nhanh 1-click.
+- **Gợi ý lưu/Cập nhật:** Tự động phát hiện khi bạn đăng nhập tài khoản mới và hiển thị thanh gợi ý lưu hoặc cập nhật mật khẩu.
 
-### 3. ⏱️ Mã xác thực OTP động (TOTP/2FA)
+### 3. ⚡ Hỗ trợ Passkeys (FIDO2/WebAuthn)
 
-- **Quét mã QR tự động:** Hỗ trợ quét mã QR trực tiếp trên trang web hoặc nạp
-  ảnh chụp mã QR để tự phân tích khóa bí mật.
-- **Tự động sinh mã:** Tính toán và hiển thị mã bảo mật 2 lớp cập nhật tự động
-  sau mỗi 30 giây.
+- **Đăng nhập không mật khẩu:** Khởi tạo, giả lập và lưu trữ các khóa đăng nhập Passkeys hiện đại trực tiếp ngay bên trong extension.
+- **Bảo vệ chống rò rỉ chéo tên miền:** Tích hợp kiểm tra tên miền khớp chéo để bảo vệ tài khoản không bị rò rỉ thông tin khóa.
 
-### 4. 🔄 Nhập xuất dữ liệu & Chuyển đổi mã TOTP dễ dàng
+### 4. ⏱️ Mã xác thực OTP động (TOTP/2FA)
 
-- **Nhập dữ liệu từ Bitwarden:** Nhập trực tiếp tệp JSON không mã hóa từ Bitwarden (bao gồm cả mật khẩu, ghi chú, custom fields và khóa TOTP).
+- **Quét mã QR tự động:** Hỗ trợ quét mã QR trực tiếp trên trang web hoặc nạp ảnh chụp mã QR để tự phân tích khóa bí mật.
+- **Tự động sinh mã:** Tính toán và hiển thị mã bảo mật 2 lớp cập nhật tự động sau mỗi 30 giây.
+
+### 5. 🛡️ Báo cáo Kiểm tra Bảo mật & Rò rỉ Dữ liệu (Vault Audit)
+
+- **Kiểm tra rò rỉ dữ liệu (HIBP):** Phân tích email & username với cơ sở dữ liệu rò rỉ Have I Been Pwned qua mô hình k-Anonymity bảo mật tuyệt đối.
+- **Đánh giá độ mạnh & Trùng lặp:** Sử dụng thuật toán `zxcvbn` chấm điểm mật khẩu và cảnh báo các mật khẩu bị dùng trùng trên nhiều dịch vụ.
+- **Cảnh báo lỗ hổng:** Tự động phát hiện các tài khoản chưa bật 2FA/TOTP và các trang web chưa sử dụng kết nối mã hóa HTTPS.
+
+### 6. 🔄 Nhập xuất dữ liệu toàn diện & Chuyển đổi mã TOTP dễ dàng
+
+- **Nhập/Xuất đa định dạng:** Nhập xuất linh hoạt dữ liệu tệp JSON/CSV từ Bitwarden, Chrome, Firefox, Edge và các ứng dụng quản lý mật khẩu.
 - **Giải mã Google Authenticator (Migration Tool):** Bóc tách nhị phân Protobuf trực tiếp từ ảnh mã QR hoặc chuỗi `otpauth-migration://` xuất từ Google Authenticator, hỗ trợ xem mã TOTP đếm ngược và ghép nối tự động vào tài khoản Két sắt.
 - **Sao lưu ngoại tuyến:** Giải mã và tải xuống cơ sở dữ liệu két sắt dưới dạng file JSON backup bất cứ lúc nào.
 
+### 7. 🎲 Trình khởi tạo Mật khẩu & Cụm từ ghép Diceware
 
-### 5. 🌐 Hỗ trợ đa ngôn ngữ
+- **Cấu hình linh hoạt:** Tự động tạo mật khẩu ngẫu nhiên với độ dài tùy chỉnh, lựa chọn ký tự và loại bỏ ký tự dễ nhầm lẫn.
+- **Cụm từ ghép song ngữ:** Sinh cụm từ ghép (Passphrase) ngẫu nhiên dễ nhớ dựa trên danh sách từ vựng EFF tiếng Anh và tiếng Việt.
+- **Lịch sử khởi tạo:** Lưu giữ lịch sử các mật khẩu vừa tạo giúp dễ dàng truy vết và khôi phục khi cần.
 
-- **Song ngữ:** Dễ dàng chuyển đổi linh hoạt giữa **Tiếng Anh 🇬🇧** và **Tiếng
-  Việt 🇻🇳** trực tiếp từ giao diện cài đặt hoặc màn hình chào mừng.
+### 8. 🔑 Két sắt Đa danh mục & Mở khóa nhanh bằng mã PIN
 
-### 6. 🎨 Giao diện hiện đại & cao cấp
+- **Đa dạng loại dữ liệu:** Lưu trữ Mật khẩu đăng nhập, Ghi chú bảo mật, Thẻ ngân hàng, Định danh cá nhân, SSH Keys kèm trường tùy biến.
+- **Mở khóa nhanh bằng PIN:** Cài đặt mã PIN mở khóa nhanh phiên làm việc mà vẫn đảm bảo két gốc được mã hóa an toàn.
 
-- **Thiết kế Tinh tế & Hiện đại:** Giao diện trực quan đẹp mắt, thanh cuộn tùy
-  chỉnh mượt mà và các hiệu ứng chuyển cảnh tự nhiên.
-- **Chế độ Sáng/Tối:** Hỗ trợ cấu hình chủ đề Dark Mode và Light Mode thời
-  thượng.
+### 9. 🌐 Hỗ trợ đa ngôn ngữ
+
+- **Song ngữ:** Dễ dàng chuyển đổi linh hoạt giữa **Tiếng Anh 🇬🇧** và **Tiếng Việt 🇻🇳** trực tiếp từ giao diện cài đặt hoặc màn hình chào mừng.
+
+### 10. 🎨 Giao diện hiện đại & cao cấp
+
+- **Thiết kế Tinh tế & Hiện đại:** Giao diện trực quan đẹp mắt, thanh cuộn tùy chỉnh mượt mà và các hiệu ứng chuyển cảnh tự nhiên.
+- **Chế độ Sáng/Tối:** Hỗ trợ cấu hình chủ đề Dark Mode và Light Mode thời thượng.
 
 ---
 
@@ -67,50 +73,34 @@ tuyệt đối với dữ liệu xuất ra từ Bitwarden.
 
 ### 1. Cơ chế Sinh khóa Kháng Phần cứng (Key Derivation - KDF)
 
-Gistwarden sử dụng **Argon2id (WebAssembly)** - thuật toán chiến thắng giải
-_Password Hashing Competition_ và là tiêu chuẩn bảo mật tốt nhất hiện nay - giúp
-kháng lại mọi hình thức dò mật khẩu (brute-force) bằng thiết bị phần cứng chuyên
-dụng (như GPU, FPGA, ASIC).
+Gistwarden sử dụng **Argon2id (WebAssembly)** - thuật toán chiến thắng giải *Password Hashing Competition* và là tiêu chuẩn bảo mật tốt nhất hiện nay - giúp kháng lại mọi hình thức dò mật khẩu (brute-force) bằng thiết bị phần cứng chuyên dụng (như GPU, FPGA, ASIC).
 
-- **Thông số:** Bộ nhớ: **64 MB**, Vòng lặp: **3 vòng**, Luồng song song: **1
-  luồng** (Tối ưu cho môi trường Extension đơn luồng).
-- **Khả năng phòng thủ:** Yêu cầu 64MB RAM cho mỗi lần thử mật khẩu khiến các
-  thiết bị đào coin/GPU bị nghẽn cổ chai RAM và tăng chi phí tấn công lên hàng
-  triệu lần, bảo vệ mật khẩu Master trước mọi đòn tấn công ngoại tuyến.
+- **Thông số:** Bộ nhớ: **64 MB**, Vòng lặp: **3 vòng**, Luồng song song: **1 luồng** (Tối ưu cho môi trường Extension đơn luồng).
+- **Khả năng phòng thủ:** Yêu cầu 64MB RAM cho mỗi lần thử mật khẩu khiến các thiết bị đào coin/GPU bị nghẽn cổ chai RAM và tăng chi phí tấn công lên hàng triệu lần, bảo vệ mật khẩu Master trước mọi đòn tấn công ngoại tuyến.
 
 ### 2. Tiêu chuẩn Mã hóa Quân đội
 
 Dữ liệu của bạn được bảo vệ bởi các tiêu chuẩn:
 
-- **AES-GCM 256-bit:** Chuẩn mã hóa đối xứng xác thực (AEAD) tiên tiến nhất. Bất
-  kỳ sự thay đổi trái phép nào đối với file mã hóa trên Gist sẽ làm quá trình
-  giải mã thất bại ngay lập tức, chống tấn công chèn hay sửa đổi file dữ liệu.
-- **Vector khởi tạo (IV) ngẫu nhiên 12-byte:** Được sinh ra bởi API ngẫu nhiên
-  bảo mật của trình duyệt (`crypto.getRandomValues`) cho mỗi lần lưu, đảm bảo
-  ciphertext luôn độc nhất cho dù dữ liệu mật khẩu bên trong trùng khớp.
+- **AES-GCM 256-bit:** Chuẩn mã hóa đối xứng xác thực (AEAD) tiên tiến nhất. Bất kỳ sự thay đổi trái phép nào đối với file mã hóa trên Gist sẽ làm quá trình giải mã thất bại ngay lập tức, chống tấn công chèn hay sửa đổi file dữ liệu.
+- **Vector khởi tạo (IV) ngẫu nhiên 12-byte:** Được sinh ra bởi API ngẫu nhiên bảo mật của trình duyệt (`crypto.getRandomValues`) cho mỗi lần lưu, đảm bảo ciphertext luôn độc nhất cho dù dữ liệu mật khẩu bên trong trùng khớp.
 
 ### 3. Tích hợp WebAssembly An toàn (Local WASM Package)
 
-Để tuân thủ tiêu chuẩn Content Security Policy (CSP) cực kỳ khắt khe của Chrome
-Extension **Manifest V3**:
+Để tuân thủ tiêu chuẩn Content Security Policy (CSP) cực kỳ khắt khe của Chrome Extension **Manifest V3**:
 
-- Nhân WebAssembly của thư viện mã hóa `hash-wasm` được **mã hóa base64 và nhúng
-  trực tiếp** vào bên trong bundle JS của extension.
-- Tiện ích cam kết **không tải bất kỳ tập lệnh (scripts) hoặc nhị phân
-  (binaries) từ bên ngoài** qua internet trong quá trình hoạt động, loại bỏ hoàn
-  toàn nguy cơ bị tấn công trung gian (MITM).
+- Nhân WebAssembly của thư viện mã hóa `hash-wasm` được **mã hóa base64 và nhúng trực tiếp** vào bên trong bundle JS của extension.
+- Tiện ích cam kết **không tải bất kỳ tập lệnh (scripts) hoặc nhị phân (binaries) từ bên ngoài** qua internet trong quá trình hoạt động, loại bỏ hoàn toàn nguy cơ bị tấn công trung gian (MITM).
 
 ---
 
 ## 🛠️ Hướng dẫn cài đặt
 
-Sau khi biên dịch, các file sản phẩm sẽ được tạo trong thư mục `/dist`. Bạn có
-thể nạp thư mục đã giải nén này vào trình duyệt của mình:
+Sau khi biên dịch, các file sản phẩm sẽ được tạo trong thư mục `/dist`. Bạn có thể nạp thư mục đã giải nén này vào trình duyệt của mình:
 
 ### 1. Google Chrome & các trình duyệt nhân Chromium (Edge, Brave, Opera, Cốc Cốc...)
 
-1. Chạy lệnh build tiện ích và đảm bảo bạn có thư mục `dist/chrome` (hoặc giải
-   nén từ tệp `dist/chrome.zip`).
+1. Chạy lệnh build tiện ích và đảm bảo bạn có thư mục `dist/chrome` (hoặc giải nén từ tệp `dist/chrome.zip`).
 2. Mở Chrome và truy cập đường dẫn [chrome://extensions/](chrome://extensions/).
 3. Bật **Chế độ dành cho nhà phát triển (Developer mode)** ở góc trên bên phải.
 4. Bấm nút **Tải tiện ích đã giải nén (Load unpacked)** ở góc trên bên trái.
@@ -121,48 +111,35 @@ thể nạp thư mục đã giải nén này vào trình duyệt của mình:
 
 #### Cách 1: Cài đặt tạm thời (Để phát triển - sẽ mất khi tắt trình duyệt)
 
-1. Mở Firefox và truy cập
-   [about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox).
+1. Mở Firefox và truy cập [about:debugging#/runtime/this-firefox](about:debugging#/runtime/this-firefox).
 2. Bấm nút **Load Temporary Add-on...** (Tải tiện ích tạm thời).
 3. Chọn file `manifest.json` nằm trong thư mục `dist/firefox`.
 
 #### Cách 2: Cài đặt vĩnh viễn (Yêu cầu Firefox Developer Edition hoặc Firefox Nightly)
 
 1. Truy cập `about:config` trên Firefox.
-2. Tìm từ khóa `xpinstall.signatures.required` và nhấp đúp để đổi giá trị thành
-   `false`.
-3. Truy cập [about:addons](about:addons), bấm vào biểu tượng bánh răng ở góc
-   trên bên phải, chọn **Install Add-on From File...** (Cài đặt tiện ích từ
-   file).
+2. Tìm từ khóa `xpinstall.signatures.required` và nhấp đúp để đổi giá trị thành `false`.
+3. Truy cập [about:addons](about:addons), bấm vào biểu tượng bánh răng ở góc trên bên phải, chọn **Install Add-on From File...** (Cài đặt tiện ích từ file).
 4. Chọn tệp `dist/firefox.zip` để cài đặt vĩnh viễn.
 
 ---
 
 ## 🔑 Cách tạo GitHub Personal Access Token
 
-Để liên kết két sắt an toàn với đám mây, tiện ích sử dụng kho lưu trữ GitHub
-Gists cá nhân của bạn. Thực hiện theo các bước đơn giản sau:
+Để liên kết két sắt an toàn với đám mây, tiện ích sử dụng kho lưu trữ GitHub Gists cá nhân của bạn. Thực hiện theo các bước đơn giản sau:
 
 1. **Đăng nhập:** Đăng nhập vào tài khoản [GitHub](https://github.com) của bạn.
 2. **Tạo nhanh mã Token:** Bấm vào liên kết được cấu hình sẵn quyền hạn này:
    [Trang tạo nhanh GitHub Token (Gist)](https://github.com/settings/tokens/new?description=Gistwarden%20Sync&scopes=gist).
 3. **Cấu hình thiết lập:**
    - **Note:** Nhập mô tả (ví dụ: `Gistwarden Vault`).
-   - **Expiration:** Chọn **No expiration** (Không bao giờ hết hạn) để tránh lỗi
-     đồng bộ trong tương lai.
-   - **Scopes:** Đảm bảo checkbox quyền **gist** đã được chọn (đây là quyền duy
-     nhất tiện ích cần).
-4. **Tạo mã:** Cuộn xuống cuối trang và bấm nút xanh **Generate token** (Tạo
-   token).
-5. **Lưu cấu hình:** Sao chép chuỗi mã Token vừa được tạo (bắt đầu bằng `ghp_`).
-   Mở tiện ích Gistwarden, vào phần **Cài đặt**, dán mã vào ô GitHub Token và
-   bấm **Lưu**.
+   - **Expiration:** Chọn **No expiration** (Không bao giờ hết hạn) để tránh lỗi đồng bộ trong tương lai.
+   - **Scopes:** Đảm bảo checkbox quyền **gist** đã được chọn (đây là quyền duy nhất tiện ích cần).
+4. **Tạo mã:** Cuộn xuống cuối trang và bấm nút xanh **Generate token** (Tạo token).
+5. **Lưu cấu hình:** Sao chép chuỗi mã Token vừa được tạo (bắt đầu bằng `ghp_`). Mở tiện ích Gistwarden, vào phần **Cài đặt**, dán mã vào ô GitHub Token và bấm **Lưu**.
 
 > [!WARNING]
-> **LƯU Ý BẢO MẬT QUAN TRỌNG:** Tuyệt đối không chia sẻ mã GitHub Token của bạn
-> cho bất kỳ ai. Tiện ích chỉ lưu mã này cục bộ trong bộ nhớ trình duyệt và giao
-> tiếp trực tiếp với máy chủ GitHub API. Không có bất kỳ máy chủ trung gian nào
-> của bên thứ ba được sử dụng.
+> **LƯU Ý BẢO MẬT QUAN TRỌNG:** Tuyệt đối không chia sẻ mã GitHub Token của bạn cho bất kỳ ai. Tiện ích chỉ lưu mã này cục bộ trong bộ nhớ trình duyệt và giao tiếp trực tiếp với máy chủ GitHub API. Không có bất kỳ máy chủ trung gian nào của bên thứ ba được sử dụng.
 
 ---
 
@@ -180,17 +157,23 @@ bun run build
 
 ### 2. Chế độ Watch (Tự động biên dịch khi sửa file)
 
+Tự động biên dịch lại khi phát hiện thay đổi trong tập tin:
+
 ```bash
 bun run watch
 ```
 
 ### 3. Kiểm tra kiểu (TypeCheck)
 
+Kiểm tra sự tuân thủ kiểu TypeScript:
+
 ```bash
 bun run typecheck
 ```
 
 ### 4. Chạy bộ kiểm thử (Unit Tests)
+
+Khởi chạy các bộ unit test cho mã hóa và tiện ích:
 
 ```bash
 bun run test

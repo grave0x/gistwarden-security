@@ -14,6 +14,7 @@
     "test": "bun test tests/",
     "typecheck": "tsc --noEmit",
     "lint": "bun run scripts/custom_linter.ts",
+    "build:readme": "bun run scripts/generate_readme.ts",
     "bump-version": "bun run version.ts"
   },
   "dependencies": {
