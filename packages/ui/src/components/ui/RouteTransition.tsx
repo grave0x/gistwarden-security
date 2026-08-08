@@ -16,9 +16,11 @@ export const RouteTransition: Component<{ children: JSX.Element }> = (
     if (currentPath !== prevPath) {
       const oldDepth = getPathDepth(prevPath);
       const newDepth = getPathDepth(currentPath);
+      const isGuideTransition =
+        currentPath.startsWith("/guide") || prevPath.startsWith("/guide");
       prevPath = currentPath;
 
-      if (!settingsStore.enablePageAnimations) {
+      if (!settingsStore.enablePageAnimations || isGuideTransition) {
         setAnimClass("");
         return;
       }

@@ -1,9 +1,9 @@
-import { type Component } from "solid-js";
+import { type Component, Show } from "solid-js";
 import { Header } from "@/components/ui/Header.tsx";
 import { View } from "@/core/types.ts";
 import { navigate } from "@/core/navigation.ts";
 import { openTab } from "@/core/tabs.ts";
-import { getAssetUrl } from "@/core/runtime.ts";
+import { getAssetUrl, isExtension } from "@/core/runtime.ts";
 
 import {
   AutofillIcon,
@@ -81,23 +81,25 @@ export const Settings: Component = () => {
           </div>
 
           {/* Autofill Options */}
-          <div
-            class="setting-row"
-            onClick={() => navigate(View.AutofillOptions)}
-          >
-            <div class="setting-row-left">
-              <AutofillIcon />
-              <div>
-                <div class="setting-label">
-                  {t("settings_autofill_options_label")}
-                </div>
-                <div class="setting-sub">
-                  {t("settings_autofill_options_sub")}
+          <Show when={isExtension()}>
+            <div
+              class="setting-row"
+              onClick={() => navigate(View.AutofillOptions)}
+            >
+              <div class="setting-row-left">
+                <AutofillIcon />
+                <div>
+                  <div class="setting-label">
+                    {t("settings_autofill_options_label")}
+                  </div>
+                  <div class="setting-sub">
+                    {t("settings_autofill_options_sub")}
+                  </div>
                 </div>
               </div>
+              <ChevronRightIcon />
             </div>
-            <ChevronRightIcon />
-          </div>
+          </Show>
 
           </div>
 
@@ -106,7 +108,13 @@ export const Settings: Component = () => {
           {/* User Guide */}
           <div
             class="setting-row"
-            onClick={() => openTab(getAssetUrl("guide.html"))}
+            onClick={() => {
+              if (isExtension()) {
+                openTab(getAssetUrl("guide.html"));
+              } else {
+                navigate(View.Guide);
+              }
+            }}
           >
             <div class="setting-row-left">
               <QuestionIcon />

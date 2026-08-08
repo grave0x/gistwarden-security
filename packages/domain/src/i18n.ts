@@ -781,6 +781,15 @@ const LangSchema = z.object({
   guide_exp_json_step3_title: z.string(),
   guide_exp_json_step3_desc: z.string(),
 
+  // Extension Downloads Guide
+  guide_item_download_extension: z.string(),
+  guide_dl_ext_lead: z.string(),
+  guide_dl_ext_firefox_title: z.string(),
+  guide_dl_ext_firefox_desc: z.string(),
+  guide_dl_ext_edge_title: z.string(),
+  guide_dl_ext_edge_desc: z.string(),
+  guide_dl_ext_btn: z.string(),
+
   // Guide Gist Token Steps
   guide_token_desc: z.string(),
   guide_token_step1_title: z.string(),

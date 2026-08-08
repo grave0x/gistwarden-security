@@ -139,6 +139,10 @@ function copyAssets() {
       webHtmlContent = webHtmlContent.replace("web-entry.tsx", "web-entry.js");
       writeFileSync(join(webDistDir, "index.html"), webHtmlContent);
     }
+    copyDirRecursive(join(uiDir, "icons"), join(webDistDir, "icons"));
+    copyDirRecursive(join(extSrcDir, "icons"), join(webDistDir, "icons"));
+    copyDirRecursive(join(uiDir, "images"), join(webDistDir, "images"));
+    copyDirRecursive(join(extSrcDir, "images"), join(webDistDir, "images"));
     writeFileSync(join(webDistDir, "web.css"), bundledAppCss);
   }
 
@@ -287,8 +291,22 @@ async function runVerifications() {
   }
 }
 
+function getAppVersionFromManifest(): string {
+  const manifestPath = join(extSrcDir, "manifest.json");
+  if (existsSync(manifestPath)) {
+    try {
+      const manifestObj = JSON.parse(readFileSync(manifestPath, "utf8"));
+      if (manifestObj.version) {
+        return manifestObj.version;
+      }
+    } catch (_) {}
+  }
+  return "1.0.0";
+}
+
 async function buildTargetDirectory(outputDir: string) {
   const enableSourcemap = !isFastDev;
+  const appVersion = getAppVersionFromManifest();
 
   const esmEntryPoints = [
     { in: join(extSrcDir, "extension/background.ts"), out: "background" },
@@ -309,7 +327,10 @@ async function buildTargetDirectory(outputDir: string) {
     format: "esm",
     target: "es2022",
     plugins: [solidPlugin()],
-    define: { "process.env.NODE_ENV": '"production"' },
+    define: {
+      "process.env.NODE_ENV": '"production"',
+      "APP_VERSION": JSON.stringify(appVersion),
+    },
     sourcemap: enableSourcemap,
   });
 
@@ -320,7 +341,10 @@ async function buildTargetDirectory(outputDir: string) {
     format: "iife",
     target: "es2022",
     plugins: [solidPlugin()],
-    define: { "process.env.NODE_ENV": '"production"' },
+    define: {
+      "process.env.NODE_ENV": '"production"',
+      "APP_VERSION": JSON.stringify(appVersion),
+    },
     sourcemap: enableSourcemap,
   });
 }
@@ -328,6 +352,7 @@ async function buildTargetDirectory(outputDir: string) {
 async function runBuild() {
   copyAssets();
   console.log(`Bundling with esbuild (${targetArg.toUpperCase()})...`);
+  const appVersion = getAppVersionFromManifest();
   try {
     if (buildExtension) {
       await buildTargetDirectory(chromeDir);
@@ -341,7 +366,10 @@ async function runBuild() {
         format: "esm",
         target: "es2022",
         plugins: [solidPlugin()],
-        define: { "process.env.NODE_ENV": '"production"' },
+        define: {
+          "process.env.NODE_ENV": '"production"',
+          "APP_VERSION": JSON.stringify(appVersion),
+        },
         sourcemap: false,
       });
     }

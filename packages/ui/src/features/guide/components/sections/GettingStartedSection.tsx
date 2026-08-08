@@ -1,7 +1,19 @@
 import { type Component, Show } from "solid-js";
 import { t } from "@/core/i18n.ts";
 import { APP_NAME } from "@/core/constants.ts";
-import { GithubIcon, InfoIcon, KeyIcon, LockIcon, ShieldAlertIcon, SyncIcon } from "@/icons/svg/index.ts";
+import { getAssetUrl } from "@/core/runtime.ts";
+import {
+  DownloadIcon,
+  ExternalLinkIcon,
+  GithubIcon,
+  GlobeIcon,
+  InfoIcon,
+  KeyIcon,
+  LockIcon,
+  ShieldAlertIcon,
+  SyncIcon,
+} from "@/icons/svg/index.ts";
+import Button from "@/components/ui/Button.tsx";
 
 export interface GuideSectionProps {
   readonly route: string;
@@ -42,6 +54,60 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
               <p>
                 {t("guide_start_ov_card3_desc")}
               </p>
+            </div>
+          </div>
+        </div>
+      </Show>
+
+      <Show when={subRoute() === "download-extension"}>
+        <div class="guide-article">
+          <div class="article-hero">
+            <div class="hero-header-row">
+              <DownloadIcon size={32} class="hero-icon" />
+              <h1>{t("guide_item_download_extension")}</h1>
+            </div>
+            <p class="hero-lead">
+              {t("guide_dl_ext_lead")}
+            </p>
+          </div>
+
+          <div class="article-cards-grid">
+            <div class="guide-card">
+              <h3>
+                <GlobeIcon size={18} /> {t("guide_dl_ext_firefox_title")}
+              </h3>
+              <p>{t("guide_dl_ext_firefox_desc")}</p>
+              <div class="mt-16">
+                <Button
+                  variant="primary"
+                  onClick={() =>
+                    window.open(
+                      "https://addons.mozilla.org/en-US/firefox/addon/gistwarden/",
+                      "_blank",
+                    )}
+                >
+                  <ExternalLinkIcon size={14} /> {t("guide_dl_ext_btn")}
+                </Button>
+              </div>
+            </div>
+
+            <div class="guide-card">
+              <h3>
+                <GlobeIcon size={18} /> {t("guide_dl_ext_edge_title")}
+              </h3>
+              <p>{t("guide_dl_ext_edge_desc")}</p>
+              <div class="mt-16">
+                <Button
+                  variant="primary"
+                  onClick={() =>
+                    window.open(
+                      "https://microsoftedge.microsoft.com/addons/detail/gistwarden/gcbibgbakekbbeeibgaeciiikbdlfndl",
+                      "_blank",
+                    )}
+                >
+                  <ExternalLinkIcon size={14} /> {t("guide_dl_ext_btn")}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -122,7 +188,7 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
                   {t("guide_token_step1_desc")}
                 </p>
                 <img
-                  src="images/gist/1.select exprire time.png"
+                  src={getAssetUrl("images/gist/1.select exprire time.png")}
                   alt="Select Expiration Time"
                   class="step-image"
                 />
@@ -137,7 +203,7 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
                   {t("guide_token_step2_desc")}
                 </p>
                 <img
-                  src="images/gist/2.make sure selected gist.png"
+                  src={getAssetUrl("images/gist/2.make sure selected gist.png")}
                   alt="Select Gist Scope"
                   class="step-image"
                 />
@@ -152,7 +218,7 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
                   {t("guide_token_step3_desc")}
                 </p>
                 <img
-                  src="images/gist/3.create generate button.png"
+                  src={getAssetUrl("images/gist/3.create generate button.png")}
                   alt="Generate Token Button"
                   class="step-image"
                 />
@@ -167,7 +233,7 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
                   {t("guide_token_step4_desc")}
                 </p>
                 <img
-                  src="images/gist/4.copy and save token.png"
+                  src={getAssetUrl("images/gist/4.copy and save token.png")}
                   alt="Copy and Save Token"
                   class="step-image"
                 />

@@ -847,6 +847,15 @@ export default {
   guide_exp_json_step3_title: "3. Steps to Export JSON Backup",
   guide_exp_json_step3_desc: "Open {APP_NAME} → navigate to Settings → Vault Options → Export Data → enter Master Password → choose JSON format and click Download JSON Backup.",
 
+  // Extension Downloads Guide
+  guide_item_download_extension: "Download Extension",
+  guide_dl_ext_lead: "Install the {APP_NAME} Extension on your browser to enjoy Autofill, FIDO2 Passkeys, and Auto-Lock.",
+  guide_dl_ext_firefox_title: "Firefox Browser (Firefox Add-on)",
+  guide_dl_ext_firefox_desc: "Download and install the official {APP_NAME} extension from Mozilla Firefox Add-ons Store.",
+  guide_dl_ext_edge_title: "Microsoft Edge Browser (Edge Add-on)",
+  guide_dl_ext_edge_desc: "Download and install the official {APP_NAME} extension from Microsoft Edge Add-ons Store.",
+  guide_dl_ext_btn: "Install Extension",
+
 
   // Guide Gist Token Steps
   guide_token_desc:

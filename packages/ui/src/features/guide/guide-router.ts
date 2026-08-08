@@ -1,6 +1,7 @@
 import { createSignal, onCleanup, type Component } from "solid-js";
 import { type TranslationKey } from "@gistwarden/domain";
 import type { IconProps } from "@/icons/svg/types.ts";
+import { isExtension, isWeb } from "@/core/runtime.ts";
 import {
   AutofillIcon,
   CardIcon,
@@ -54,6 +55,16 @@ export const GUIDE_STRUCTURE: readonly GuideCategoryDef[] = [
         route: "getting-started/overview",
         icon: InfoIcon,
       },
+      ...(isWeb()
+        ? [
+            {
+              id: "download-extension",
+              titleKey: "guide_item_download_extension" as const,
+              route: "getting-started/download-extension",
+              icon: DownloadIcon,
+            },
+          ]
+        : []),
       {
         id: "master-password",
         titleKey: "guide_item_master_password",
@@ -244,7 +255,12 @@ export const GUIDE_STRUCTURE: readonly GuideCategoryDef[] = [
 ];
 
 export function getRouteFromHash(): string {
-  const hash = window.location.hash.replace(/^#\/?/, "").trim();
+  let hash = window.location.hash.replace(/^#\/?/, "").trim();
+  if (hash.startsWith("guide/")) {
+    hash = hash.substring(6).trim();
+  } else if (hash === "guide") {
+    hash = "";
+  }
   if (!hash) return DEFAULT_GUIDE_ROUTE;
 
   const validRoutes = GUIDE_STRUCTURE.flatMap((cat) =>
@@ -265,7 +281,11 @@ export function getRouteFromHash(): string {
 }
 
 export function navigateGuide(route: string): void {
-  window.location.hash = `#${route}`;
+  if (isExtension()) {
+    window.location.hash = `#${route}`;
+  } else {
+    window.location.hash = `#/guide/${route}`;
+  }
 }
 
 export function useGuideRoute() {

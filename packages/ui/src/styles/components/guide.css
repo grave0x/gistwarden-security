@@ -61,6 +61,32 @@ body.light-theme.guide-body-native {
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
     z-index: 10;
     flex-shrink: 0;
+    .guide-header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .guide-back-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface-hover, rgba(255, 255, 255, 0.05));
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.2s ease;
+
+      &:hover {
+        background: var(--primary);
+        color: #fff;
+        border-color: var(--primary);
+      }
+    }
 
     .logo-area {
       display: flex;

@@ -1,8 +1,10 @@
 import type { Component } from "solid-js";
 import { openTab } from "@/core/tabs.ts";
-import { getAssetUrl } from "@/core/runtime.ts";
+import { getAssetUrl, isExtension } from "@/core/runtime.ts";
 import { t } from "@/core/i18n.ts";
 import { QuestionIcon } from "@/icons/svg/index.ts";
+import { navigate } from "@/core/navigation.ts";
+import { View } from "@gistwarden/domain";
 
 export interface GuideHelpButtonProps {
   readonly route: string;
@@ -15,7 +17,15 @@ export const GuideHelpButton: Component<GuideHelpButtonProps> = (props) => {
   const handleClick = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    openTab(getAssetUrl(`guide.html#${props.route}`));
+    if (isExtension()) {
+      openTab(getAssetUrl(`guide.html#${props.route}`));
+    } else {
+      if (props.route) {
+        window.location.hash = `#/guide/${props.route}`;
+      } else {
+        navigate(View.Guide);
+      }
+    }
   };
 
   const isLg = () => (props.size || 14) > 14;

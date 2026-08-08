@@ -23,6 +23,18 @@ import {
   type GeneratedPasswordHistoryItem,
   GeneratedPasswordHistoryListSchema,
 } from "./storage-schemas.ts";
+import {
+  getWebLocalItem,
+  getWebSessionItem,
+  getWebSessionItems,
+  hasWebLocalStorage,
+  hasWebSessionStorage,
+  removeWebLocalItem,
+  removeWebSessionItem,
+  setWebLocalItem,
+  setWebSessionItem,
+  setWebSessionItems,
+} from "./web-storage.ts";
 
 export function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null;
@@ -64,7 +76,7 @@ export async function getExtensionSettings(): Promise<
 export async function updateExtensionSettings(
   patch: Partial<ExtensionSettings>,
 ): Promise<Result<void, TranslationKey>> {
-  if (!hasLocalStorage()) {
+  if (!hasLocalStorage() && !hasWebLocalStorage()) {
     return err("storage_error");
   }
   const currentRes = await getExtensionSettings();
@@ -99,7 +111,7 @@ export async function getAccountSettings(): Promise<
 export async function updateAccountSettings(
   patch: Partial<AccountSettings>,
 ): Promise<Result<void, TranslationKey>> {
-  if (!hasLocalStorage()) {
+  if (!hasLocalStorage() && !hasWebLocalStorage()) {
     return err("storage_error");
   }
   const currentRes = await getAccountSettings();
@@ -115,7 +127,7 @@ export async function updateAccountSettings(
 export async function resetAccountSettings(): Promise<
   Result<void, TranslationKey>
 > {
-  if (!hasLocalStorage()) {
+  if (!hasLocalStorage() && !hasWebLocalStorage()) {
     return err("storage_error");
   }
   await removeLocalItem(STORAGE_KEY_ACCOUNT_SETTINGS);
@@ -129,80 +141,95 @@ export async function resetAccountSettings(): Promise<
 export async function getSessionItem(
   key: string,
 ): Promise<Result<unknown, TranslationKey>> {
-  if (!hasSessionStorage()) {
-    return err("storage_error");
-  }
-  try {
-    const res = await chrome.storage.session.get(key);
-    if (isRecord(res) && key in res) {
-      return ok(res[key]);
+  if (hasSessionStorage()) {
+    try {
+      const res = await chrome.storage.session.get(key);
+      if (isRecord(res) && key in res) {
+        return ok(res[key]);
+      }
+      return ok(null);
+    } catch (e) {
+      logger.storage.error(`Failed to get session item '${key}':`, e);
+      return err("storage_error");
     }
-    return ok(null);
-  } catch (e) {
-    logger.storage.error(`Failed to get session item '${key}':`, e);
-    return err("storage_error");
   }
+  if (hasWebSessionStorage()) {
+    return await getWebSessionItem(key);
+  }
+  return err("storage_error");
 }
 
 export async function setSessionItem(
   key: string,
   value: unknown,
 ): Promise<Result<void, TranslationKey>> {
-  if (!hasSessionStorage()) {
-    return err("storage_error");
+  if (hasSessionStorage()) {
+    try {
+      await chrome.storage.session.set({ [key]: value });
+      return ok();
+    } catch (e) {
+      logger.storage.error(`Failed to set session item '${key}':`, e);
+      return err("storage_error");
+    }
   }
-  try {
-    await chrome.storage.session.set({ [key]: value });
-    return ok();
-  } catch (e) {
-    logger.storage.error(`Failed to set session item '${key}':`, e);
-    return err("storage_error");
+  if (hasWebSessionStorage()) {
+    return await setWebSessionItem(key, value);
   }
+  return err("storage_error");
 }
 
 export async function getSessionItems(
   keys: string[],
 ): Promise<Result<Record<string, unknown>, TranslationKey>> {
-  if (!hasSessionStorage()) {
-    return err("storage_error");
-  }
-  try {
-    const res = await chrome.storage.session.get(keys);
-    if (isRecord(res)) {
-      return ok(res);
+  if (hasSessionStorage()) {
+    try {
+      const res = await chrome.storage.session.get(keys);
+      if (isRecord(res)) {
+        return ok(res);
+      }
+      return ok({});
+    } catch {
+      return err("storage_error");
     }
-    return ok({});
-  } catch {
-    return err("storage_error");
   }
+  if (hasWebSessionStorage()) {
+    return await getWebSessionItems(keys);
+  }
+  return err("storage_error");
 }
 
 export async function setSessionItems(
   items: Record<string, unknown>,
 ): Promise<Result<void, TranslationKey>> {
-  if (!hasSessionStorage()) {
-    return err("storage_error");
+  if (hasSessionStorage()) {
+    try {
+      await chrome.storage.session.set(items);
+      return ok();
+    } catch {
+      return err("storage_error");
+    }
   }
-  try {
-    await chrome.storage.session.set(items);
-    return ok();
-  } catch {
-    return err("storage_error");
+  if (hasWebSessionStorage()) {
+    return await setWebSessionItems(items);
   }
+  return err("storage_error");
 }
 
 export async function removeSessionItem(
   keys: string | string[],
 ): Promise<Result<void, TranslationKey>> {
-  if (!hasSessionStorage()) {
-    return err("storage_error");
+  if (hasSessionStorage()) {
+    try {
+      await chrome.storage.session.remove(keys);
+      return ok();
+    } catch {
+      return err("storage_error");
+    }
   }
-  try {
-    await chrome.storage.session.remove(keys);
-    return ok();
-  } catch {
-    return err("storage_error");
+  if (hasWebSessionStorage()) {
+    return await removeWebSessionItem(keys);
   }
+  return err("storage_error");
 }
 
 
@@ -284,79 +311,100 @@ export async function setSessionUnlocked(unlocked: boolean): Promise<void> {
   }
 }
 
-export async function clearLocal(): Promise<Result<void, TranslationKey>> {
-  if (!hasLocalStorage()) {
-    return err("storage_error");
+export async function clearLocalStorage(): Promise<Result<void, TranslationKey>> {
+  if (hasLocalStorage()) {
+    try {
+      await chrome.storage.local.clear();
+      return ok();
+    } catch (e) {
+      logger.storage.error("Failed to clear local storage:", e);
+      return err("storage_error");
+    }
   }
-  try {
-    await chrome.storage.local.clear();
-    return ok();
-  } catch (e) {
-    logger.storage.error("Failed to clear local storage:", e);
-    return err("storage_error");
+  if (hasWebLocalStorage()) {
+    if (typeof window !== "undefined" && window.localStorage) {
+      window.localStorage.clear();
+      return ok();
+    }
   }
+  return err("storage_error");
 }
 
 export async function clearSession(): Promise<Result<void, TranslationKey>> {
-  if (!hasSessionStorage()) {
-    return err("storage_error");
+  if (hasSessionStorage()) {
+    try {
+      await chrome.storage.session.clear();
+      return ok();
+    } catch (e) {
+      logger.storage.error("Failed to clear session storage:", e);
+      return err("storage_error");
+    }
   }
-  try {
-    await chrome.storage.session.clear();
-    return ok();
-  } catch (e) {
-    logger.storage.error("Failed to clear session storage:", e);
-    return err("storage_error");
+  if (hasWebSessionStorage()) {
+    if (typeof window !== "undefined" && window.sessionStorage) {
+      window.sessionStorage.clear();
+      return ok();
+    }
   }
+  return err("storage_error");
 }
 
 export async function getLocalItem(
   key: string,
 ): Promise<Result<unknown, TranslationKey>> {
-  if (!hasLocalStorage()) {
-    return err("storage_error");
-  }
-  try {
-    const res = await chrome.storage.local.get(key);
-    if (isRecord(res) && key in res) {
-      return ok(res[key]);
+  if (hasLocalStorage()) {
+    try {
+      const res = await chrome.storage.local.get(key);
+      if (isRecord(res) && key in res) {
+        return ok(res[key]);
+      }
+      return ok(null);
+    } catch (e) {
+      logger.storage.error(`Failed to get local item '${key}':`, e);
+      return err("storage_error");
     }
-    return ok(null);
-  } catch (e) {
-    logger.storage.error(`Failed to get local item '${key}':`, e);
-    return err("storage_error");
   }
+  if (hasWebLocalStorage()) {
+    return await getWebLocalItem(key);
+  }
+  return err("storage_error");
 }
 
 export async function setLocalItem(
   key: string,
   value: unknown,
 ): Promise<Result<void, TranslationKey>> {
-  if (!hasLocalStorage()) {
-    return err("storage_error");
+  if (hasLocalStorage()) {
+    try {
+      await chrome.storage.local.set({ [key]: value });
+      return ok();
+    } catch (e) {
+      logger.storage.error(`Failed to set local item '${key}':`, e);
+      return err("storage_error");
+    }
   }
-  try {
-    await chrome.storage.local.set({ [key]: value });
-    return ok();
-  } catch (e) {
-    logger.storage.error(`Failed to set local item '${key}':`, e);
-    return err("storage_error");
+  if (hasWebLocalStorage()) {
+    return await setWebLocalItem(key, value);
   }
+  return err("storage_error");
 }
 
 export async function removeLocalItem(
   keys: string | string[],
 ): Promise<Result<void, TranslationKey>> {
-  if (!hasLocalStorage()) {
-    return err("storage_error");
+  if (hasLocalStorage()) {
+    try {
+      await chrome.storage.local.remove(keys);
+      return ok();
+    } catch (e) {
+      logger.storage.error("Failed to remove local item:", e);
+      return err("storage_error");
+    }
   }
-  try {
-    await chrome.storage.local.remove(keys);
-    return ok();
-  } catch (e) {
-    logger.storage.error("Failed to remove local item:", e);
-    return err("storage_error");
+  if (hasWebLocalStorage()) {
+    return await removeWebLocalItem(keys);
   }
+  return err("storage_error");
 }
 
 export async function getPasswordHistory(): Promise<

@@ -1,6 +1,7 @@
 import { type Component, type JSX, Show } from "solid-js";
 import { ArrowLeftIcon, PopoutIcon } from "@/icons/svg/index.ts";
 import { handlePopout, isPopout } from "@/core/popout-utils.ts";
+import { isExtension } from "@/core/runtime.ts";
 import { t } from "@/core/i18n.ts";
 
 interface DetailHeaderProps {
@@ -19,7 +20,7 @@ export const DetailHeader: Component<DetailHeaderProps> = (props) => {
       <div class="detail-title">{props.title}</div>
       <div class="d-flex align-items-center gap-8 ml-auto">
         {props.rightActions}
-        <Show when={props.showPopout && !isPopout()}>
+        <Show when={props.showPopout && isExtension() && !isPopout()}>
           <button
             type="button"
             class="action-btn"

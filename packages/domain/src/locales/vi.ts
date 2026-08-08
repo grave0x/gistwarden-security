@@ -853,6 +853,15 @@ export default {
   guide_exp_json_step3_title: "3. Các bước xuất tệp sao lưu JSON",
   guide_exp_json_step3_desc: "Mở {APP_NAME} → chọn Cài đặt → Quản lý dữ liệu → Xuất dữ liệu (Export) → nhập Mật khẩu chính → chọn định dạng JSON và nhấn Tải tệp Sao lưu JSON.",
 
+  // Extension Downloads Guide
+  guide_item_download_extension: "Tải Extension",
+  guide_dl_ext_lead: "Cài đặt Extension {APP_NAME} trên trình duyệt để trải nghiệm tính năng Tự động điền, Passkey FIDO2 và Tự động khóa két bảo mật.",
+  guide_dl_ext_firefox_title: "Trình duyệt Firefox (Firefox Add-on)",
+  guide_dl_ext_firefox_desc: "Tải và cài đặt Extension {APP_NAME} chính thức trên Mozilla Firefox Add-ons Store.",
+  guide_dl_ext_edge_title: "Trình duyệt Microsoft Edge (Edge Add-on)",
+  guide_dl_ext_edge_desc: "Tải và cài đặt Extension {APP_NAME} chính thức trên Microsoft Edge Add-ons Store.",
+  guide_dl_ext_btn: "Cài đặt Extension",
+
 
   // Guide Gist Token Steps
   guide_token_desc:

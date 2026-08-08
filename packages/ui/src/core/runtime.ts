@@ -7,26 +7,56 @@ export function hasRuntime(): boolean {
   return typeof chrome !== "undefined" && !!chrome.runtime;
 }
 
+export type AppPlatform = "extension" | "web";
+
+/**
+ * Check if the application is running inside a browser extension environment.
+ */
+export function isExtension(): boolean {
+  return typeof chrome !== "undefined" && !!chrome.runtime && !!chrome.runtime.id;
+}
+
+/**
+ * Check if the application is running as a standalone web application.
+ */
+export function isWeb(): boolean {
+  return !isExtension();
+}
+
+/**
+ * Get the current execution platform ("extension" | "web").
+ */
+export function getPlatform(): AppPlatform {
+  return isExtension() ? "extension" : "web";
+}
+
 /**
  * Get the fully qualified URL for a resource path inside the extension.
  * Falls back to returning the path as-is if chrome.runtime is unavailable.
  */
 export function getAssetUrl(path: string): string {
   if (!hasRuntime() || !chrome.runtime.getURL) {
-    return path;
+    const cleanPath = path.replace(/^\//, "");
+    return `./${cleanPath}`;
   }
   return chrome.runtime.getURL(path);
 }
 
+declare const APP_VERSION: string | undefined;
+
 /**
- * Get the application version from the extension manifest.
+ * Get the application version from the extension manifest or build definition.
  * Falls back to "1.0.0" if unavailable.
  */
 export function getAppVersion(): string {
-  if (!hasRuntime() || !chrome.runtime.getManifest) {
-    return "1.0.0";
+  if (hasRuntime() && chrome.runtime.getManifest) {
+    const ver = chrome.runtime.getManifest().version;
+    if (ver) return ver;
   }
-  return chrome.runtime.getManifest().version || "1.0.0";
+  if (typeof APP_VERSION !== "undefined" && APP_VERSION) {
+    return APP_VERSION;
+  }
+  return "1.0.0";
 }
 
 /**

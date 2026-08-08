@@ -13,6 +13,7 @@ import { lock, logout } from "@/features/auth/auth-service.ts";
 import { syncVault } from "@/features/sync/sync-service.ts";
 import { confirm, setGlobalLoading } from "@gistwarden/ui";
 import { handlePopout, isPopout } from "@/core/popout-utils.ts";
+import { isExtension } from "@/core/runtime.ts";
 import { t } from "@/core/i18n.ts";
 import {
   FolderIcon,
@@ -186,7 +187,7 @@ export const Header: Component<HeaderProps> = (props) => {
         </Show>
 
         {/* Popout Button */}
-        <Show when={!isPopout()}>
+        <Show when={isExtension() && !isPopout()}>
           <button
             class="header-icon-btn"
             type="button"

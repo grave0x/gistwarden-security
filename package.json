@@ -10,6 +10,7 @@
     "build:extension": "bun run scripts/build.ts extension",
     "build:web": "bun run scripts/build.ts web",
     "build:all": "bun run scripts/build.ts all",
+    "serve": "bun run scripts/serve.ts",
     "test": "bun test tests/",
     "typecheck": "tsc --noEmit",
     "lint": "bun run scripts/custom_linter.ts",

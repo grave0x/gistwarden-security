@@ -75,15 +75,30 @@ export const Login: Component = () => {
   });
 
   onMount(async () => {
+    let tokenToSetup: string | null = null;
+
     const rawTokenRes = await getSessionItem(SESSION_KEY_PENDING_GITHUB_TOKEN);
     const rawToken = rawTokenRes.isOk() ? rawTokenRes.value : null;
     const parsed = z.string().safeParse(rawToken);
-
     if (parsed.success && parsed.data) {
-      const token = parsed.data;
+      tokenToSetup = parsed.data;
+    }
+
+    if (!tokenToSetup && typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const tokenFromUrl = urlParams.get("token");
+      if (tokenFromUrl) {
+        tokenToSetup = tokenFromUrl;
+        const cleanUrl = window.location.origin + window.location.pathname +
+          window.location.hash;
+        window.history.replaceState({}, document.title, cleanUrl);
+      }
+    }
+
+    if (tokenToSetup) {
       setGlobalLoading(true);
       await removeSessionItem(SESSION_KEY_PENDING_GITHUB_TOKEN);
-      const setupRes = await setupGithub(token);
+      const setupRes = await setupGithub(tokenToSetup);
       setGlobalLoading(false);
       if (setupRes.isErr()) {
         setError(t(setupRes.error));

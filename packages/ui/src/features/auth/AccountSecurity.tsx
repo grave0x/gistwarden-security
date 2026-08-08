@@ -14,6 +14,7 @@ import { ChevronRightIcon, KeyIcon } from "@/icons/svg/index.ts";
 import { t } from "@/core/i18n.ts";
 import SetPinModal from "@/features/auth/SetPinModal.tsx";
 import SessionTimeoutSettings from "@/features/settings/SessionTimeoutSettings.tsx";
+import { isExtension } from "@/core/runtime.ts";
 import Checkbox from "@/components/ui/Checkbox.tsx";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
 
@@ -92,40 +93,43 @@ export const AccountSecurity: Component = () => {
           <div class="alert alert-danger mb-16">{error()}</div>
         </Show>
 
-        {/* Section 1: Unlock Options */}
-        <div class="detail-section-title mt-0">
-          {t("unlock_options_header")}
-        </div>
-        <div class="card p-16 mb-20 d-flex flex-column gap-16">
-          {/* PIN Option */}
-          <Checkbox
-            id="unlock-pin"
-            checked={isPinEnabled()}
-            onChange={handlePinToggle}
-            label={t("unlock_with_pin")}
-          />
-
-          {/* Require master password on restart - Indent nested option */}
-          <Show when={isPinEnabled()}>
+        {/* Extension Only: Unlock Options & Vault Timeout Settings */}
+        <Show when={isExtension()}>
+          {/* Section 1: Unlock Options */}
+          <div class="detail-section-title mt-0">
+            {t("unlock_options_header")}
+          </div>
+          <div class="card p-16 mb-20 d-flex flex-column gap-16">
+            {/* PIN Option */}
             <Checkbox
-              id="pin-require-restart"
-              checked={isRequireRestart()}
-              onChange={handleRequireRestartChange}
-              label={t("require_master_password_on_restart")}
-              class="pl-24"
+              id="unlock-pin"
+              checked={isPinEnabled()}
+              onChange={handlePinToggle}
+              label={t("unlock_with_pin")}
             />
-          </Show>
-        </div>
 
-        {/* Section 2: Vault Timeout Settings */}
-        <SessionTimeoutSettings
-          timeout={currentTimeout()}
-          action={currentTimeoutAction()}
-          onChange={handleTimeoutChange}
-        />
+            {/* Require master password on restart - Indent nested option */}
+            <Show when={isPinEnabled()}>
+              <Checkbox
+                id="pin-require-restart"
+                checked={isRequireRestart()}
+                onChange={handleRequireRestartChange}
+                label={t("require_master_password_on_restart")}
+                class="pl-24"
+              />
+            </Show>
+          </div>
+
+          {/* Section 2: Vault Timeout Settings */}
+          <SessionTimeoutSettings
+            timeout={currentTimeout()}
+            action={currentTimeoutAction()}
+            onChange={handleTimeoutChange}
+          />
+        </Show>
 
         {/* Section 3: Change Master Password Action */}
-        <div class="detail-section-title">
+        <div class={`detail-section-title ${isExtension() ? "" : "mt-0"}`}>
           {t("settings_change_mp_title")}
         </div>
         <div class="card card-list">

@@ -49,6 +49,7 @@ const pathToViewMap = new Map<string, View>([
   ["/settings/autofill", View.AutofillOptions],
   ["/settings/about", View.About],
   ["/settings/about/troubleshooting", View.Troubleshooting],
+  ["/guide", View.Guide],
 ]);
 
 const viewToPathMap = new Map<View, string>(
@@ -60,6 +61,9 @@ export function getViewPath(view: View): string {
 }
 
 export function getPathView(path: string): View {
+  if (path.startsWith("/guide")) {
+    return View.Guide;
+  }
   return pathToViewMap.get(path) ?? View.Vault;
 }
 

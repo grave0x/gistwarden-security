@@ -11,3 +11,4 @@ export * from "./src/vault-sync-usecase.ts";
 export * from "./src/vault-mutation-usecases.ts";
 export * from "./src/autofill-usecases.ts";
 export * from "./src/vault-repository-usecase.ts";
+export * from "./src/web-router.ts";

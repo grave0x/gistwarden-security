@@ -346,45 +346,51 @@ export function launchGithubOauthFlow(
 ): Promise<Result<GitHubAccessToken, TranslationKey>> {
   return new Promise((resolve) => {
     if (
-      typeof chrome === "undefined" ||
-      !chrome.identity ||
-      !chrome.identity.launchWebAuthFlow
+      typeof chrome !== "undefined" &&
+      chrome.identity &&
+      chrome.identity.launchWebAuthFlow
     ) {
+      const redirectUri = chrome.identity.getRedirectURL();
+      const authUrl =
+        `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=gist&state=${
+          encodeURIComponent(redirectUri)
+        }`;
+
+      chrome.identity.launchWebAuthFlow(
+        {
+          url: authUrl,
+          interactive: true,
+        },
+        (redirectUrl) => {
+          if (chrome.runtime.lastError || !redirectUrl) {
+            resolve(err("login_error_oauth_fail"));
+            return;
+          }
+
+          const urlRes = safeParseUrl(redirectUrl);
+          if (urlRes.isErr()) {
+            resolve(err("login_error_oauth_fail"));
+            return;
+          }
+
+          const token = urlRes.value.searchParams.get("token");
+          if (!token) {
+            resolve(err("login_error_oauth_no_token"));
+            return;
+          }
+
+          resolve(ok(asGitHubAccessToken(token)));
+        },
+      );
+    } else if (typeof window !== "undefined") {
+      const webRedirectUri = window.location.origin + window.location.pathname;
+      const authUrl =
+        `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=gist&state=${
+          encodeURIComponent(webRedirectUri)
+        }`;
+      window.location.href = authUrl;
+    } else {
       resolve(err("login_error_oauth_fail"));
-      return;
     }
-
-    const redirectUri = chrome.identity.getRedirectURL();
-    const authUrl =
-      `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=gist&state=${
-        encodeURIComponent(redirectUri)
-      }`;
-
-    chrome.identity.launchWebAuthFlow(
-      {
-        url: authUrl,
-        interactive: true,
-      },
-      (redirectUrl) => {
-        if (chrome.runtime.lastError || !redirectUrl) {
-          resolve(err("login_error_oauth_fail"));
-          return;
-        }
-
-        const urlRes = safeParseUrl(redirectUrl);
-        if (urlRes.isErr()) {
-          resolve(err("login_error_oauth_fail"));
-          return;
-        }
-
-        const token = urlRes.value.searchParams.get("token");
-        if (!token) {
-          resolve(err("login_error_oauth_no_token"));
-          return;
-        }
-
-        resolve(ok(asGitHubAccessToken(token)));
-      },
-    );
   });
 }

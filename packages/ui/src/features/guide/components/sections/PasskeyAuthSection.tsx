@@ -1,6 +1,7 @@
 import { type Component, Show } from "solid-js";
 import { t } from "@/core/i18n.ts";
 import { APP_NAME } from "@/core/constants.ts";
+import { getAssetUrl } from "@/core/runtime.ts";
 import { GeneratorIcon, IdentityIcon, Shield2FAIcon, ShieldIcon, SyncIcon } from "@/icons/svg/index.ts";
 
 export interface GuideSectionProps {
@@ -62,7 +63,7 @@ export const PasskeyAuthSection: Component<GuideSectionProps> = (props) => {
                   {t("guide_pk_reg_step1_desc")}
                 </p>
                 <img
-                  src="images/passkey/1 select create pk.jpg"
+                  src={getAssetUrl("images/passkey/1 select create pk.jpg")}
                   alt="Select Create Passkey"
                   class="step-image"
                 />
@@ -77,7 +78,7 @@ export const PasskeyAuthSection: Component<GuideSectionProps> = (props) => {
                   {t("guide_pk_reg_step2_desc")}
                 </p>
                 <img
-                  src="images/passkey/2 select account to store pk.jpg"
+                  src={getAssetUrl("images/passkey/2 select account to store pk.jpg")}
                   alt="Select Account to Store Passkey"
                   class="step-image"
                 />
@@ -92,7 +93,7 @@ export const PasskeyAuthSection: Component<GuideSectionProps> = (props) => {
                   {t("guide_pk_reg_step3_desc")}
                 </p>
                 <img
-                  src="images/passkey/3 pk saved.jpg"
+                  src={getAssetUrl("images/passkey/3 pk saved.jpg")}
                   alt="Passkey Saved Successfully"
                   class="step-image"
                 />
@@ -123,7 +124,7 @@ export const PasskeyAuthSection: Component<GuideSectionProps> = (props) => {
                   {t("guide_pk_login_step1_desc")}
                 </p>
                 <img
-                  src="images/passkey/4 click login with pk.jpg"
+                  src={getAssetUrl("images/passkey/4 click login with pk.jpg")}
                   alt="Click Login with Passkey"
                   class="step-image"
                 />
@@ -138,7 +139,7 @@ export const PasskeyAuthSection: Component<GuideSectionProps> = (props) => {
                   {t("guide_pk_login_step2_desc")}
                 </p>
                 <img
-                  src="images/passkey/5 select your account.jpg"
+                  src={getAssetUrl("images/passkey/5 select your account.jpg")}
                   alt="Select Passkey Account"
                   class="step-image"
                 />
@@ -169,7 +170,7 @@ export const PasskeyAuthSection: Component<GuideSectionProps> = (props) => {
                   {t("guide_totp_step1_desc")}
                 </p>
                 <img
-                  src="images/totp/1. click icon scan if page show qr.jpg"
+                  src={getAssetUrl("images/totp/1. click icon scan if page show qr.jpg")}
                   alt="Scan QR Code for TOTP"
                   class="step-image"
                 />
@@ -184,7 +185,7 @@ export const PasskeyAuthSection: Component<GuideSectionProps> = (props) => {
                   {t("guide_totp_step2_desc")}
                 </p>
                 <img
-                  src="images/totp/2 save and copy otp.jpg"
+                  src={getAssetUrl("images/totp/2 save and copy otp.jpg")}
                   alt="Save and Copy OTP"
                   class="step-image"
                 />
@@ -215,7 +216,7 @@ export const PasskeyAuthSection: Component<GuideSectionProps> = (props) => {
                   {t("guide_passkey_gmig_step1_desc")}
                 </p>
                 <img
-                  src="images/google-migration/1.main interface.jpg"
+                  src={getAssetUrl("images/google-migration/1.main interface.jpg")}
                   alt="Google Authenticator Main Interface"
                   class="step-image"
                 />
@@ -230,7 +231,7 @@ export const PasskeyAuthSection: Component<GuideSectionProps> = (props) => {
                   {t("guide_passkey_gmig_step2_desc")}
                 </p>
                 <img
-                  src="images/google-migration/2. press menu button.png"
+                  src={getAssetUrl("images/google-migration/2. press menu button.png")}
                   alt="Press Menu Button"
                   class="step-image"
                 />
@@ -245,7 +246,7 @@ export const PasskeyAuthSection: Component<GuideSectionProps> = (props) => {
                   {t("guide_passkey_gmig_step3_desc")}
                 </p>
                 <img
-                  src="images/google-migration/3. select export codes.png"
+                  src={getAssetUrl("images/google-migration/3. select export codes.png")}
                   alt="Select Export Codes"
                   class="step-image"
                 />
@@ -260,7 +261,7 @@ export const PasskeyAuthSection: Component<GuideSectionProps> = (props) => {
                   {t("guide_passkey_gmig_step4_desc")}
                 </p>
                 <img
-                  src="images/google-migration/4. select codes.png"
+                  src={getAssetUrl("images/google-migration/4. select codes.png")}
                   alt="Select Account Codes"
                   class="step-image"
                 />
@@ -275,7 +276,7 @@ export const PasskeyAuthSection: Component<GuideSectionProps> = (props) => {
                   {t("guide_passkey_gmig_step5_desc")}
                 </p>
                 <img
-                  src="images/google-migration/5. use this qr .png"
+                  src={getAssetUrl("images/google-migration/5. use this qr .png")}
                   alt="Scan Migration QR Code"
                   class="step-image"
                 />
