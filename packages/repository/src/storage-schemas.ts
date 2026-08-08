@@ -55,6 +55,11 @@ export const GithubUserSchema = z.object({
 }).readonly();
 export type GithubUser = z.infer<typeof GithubUserSchema>;
 
+export const DEFAULT_EXCLUDED_DOMAINS: readonly string[] = Object.freeze([
+  "uongsuadaubung.github.io",
+  "gistwarden.uongsuadaubung.workers.dev",
+]);
+
 export const ExtensionSettingsSchema = z.object({
   language: SupportLanguageSchema.default(SupportLanguage.En),
   welcomeAccepted: z.boolean().default(false),
@@ -66,6 +71,7 @@ export const ExtensionSettingsSchema = z.object({
   autoSubmitOnAutofill: z.boolean().default(true),
   showAutofillSuggestionsOnFocus: z.boolean().default(true),
   enablePageAnimations: z.boolean().default(true),
+  excludedDomains: z.array(z.string()).default([...DEFAULT_EXCLUDED_DOMAINS]),
 }).readonly();
 export type ExtensionSettings = z.infer<typeof ExtensionSettingsSchema>;
 

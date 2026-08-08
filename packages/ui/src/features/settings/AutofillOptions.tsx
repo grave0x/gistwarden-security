@@ -1,4 +1,5 @@
-import { type Component, Show } from "solid-js";
+import { DEFAULT_EXCLUDED_DOMAINS } from "@gistwarden/repository";
+import { type Component, createSignal, For, Show } from "solid-js";
 import { setSettingsStore, settingsStore } from "@/core/store.ts";
 import { View } from "@/core/types.ts";
 import { navigate } from "@/core/navigation.ts";
@@ -6,8 +7,13 @@ import { updateExtensionSettings } from "@/core/storage.ts";
 import { t } from "@/core/i18n.ts";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
 import Checkbox from "@/components/ui/Checkbox.tsx";
+import Input from "@/components/ui/Input.tsx";
+import Button from "@/components/ui/Button.tsx";
+import { PlusIcon, TrashIcon } from "@/icons/svg/index.ts";
 
 export const AutofillOptions: Component = () => {
+  const [newDomain, setNewDomain] = createSignal("");
+
   const handleBack = () => {
     navigate(View.Settings);
   };
@@ -31,6 +37,36 @@ export const AutofillOptions: Component = () => {
       setSettingsStore("showAutofillSuggestionsOnFocus", true);
       await updateExtensionSettings({ showAutofillSuggestionsOnFocus: true });
     }
+  };
+
+  const excludedDomains = () => settingsStore.excludedDomains || [];
+
+  const isDefaultDomain = (domain: string) =>
+    DEFAULT_EXCLUDED_DOMAINS.includes(domain.toLowerCase().trim());
+
+  const handleAddDomain = async () => {
+    const raw = newDomain().trim();
+    if (!raw) return;
+    const clean = raw
+      .toLowerCase()
+      .replace(/^https?:\/\//, "")
+      .replace(/\/.*$/, "");
+    if (!clean) return;
+
+    const current = [...excludedDomains()];
+    if (!current.includes(clean)) {
+      const updated = [...current, clean];
+      setSettingsStore("excludedDomains", updated);
+      await updateExtensionSettings({ excludedDomains: updated });
+    }
+    setNewDomain("");
+  };
+
+  const handleRemoveDomain = async (domain: string) => {
+    if (isDefaultDomain(domain)) return;
+    const updated = excludedDomains().filter((d) => d !== domain);
+    setSettingsStore("excludedDomains", updated);
+    await updateExtensionSettings({ excludedDomains: updated });
   };
 
   const isShowSuggestionsEnabled = () =>
@@ -68,6 +104,70 @@ export const AutofillOptions: Component = () => {
               />
             </div>
           </Show>
+        </div>
+
+        {/* Excluded Domains Section */}
+        <div class="detail-section-title">
+          {t("autofill_excluded_domains_title")}
+        </div>
+        <div class="card p-16 mb-20 d-flex flex-column gap-16">
+          <p class="m-0 font-sz-13 text-secondary lh-1_5">
+            {t("autofill_excluded_domains_sub")}
+          </p>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleAddDomain();
+            }}
+            class="excluded-domain-form"
+          >
+            <div class="excluded-input-wrapper">
+              <Input
+                id="new-excluded-domain-input"
+                type="text"
+                value={newDomain()}
+                onInput={(e) => setNewDomain(e.currentTarget.value)}
+                placeholder={t("autofill_excluded_domain_placeholder")}
+                class="w-100 font-mono"
+              />
+            </div>
+            <Button
+              type="submit"
+              variant="primary"
+              disabled={!newDomain().trim()}
+              class="excluded-add-btn"
+            >
+              <PlusIcon /> {t("autofill_btn_add_domain")}
+            </Button>
+          </form>
+
+          <div class="excluded-domains-list">
+            <For each={excludedDomains()}>
+              {(domain) => (
+                <div class="excluded-domain-item">
+                  <div class="d-flex align-items-center gap-8 min-w-0">
+                    <span class="excluded-domain-name">{domain}</span>
+                    <Show when={isDefaultDomain(domain)}>
+                      <span class="excluded-domain-tag">
+                        {t("autofill_excluded_domain_default_tag")}
+                      </span>
+                    </Show>
+                  </div>
+                  <Show when={!isDefaultDomain(domain)}>
+                    <button
+                      type="button"
+                      class="excluded-domain-remove-btn"
+                      title={t("btn_delete")}
+                      onClick={() => handleRemoveDomain(domain)}
+                    >
+                      <TrashIcon />
+                    </button>
+                  </Show>
+                </div>
+              )}
+            </For>
+          </div>
         </div>
       </div>
     </div>

@@ -312,7 +312,7 @@ export const CheckAutofillSuggestionResponseSchema = z.discriminatedUnion(
     }),
     z.object({
       success: z.literal(false),
-      reason: z.enum(["invalid_domain", "locked", "no_matches"]),
+      reason: z.enum(["invalid_domain", "locked", "no_matches", "excluded_domain"]),
     }),
   ],
 );

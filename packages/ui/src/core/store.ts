@@ -2,6 +2,7 @@ import { createStore } from "solid-js/store";
 import { computeHmac, ThemeMode, View } from "@gistwarden/domain";
 import {
   type ConfirmType,
+  DEFAULT_EXCLUDED_DOMAINS,
   DEFAULT_GITHUB_CONFIG,
   DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
   DEFAULT_PIN_CONFIG,
@@ -35,6 +36,7 @@ export interface ExtensionSettingsStore {
   autoSubmitOnAutofill: boolean;
   showAutofillSuggestionsOnFocus: boolean;
   enablePageAnimations: boolean;
+  excludedDomains: readonly string[];
   isLoaded: boolean;
 }
 
@@ -101,6 +103,7 @@ export const initialExtensionSettings: Omit<
   autoSubmitOnAutofill: true,
   showAutofillSuggestionsOnFocus: true,
   enablePageAnimations: true,
+  excludedDomains: DEFAULT_EXCLUDED_DOMAINS,
 };
 
 export const initialAccountState: Omit<AccountStore, "isLoaded"> = {

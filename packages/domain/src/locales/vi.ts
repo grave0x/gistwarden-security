@@ -385,6 +385,12 @@ export default {
   auto_submit_on_autofill_label: "Tự động đăng nhập sau khi tự điền",
   auto_submit_on_autofill_sub:
     "Tự động gửi form hoặc click nút Đăng nhập sau khi chọn tài khoản từ gợi ý",
+  autofill_excluded_domains_title: "Danh sách tên miền ngoại lệ",
+  autofill_excluded_domains_sub:
+    "Không gửi thông báo lưu mật khẩu hoặc hiển thị gợi ý tự động điền trên các trang web này",
+  autofill_excluded_domain_placeholder: "Ví dụ: domain.com",
+  autofill_btn_add_domain: "Thêm",
+  autofill_excluded_domain_default_tag: "Mặc định",
   settings_account_security: "Bảo mật tài khoản",
   settings_account_security_sub: "Khóa bằng mã PIN và thời gian chờ phiên",
   account_security_title: "Bảo mật tài khoản",

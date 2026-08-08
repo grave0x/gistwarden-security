@@ -383,6 +383,12 @@ export default {
   auto_submit_on_autofill_label: "Auto-submit after autofill",
   auto_submit_on_autofill_sub:
     "Automatically submit form or click Login button after selecting an account from suggestions",
+  autofill_excluded_domains_title: "Excluded Domains",
+  autofill_excluded_domains_sub:
+    "Never prompt to save passwords or display autofill suggestions on these websites",
+  autofill_excluded_domain_placeholder: "e.g., domain.com",
+  autofill_btn_add_domain: "Add",
+  autofill_excluded_domain_default_tag: "Default",
   settings_account_security: "Account Security",
   settings_account_security_sub: "PIN unlock and session timeout options",
   account_security_title: "Account Security",

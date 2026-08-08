@@ -12,6 +12,8 @@ import {
   VaultItemType,
 } from "@gistwarden/domain";
 import {
+  DEFAULT_EXCLUDED_DOMAINS,
+  getExtensionSettings,
   getLocalItem,
   removeLocalItem,
   setLocalItem,
@@ -28,6 +30,24 @@ const SubmittedCredentialsSchema = z.object({
   password: z.string(),
 }).readonly();
 
+export function isDomainExcluded(
+  domainOrUrl: string,
+  excludedList?: readonly string[],
+): boolean {
+  if (!domainOrUrl) return false;
+  const list = excludedList && excludedList.length > 0
+    ? excludedList
+    : DEFAULT_EXCLUDED_DOMAINS;
+  const normalized = domainOrUrl.toLowerCase().trim();
+  return list.some((ex) => {
+    const cleanEx = ex.toLowerCase().trim().replace(/^https?:\/\//, "").replace(
+      /\/.*$/,
+      "",
+    );
+    if (!cleanEx) return false;
+    return normalized.includes(cleanEx) || cleanEx.includes(normalized);
+  });
+}
 
 export async function processSubmittedCredentialsUseCase(
   rawCreds: unknown,
@@ -42,10 +62,21 @@ export async function processSubmittedCredentialsUseCase(
 
   if (/^\d{6}$/.test(cleanPassword)) return;
 
-  const vaultData = await getDecryptedVaultItems();
-  const items = vaultData ? vaultData.items : [];
+  const settingsRes = await getExtensionSettings();
+  const excludedList = settingsRes.isOk()
+    ? settingsRes.value.excludedDomains
+    : DEFAULT_EXCLUDED_DOMAINS;
 
   const domain = creds.domain || getBaseDomain(creds.url);
+  if (
+    isDomainExcluded(domain, excludedList) ||
+    isDomainExcluded(creds.url, excludedList)
+  ) {
+    return;
+  }
+
+  const vaultData = await getDecryptedVaultItems();
+  const items = vaultData ? vaultData.items : [];
   const normalizedUser = creds.username.toLowerCase().trim();
 
   const domainItems = items.filter((item) => {
@@ -195,6 +226,15 @@ export async function checkAutofillSuggestionUseCase(
 ): Promise<CheckAutofillSuggestionResponse> {
   if (!domainStr) {
     return { success: false, reason: "invalid_domain" };
+  }
+
+  const settingsRes = await getExtensionSettings();
+  const excludedList = settingsRes.isOk()
+    ? settingsRes.value.excludedDomains
+    : DEFAULT_EXCLUDED_DOMAINS;
+
+  if (isDomainExcluded(domainStr, excludedList)) {
+    return { success: false, reason: "excluded_domain" };
   }
 
   const vaultData = await getDecryptedVaultItems();
