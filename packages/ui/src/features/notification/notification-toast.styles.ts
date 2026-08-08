@@ -9,7 +9,7 @@ export const notificationToastCss = `
   max-width: calc(100vw - 40px) !important;
   z-index: 2147483647 !important;
   pointer-events: auto !important;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   box-sizing: border-box !important;
 }
 

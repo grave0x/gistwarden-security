@@ -18,6 +18,7 @@ import {
 } from "@solidjs/router";
 import {
   accountStore,
+  getPathView,
   getViewPath,
   init,
   lock,
@@ -26,6 +27,7 @@ import {
   resetAccountStore,
   resetUiStore,
   setActiveNavigator,
+  setUiStore,
   settingsStore,
   uiStore,
 } from "@gistwarden/ui";
@@ -97,12 +99,9 @@ const RouterSyncHandler: Component = () => {
   });
 
   createEffect(() => {
-    const targetPath = getViewPath(uiStore.view);
-    if (uiStore.view === View.Guide && location.pathname.startsWith("/guide")) {
-      return;
-    }
-    if (location.pathname !== targetPath) {
-      nav(targetPath, { replace: true });
+    const viewFromPath = getPathView(location.pathname);
+    if (viewFromPath !== uiStore.view) {
+      setUiStore("view", viewFromPath);
     }
   });
 
@@ -126,7 +125,7 @@ const MainLayout: Component<RouteSectionProps> = (props) => {
           </Match>
 
           {/* Regular vault locking/login */}
-          <Match when={accountStore.isLocked}>
+          <Match when={accountStore.isLocked && uiStore.view !== View.Guide}>
             <Switch>
               <Match when={uiStore.view === View.Welcome}>
                 <Welcome />

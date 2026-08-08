@@ -123,6 +123,7 @@ function copyAssets() {
       copyDirRecursive(join(extSrcDir, "icons"), join(targetDir, "icons"));
       copyDirRecursive(join(uiDir, "images"), join(targetDir, "images"));
       copyDirRecursive(join(extSrcDir, "images"), join(targetDir, "images"));
+      copyDirRecursive(join(uiDir, "fonts"), join(targetDir, "fonts"));
 
       // Copy bundled CSS assets
       writeFileSync(join(targetDir, "popup.css"), bundledAppCss);
@@ -143,6 +144,7 @@ function copyAssets() {
     copyDirRecursive(join(extSrcDir, "icons"), join(webDistDir, "icons"));
     copyDirRecursive(join(uiDir, "images"), join(webDistDir, "images"));
     copyDirRecursive(join(extSrcDir, "images"), join(webDistDir, "images"));
+    copyDirRecursive(join(uiDir, "fonts"), join(webDistDir, "fonts"));
     writeFileSync(join(webDistDir, "web.css"), bundledAppCss);
   }
 
