@@ -1,6 +1,7 @@
 import { type Component, onMount, Show } from "solid-js";
 import { t } from "@/core/i18n.ts";
 import { APP_NAME } from "@/core/constants.ts";
+import { getAppVersion } from "@/core/runtime.ts";
 import { accountStore, settingsStore } from "@/core/store.ts";
 import { init, updateLanguage } from "@gistwarden/ui";
 import Button from "@/components/ui/Button.tsx";
@@ -48,7 +49,7 @@ export const Guide: Component = () => {
             />
             <div class="brand">
               <h1>{APP_NAME}</h1>
-              <span class="badge">v1.0.0</span>
+              <span class="badge">v{getAppVersion()}</span>
             </div>
           </div>
 

@@ -5,15 +5,15 @@ import {
   type VaultItem,
   VaultItemType,
 } from "@gistwarden/domain";
-
-export { getVaultItemFallbackName };
-import { confirm, setGlobalLoading, showToast } from "../../core/ui-service.ts";
+import { confirm, setGlobalLoading, showToast } from "@/core/ui-service.ts";
 import { deleteItem } from "@/features/vault/vault-service.ts";
 import { navigate } from "@/core/navigation.ts";
 import {
   getVaultItemStrategy,
   getVaultItemTypeLabel as registryGetTypeLabel,
 } from "@/features/vault/registry/vault-item-registry.ts";
+
+export { getVaultItemFallbackName };
 
 export const getVaultItemTypeLabel = registryGetTypeLabel;
 

@@ -1,0 +1,35 @@
+import type { Component } from "solid-js";
+import { openTab } from "@/core/tabs.ts";
+import { getAssetUrl } from "@/core/runtime.ts";
+import { t } from "@/core/i18n.ts";
+import { QuestionIcon } from "@/icons/svg/index.ts";
+
+export interface GuideHelpButtonProps {
+  readonly route: string;
+  readonly title?: string;
+  readonly size?: number;
+  readonly class?: string;
+}
+
+export const GuideHelpButton: Component<GuideHelpButtonProps> = (props) => {
+  const handleClick = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    openTab(getAssetUrl(`guide.html#${props.route}`));
+  };
+
+  const isLg = () => (props.size || 14) > 14;
+
+  return (
+    <button
+      type="button"
+      class={`action-btn text-muted hover-text-primary guide-help-btn ${isLg() ? "guide-help-btn-lg" : ""} ${props.class || ""}`}
+      title={props.title || t("settings_user_guide")}
+      onClick={handleClick}
+    >
+      <QuestionIcon size={props.size || 14} />
+    </button>
+  );
+};
+
+export default GuideHelpButton;

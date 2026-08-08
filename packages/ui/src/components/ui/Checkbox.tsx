@@ -1,4 +1,4 @@
-import { type Component, Show } from "solid-js";
+import { type Component, type JSX, Show } from "solid-js";
 
 interface CheckboxProps {
   id: string;
@@ -6,6 +6,7 @@ interface CheckboxProps {
   onChange: (checked: boolean) => void;
   label?: string;
   description?: string;
+  suffix?: JSX.Element;
   class?: string;
   disabled?: boolean;
 }
@@ -35,6 +36,9 @@ export const Checkbox: Component<CheckboxProps> = (props) => {
           >
             {props.label}
           </label>
+        </Show>
+        <Show when={props.suffix}>
+          {props.suffix}
         </Show>
       </div>
       <Show when={props.description}>

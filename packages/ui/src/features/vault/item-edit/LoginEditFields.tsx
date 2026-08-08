@@ -2,6 +2,7 @@ import { type Component, createSignal, For, Index, Show } from "solid-js";
 import { t } from "@/core/i18n.ts";
 import Input from "@/components/ui/Input.tsx";
 import Select from "@/components/ui/Select.tsx";
+import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
 import {
   DragIcon,
   MinusCircleIcon,
@@ -184,8 +185,9 @@ export const LoginEditFields: Component<LoginEditFieldsProps> = (props) => {
       </Show>
 
       {/* TOTP Section */}
-      <div class="detail-section-title">
-        {t("detail_section_security")}
+      <div class="detail-section-title d-inline-flex align-items-center gap-6">
+        <span>{t("detail_section_security")}</span>
+        <GuideHelpButton route="passkey-auth/totp-authenticator" />
       </div>
       <div class="card mb-16">
         <FormField id="item-totp" label={t("edit_label_totp")}>
@@ -283,8 +285,9 @@ export const LoginEditFields: Component<LoginEditFieldsProps> = (props) => {
 
               <Show when={isGearOpen(idx) || u().match != null}>
                 <div class="match-detection-container">
-                  <div class="match-detection-label">
-                    {t("match_detection_label")}
+                  <div class="match-detection-label d-inline-flex align-items-center gap-6 mb-4">
+                    <span>{t("match_detection_label")}</span>
+                    <GuideHelpButton route="vault-management/logins" />
                   </div>
                   <Select
                     id={`item-uri-match-${idx}`}

@@ -146,15 +146,18 @@
 }
 
 .checkbox-grid {
-  display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
-  gap: 12px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 6px;
   margin-bottom: 20px;
 
   .checkbox-container {
-    flex: 1;
-    min-width: 75px;
+    min-width: 0;
+    width: 100%;
+  }
+
+  .checkbox-label {
+    white-space: nowrap;
   }
 }
 

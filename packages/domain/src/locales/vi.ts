@@ -98,6 +98,7 @@ export default {
   login_title_setup: "Cấu hình bộ lưu trữ đám mây GitHub Gist",
   login_method_oauth: "Đăng nhập GitHub (OAuth)",
   login_method_pat: "Dùng Token (PAT)",
+  login_pat_label: "Mã truy cập cá nhân GitHub (PAT)",
   login_pat_help:
     "Token cần có quyền truy cập <strong>gist</strong>. Tiện ích sẽ tạo một Gist bí mật (secret gist) để lưu trữ két sắt đã mã hóa của bạn.",
   login_oauth_help:
@@ -685,12 +686,12 @@ export default {
 
   // Vault Management Guides
   guide_vm_logins_lead: "Quản lý tài khoản đăng nhập web, địa chỉ URIs, chế độ khớp tên miền và bảo mật từng mục.",
-  guide_vm_logins_card1_title: "Chế độ khớp Tên miền (Domain Match Modes)",
-  guide_vm_logins_card1_item1: "Base Domain (Mặc định): Khớp tất cả subdomains (ví dụ app.github.com khớp với github.com).",
-  guide_vm_logins_card1_item2: "Host / Exact Host: Chỉ khớp đúng hostname chính xác (ví dụ login.github.com).",
-  guide_vm_logins_card1_item3: "Exact / Full URL: Khớp toàn bộ đường dẫn URL bao gồm port và path.",
-  guide_vm_logins_card1_item4: "RegEx Pattern: Khớp theo biểu thức chính quy linh hoạt.",
-  guide_vm_logins_card1_item5: "Never: Tuyệt đối không bao giờ tự động gợi ý điền tài khoản này cho bất kỳ trang web nào.",
+  guide_vm_logins_card1_title: "Chi tiết các Chế độ khớp Tên miền (Domain Match Modes)",
+  guide_vm_logins_card1_item1: "Base Domain (Tên miền gốc - Mặc định): Khớp tất cả các trang con (Subdomain). Ví dụ: Lưu 'https://github.com' sẽ gợi ý điền trên cả 'gist.github.com', 'education.github.com' và 'login.github.com'. Thích hợp cho 90% các dịch vụ web thông thường.",
+  guide_vm_logins_card1_item2: "Host / Exact Host (Hostname chính xác): Chỉ khớp đúng tên miền máy chủ chính xác. Ví dụ: Lưu 'https://mail.google.com' chỉ gợi ý khi vào đúng 'mail.google.com', KHÔNG gợi ý khi vào 'drive.google.com' hay 'calendar.google.com'.",
+  guide_vm_logins_card1_item3: "Exact / Full URL (Khớp toàn bộ URL): Khớp chính xác từng ký tự bao gồm cả Cổng (Port) và Đường dẫn (Path). Ví dụ: Lưu 'https://192.168.1.1:8080/admin/login' chỉ gợi ý đúng trang login admin này, KHÔNG gợi ý nếu vào '/user/login'. Thích hợp cho Router, Server NAS hay trang Admin nội bộ.",
+  guide_vm_logins_card1_item4: "RegEx Pattern (Biểu thức chính quy): Khớp theo mẫu RegEx linh hoạt. Ví dụ: Lưu mẫu '^https:\\/\\/(dev|staging)\\.company\\.com' sẽ khớp và gợi ý trên cả 'dev.company.com' và 'staging.company.com', nhưng tự động bỏ qua 'prod.company.com'. Thích hợp cho Lập trình viên & SysAdmin.",
+  guide_vm_logins_card1_item5: "Never (Không bao giờ gợi ý): Tuyệt đối KHÔNG hiển thị gợi ý tự động điền tài khoản này trên bất kỳ trang web nào (chống bị mã độc trên web rình rập điền tự động). Thích hợp cho các tài khoản cực kỳ nhạy cảm chỉ muốn copy thủ công khi cần.",
   guide_vm_logins_card2_title: "Lưu Nhiều Địa Chỉ URIs",
   guide_vm_logins_card2_desc: "Mỗi tài khoản đăng nhập cho phép thêm nhiều địa chỉ URI khác nhau với các chế độ khớp riêng biệt cho từng URI.",
   guide_vm_logins_card3_title: "Yêu cầu Mật khẩu chính (Mật khẩu chính Re-prompt)",

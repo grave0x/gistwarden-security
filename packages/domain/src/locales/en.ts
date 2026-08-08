@@ -95,6 +95,7 @@ export default {
   login_title_setup: "Configure GitHub Gist Cloud Storage",
   login_method_oauth: "Login with GitHub (OAuth)",
   login_method_pat: "Use Token (PAT)",
+  login_pat_label: "GitHub Personal Access Token (PAT)",
   login_pat_help:
     "Token needs <strong>gist</strong> scope. The extension will create a secret Gist to store your encrypted vault.",
   login_oauth_help:
@@ -679,12 +680,12 @@ export default {
 
   // Vault Management Guides
   guide_vm_logins_lead: "Manage web login accounts, URIs, smart domain matching options, and item security.",
-  guide_vm_logins_card1_title: "Domain Match Modes",
-  guide_vm_logins_card1_item1: "Base Domain (Default): Matches all subdomains (e.g. app.github.com matches github.com).",
-  guide_vm_logins_card1_item2: "Host / Exact Host: Matches the exact hostname only (e.g. login.github.com).",
-  guide_vm_logins_card1_item3: "Exact / Full URL: Matches the full URL path including port and path.",
-  guide_vm_logins_card1_item4: "RegEx Pattern: Matches via flexible regular expressions.",
-  guide_vm_logins_card1_item5: "Never: Never automatically offers or suggests autofill for this item on any website.",
+  guide_vm_logins_card1_title: "Detailed Domain Match Modes & Use Cases",
+  guide_vm_logins_card1_item1: "Base Domain (Default): Matches all subdomains. Example: Saving 'https://github.com' suggests credentials on 'gist.github.com', 'education.github.com', and 'login.github.com'. Recommended for 90% of standard web services.",
+  guide_vm_logins_card1_item2: "Host / Exact Host: Matches the exact hostname only. Example: Saving 'https://mail.google.com' offers autofill on 'mail.google.com' ONLY, NOT on 'drive.google.com' or 'calendar.google.com'.",
+  guide_vm_logins_card1_item3: "Exact / Full URL: Matches exact characters including Port and Path. Example: Saving 'https://192.168.1.1:8080/admin/login' matches only this admin login URL, NOT '/user/login'. Ideal for Routers, NAS servers, or internal admin portals.",
+  guide_vm_logins_card1_item4: "RegEx Pattern: Matches via flexible Regular Expressions. Example: Pattern '^https:\\/\\/(dev|staging)\\.company\\.com' offers autofill on both 'dev.company.com' and 'staging.company.com', while skipping 'prod.company.com'. Great for Developers & SysAdmins.",
+  guide_vm_logins_card1_item5: "Never: Never offers or displays autofill suggestions for this item on any site (prevents malicious scripts from auto-capturing credentials). Ideal for high-risk accounts where manual copy/paste is preferred.",
   guide_vm_logins_card2_title: "Multiple URIs Support",
   guide_vm_logins_card2_desc: "Each login item allows storing multiple URIs with distinct match options.",
   guide_vm_logins_card3_title: "Master Password Re-prompt",

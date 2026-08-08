@@ -31,6 +31,21 @@ function isRouteContract(
   );
 }
 
+function isCommandOptions(
+  val: unknown,
+): val is {
+  type: string;
+  schema?: z.ZodTypeAny;
+  internalOnly?: boolean;
+  execute: (payload: unknown, context: MessageContext) => unknown;
+} {
+  return (
+    isRecord(val) &&
+    typeof val.type === "string" &&
+    typeof val.execute === "function"
+  );
+}
+
 export function createCommand<
   TSchema extends z.ZodTypeAny,
   TResponse,
@@ -60,28 +75,31 @@ export function createCommand(
   routeOrOptions: unknown,
   handler?: unknown,
 ): MessageCommand {
-  if (isRouteContract(routeOrOptions)) {
+  if (isRouteContract(routeOrOptions) && typeof handler === "function") {
     const route = routeOrOptions;
-    const fn = handler as (payload: unknown, context: MessageContext) => unknown;
+    const fn = handler;
     return {
       type: route.type,
       payloadSchema: route.payloadSchema,
       responseSchema: route.responseSchema,
       internalOnly: route.internalOnly,
-      execute: fn,
+      execute: (payload: unknown, context: MessageContext) =>
+        fn(payload, context),
     };
   }
 
-  const opts = routeOrOptions as {
-    type: string;
-    schema?: z.ZodTypeAny;
-    internalOnly?: boolean;
-    execute: (payload: unknown, context: MessageContext) => unknown;
-  };
+  if (isCommandOptions(routeOrOptions)) {
+    const opts = routeOrOptions;
+    return {
+      type: opts.type,
+      payloadSchema: opts.schema,
+      internalOnly: opts.internalOnly,
+      execute: opts.execute,
+    };
+  }
+
   return {
-    type: opts.type,
-    payloadSchema: opts.schema,
-    internalOnly: opts.internalOnly,
-    execute: opts.execute,
+    type: "unknown",
+    execute: () => undefined,
   };
 }

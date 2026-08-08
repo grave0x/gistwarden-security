@@ -272,13 +272,14 @@ async function runCommandOrExit(name: string, command: string, cmdArgs: string[]
 }
 
 async function runVerifications() {
-  console.log("Running TypeCheck & Tests...");
+  console.log("Running Linter, TypeCheck & Tests...");
   try {
     await Promise.all([
+      runCommandOrExit("bun lint", "bun", ["run", "lint"]),
       runCommandOrExit("bun typecheck", "bun", ["run", "typecheck"]),
       runCommandOrExit("bun test", "bun", ["test"]),
     ]);
-    console.log("✓ TypeCheck & Tests passed.");
+    console.log("✓ Linter, TypeCheck & Tests passed.");
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : String(err);
     console.error(errorMsg);

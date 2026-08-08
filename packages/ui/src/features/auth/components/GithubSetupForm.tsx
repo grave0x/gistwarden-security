@@ -3,6 +3,7 @@ import { t } from "@/core/i18n.ts";
 import Button from "@/components/ui/Button.tsx";
 import Input from "@/components/ui/Input.tsx";
 import SafeHtml from "@/components/ui/SafeHtml.tsx";
+import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
 import { GithubIcon } from "@/icons/svg/index.ts";
 import { type LoginMethod } from "@/core/storage-schemas.ts";
 
@@ -43,8 +44,9 @@ export const GithubSetupForm: Component<GithubSetupFormProps> = (props) => {
         fallback={
           <form onSubmit={handleSubmit} class="mb-0">
             <div class="form-group">
-              <label for="github-token">
-                GitHub Personal Access Token (PAT)
+              <label for="github-token" class="mb-4 d-inline-flex align-items-center gap-6">
+                <span>{t("login_pat_label")}</span>
+                <GuideHelpButton route="getting-started/github-gist" />
               </label>
               <Input
                 id="github-token"

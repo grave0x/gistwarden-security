@@ -18,6 +18,7 @@ import Input from "@/components/ui/Input.tsx";
 import Select from "@/components/ui/Select.tsx";
 import Checkbox from "@/components/ui/Checkbox.tsx";
 import { TrashIcon } from "@/icons/svg/index.ts";
+import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
 import { t } from "@/core/i18n.ts";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
 import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
@@ -282,6 +283,7 @@ export const ItemEdit: Component = () => {
                   onChange={(checked) =>
                     updateForm("reprompt", checked ? 1 : 0)}
                   label={t("edit_label_reprompt")}
+                  suffix={<GuideHelpButton route="vault-management/logins" />}
                 />
               </div>
             </div>

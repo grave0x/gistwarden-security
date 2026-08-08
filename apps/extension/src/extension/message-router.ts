@@ -5,19 +5,19 @@ import {
   onExtensionMessage,
   type RouteContract,
 } from "@gistwarden/orchestrator";
-import type { MessageCommand, MessageContext } from "./message-command.ts";
-import { createCommand } from "./message-command.ts";
+import type { MessageCommand, MessageContext } from "@/extension/message-command.ts";
+import { createCommand } from "@/extension/message-command.ts";
 
-export type { MessageCommand, MessageContext } from "./message-command.ts";
-export { createCommand } from "./message-command.ts";
+export type { MessageCommand, MessageContext } from "@/extension/message-command.ts";
+export { createCommand } from "@/extension/message-command.ts";
 
 export class MessageRouter {
-  private commands = new Map<string, MessageCommand>();
+  private commands = new Map<string, MessageCommand<unknown, unknown>>();
 
   registerCommand<TPayload, TResponse>(
     command: MessageCommand<TPayload, TResponse>,
   ): this {
-    this.commands.set(command.type, command as MessageCommand);
+    this.commands.set(command.type, command);
     return this;
   }
 

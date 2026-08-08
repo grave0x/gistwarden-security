@@ -200,7 +200,10 @@ export async function createPasskeyKeyPair(): Promise<
       true,
       ["sign"],
     );
-    return ok(res as CryptoKeyPair);
+    if ("publicKey" in res && "privateKey" in res) {
+      return ok(res);
+    }
+    return err("fido2_error_create_failed");
   } catch (e) {
     console.error("[Passkey Crypto] Key generation error:", e);
     return err("fido2_error_create_failed");

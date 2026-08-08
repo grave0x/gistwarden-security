@@ -22,6 +22,7 @@ import DetailHeader from "@/components/ui/DetailHeader.tsx";
 import Button from "@/components/ui/Button.tsx";
 import Input from "@/components/ui/Input.tsx";
 import Select from "@/components/ui/Select.tsx";
+import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
 import CopyableField from "@/components/ui/CopyableField.tsx";
 import {
   asVaultItemId,
@@ -286,8 +287,9 @@ export const GoogleMigrationPage: Component = () => {
 
         <div class="google-migration-tool-card mb-3">
           <form onSubmit={handleFormSubmit}>
-            <div class="google-migration-tool-title">
-              {t("google_tool_paste_label")}
+            <div class="google-migration-tool-title d-inline-flex align-items-center gap-6 mb-8">
+              <span>{t("google_tool_paste_label")}</span>
+              <GuideHelpButton route="passkey-auth/google-migration" size={16} />
             </div>
             <div class="google-migration-input-group">
               <Input
@@ -365,10 +367,8 @@ export const GoogleMigrationPage: Component = () => {
                               cx="12"
                               cy="12"
                               r={radius}
-                              style={{
-                                "stroke-dasharray": `${circumference}`,
-                                "stroke-dashoffset": `${strokeDashoffset()}`,
-                              }}
+                              stroke-dasharray={String(circumference)}
+                              stroke-dashoffset={String(strokeDashoffset())}
                             />
                           </svg>
                           <span class="timer-text">{totpRemaining()}</span>

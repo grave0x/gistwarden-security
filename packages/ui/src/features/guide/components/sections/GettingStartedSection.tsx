@@ -226,7 +226,7 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
               <div class="step-content">
                 <h4>{t("guide_start_pin_title")}</h4>
                 <p>{t("guide_start_pin_lead")}</p>
-                <div class="step-guide-container" style={{ "margin-top": "12px" }}>
+                <div class="step-guide-container mt-12">
                   <div class="step-box">
                     <span class="step-number">a</span>
                     <div class="step-content">
@@ -250,7 +250,7 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
                   </div>
                 </div>
 
-                <div class="warning-callout-box" style={{ "margin-top": "16px" }}>
+                <div class="warning-callout-box mt-16">
                   <ShieldAlertIcon size={20} class="warning-icon" />
                   <div class="warning-content">
                     <h4>{t("guide_start_pin_note_title")}</h4>

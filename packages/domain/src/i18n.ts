@@ -93,6 +93,7 @@ const LangSchema = z.object({
   login_title_setup: z.string(),
   login_method_oauth: z.string(),
   login_method_pat: z.string(),
+  login_pat_label: z.string(),
   login_pat_help: z.string(),
   login_oauth_help: z.string(),
   login_btn_save_token: z.string(),

@@ -12,6 +12,7 @@
     "build:all": "bun run scripts/build.ts all",
     "test": "bun test tests/",
     "typecheck": "tsc --noEmit",
+    "lint": "bun run scripts/custom_linter.ts",
     "bump-version": "bun run version.ts"
   },
   "dependencies": {

@@ -187,6 +187,69 @@
     }
   }
 
+  .tour-action-area {
+    width: 100%;
+    margin-top: 8px;
+  }
+
+  .tour-checkbox-container {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 14px;
+  }
+
+  .tour-checkbox-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    text-align: left;
+    padding: 0 4px;
+
+    .tour-checkbox {
+      appearance: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+      width: 16px;
+      height: 16px;
+      min-width: 16px;
+      margin-top: 2px;
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      background-color: var(--bg-input, transparent);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      transition: background-color 0.2s, border-color 0.2s;
+
+      &:checked {
+        background-color: var(--primary);
+        border-color: var(--primary);
+
+        &::after {
+          content: "";
+          position: absolute;
+          width: 4px;
+          height: 8px;
+          border: solid #ffffff;
+          border-width: 0 2px 2px 0;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -60%) rotate(45deg);
+        }
+      }
+    }
+
+    .tour-checkbox-label {
+      font-size: 12.5px;
+      line-height: 1.45;
+      color: var(--text);
+      user-select: none;
+    }
+  }
+
   .tour-footer {
     width: 100%;
     margin-top: 4px;
