@@ -93,34 +93,33 @@ export const AccountSecurity: Component = () => {
           <div class="alert alert-danger mb-16">{error()}</div>
         </Show>
 
-        {/* Extension Only: Unlock Options & Vault Timeout Settings */}
-        <Show when={isExtension()}>
-          {/* Section 1: Unlock Options */}
-          <div class="detail-section-title mt-0">
-            {t("unlock_options_header")}
-          </div>
-          <div class="card p-16 mb-20 d-flex flex-column gap-16">
-            {/* PIN Option */}
+        {/* Section 1: Unlock Options (PIN) - Available on Web & Extension */}
+        <div class="detail-section-title mt-0">
+          {t("unlock_options_header")}
+        </div>
+        <div class="card p-16 mb-20 d-flex flex-column gap-16">
+          {/* PIN Option */}
+          <Checkbox
+            id="unlock-pin"
+            checked={isPinEnabled()}
+            onChange={handlePinToggle}
+            label={t("unlock_with_pin")}
+          />
+
+          {/* Require master password on restart - Indent nested option */}
+          <Show when={isPinEnabled()}>
             <Checkbox
-              id="unlock-pin"
-              checked={isPinEnabled()}
-              onChange={handlePinToggle}
-              label={t("unlock_with_pin")}
+              id="pin-require-restart"
+              checked={isRequireRestart()}
+              onChange={handleRequireRestartChange}
+              label={t("require_master_password_on_restart")}
+              class="pl-24"
             />
+          </Show>
+        </div>
 
-            {/* Require master password on restart - Indent nested option */}
-            <Show when={isPinEnabled()}>
-              <Checkbox
-                id="pin-require-restart"
-                checked={isRequireRestart()}
-                onChange={handleRequireRestartChange}
-                label={t("require_master_password_on_restart")}
-                class="pl-24"
-              />
-            </Show>
-          </div>
-
-          {/* Section 2: Vault Timeout Settings */}
+        {/* Section 2: Extension Only (Vault Timeout Settings) */}
+        <Show when={isExtension()}>
           <SessionTimeoutSettings
             timeout={currentTimeout()}
             action={currentTimeoutAction()}
@@ -129,7 +128,7 @@ export const AccountSecurity: Component = () => {
         </Show>
 
         {/* Section 3: Change Master Password Action */}
-        <div class={`detail-section-title ${isExtension() ? "" : "mt-0"}`}>
+        <div class="detail-section-title">
           {t("settings_change_mp_title")}
         </div>
         <div class="card card-list">

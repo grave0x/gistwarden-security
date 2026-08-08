@@ -13,7 +13,11 @@ interface CheckboxProps {
 
 export const Checkbox: Component<CheckboxProps> = (props) => {
   const handleChange = (e: Event & { currentTarget: HTMLInputElement }) => {
-    props.onChange(e.currentTarget.checked);
+    const target = e.currentTarget;
+    props.onChange(target.checked);
+    queueMicrotask(() => {
+      target.checked = props.checked;
+    });
   };
 
   return (
