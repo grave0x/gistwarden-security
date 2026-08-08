@@ -3,6 +3,7 @@ import {
   base64ToArrayBuffer,
   decryptData,
   type GitHubAccessToken,
+  isExtension,
   logger,
   SESSION_KEY_DERIVED_KEY,
   SESSION_KEY_PENDING_GITHUB_TOKEN,
@@ -41,17 +42,17 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 export function hasLocalStorage(): boolean {
-  return typeof chrome !== "undefined" && !!chrome.storage &&
+  return isExtension() && typeof chrome !== "undefined" && !!chrome.storage &&
     !!chrome.storage.local;
 }
 
 export function hasSessionStorage(): boolean {
-  return typeof chrome !== "undefined" && !!chrome.storage &&
+  return isExtension() && typeof chrome !== "undefined" && !!chrome.storage &&
     !!chrome.storage.session;
 }
 
 export function hasStorageOnChanged(): boolean {
-  return typeof chrome !== "undefined" && !!chrome.storage &&
+  return isExtension() && typeof chrome !== "undefined" && !!chrome.storage &&
     !!chrome.storage.onChanged;
 }
 

@@ -6,6 +6,7 @@ import {
 import { safeFetch } from "@gistwarden/network";
 import {
   hashPasswordSHA1PrefixSuffix,
+  isExtension,
   isLoginItem,
   type LoginVaultItem,
   type TranslationKey,
@@ -59,7 +60,7 @@ export async function checkPasswordHIBPUseCase(
   password: string,
 ): Promise<{ count: number; errorKey?: TranslationKey }> {
   if (
-    typeof chrome !== "undefined" &&
+    isExtension() &&
     typeof chrome.runtime?.sendMessage === "function"
   ) {
     const bgRes = await sendBackgroundMessage(checkHIBPRoute, { password });
@@ -104,7 +105,7 @@ export async function checkEmailBreachUseCase(email: string): Promise<{
   errorKey?: TranslationKey;
 }> {
   if (
-    typeof chrome !== "undefined" &&
+    isExtension() &&
     typeof chrome.runtime?.sendMessage === "function"
   ) {
     const bgRes = await sendBackgroundMessage(checkDataBreachRoute, { email });

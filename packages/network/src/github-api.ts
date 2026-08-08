@@ -5,6 +5,7 @@ import {
   asGitHubAccessToken,
   type GistId,
   type GitHubAccessToken,
+  isExtension,
   safeJsonParse,
   safeParseUrl,
   type TranslationKey,
@@ -346,7 +347,7 @@ export function launchGithubOauthFlow(
 ): Promise<Result<GitHubAccessToken, TranslationKey>> {
   return new Promise((resolve) => {
     if (
-      typeof chrome !== "undefined" &&
+      isExtension() &&
       chrome.identity &&
       chrome.identity.launchWebAuthFlow
     ) {

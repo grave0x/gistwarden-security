@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { err, ok, Result } from "neverthrow";
-import { logger, type TranslationKey } from "@gistwarden/domain";
+import { isExtension, logger, type TranslationKey } from "@gistwarden/domain";
 
 export interface RouteContract<
   TType extends string,
@@ -101,11 +101,7 @@ export async function sendBackgroundMessage<
   const message = { type: route.type, ...(payload || {}) };
   let responseVal: unknown;
 
-  if (
-    typeof chrome !== "undefined" &&
-    chrome.runtime &&
-    typeof chrome.runtime.sendMessage === "function"
-  ) {
+  if (isExtension() && typeof chrome.runtime.sendMessage === "function") {
     try {
       responseVal = await chrome.runtime.sendMessage(message);
     } catch (e) {
@@ -152,11 +148,7 @@ export async function sendBackgroundMessage<
 export async function notifyBackground(
   message: unknown,
 ): Promise<Result<void, TranslationKey>> {
-  if (
-    typeof chrome !== "undefined" &&
-    chrome.runtime &&
-    typeof chrome.runtime.sendMessage === "function"
-  ) {
+  if (isExtension() && typeof chrome.runtime.sendMessage === "function") {
     try {
       await chrome.runtime.sendMessage(message);
       return ok();

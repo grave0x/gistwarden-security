@@ -1,4 +1,4 @@
-import { type Component, Show } from "solid-js";
+import { createEffect, type Component, Show } from "solid-js";
 import { View } from "@/core/types.ts";
 import type { VaultItem, VaultItemId } from "@gistwarden/domain";
 import { MoreVerticalIcon } from "@/icons/svg/index.ts";
@@ -17,11 +17,26 @@ interface VaultItemOptionsMenuProps {
   onDeleteItem: (item: VaultItem, e: MouseEvent) => void;
 }
 
-
-
 export const VaultItemOptionsMenu: Component<VaultItemOptionsMenuProps> = (
   props,
 ) => {
+  let menuRef: HTMLDivElement | undefined;
+
+  createEffect(() => {
+    const pos = props.contextMenuPos;
+    const el = menuRef;
+    if (pos && el && props.activeOptionsMenuId === props.item.id) {
+      const windowWidth =
+        typeof window !== "undefined" ? window.innerWidth : 400;
+      const windowHeight =
+        typeof window !== "undefined" ? window.innerHeight : 600;
+      const x = Math.max(10, Math.min(pos.x, windowWidth - 160));
+      const y = Math.max(10, Math.min(pos.y, windowHeight - 200));
+      el.style.setProperty("--menu-x", `${x}px`);
+      el.style.setProperty("--menu-y", `${y}px`);
+    }
+  });
+
   return (
     <>
       {/* Item Options Toggle Button */}
@@ -36,29 +51,8 @@ export const VaultItemOptionsMenu: Component<VaultItemOptionsMenuProps> = (
       {/* Options Dropdown Overlay */}
       <Show when={props.activeOptionsMenuId === props.item.id}>
         <div
+          ref={menuRef}
           class={`options-dropdown ${props.contextMenuPos ? "fixed-pos" : ""}`}
-          ref={(el) => {
-            if (props.contextMenuPos) {
-              const x = Math.max(
-                10,
-                Math.min(
-                  props.contextMenuPos.x,
-                  (typeof window !== "undefined" ? window.innerWidth : 400) -
-                    150,
-                ),
-              );
-              const y = Math.max(
-                10,
-                Math.min(
-                  props.contextMenuPos.y,
-                  (typeof window !== "undefined" ? window.innerHeight : 600) -
-                    180,
-                ),
-              );
-              el.style.setProperty("--menu-x", `${x}px`);
-              el.style.setProperty("--menu-y", `${y}px`);
-            }
-          }}
           onClick={(e) => e.stopPropagation()}
         >
           <div

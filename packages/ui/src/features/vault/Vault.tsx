@@ -252,7 +252,8 @@ export const Vault: Component = () => {
         if (
           target.closest(".action-btn") ||
           target.closest(".copy-dropdown") ||
-          target.closest(".options-dropdown")
+          target.closest(".options-dropdown") ||
+          target.closest(".vault-item-row")
         ) {
           return;
         }

@@ -1,3 +1,4 @@
+import { isExtension } from "@gistwarden/domain";
 import { isRecord } from "@gistwarden/repository";
 
 export interface PendingTabNotification {
@@ -38,11 +39,18 @@ export class PendingNotificationManager {
   private lastGlobalPendingNotification: GlobalPendingNotification | null =
     null;
 
+  private hasSessionStorage(): boolean {
+    return (
+      isExtension() &&
+      typeof chrome !== "undefined" &&
+      !!chrome.storage &&
+      !!chrome.storage.session
+    );
+  }
+
   public async clearFido2Result(): Promise<void> {
     this.pendingFido2Callback = null;
-    if (
-      typeof chrome !== "undefined" && chrome.storage && chrome.storage.session
-    ) {
+    if (this.hasSessionStorage()) {
       await chrome.storage.session.remove(STORAGE_KEY_FIDO2_RESULT);
     }
   }
@@ -59,10 +67,7 @@ export class PendingNotificationManager {
       this.pendingFido2Callback(response);
       this.pendingFido2Callback = null;
       resolved = true;
-      if (
-        typeof chrome !== "undefined" && chrome.storage &&
-        chrome.storage.session
-      ) {
+      if (this.hasSessionStorage()) {
         chrome.storage.session.remove(STORAGE_KEY_FIDO2_RESULT);
       }
     } else {
@@ -117,9 +122,7 @@ export class PendingNotificationManager {
     this.pendingTabNotifications.clear();
     this.lastGlobalPendingNotification = null;
     this.pendingFido2Callback = null;
-    if (
-      typeof chrome !== "undefined" && chrome.storage && chrome.storage.session
-    ) {
+    if (this.hasSessionStorage()) {
       await chrome.storage.session.remove([
         STORAGE_KEY_TAB_NOTIFS,
         STORAGE_KEY_GLOBAL_NOTIF,
@@ -129,9 +132,7 @@ export class PendingNotificationManager {
   }
 
   private async persistFido2Result(response: unknown): Promise<void> {
-    if (
-      typeof chrome !== "undefined" && chrome.storage && chrome.storage.session
-    ) {
+    if (this.hasSessionStorage()) {
       await chrome.storage.session.set({
         [STORAGE_KEY_FIDO2_RESULT]: response,
       });
@@ -139,9 +140,7 @@ export class PendingNotificationManager {
   }
 
   private async checkAndFlushFido2Result(): Promise<void> {
-    if (
-      typeof chrome !== "undefined" && chrome.storage && chrome.storage.session
-    ) {
+    if (this.hasSessionStorage()) {
       const res = await chrome.storage.session.get(STORAGE_KEY_FIDO2_RESULT);
       if (res && STORAGE_KEY_FIDO2_RESULT in res && this.pendingFido2Callback) {
         const storedResult = res[STORAGE_KEY_FIDO2_RESULT];
@@ -156,18 +155,14 @@ export class PendingNotificationManager {
   }
 
   private async persistTabNotifications(): Promise<void> {
-    if (
-      typeof chrome !== "undefined" && chrome.storage && chrome.storage.session
-    ) {
+    if (this.hasSessionStorage()) {
       const obj = Object.fromEntries(this.pendingTabNotifications.entries());
       await chrome.storage.session.set({ [STORAGE_KEY_TAB_NOTIFS]: obj });
     }
   }
 
   private async loadTabNotifications(): Promise<void> {
-    if (
-      typeof chrome !== "undefined" && chrome.storage && chrome.storage.session
-    ) {
+    if (this.hasSessionStorage()) {
       const res = await chrome.storage.session.get(STORAGE_KEY_TAB_NOTIFS);
       if (isRecord(res) && isRecord(res[STORAGE_KEY_TAB_NOTIFS])) {
         const entries = Object.entries(res[STORAGE_KEY_TAB_NOTIFS]);
@@ -182,9 +177,7 @@ export class PendingNotificationManager {
   }
 
   private async persistGlobalNotification(): Promise<void> {
-    if (
-      typeof chrome !== "undefined" && chrome.storage && chrome.storage.session
-    ) {
+    if (this.hasSessionStorage()) {
       await chrome.storage.session.set({
         [STORAGE_KEY_GLOBAL_NOTIF]: this.lastGlobalPendingNotification,
       });
@@ -192,9 +185,7 @@ export class PendingNotificationManager {
   }
 
   private async loadGlobalNotification(): Promise<void> {
-    if (
-      typeof chrome !== "undefined" && chrome.storage && chrome.storage.session
-    ) {
+    if (this.hasSessionStorage()) {
       const res = await chrome.storage.session.get(STORAGE_KEY_GLOBAL_NOTIF);
       if (
         isRecord(res) &&

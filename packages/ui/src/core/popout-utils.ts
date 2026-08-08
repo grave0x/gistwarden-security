@@ -1,4 +1,4 @@
-import { POPOUT_HEIGHT, POPUP_WIDTH } from "@gistwarden/domain";
+import { isExtension, POPOUT_HEIGHT, POPUP_WIDTH } from "@gistwarden/domain";
 import { uiStore } from "@/core/store.ts";
 import { getAssetUrl } from "@/core/runtime.ts";
 
@@ -7,7 +7,7 @@ export const isPopout = (): boolean => {
 };
 
 export const handlePopout = () => {
-  if (typeof chrome !== "undefined" && chrome.windows) {
+  if (isExtension() && chrome.windows) {
     chrome.windows.getLastFocused((parentWindow) => {
       let left: number | undefined;
       let top: number | undefined;

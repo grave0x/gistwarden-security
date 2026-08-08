@@ -20,3 +20,4 @@ export * from "./src/vault-domain-matching.ts";
 export * from "./src/vault-item-utils.ts";
 export * from "./src/google-migration-parser.ts";
 export * from "./src/google-migration-matcher.ts";
+export * from "./src/runtime-env.ts";

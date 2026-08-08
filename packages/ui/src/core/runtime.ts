@@ -1,3 +1,12 @@
+import {
+  getPlatform,
+  isExtension,
+  isWeb,
+  type AppPlatform,
+} from "@gistwarden/domain";
+
+export { getPlatform, isExtension, isWeb, type AppPlatform };
+
 /**
  * Utility functions for interacting with the Chrome extension runtime.
  * Provides safe fallbacks for environments outside the extension.
@@ -5,29 +14,6 @@
 
 export function hasRuntime(): boolean {
   return typeof chrome !== "undefined" && !!chrome.runtime;
-}
-
-export type AppPlatform = "extension" | "web";
-
-/**
- * Check if the application is running inside a browser extension environment.
- */
-export function isExtension(): boolean {
-  return typeof chrome !== "undefined" && !!chrome.runtime && !!chrome.runtime.id;
-}
-
-/**
- * Check if the application is running as a standalone web application.
- */
-export function isWeb(): boolean {
-  return !isExtension();
-}
-
-/**
- * Get the current execution platform ("extension" | "web").
- */
-export function getPlatform(): AppPlatform {
-  return isExtension() ? "extension" : "web";
 }
 
 /**
