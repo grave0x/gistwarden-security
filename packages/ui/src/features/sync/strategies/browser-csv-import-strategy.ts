@@ -18,7 +18,7 @@ function extractDomain(urlStr: string): string {
   return safeParseUrl(urlStr).map((u) => u.hostname).unwrapOr(urlStr);
 }
 
-export const browserCsvImportStrategy: ImportStrategy = {
+export const browserCsvImportStrategy = {
   id: "browser_csv",
   nameKey: "import_option_browser",
   subKey: "import_option_browser_sub",
@@ -107,4 +107,4 @@ export const browserCsvImportStrategy: ImportStrategy = {
       combinedFolders: existingFolders,
     });
   },
-};
+} satisfies ImportStrategy;

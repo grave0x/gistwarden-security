@@ -7,20 +7,24 @@ import { noteStrategy } from "./strategies/note-strategy.tsx";
 import { sshKeyStrategy } from "./strategies/ssh-key-strategy.tsx";
 import { t } from "@/core/i18n.ts";
 
-export const vaultItemRegistry: Record<VaultItemType, VaultItemStrategy> = {
+export const vaultItemRegistry = {
   [VaultItemType.Login]: loginStrategy,
   [VaultItemType.Card]: cardStrategy,
   [VaultItemType.Identity]: identityStrategy,
   [VaultItemType.SecureNote]: noteStrategy,
   [VaultItemType.SshKey]: sshKeyStrategy,
-};
+} satisfies Record<VaultItemType, VaultItemStrategy>;
+
+function isVaultItemKey(num: number): num is keyof typeof vaultItemRegistry {
+  return num in vaultItemRegistry;
+}
 
 export function getVaultItemStrategy(
   type: VaultItemType | number | undefined,
 ): VaultItemStrategy {
   const numType = Number(type);
-  if (numType in vaultItemRegistry) {
-    return vaultItemRegistry[numType as VaultItemType];
+  if (isVaultItemKey(numType)) {
+    return vaultItemRegistry[numType];
   }
   return loginStrategy;
 }
@@ -42,8 +46,8 @@ export function getVaultItemTypeLabel(
     return t("vault_filter_type");
   }
   const numType = Number(type);
-  if (numType in vaultItemRegistry) {
-    return vaultItemRegistry[numType as VaultItemType].getTypeName();
+  if (isVaultItemKey(numType)) {
+    return vaultItemRegistry[numType].getTypeName();
   }
   return t("vault_filter_type");
 }

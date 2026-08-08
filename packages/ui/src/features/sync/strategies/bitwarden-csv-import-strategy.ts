@@ -20,7 +20,7 @@ function extractDomain(urlStr: string): string {
   return safeParseUrl(urlStr).map((u) => u.hostname).unwrapOr(urlStr);
 }
 
-export const bitwardenCsvImportStrategy: ImportStrategy = {
+export const bitwardenCsvImportStrategy = {
   id: "bitwarden_csv",
   nameKey: "import_option_bitwarden_csv",
   subKey: "import_option_bitwarden_csv_sub",
@@ -167,4 +167,4 @@ export const bitwardenCsvImportStrategy: ImportStrategy = {
       combinedFolders,
     });
   },
-};
+} satisfies ImportStrategy;

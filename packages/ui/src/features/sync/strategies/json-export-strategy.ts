@@ -3,7 +3,7 @@ import { VaultItemType } from "@gistwarden/domain";
 import { APP_NAME } from "@/core/constants.ts";
 import type { ExportResult, ExportStrategy } from "../import-export-types.ts";
 
-export const jsonExportStrategy: ExportStrategy = {
+export const jsonExportStrategy = {
   id: "json",
   nameKey: "export_option_json",
   subKey: "export_option_json_sub",
@@ -128,4 +128,4 @@ export const jsonExportStrategy: ExportStrategy = {
       mimeType: "application/json",
     };
   },
-};
+} satisfies ExportStrategy;

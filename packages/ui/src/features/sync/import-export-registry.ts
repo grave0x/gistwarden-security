@@ -7,25 +7,33 @@ import { jsonExportStrategy } from "./strategies/json-export-strategy.ts";
 import { bitwardenCsvExportStrategy } from "./strategies/bitwarden-csv-export-strategy.ts";
 import { browserCsvExportStrategy } from "./strategies/browser-csv-export-strategy.ts";
 
-export const importRegistry: Record<string, ImportStrategy> = {
+export const importRegistry = {
   json: jsonImportStrategy,
   bitwarden_csv: bitwardenCsvImportStrategy,
   browser_csv: browserCsvImportStrategy,
   bitwarden: bitwardenCsvImportStrategy,
   browser: browserCsvImportStrategy,
-};
+} satisfies Record<string, ImportStrategy>;
 
-export const exportRegistry: Record<string, ExportStrategy> = {
+export const exportRegistry = {
   json: jsonExportStrategy,
   bitwarden_csv: bitwardenCsvExportStrategy,
   browser_csv: browserCsvExportStrategy,
   bitwarden: bitwardenCsvExportStrategy,
   browser: browserCsvExportStrategy,
-};
+} satisfies Record<string, ExportStrategy>;
+
+function isImportKey(key: string): key is keyof typeof importRegistry {
+  return key in importRegistry;
+}
+
+function isExportKey(key: string): key is keyof typeof exportRegistry {
+  return key in exportRegistry;
+}
 
 export function getImportStrategy(id: string): ImportStrategy {
   const normalizedId = id.toLowerCase().trim();
-  if (normalizedId in importRegistry) {
+  if (isImportKey(normalizedId)) {
     return importRegistry[normalizedId];
   }
   return jsonImportStrategy;
@@ -33,7 +41,7 @@ export function getImportStrategy(id: string): ImportStrategy {
 
 export function getExportStrategy(id: string): ExportStrategy {
   const normalizedId = id.toLowerCase().trim();
-  if (normalizedId in exportRegistry) {
+  if (isExportKey(normalizedId)) {
     return exportRegistry[normalizedId];
   }
   return jsonExportStrategy;

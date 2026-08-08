@@ -13,7 +13,7 @@ import { safeJsonParse } from "@/core/json-utils.ts";
 import { mergeFolders } from "@gistwarden/orchestrator";
 import type { ImportResult, ImportStrategy } from "../import-export-types.ts";
 
-export const jsonImportStrategy: ImportStrategy = {
+export const jsonImportStrategy = {
   id: "json",
   nameKey: "import_option_json",
   subKey: "import_option_json_sub",
@@ -267,4 +267,4 @@ export const jsonImportStrategy: ImportStrategy = {
       combinedFolders,
     });
   },
-};
+} satisfies ImportStrategy;

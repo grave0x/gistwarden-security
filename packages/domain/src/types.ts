@@ -59,3 +59,10 @@ export function createSuccessPayloadResponseSchema<T extends z.ZodTypeAny>(
     }),
   ]);
 }
+
+/**
+ * Helper function for compile-time exhaustiveness checking in switch/if branches.
+ */
+export function assertNever(x: never): never {
+  throw new Error(`Unexpected value: ${JSON.stringify(x)}`);
+}

@@ -11,6 +11,7 @@ import {
 } from "./vault-schemas.ts";
 import { CustomFieldType, VaultItemType } from "./vault-types.ts";
 import { t } from "./i18n.ts";
+import { assertNever } from "./types.ts";
 
 export function mapCustomFields(
   fields?:
@@ -66,11 +67,26 @@ export function createBaseVaultItem(
   };
 }
 
+function isVaultItemType(val: number): val is VaultItemType {
+  return val === VaultItemType.Login ||
+    val === VaultItemType.Card ||
+    val === VaultItemType.Identity ||
+    val === VaultItemType.SecureNote ||
+    val === VaultItemType.SshKey;
+}
+
 export function getVaultItemFallbackName(
   type?: VaultItemType | number | string | null,
 ): string {
   const numType = Number(type);
-  switch (numType) {
+  if (!isVaultItemType(numType)) {
+    return t("fallback_name_default");
+  }
+
+  const itemType: VaultItemType = numType;
+  switch (itemType) {
+    case VaultItemType.Login:
+      return t("fallback_name_login");
     case VaultItemType.SecureNote:
       return t("fallback_name_note");
     case VaultItemType.Card:
@@ -79,19 +95,9 @@ export function getVaultItemFallbackName(
       return t("fallback_name_identity");
     case VaultItemType.SshKey:
       return t("fallback_name_ssh_key");
-    case VaultItemType.Login:
-      return t("fallback_name_login");
     default:
-      return t("fallback_name_default");
+      return assertNever(itemType);
   }
-}
-
-function isVaultItemType(val: number): val is VaultItemType {
-  return val === VaultItemType.Login ||
-    val === VaultItemType.Card ||
-    val === VaultItemType.Identity ||
-    val === VaultItemType.SecureNote ||
-    val === VaultItemType.SshKey;
 }
 
 function getSubPayload(item: unknown, key: string): unknown {

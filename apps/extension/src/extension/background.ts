@@ -7,7 +7,6 @@ import { registerReportRoutes } from "@/extension/handlers/report-handlers.ts";
 import { SESSION_KEY_SESSION_INITIALIZED } from "@/core/constants.ts";
 import {
   clearSession,
-  configureSessionAccessLevel,
   getExtensionSettings,
   getSessionItem,
   hasSessionStorage,
@@ -35,7 +34,6 @@ async function initSession() {
     await syncLockStateBadge();
     return;
   }
-  await configureSessionAccessLevel();
   const sessionInitializedRes = await getSessionItem(
     SESSION_KEY_SESSION_INITIALIZED,
   );

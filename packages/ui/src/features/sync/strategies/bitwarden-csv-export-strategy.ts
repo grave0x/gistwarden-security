@@ -4,7 +4,7 @@ import { VaultItemType } from "@gistwarden/domain";
 import { APP_NAME } from "@/core/constants.ts";
 import type { ExportResult, ExportStrategy } from "../import-export-types.ts";
 
-export const bitwardenCsvExportStrategy: ExportStrategy = {
+export const bitwardenCsvExportStrategy = {
   id: "bitwarden_csv",
   nameKey: "export_option_bitwarden_csv",
   subKey: "export_option_bitwarden_csv_sub",
@@ -87,4 +87,4 @@ export const bitwardenCsvExportStrategy: ExportStrategy = {
       mimeType: "text/csv",
     };
   },
-};
+} satisfies ExportStrategy;

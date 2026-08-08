@@ -4,7 +4,7 @@ import { VaultItemType } from "@gistwarden/domain";
 import { APP_NAME } from "@/core/constants.ts";
 import type { ExportResult, ExportStrategy } from "../import-export-types.ts";
 
-export const browserCsvExportStrategy: ExportStrategy = {
+export const browserCsvExportStrategy = {
   id: "browser_csv",
   nameKey: "export_option_browser",
   subKey: "export_option_browser_sub",
@@ -41,4 +41,4 @@ export const browserCsvExportStrategy: ExportStrategy = {
       mimeType: "text/csv",
     };
   },
-};
+} satisfies ExportStrategy;

@@ -205,27 +205,7 @@ export async function removeSessionItem(
   }
 }
 
-export async function configureSessionAccessLevel(
-  accessLevel: "TRUSTED_CONTEXTS" | "TRUSTED_AND_UNTRUSTED_CONTEXTS" =
-    "TRUSTED_CONTEXTS",
-): Promise<Result<void, TranslationKey>> {
-  if (
-    typeof chrome === "undefined" ||
-    !chrome.storage?.session?.setAccessLevel
-  ) {
-    return ok();
-  }
-  try {
-    await chrome.storage.session.setAccessLevel({ accessLevel });
-    return ok();
-  } catch (e) {
-    logger.storage.warn(
-      "[Storage] Failed to set session storage access level:",
-      e,
-    );
-    return err("storage_error");
-  }
-}
+
 
 export async function clearUnlockedSessionState(): Promise<
   Result<void, TranslationKey>
