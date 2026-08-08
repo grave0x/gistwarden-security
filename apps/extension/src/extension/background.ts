@@ -60,4 +60,6 @@ async function initSession() {
   await syncLockStateBadge();
 }
 
-initSession();
+void initSession().catch((err) => {
+  console.error("[Background] Failed to initialize session:", err);
+});
