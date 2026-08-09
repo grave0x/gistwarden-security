@@ -6,6 +6,7 @@ import { APP_NAME } from "./constants.ts";
 import { SupportLanguage } from "./types.ts";
 
 const LangSchema = z.object({
+  APP_NAME: z.string(),
   // Common buttons & notifications
   btn_save: z.string(),
   btn_cancel: z.string(),
@@ -205,6 +206,9 @@ const LangSchema = z.object({
   edit_placeholder_username: z.string(),
   edit_label_password: z.string(),
   edit_placeholder_password: z.string(),
+  edit_gen_btn_title: z.string(),
+  edit_gen_random_password: z.string(),
+  edit_gen_passphrase: z.string(),
   edit_label_totp: z.string(),
   edit_placeholder_totp: z.string(),
   edit_label_website: z.string(),
@@ -654,10 +658,20 @@ const LangSchema = z.object({
   guide_vm_fields_item4: z.string(),
 
   guide_vm_folders_lead: z.string(),
-  guide_vm_folders_card1_title: z.string(),
-  guide_vm_folders_card1_desc: z.string(),
-  guide_vm_folders_card2_title: z.string(),
-  guide_vm_folders_card2_desc: z.string(),
+  guide_vm_folders_sec1_title: z.string(),
+  guide_vm_folders_step1_title: z.string(),
+  guide_vm_folders_step1_desc: z.string(),
+  guide_vm_folders_step2_title: z.string(),
+  guide_vm_folders_step2_desc: z.string(),
+  guide_vm_folders_step3_title: z.string(),
+  guide_vm_folders_step3_desc: z.string(),
+  guide_vm_trash_sec2_title: z.string(),
+  guide_vm_trash_step1_title: z.string(),
+  guide_vm_trash_step1_desc: z.string(),
+  guide_vm_trash_step2_title: z.string(),
+  guide_vm_trash_step2_desc: z.string(),
+  guide_vm_trash_step3_title: z.string(),
+  guide_vm_trash_step3_desc: z.string(),
 
   // Getting Started Guides
   guide_start_ov_lead: z.string(),
@@ -928,15 +942,30 @@ export function initI18n(language?: SupportLanguage | "en" | "vi"): void {
 // Initialize default language matching SettingsSchema (En) so translations are ready on module load
 setLanguage(SupportLanguage.En);
 
+function isLangKey(key: string, dict: Partial<Lang>): key is keyof Lang {
+  return Object.prototype.hasOwnProperty.call(dict, key);
+}
+
 export function t(
   key: TranslationKey,
   params?: Record<string, string | number>,
 ): string {
-  let msg = translations()[key] ?? key;
-  msg = msg.replaceAll("{APP_NAME}", APP_NAME);
+  const current = translations();
+  let msg = current[key] ?? key;
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
       msg = msg.replaceAll(`{${k}}`, String(v));
+    });
+  }
+  if (msg.includes("{")) {
+    msg = msg.replace(/\{([a-zA-Z0-9_]+)\}/g, (match, subKey) => {
+      if (isLangKey(subKey, current)) {
+        const subMsg = current[subKey];
+        if (typeof subMsg === "string") {
+          return subMsg;
+        }
+      }
+      return match;
     });
   }
   return msg;

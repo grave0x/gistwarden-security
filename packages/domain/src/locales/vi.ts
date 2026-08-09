@@ -1,4 +1,7 @@
+import { APP_NAME } from "../constants.ts";
+
 export default {
+  APP_NAME,
   // Common buttons & notifications
   btn_save: "Lưu",
   btn_cancel: "Hủy",
@@ -219,6 +222,9 @@ export default {
   edit_placeholder_username: "Tên đăng nhập hoặc email...",
   edit_label_password: "Mật khẩu",
   edit_placeholder_password: "Mật khẩu tài khoản...",
+  edit_gen_btn_title: "Tạo mật khẩu ngẫu nhiên",
+  edit_gen_random_password: "Mật khẩu ngẫu nhiên",
+  edit_gen_passphrase: "Cụm mật khẩu",
   edit_label_totp: "Khóa xác thực (TOTP)",
   edit_placeholder_totp: "Dán khóa bí mật (Base32) hoặc otpauth://...",
   edit_label_website: "Website",
@@ -549,7 +555,7 @@ export default {
 
   // Navigation tabs
   nav_vault: "Két sắt",
-  nav_generator: "Trình tạo",
+  nav_generator: "Tạo mật khẩu",
   nav_reports: "Báo cáo",
   nav_settings: "Cài đặt",
 
@@ -726,11 +732,21 @@ export default {
   guide_vm_fields_item3: "Boolean: Công tắc Bật/Tắt (True/False).",
   guide_vm_fields_item4: "Linked: Liên kết tự động lấy dữ liệu từ trường khác.",
 
-  guide_vm_folders_lead: "Phân loại dữ liệu theo Thư mục và quản lý các mục đã xóa trong Thùng rác.",
-  guide_vm_folders_card1_title: "Thư Mục (Folders)",
-  guide_vm_folders_card1_desc: "Tạo các thư mục cá nhân để sắp xếp tài khoản công việc, cá nhân, tài chính khoa học.",
-  guide_vm_folders_card2_title: "Thùng Rác (Trash)",
-  guide_vm_folders_card2_desc: "Các mục xóa sẽ được chuyển vào Thùng Rác. Bạn có thể khôi phục lại hoặc xóa vĩnh viễn bất kỳ lúc nào.",
+  guide_vm_folders_lead: "Tự do phân loại dữ liệu theo Thư mục và quản lý an toàn các mục bị xóa trong Thùng rác.",
+  guide_vm_folders_sec1_title: "1. Tạo & Quản lý Thư mục (Folders)",
+  guide_vm_folders_step1_title: "Tạo thư mục mới",
+  guide_vm_folders_step1_desc: "Mở {APP_NAME} → chọn {settings_header} → {settings_vault_options_label} → {folder_management_title}. Nhập tên thư mục mới và nhấn Lưu.",
+  guide_vm_folders_step2_title: "Gán mục vào Thư mục",
+  guide_vm_folders_step2_desc: "Khi Thêm hoặc Chỉnh sửa một mục trong Két sắt, chọn thư mục mong muốn tại trường 'Thư mục'. Hoặc tại danh sách Két sắt, chọn các mục và bấm 'Di chuyển vào thư mục'.",
+  guide_vm_folders_step3_title: "Chỉnh sửa hoặc Xóa thư mục",
+  guide_vm_folders_step3_desc: "Trong danh sách Thư mục, bấm biểu tượng Chỉnh sửa để đổi tên hoặc biểu tượng Thùng rác để xóa thư mục (Lưu ý: Xóa thư mục không làm mất các tài khoản bên trong).",
+  guide_vm_trash_sec2_title: "2. Quản lý Thùng Rác & Khôi Phục (Trash)",
+  guide_vm_trash_step1_title: "Chuyển mục vào Thùng rác",
+  guide_vm_trash_step1_desc: "Khi bấm Xóa một mục trong Két sắt, mục đó sẽ được chuyển an toàn vào Thùng rác để phòng trường hợp xóa nhầm.",
+  guide_vm_trash_step2_title: "Truy cập Thùng rác & Khôi phục",
+  guide_vm_trash_step2_desc: "Mở {APP_NAME} → chọn {settings_header} → {settings_vault_options_label} → {trash_title}. Nhấn nút 'Khôi phục' bên cạnh mục cần lấy lại về Két sắt.",
+  guide_vm_trash_step3_title: "Xóa vĩnh viễn (Purge)",
+  guide_vm_trash_step3_desc: "Bấm 'Xóa vĩnh viễn' từng mục hoặc 'Xóa sạch thùng rác' để xóa hoàn toàn khỏi thiết bị và GitHub Gist. Lưu ý: Dữ liệu sau khi xóa vĩnh viễn không thể khôi phục.",
 
   // Getting Started Guides
   guide_start_ov_lead: "{APP_NAME} là giải pháp két mật khẩu cá nhân mã hóa Zero-Knowledge, tự động đồng bộ hóa đám mây riêng tư thông qua GitHub Gist.",
@@ -747,11 +763,11 @@ export default {
   guide_start_mp_step2_title: "2. Nguyên tắc Không lưu trữ Mật khẩu chính",
   guide_start_mp_step2_desc: "{APP_NAME} tuân thủ nguyên tắc Zero-Knowledge: ứng dụng tuyệt đối không bao giờ lưu trữ hay gửi Mật khẩu chính lên bất kỳ máy chủ nào. Nếu bạn quên Mật khẩu chính, dữ liệu sẽ không thể khôi phục.",
   guide_start_mp_step3_title: "3. Cách thay đổi Mật khẩu chính",
-  guide_start_mp_step3_desc: "Bạn có thể đổi Mật khẩu chính bất cứ lúc nào bằng cách mở ứng dụng → chọn Cài đặt → An toàn tài khoản → Thay đổi Mật khẩu chính. Khi đổi, hệ thống sẽ tự động giải mã và mã hóa lại toàn bộ két sắt bằng chìa khóa mới.",
+  guide_start_mp_step3_desc: "Bạn có thể đổi Mật khẩu chính bất cứ lúc nào bằng cách mở ứng dụng → chọn {settings_header} → {settings_account_security} → {settings_change_mp}. Khi đổi, hệ thống sẽ tự động giải mã và mã hóa lại toàn bộ két sắt bằng chìa khóa mới.",
 
   guide_start_lock_lead: "Tự động bảo vệ dữ liệu két mật khẩu khi bạn không thao tác hoặc khi khởi động lại trình duyệt.",
   guide_start_lock_step1_title: "1. Mở Cài đặt An toàn tài khoản",
-  guide_start_lock_step1_desc: "Mở ứng dụng {APP_NAME} → truy cập mục Cài đặt → An toàn tài khoản (Account Security).",
+  guide_start_lock_step1_desc: "Mở ứng dụng {APP_NAME} → truy cập mục {settings_header} → {settings_account_security}.",
   guide_start_lock_step2_title: "2. Tùy chỉnh Thời gian chờ (Vault Timeout)",
   guide_start_lock_step2_desc: "Lựa chọn thời gian tự động xử lý khi không có thao tác: Khi khởi động lại trình duyệt (On Restart), 1 phút, 5 phút, 15 phút, 30 phút, 1 giờ, hoặc 4 giờ.",
   guide_start_lock_step3_title: "3. Lựa chọn Hành động khi hết thời gian (Timeout Action)",
@@ -763,7 +779,7 @@ export default {
   guide_start_pin_title: "Cấu hình & Sử dụng Mã PIN Mở Khóa Nhanh",
   guide_start_pin_lead: "Mã PIN giúp bạn mở khóa két nhanh chóng bằng một chuỗi số ngắn mà không cần nhập lại Mật khẩu chính dài phức tạp mỗi lần sử dụng.",
   guide_start_pin_step1_title: "1. Bật tùy chọn Mở khóa bằng Mã PIN",
-  guide_start_pin_step1_desc: "Mở ứng dụng {APP_NAME} ➔ chọn Cài đặt ➔ Bảo mật tài khoản. Tích chọn vào ô 'Mở khóa bằng mã PIN' (Unlock with PIN).",
+  guide_start_pin_step1_desc: "Mở ứng dụng {APP_NAME} ➔ chọn {settings_header} ➔ {settings_account_security}. Tích chọn vào ô 'Mở khóa bằng mã PIN' (Unlock with PIN).",
   guide_start_pin_step2_title: "2. Thiết lập Mã PIN mới (Tối thiểu 4 chữ số)",
   guide_start_pin_step2_desc: "Cửa sổ Thiết lập mã PIN sẽ xuất hiện. Hãy nhập mã PIN dễ nhớ với bạn (tối thiểu 4 ký tự/chữ số) và bấm 'Xác nhận' để lưu cấu hình.",
   guide_start_pin_step3_title: "3. Mở khóa nhanh bằng PIN khi két bị khóa",
@@ -782,24 +798,24 @@ export default {
   guide_passkey_gmig_step1_title: "1. Mở ứng dụng Google Authenticator",
   guide_passkey_gmig_step1_desc: "Mở Google Authenticator trên điện thoại của bạn.",
   guide_passkey_gmig_step2_title: "2. Mở Menu Chuyển tài khoản",
-  guide_passkey_gmig_step2_desc: "Nhấn vào nút Menu góc trên và chọn Chuyển tài khoản (Transfer accounts).",
+  guide_passkey_gmig_step2_desc: "Nhấn vào nút Menu góc trên và chọn Chuyển tài khoản (Transfer codes).",
   guide_passkey_gmig_step3_title: "3. Chọn Xuất tài khoản",
-  guide_passkey_gmig_step3_desc: "Chọn Xuất tài khoản (Export accounts).",
-  guide_passkey_gmig_step4_title: "4. Chọn các mã tài khoản muốn xuất",
-  guide_passkey_gmig_step4_desc: "Tích chọn các tài khoản 2FA bạn muốn chuyển sang {APP_NAME}.",
-  guide_passkey_gmig_step5_title: "5. Quét mã QR Migration vào {APP_NAME}",
-  guide_passkey_gmig_step5_desc: "Mã QR xuất tài khoản sẽ hiển thị. Mở {APP_NAME} → Cài đặt → Quản lý dữ liệu → Chuyển đổi Google Authenticator để quét hoặc tải ảnh mã QR này lên.",
+  guide_passkey_gmig_step3_desc: "Chọn Xuất tài khoản (Export codes).",
+  guide_passkey_gmig_step4_title: "4. Chọn các mã 2FA muốn xuất",
+  guide_passkey_gmig_step4_desc: "Tích chọn các mã 2FA bạn muốn chuyển sang {APP_NAME}.",
+  guide_passkey_gmig_step5_title: "5. Quét mã QR sang {APP_NAME}",
+  guide_passkey_gmig_step5_desc: "Mã QR xuất tài khoản sẽ hiển thị. Mở {APP_NAME} → {settings_header} → {settings_vault_options_label} → {settings_tools_google_auth} để quét hoặc tải ảnh mã QR này lên.",
 
   // Autofill & Password Generator Guides
   guide_auto_lead: "Tự động nhận diện biểu mẫu và điền Tên đăng nhập / Mật khẩu trên các trang web.",
   guide_auto_card1_title: "Biểu tượng Gistwarden trên ô nhập liệu",
   guide_auto_card1_desc: "Khi bấm vào ô đăng nhập trên bất kỳ trang web nào, biểu tượng {APP_NAME} sẽ xuất hiện cho phép bạn chọn tài khoản và tự động điền ngay lập tức.",
   guide_auto_card2_title: "Tự động gửi biểu mẫu (Auto-Submit)",
-  guide_auto_card2_desc: "Bạn có thể bật tùy chọn Tự động gửi biểu mẫu sau khi điền tại mục Cài đặt → Tùy chọn Tự động điền để đăng nhập nhanh 1-click.",
+  guide_auto_card2_desc: "Bạn có thể bật tùy chọn Tự động gửi biểu mẫu sau khi điền tại mục {settings_header} → {settings_autofill_options_label} để đăng nhập nhanh 1-click.",
 
   guide_pwdgen_lead: "Tạo mật khẩu ngẫu nhiên hoặc cụm từ mật khẩu an toàn cao, chống lại mọi đòn tấn công dò tìm.",
   guide_pwdgen_step1_title: "1. Vị trí Công cụ Tạo Mật khẩu",
-  guide_pwdgen_step1_desc: "Mở ứng dụng {APP_NAME} → chuyển tới tab Công cụ (Tools) → Trình tạo mật khẩu (Generator) (hoặc nhấn biểu tượng Tạo mật khẩu khi đang thêm/sửa tài khoản).",
+  guide_pwdgen_step1_desc: "Mở ứng dụng {APP_NAME} → chuyển tới tab {nav_generator} trên thanh điều hướng (hoặc nhấn biểu tượng Tạo mật khẩu khi đang thêm/sửa tài khoản).",
   guide_pwdgen_step2_title: "2. Chế độ Mật khẩu Ngẫu nhiên (Random Password)",
   guide_pwdgen_step2_length: "Tùy chỉnh độ dài: Kéo chọn độ dài mật khẩu từ 5 đến 128 ký tự (khuyên dùng từ 16 ký tự trở lên).",
   guide_pwdgen_step2_charset: "Tập ký tự: Tùy chọn bật/tắt Chữ hoa (A-Z), Chữ thường (a-z), Chữ số (0-9) và Ký tự đặc biệt (!@#$%^...).",
@@ -826,11 +842,11 @@ export default {
   guide_imp_csv_step2_title: "2. Nhập tệp CSV từ Bitwarden",
   guide_imp_csv_step2_desc: "Xuất tệp CSV từ Bitwarden để chuyển sang {APP_NAME}. Ứng dụng sẽ nạp toàn bộ mật khẩu, ghi chú và tự động tái tạo lại các Thư mục tương ứng.",
   guide_imp_csv_step3_title: "3. Các bước thao tác trong ứng dụng",
-  guide_imp_csv_step3_desc: "Mở {APP_NAME} → chọn Cài đặt → Quản lý dữ liệu → Nhập dữ liệu (Import). Chọn chuẩn tệp (Browser CSV hoặc Bitwarden CSV), chọn tệp từ máy tính và nhấn Xác nhận nhập.",
+  guide_imp_csv_step3_desc: "Mở {APP_NAME} → chọn {settings_header} → {settings_vault_options_label} → {vault_options_import}. Chọn chuẩn tệp (Browser CSV hoặc Bitwarden CSV), chọn tệp từ máy tính và nhấn Xác nhận nhập.",
 
   guide_imp_json_lead: "Khôi phục 100% trọn vẹn cấu trúc dữ liệu két mật khẩu từ tệp Sao lưu định dạng JSON.",
   guide_imp_json_step1_title: "1. Vị trí chức năng Nhập dữ liệu",
-  guide_imp_json_step1_desc: "Mở ứng dụng {APP_NAME} → chọn menu Cài đặt → Quản lý dữ liệu → Nhập dữ liệu (Import Data).",
+  guide_imp_json_step1_desc: "Mở ứng dụng {APP_NAME} → chọn menu {settings_header} → {settings_vault_options_label} → {vault_options_import}.",
   guide_imp_json_step2_title: "2. Chọn định dạng tệp JSON",
   guide_imp_json_step2_desc: "Tại danh sách chọn định dạng tệp, chọn Gistwarden / Bitwarden JSON (.json).",
   guide_imp_json_step3_title: "3. Tải tệp JSON & Xem trước kết quả",
@@ -842,7 +858,7 @@ export default {
 
   guide_exp_csv_lead: "Xuất danh sách mật khẩu ra tệp định dạng CSV để dễ dàng xem hoặc chuyển đổi ứng dụng.",
   guide_exp_csv_step1_title: "1. Truy cập tính năng Xuất dữ liệu",
-  guide_exp_csv_step1_desc: "Mở ứng dụng {APP_NAME} → chọn menu Cài đặt → Quản lý dữ liệu → Xuất dữ liệu (Export Data).",
+  guide_exp_csv_step1_desc: "Mở ứng dụng {APP_NAME} → chọn menu {settings_header} → {settings_vault_options_label} → {vault_options_export}.",
   guide_exp_csv_step2_title: "2. Nhập Mật khẩu chính để xác minh bảo mật",
   guide_exp_csv_step2_desc: "Để bảo vệ an toàn, ứng dụng yêu cầu bạn nhập lại Mật khẩu chính (Mật khẩu chính) để xác nhận quyền truy cập trước khi tạo tệp CSV.",
   guide_exp_csv_step3_title: "3. Lựa chọn định dạng tệp CSV",
@@ -857,7 +873,7 @@ export default {
   guide_exp_json_step2_title: "2. Tùy chọn Xuất Mã hóa hoặc Không Mã hóa",
   guide_exp_json_step2_desc: "Nên chọn Xuất mã hóa (Encrypted JSON) để tệp sao lưu được bảo vệ bằng Mật khẩu chính của bạn. Người khác không thể mở nếu không có Mật khẩu chính.",
   guide_exp_json_step3_title: "3. Các bước xuất tệp sao lưu JSON",
-  guide_exp_json_step3_desc: "Mở {APP_NAME} → chọn Cài đặt → Quản lý dữ liệu → Xuất dữ liệu (Export) → nhập Mật khẩu chính → chọn định dạng JSON và nhấn Tải tệp Sao lưu JSON.",
+  guide_exp_json_step3_desc: "Mở {APP_NAME} → chọn {settings_header} → {settings_vault_options_label} → {vault_options_export} → nhập Mật khẩu chính → chọn định dạng JSON và nhấn Tải tệp Sao lưu JSON.",
 
   // Extension Downloads Guide
   guide_item_download_extension: "Tải Extension",

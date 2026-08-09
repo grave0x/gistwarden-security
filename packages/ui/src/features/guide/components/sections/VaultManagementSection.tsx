@@ -163,18 +163,57 @@ export const VaultManagementSection: Component<GuideSectionProps> = (props) => {
             </p>
           </div>
 
-          <div class="article-cards-grid">
-            <div class="guide-card">
-              <h3>{t("guide_vm_folders_card1_title")}</h3>
-              <p>
-                {t("guide_vm_folders_card1_desc")}
-              </p>
+          <div class="step-section-group">
+            <h3>{t("guide_vm_folders_sec1_title")}</h3>
+            <div class="step-guide-container">
+              <div class="step-box">
+                <span class="step-number">1</span>
+                <div class="step-content">
+                  <h4>{t("guide_vm_folders_step1_title")}</h4>
+                  <p>{t("guide_vm_folders_step1_desc")}</p>
+                </div>
+              </div>
+              <div class="step-box">
+                <span class="step-number">2</span>
+                <div class="step-content">
+                  <h4>{t("guide_vm_folders_step2_title")}</h4>
+                  <p>{t("guide_vm_folders_step2_desc")}</p>
+                </div>
+              </div>
+              <div class="step-box">
+                <span class="step-number">3</span>
+                <div class="step-content">
+                  <h4>{t("guide_vm_folders_step3_title")}</h4>
+                  <p>{t("guide_vm_folders_step3_desc")}</p>
+                </div>
+              </div>
             </div>
-            <div class="guide-card">
-              <h3>{t("guide_vm_folders_card2_title")}</h3>
-              <p>
-                {t("guide_vm_folders_card2_desc")}
-              </p>
+          </div>
+
+          <div class="step-section-group">
+            <h3>{t("guide_vm_trash_sec2_title")}</h3>
+            <div class="step-guide-container">
+              <div class="step-box">
+                <span class="step-number">1</span>
+                <div class="step-content">
+                  <h4>{t("guide_vm_trash_step1_title")}</h4>
+                  <p>{t("guide_vm_trash_step1_desc")}</p>
+                </div>
+              </div>
+              <div class="step-box">
+                <span class="step-number">2</span>
+                <div class="step-content">
+                  <h4>{t("guide_vm_trash_step2_title")}</h4>
+                  <p>{t("guide_vm_trash_step2_desc")}</p>
+                </div>
+              </div>
+              <div class="step-box">
+                <span class="step-number">3</span>
+                <div class="step-content">
+                  <h4>{t("guide_vm_trash_step3_title")}</h4>
+                  <p>{t("guide_vm_trash_step3_desc")}</p>
+                </div>
+              </div>
             </div>
           </div>
         </div>

@@ -15,6 +15,8 @@ import type { ItemEditFormState } from "@/features/vault/item-edit/vault-edit-he
 import { type Fido2CredentialId, UriMatchMode } from "@gistwarden/domain";
 import { confirm } from "@gistwarden/ui";
 
+import InlinePasswordGenerator from "@/components/ui/InlinePasswordGenerator.tsx";
+
 interface LoginEditFieldsProps {
   formState: ItemEditFormState;
   updateForm: <K extends keyof ItemEditFormState>(
@@ -132,7 +134,7 @@ export const LoginEditFields: Component<LoginEditFieldsProps> = (props) => {
   return (
     <>
       <div class="detail-section-title">{t("detail_section_login")}</div>
-      <div class="card mb-16">
+      <div class="card mb-16 overflow-visible">
         <FormField id="item-username" label={t("edit_label_username")}>
           <Input
             id="item-username"
@@ -153,6 +155,11 @@ export const LoginEditFields: Component<LoginEditFieldsProps> = (props) => {
               onInput={(e) =>
                 props.updateForm("password", e.currentTarget.value)}
               placeholder={t("edit_placeholder_password")}
+              rightActions={
+                <InlinePasswordGenerator
+                  onGenerate={(pwd) => props.updateForm("password", pwd)}
+                />
+              }
             />
           </div>
         </FormField>
