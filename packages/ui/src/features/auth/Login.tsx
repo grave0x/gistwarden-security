@@ -8,7 +8,7 @@ import {
   Switch,
   untrack,
 } from "solid-js";
-import { accountStore, setAccountStore, settingsStore, uiStore } from "@/core/store.ts";
+import { accountStore, setAccountStore, setSettingsStore, settingsStore, uiStore } from "@/core/store.ts";
 import { setupGithub } from "@/features/sync/github-auth.ts";
 import { sendBackgroundMessage } from "@/core/messaging.ts";
 
@@ -24,9 +24,10 @@ import PinUnlockForm from "@/features/auth/PinUnlockForm.tsx";
 import { GithubSetupForm } from "@/features/auth/components/GithubSetupForm.tsx";
 import { MasterPasswordForm } from "@/features/auth/components/MasterPasswordForm.tsx";
 import { MasterPasswordCreate } from "@/features/auth/components/MasterPasswordCreate.tsx";
-import { AppIcon, SyncIcon } from "@/icons/svg/index.ts";
+import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
+import { AppIcon, ShieldAlertIcon, SyncIcon } from "@/icons/svg/index.ts";
 import { t, type TranslationKey } from "@/core/i18n.ts";
-import { getSessionItem, updateAccountSettings } from "@/core/storage.ts";
+import { getAccountSettings, getGithubToken, getSessionItem, updateAccountSettings, updateExtensionSettings } from "@/core/storage.ts";
 import { z } from "zod";
 import {
   downloadFromGistRoute,
@@ -38,7 +39,9 @@ import {
   SESSION_KEY_PENDING_GITHUB_TOKEN,
 } from "@/core/constants.ts";
 import { type LoginViewMode } from "@/core/storage-schemas.ts";
-import { safeJsonParse } from "@gistwarden/domain";
+import { type VaultMode } from "@gistwarden/repository";
+import { getSyncProvider } from "@gistwarden/network";
+import { asGitHubAccessToken, safeJsonParse } from "@gistwarden/domain";
 import { GistPayloadSchema } from "@gistwarden/repository";
 
 export const Login: Component = () => {
@@ -49,17 +52,45 @@ export const Login: Component = () => {
     "checking" | "new" | "exists"
   >("exists");
 
-  const checkGistStatus = async () => {
-    setGistStatus("checking");
-    setError("");
-    const sendResult = await sendBackgroundMessage(
-      downloadFromGistRoute,
-    );
-    if (
-      sendResult.isOk() && sendResult.value.success &&
-      sendResult.value.content
-    ) {
-      const content = sendResult.value.content;
+  const checkVaultStatusForMode = async (
+    mode: VaultMode,
+  ): Promise<"checking" | "exists" | "new"> => {
+    const accRes = await getAccountSettings(mode);
+    const acc = accRes.isOk() ? accRes.value : null;
+
+    if (acc) {
+      setAccountStore("masterPasswordConfig", acc.masterPasswordConfig);
+      setAccountStore("pinConfig", acc.pinConfig);
+      setAccountStore("githubConfig", acc.githubConfig);
+    }
+
+    if (acc?.masterPasswordConfig.salt) {
+      return "exists";
+    }
+
+    const provider = getSyncProvider(mode);
+    const retrievedToken = await getGithubToken(mode);
+    const activeToken = retrievedToken ||
+      (accountStore.githubToken
+        ? asGitHubAccessToken(accountStore.githubToken)
+        : undefined);
+
+    const isConfigured = await provider.isConfigured({
+      token: activeToken,
+      gistId: acc?.githubConfig.gistId || undefined,
+    });
+
+    if (!isConfigured) {
+      return "new";
+    }
+
+    const downloadRes = await provider.download({
+      token: activeToken,
+      gistId: acc?.githubConfig.gistId || undefined,
+    });
+
+    if (downloadRes.isOk() && downloadRes.value.content) {
+      const content = downloadRes.value.content;
       const payloadJsonRes = safeJsonParse(content);
       if (payloadJsonRes.isOk()) {
         const parsed = GistPayloadSchema.safeParse(payloadJsonRes.value);
@@ -68,44 +99,18 @@ export const Login: Component = () => {
             ...accountStore.masterPasswordConfig,
             salt: parsed.data.salt,
           };
-          await updateAccountSettings({ masterPasswordConfig: updatedMpConfig });
+          await updateAccountSettings(
+            { masterPasswordConfig: updatedMpConfig },
+            mode,
+          );
           setAccountStore("masterPasswordConfig", updatedMpConfig);
+          return "exists";
         }
       }
-      setGistStatus("exists");
-    } else if (
-      sendResult.isOk() && !sendResult.value.success &&
-      sendResult.value.error === "github_error_gist_not_found"
-    ) {
-      setGistStatus("new");
-    } else {
-      let rawErr: TranslationKey = "messaging_error_send_failed";
-      if (sendResult.isOk()) {
-        const val = sendResult.value;
-        if (!val.success && val.error) {
-          rawErr = val.error;
-        }
-      } else {
-        rawErr = sendResult.error;
-      }
-      setError(t(rawErr));
-      setGistStatus("exists");
     }
+
+    return "new";
   };
-
-  createEffect(() => {
-    const isConfigured = accountStore.githubConfigured;
-    const hasSalt = accountStore.masterPasswordConfig.salt;
-    const mode = viewMode();
-
-    if (isConfigured && !hasSalt && mode === "masterPassword") {
-      checkGistStatus();
-    } else {
-      if (!untrack(() => uiStore.globalLoading)) {
-        setGistStatus("exists");
-      }
-    }
-  });
 
   onMount(async () => {
     let tokenToSetup: string | null = null;
@@ -136,6 +141,9 @@ export const Login: Component = () => {
         setError(t(setupRes.error));
       }
     }
+
+    const initialStatus = await checkVaultStatusForMode(settingsStore.vaultMode);
+    setGistStatus(initialStatus);
   });
 
   createEffect(() => {
@@ -206,6 +214,16 @@ export const Login: Component = () => {
     }
 
     setGlobalLoading(false);
+  };
+
+  const handleSwitchVaultMode = async (mode: VaultMode) => {
+    setSettingsStore("vaultMode", mode);
+    await updateExtensionSettings({ vaultMode: mode });
+    setError("");
+
+    setGistStatus("checking");
+    const status = await checkVaultStatusForMode(mode);
+    setGistStatus(status);
   };
 
   const handleCreateMasterPassword = async (password: string) => {
@@ -288,13 +306,45 @@ export const Login: Component = () => {
         <h2 class="login-brand-title">{APP_NAME}</h2>
         <p class="login-subtitle">
           <Show
-            when={accountStore.githubConfigured}
+            when={settingsStore.vaultMode === "local_storage" || accountStore.githubConfigured}
             fallback={t("login_title_setup")}
           >
             {t("login_title_locked")}
           </Show>
         </p>
       </div>
+
+      {/* Vault Mode Selector Tabs */}
+      <div class="login-tabs mb-16">
+        <button
+          type="button"
+          class={`login-tab-btn ${settingsStore.vaultMode === "github_gist" ? "active" : ""}`}
+          onClick={() => handleSwitchVaultMode("github_gist")}
+        >
+          Cloud Vault (Gist)
+        </button>
+        <button
+          type="button"
+          class={`login-tab-btn ${settingsStore.vaultMode === "local_storage" ? "active" : ""}`}
+          onClick={() => handleSwitchVaultMode("local_storage")}
+        >
+          Local Vault
+        </button>
+      </div>
+
+      {/* Local Vault Must Read Warning Banner */}
+      <Show when={settingsStore.vaultMode === "local_storage"}>
+        <div class="local-vault-must-read-banner mb-16">
+          <div class="must-read-text">
+            <ShieldAlertIcon size={16} class="must-read-icon" />
+            <span>{t("login_local_vault_must_read")}</span>
+          </div>
+          <div class="must-read-link-group">
+            <span class="must-read-label">{t("login_local_vault_must_read_btn")}</span>
+            <GuideHelpButton route="getting-started/local-vault" size={15} />
+          </div>
+        </div>
+      </Show>
 
       <Show when={error()}>
         <div class="alert alert-danger mb-16">{error()}</div>
@@ -307,7 +357,7 @@ export const Login: Component = () => {
       </Show>
 
       <Show
-        when={accountStore.githubConfigured}
+        when={settingsStore.vaultMode === "local_storage" || accountStore.githubConfigured}
         fallback={
           <GithubSetupForm
             onSaveToken={handleSaveToken}

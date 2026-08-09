@@ -6,7 +6,7 @@ import {
   SESSION_KEY_VERIFICATION_IV,
   type TranslationKey,
 } from "@gistwarden/domain";
-import { getAccountSettings, getSessionItem } from "@gistwarden/repository";
+import { getAccountSettings, getSessionItem, type VaultMode } from "@gistwarden/repository";
 import { err, ok, Result } from "neverthrow";
 import { vaultSecurityContext } from "./vault-security-state.ts";
 
@@ -52,14 +52,17 @@ export async function getSessionKey(): Promise<CryptoKey | null> {
   return await vaultSecurityContext.getKey();
 }
 
-export async function verifyMasterPassword(password: string): Promise<boolean> {
+export async function verifyMasterPassword(
+  password: string,
+  mode: VaultMode,
+): Promise<boolean> {
   const ivRes = await getSessionItem(SESSION_KEY_VERIFICATION_IV);
   const ciphertextRes = await getSessionItem(
     SESSION_KEY_VERIFICATION_CIPHERTEXT,
   );
   const ivB64 = ivRes.isOk() ? ivRes.value : null;
   const ciphertextB64 = ciphertextRes.isOk() ? ciphertextRes.value : null;
-  const settingsRes = await getAccountSettings();
+  const settingsRes = await getAccountSettings(mode);
   if (settingsRes.isErr()) {
     return false;
   }

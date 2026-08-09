@@ -23,7 +23,9 @@ export const Guide: Component = () => {
 
   onMount(async () => {
     document.body.classList.add("guide-body-native");
-    await init();
+    if (!accountStore.isLoaded || !settingsStore.isLoaded) {
+      await init();
+    }
   });
 
   onCleanup(() => {

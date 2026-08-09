@@ -27,6 +27,7 @@ import { getSyncProvider } from "@gistwarden/network";
 import {
   DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
   getAccountSettings,
+  getActiveVaultMode,
   getGithubToken,
   getSessionItem,
   GistPayloadSchema,
@@ -37,6 +38,8 @@ import {
   setSessionItem,
   setSessionUnlocked,
   updateAccountSettings,
+  updateExtensionSettings,
+  type VaultMode,
 } from "@gistwarden/repository";
 import { err, ok, type Result } from "neverthrow";
 import { clearAlarm } from "./alarms.ts";
@@ -57,6 +60,7 @@ export interface CreateNewVaultOptions {
   githubToken?: string;
   githubConfig?: GithubConfig;
   masterPasswordConfig?: MasterPasswordSecurityConfig;
+  vaultMode: VaultMode;
 }
 
 export interface CreateNewVaultResult {
@@ -70,8 +74,10 @@ export interface CreateNewVaultResult {
 export async function createNewVaultUseCase(
   options: CreateNewVaultOptions,
 ): Promise<Result<CreateNewVaultResult, TranslationKey>> {
+  await updateExtensionSettings({ vaultMode: options.vaultMode });
+  const mode = options.vaultMode;
   const tokenToEncrypt = options.githubToken ||
-    (await getGithubToken()) || "";
+    (await getGithubToken(mode)) || "";
   await clearDerivedKey();
 
   const rawSalt = generateSalt();
@@ -80,7 +86,10 @@ export async function createNewVaultUseCase(
     ...(options.masterPasswordConfig || DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG),
     salt: saltBase64,
   };
-  await updateAccountSettings({ masterPasswordConfig: updatedMpConfig });
+  await updateAccountSettings(
+    { masterPasswordConfig: updatedMpConfig },
+    mode,
+  );
 
   const keyRes = await getOrDeriveKey(options.password, saltBase64);
   if (keyRes.isErr()) {
@@ -102,9 +111,10 @@ export async function createNewVaultUseCase(
       githubTokenEncrypted: ciphertext,
       githubTokenIv: iv,
     };
-    await updateAccountSettings({
-      githubConfig: updatedGithubConfig,
-    });
+    await updateAccountSettings(
+      { githubConfig: updatedGithubConfig },
+      mode,
+    );
     await removeSessionItem(SESSION_KEY_PENDING_GITHUB_TOKEN);
   }
 
@@ -173,11 +183,11 @@ export async function lockSessionUseCase(): Promise<void> {
   await clearAlarm(ALARM_NAME_VAULT_TIMEOUT);
 }
 
-export async function logoutSessionUseCase(): Promise<void> {
+export async function logoutSessionUseCase(mode: VaultMode): Promise<void> {
   await clearDerivedKey();
   sessionManager.clearKey();
   await removeSessionItem([...SESSION_KEYS_ON_LOCK]);
-  await resetAccountSettings();
+  await resetAccountSettings(mode);
   await clearAlarm(ALARM_NAME_VAULT_TIMEOUT);
   await broadcastMessage({ type: MSG_VAULT_LOGGED_OUT });
 }

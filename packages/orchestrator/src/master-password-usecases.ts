@@ -9,11 +9,13 @@ import {
 } from "@gistwarden/domain";
 import {
   DEFAULT_PIN_CONFIG,
+  getActiveVaultMode,
   getGithubToken,
   type GithubConfig,
   type MasterPasswordSecurityConfig,
   setSessionItem,
   updateAccountSettings,
+  type VaultMode,
 } from "@gistwarden/repository";
 import { err, ok, type Result } from "neverthrow";
 import { setDerivedKey, verifyMasterPassword } from "./crypto-usecases.ts";
@@ -25,6 +27,7 @@ export interface ChangeMasterPasswordOptions {
   vaultItems: VaultItem[];
   currentGithubConfig: GithubConfig;
   currentMpConfig: MasterPasswordSecurityConfig;
+  vaultMode: VaultMode;
 }
 
 export interface ChangeMasterPasswordResult {
@@ -42,6 +45,7 @@ export async function changeMasterPasswordUseCase(
 
   const isCurrentPasswordCorrect = await verifyMasterPassword(
     options.currentPass,
+    options.vaultMode,
   );
   if (!isCurrentPasswordCorrect) {
     return err("settings_error_mp_wrong_current");
@@ -60,6 +64,7 @@ export async function changeMasterPasswordUseCase(
     options.vaultItems,
     newKey,
     newSaltBase64,
+    { vaultMode: options.vaultMode },
   );
   if (uploadRes.isErr()) {
     return err(uploadRes.error);
@@ -76,7 +81,8 @@ export async function changeMasterPasswordUseCase(
   await setSessionItem(SESSION_KEY_VERIFICATION_IV, vIv);
   await setSessionItem(SESSION_KEY_VERIFICATION_CIPHERTEXT, vCiphertext);
 
-  const githubToken = await getGithubToken();
+  const mode = options.vaultMode;
+  const githubToken = await getGithubToken(mode);
   const updatedMpConfig: MasterPasswordSecurityConfig = {
     ...options.currentMpConfig,
     salt: newSaltBase64,
@@ -96,11 +102,14 @@ export async function changeMasterPasswordUseCase(
     };
   }
 
-  await updateAccountSettings({
-    githubConfig: updatedGithubConfig,
-    masterPasswordConfig: updatedMpConfig,
-    pinConfig: DEFAULT_PIN_CONFIG,
-  });
+  await updateAccountSettings(
+    {
+      githubConfig: updatedGithubConfig,
+      masterPasswordConfig: updatedMpConfig,
+      pinConfig: DEFAULT_PIN_CONFIG,
+    },
+    mode,
+  );
 
   return ok({
     newKey,

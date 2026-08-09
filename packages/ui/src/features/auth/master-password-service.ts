@@ -1,6 +1,6 @@
 import { changeMasterPasswordUseCase } from "@gistwarden/orchestrator";
 import { DEFAULT_PIN_CONFIG } from "@gistwarden/repository";
-import { accountStore, setAccountStore } from "@/core/store.ts";
+import { accountStore, setAccountStore, settingsStore } from "@/core/store.ts";
 import { err, ok, type Result } from "neverthrow";
 import type { TranslationKey } from "@/core/i18n.ts";
 
@@ -14,6 +14,7 @@ export async function changeMasterPassword(
     vaultItems: accountStore.vaultItems,
     currentGithubConfig: accountStore.githubConfig,
     currentMpConfig: accountStore.masterPasswordConfig,
+    vaultMode: settingsStore.vaultMode,
   });
 
   if (res.isErr()) {

@@ -49,4 +49,8 @@ export class GithubGistProvider implements ISyncProvider {
   ): Promise<Result<SyncValidationResult, TranslationKey>> {
     return await validateToken(configToken || asGitHubAccessToken(""));
   }
+
+  async isConfigured(options?: SyncOptions): Promise<boolean> {
+    return Promise.resolve(!!options?.token);
+  }
 }

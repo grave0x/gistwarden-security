@@ -6,7 +6,9 @@ import {
   MSG_CHECK_PENDING_NOTIFICATION,
   MSG_CREDENTIALS_SUBMITTED,
   MSG_DELETE_GIST,
+  MSG_DELETE_LOCAL_VAULT,
   MSG_DOWNLOAD_FROM_GIST,
+  MSG_DOWNLOAD_FROM_LOCAL,
   MSG_FIDO2_CREDENTIAL_CREATION_REQUEST,
   MSG_FIDO2_CREDENTIAL_GET_REQUEST,
   MSG_FIDO2_HEARTBEAT,
@@ -16,6 +18,7 @@ import {
   MSG_SAVE_CREDENTIAL_ACTION,
   MSG_START_GITHUB_OAUTH,
   MSG_UPLOAD_TO_GIST,
+  MSG_UPLOAD_TO_LOCAL,
   MSG_USER_ACTIVITY,
   MSG_VALIDATE_TOKEN,
 } from "@/core/constants.ts";
@@ -247,6 +250,27 @@ export const deleteGistRoute = defineRoute({
 
 export const downloadFromGistRoute = defineRoute({
   type: MSG_DOWNLOAD_FROM_GIST,
+  payloadSchema: DownloadFromGistMsgSchema,
+  responseSchema: DownloadGistResponseSchema,
+  internalOnly: true,
+});
+
+export const uploadToLocalRoute = defineRoute({
+  type: MSG_UPLOAD_TO_LOCAL,
+  payloadSchema: UploadToGistMsgSchema,
+  responseSchema: SyncActionResponseSchema,
+  internalOnly: true,
+});
+
+export const deleteLocalVaultRoute = defineRoute({
+  type: MSG_DELETE_LOCAL_VAULT,
+  payloadSchema: DeleteGistMsgSchema,
+  responseSchema: SyncActionResponseSchema,
+  internalOnly: true,
+});
+
+export const downloadFromLocalRoute = defineRoute({
+  type: MSG_DOWNLOAD_FROM_LOCAL,
   payloadSchema: DownloadFromGistMsgSchema,
   responseSchema: DownloadGistResponseSchema,
   internalOnly: true,

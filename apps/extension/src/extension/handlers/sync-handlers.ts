@@ -1,22 +1,22 @@
 import type { MessageRouter } from "@/extension/message-router.ts";
 import {
   deleteGistRoute,
-  deleteGistUseCase,
+  deleteVaultUseCase,
   downloadFromGistRoute,
-  downloadFromGistUseCase,
+  downloadVaultUseCase,
   startGithubOauthRoute,
   startGithubOauthUseCase,
   uploadToGistRoute,
-  uploadToGistUseCase,
+  uploadVaultUseCase,
   validateTokenRoute,
   validateTokenUseCase,
 } from "@gistwarden/orchestrator";
 
 export function registerSyncRoutes(router: MessageRouter): void {
   router
-    .register(uploadToGistRoute, uploadToGistUseCase)
-    .register(deleteGistRoute, deleteGistUseCase)
-    .register(downloadFromGistRoute, downloadFromGistUseCase)
+    .register(uploadToGistRoute, uploadVaultUseCase)
+    .register(deleteGistRoute, deleteVaultUseCase)
+    .register(downloadFromGistRoute, downloadVaultUseCase)
     .register(validateTokenRoute, validateTokenUseCase)
     .register(startGithubOauthRoute, startGithubOauthUseCase);
 }

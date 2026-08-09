@@ -51,6 +51,7 @@ export default {
     "Kích thước Két sắt vượt quá giới hạn của GitHub Gist (10MB). Vui lòng giảm bớt dữ liệu hoặc chia nhỏ két sắt.",
   github_error_rate_limit:
     "Đã vượt quá giới hạn lượt gọi GitHub API (Rate Limit). Vui lòng thử lại sau ít phút.",
+  vault_error_not_found: "Không tìm thấy dữ liệu két sắt.",
   sync_error_corrupted_payload:
     "Dữ liệu đồng bộ bị lỗi cấu trúc hoặc không giải mã được.",
   sync_error_remote_password_changed:
@@ -140,6 +141,8 @@ export default {
   login_confirm_master_password: "Nhập lại để xác nhận",
   login_btn_create_master_password: "Tạo Mật khẩu chính",
   login_checking_gist: "Đang kiểm tra dữ liệu...",
+  login_local_vault_must_read: "Cảnh báo & lưu ý quan trọng",
+  login_local_vault_must_read_btn: "Cần đọc trước",
 
   // Vault Page
   vault_search_placeholder: "Tìm kiếm tài khoản...",
@@ -449,7 +452,7 @@ export default {
   settings_mp_success: "Đổi Mật khẩu chính thành công!",
   settings_export_success: "Đã tải xuống file sao lưu!",
   settings_clear_vault_msg:
-    "Bạn có chắc chắn muốn xóa TOÀN BỘ tài khoản trong két sắt? Hành động này không thể hoàn tác và toàn bộ dữ liệu trên Gist sẽ bị xóa sạch.",
+    "Bạn có chắc chắn muốn xóa TOÀN BỘ tài khoản trong két sắt? Hành động này không thể hoàn tác và toàn bộ dữ liệu trong két sắt sẽ bị xóa sạch.",
   settings_clear_vault_confirm_title: "Xác nhận xóa vĩnh viễn",
   settings_clear_vault_confirm_msg:
     "XÁC NHẬN LẦN CUỐI: Xóa vĩnh viễn toàn bộ dữ liệu tài khoản? Vui lòng đảm bảo bạn đã xuất dữ liệu sao lưu (backup) trước khi tiếp tục.",
@@ -457,10 +460,10 @@ export default {
     "Đã xóa toàn bộ tài khoản trong két sắt thành công!",
   settings_logout_title: "Đăng xuất",
   settings_logout_msg:
-    "Bạn có chắc chắn muốn ngắt kết nối tài khoản GitHub? Thao tác này sẽ xóa toàn bộ cấu hình cục bộ.",
+    "Bạn có chắc chắn muốn ngắt kết nối? Thao tác này sẽ xóa toàn bộ cấu hình cục bộ.",
   vault_sync_success: "Đồng bộ dữ liệu thành công!",
   vault_import_success:
-    "Nhập thành công {count} tài khoản! Két sắt đã được đồng bộ lên Gist.",
+    "Nhập thành công {count} tài khoản! Két sắt đã được cập nhật thành công.",
   vault_import_error_invalid:
     "Định dạng file không hợp lệ hoặc xác thực thất bại",
   vault_options_sync_manual: "Đồng bộ thủ công",
@@ -649,7 +652,33 @@ export default {
   guide_item_overview: "Tổng quan & Mã hóa E2EE",
   guide_item_master_password: "Mật khẩu chính (Master Password)",
   guide_item_github_gist: "Tạo GitHub Token & Cấu hình Gist",
+  guide_item_local_vault: "Két sắt Cục bộ & Cảnh báo Bảo mật",
   guide_item_auto_lock: "Khóa Két & Tự Động Khóa",
+
+  guide_start_local_lead:
+    "Local Vault cho phép bạn lưu trữ két mật khẩu được mã hóa trực tiếp trên thiết bị hiện tại mà không cần kết nối tài khoản đám mây.",
+  guide_start_local_warn_title: "Cảnh báo Quan trọng khi sử dụng Local Vault",
+  guide_start_local_warn_desc:
+    "Local Vault chỉ được lưu cục bộ trên thiết bị này. Việc gỡ cài đặt Extension hoặc xóa dữ liệu trình duyệt sẽ xóa sạch dữ liệu két mật khẩu. Hãy luôn chủ động Xuất file sao lưu (Export Backup) định kỳ!",
+  guide_start_local_passkey_warn_title:
+    "CẢNH BÁO: KHÔNG dùng chung cùng một Passkey FIDO2 giữa Local Vault và Sync Vault",
+  guide_start_local_passkey_warn_desc:
+    "Passkey FIDO2 vẫn hoạt động bình thường trên Local Vault của thiết bị hiện tại. Tuy nhiên, tuyệt đối KHÔNG dùng chung hay sao chép cùng một Passkey giữa Local Vault và Cloud Sync Vault trên nhiều thiết bị. Sự lệch nhịp Bộ đếm (Signature Counter) giữa các két sắt không đồng bộ sẽ khiến máy chủ nghi ngờ bị hack và CHẶN ĐĂNG NHẬP PASSKEY. Lời khuyên: Nếu muốn dùng ở nhiều thiết bị, hãy đăng ký các Passkey riêng biệt trực tiếp trên từng máy!",
+  guide_start_local_card1_title: "1. Lưu trữ Mã hóa Cục bộ 100%",
+  guide_start_local_card1_desc:
+    "Két mật khẩu được mã hóa bằng AES-256-GCM và lưu duy nhất trong bộ nhớ trình duyệt. Không có bất kỳ dữ liệu nào gửi lên máy chủ hay GitHub.",
+  guide_start_local_card2_title: "2. Nguy cơ Mất dữ liệu vĩnh viễn",
+  guide_start_local_card2_desc:
+    "Do không lưu trên Cloud, việc dọn dẹp dữ liệu web hoặc gỡ ứng dụng sẽ xóa sạch Két sắt. Dữ liệu một khi đã mất sẽ KHÔNG thể khôi phục!",
+  guide_start_local_card3_title: "3. Sao lưu Thủ công Định kỳ",
+  guide_start_local_card3_desc:
+    "Luôn vào Cài đặt -> Xuất dữ liệu để lưu file sao lưu CSV hoặc JSON mã hóa ra thư mục an toàn hoặc ổ cứng ngoài.",
+  guide_start_local_card4_title: "4. Độc lập theo từng Thiết bị",
+  guide_start_local_card4_desc:
+    "Mỗi thiết bị dùng Local Vault sẽ có một két sắt và cấu hình riêng biệt. Thay đổi ở Máy A sẽ không tự đồng bộ sang Máy B.",
+  guide_start_local_card5_title: "5. Rủi ro Lệch Bộ đếm (Counter) khi Dùng Passkey Đa thiết bị",
+  guide_start_local_card5_desc:
+    "Mỗi Passkey có một 'Bộ đếm số lần sử dụng' (Signature Counter) được máy chủ ghi nhớ. Khi dùng Passkey trên nhiều thiết bị đồng bộ không kịp thời, bộ đếm trên một máy có thể bị lùi số/lệch nhịp so với máy chủ. Khi đó máy chủ sẽ nghi ngờ bị hack/sao chép giả mạo và CHẶN đăng nhập Passkey ngay lập tức. Khuyên dùng: Hãy đăng ký Passkey riêng cho từng thiết bị.",
 
   guide_item_logins: "Mật khẩu Đăng nhập & Tên miền",
   guide_item_secure_notes: "Ghi chú Bảo mật",

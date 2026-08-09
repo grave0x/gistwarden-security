@@ -1,11 +1,14 @@
 import type { ISyncProvider, SyncProviderId } from "./sync-provider-types.ts";
 import { GithubGistProvider } from "./github-gist-provider.ts";
+import { LocalStorageProvider } from "./local-storage-provider.ts";
 
 const registry = new Map<SyncProviderId, ISyncProvider>();
 
 // Register default providers
 const defaultGistProvider = new GithubGistProvider();
+const defaultLocalStorageProvider = new LocalStorageProvider();
 registry.set(defaultGistProvider.id, defaultGistProvider);
+registry.set(defaultLocalStorageProvider.id, defaultLocalStorageProvider);
 
 export function registerSyncProvider(provider: ISyncProvider): void {
   registry.set(provider.id, provider);
@@ -14,10 +17,5 @@ export function registerSyncProvider(provider: ISyncProvider): void {
 export function getSyncProvider(
   providerId: SyncProviderId = "github_gist",
 ): ISyncProvider {
-  const provider = registry.get(providerId);
-  if (!provider) {
-    // Fallback to GitHub Gist provider if specified provider is not found
-    return defaultGistProvider;
-  }
-  return provider;
+  return registry.get(providerId) ?? defaultGistProvider;
 }

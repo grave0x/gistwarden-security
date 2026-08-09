@@ -1,5 +1,5 @@
 import { reconcile } from "solid-js/store";
-import { accountStore, setAccountStore } from "@/core/store.ts";
+import { accountStore, setAccountStore, settingsStore } from "@/core/store.ts";
 import { STORE_KEY_VAULT_ITEMS } from "@/core/constants.ts";
 import { getSessionKey } from "@gistwarden/orchestrator";
 import type { TranslationKey } from "@/core/i18n.ts";
@@ -18,7 +18,10 @@ export async function syncVault(): Promise<Result<void, TranslationKey>> {
     accountStore.vaultItems,
     key,
     accountStore.masterPasswordConfig.salt,
-    { trashItems: accountStore.trashItems || [] },
+    {
+      vaultMode: settingsStore.vaultMode,
+      trashItems: accountStore.trashItems || [],
+    },
   );
 
   if (uploadRes.isErr()) {

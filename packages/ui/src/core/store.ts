@@ -16,6 +16,7 @@ import {
   updateAccountSettings,
   type VaultTimeoutAction,
   type VaultTimeoutValue,
+  type VaultMode,
 } from "@gistwarden/repository";
 import type {
   Folder,
@@ -37,6 +38,7 @@ export interface ExtensionSettingsStore {
   showAutofillSuggestionsOnFocus: boolean;
   enablePageAnimations: boolean;
   excludedDomains: readonly string[];
+  vaultMode: VaultMode;
   isLoaded: boolean;
 }
 
@@ -104,6 +106,7 @@ export const initialExtensionSettings: Omit<
   showAutofillSuggestionsOnFocus: true,
   enablePageAnimations: true,
   excludedDomains: DEFAULT_EXCLUDED_DOMAINS,
+  vaultMode: "github_gist",
 };
 
 export const initialAccountState: Omit<AccountStore, "isLoaded"> = {
@@ -194,7 +197,8 @@ export async function loadAllStores(): Promise<void> {
     });
   }
 
-  const accRes = await getAccountSettings();
+  const activeMode = settingsStore.vaultMode;
+  const accRes = await getAccountSettings(activeMode);
   if (accRes.isOk()) {
     const acc = accRes.value;
     const githubConfig = acc.githubConfig || DEFAULT_GITHUB_CONFIG;
@@ -211,7 +215,7 @@ export async function loadAllStores(): Promise<void> {
         pinConfig.failedAttempts >= 3
       ) {
         pinConfig = DEFAULT_PIN_CONFIG;
-        await updateAccountSettings({ pinConfig });
+        await updateAccountSettings({ pinConfig }, activeMode);
       }
     }
 
@@ -232,7 +236,7 @@ export async function loadAllStores(): Promise<void> {
         masterPasswordConfig.failedMac !== expectedMac
       ) {
         masterPasswordConfig = DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG;
-        await updateAccountSettings({ masterPasswordConfig });
+        await updateAccountSettings({ masterPasswordConfig }, activeMode);
       }
     }
 

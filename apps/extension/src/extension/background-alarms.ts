@@ -7,6 +7,7 @@ import {
 import { clearAlarm, createAlarm, hasAlarms, onAlarm } from "@/core/alarms.ts";
 import {
   clearUnlockedSessionState,
+  getActiveVaultMode,
   getExtensionSettings,
   getSessionItem,
   resetAccountSettings,
@@ -65,7 +66,8 @@ export function setupAlarmsListener(): () => void {
       }
 
       if (action === "logout") {
-        await resetAccountSettings();
+        const activeMode = await getActiveVaultMode();
+        await resetAccountSettings(activeMode);
         broadcastMessage({ type: MSG_VAULT_LOGGED_OUT });
       } else {
         broadcastMessage({ type: MSG_VAULT_LOCKED });

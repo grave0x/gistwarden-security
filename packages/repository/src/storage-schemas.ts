@@ -49,6 +49,9 @@ export type LoginMethod = z.infer<typeof LoginMethodSchema>;
 export const LoginViewModeSchema = z.enum(["masterPassword", "pin"]);
 export type LoginViewMode = z.infer<typeof LoginViewModeSchema>;
 
+export const VaultModeSchema = z.enum(["github_gist", "local_storage"]);
+export type VaultMode = z.infer<typeof VaultModeSchema>;
+
 export const GithubUserSchema = z.object({
   login: z.string(),
   avatar_url: z.string(),
@@ -72,6 +75,7 @@ export const ExtensionSettingsSchema = z.object({
   showAutofillSuggestionsOnFocus: z.boolean().default(true),
   enablePageAnimations: z.boolean().default(true),
   excludedDomains: z.array(z.string()).default([...DEFAULT_EXCLUDED_DOMAINS]),
+  vaultMode: VaultModeSchema.default("github_gist"),
 }).readonly();
 export type ExtensionSettings = z.infer<typeof ExtensionSettingsSchema>;
 

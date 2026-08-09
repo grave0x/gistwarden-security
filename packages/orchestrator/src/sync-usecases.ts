@@ -7,6 +7,7 @@ import {
   type DeleteGistMsg,
   type DownloadGistResponse,
   getAccountSettings,
+  getExtensionSettings,
   getGithubToken,
   setSessionItem,
   type StartGithubOauthMsg,
@@ -19,61 +20,21 @@ import {
 } from "@gistwarden/repository";
 import { asGistId, SESSION_KEY_PENDING_GITHUB_TOKEN } from "@gistwarden/domain";
 
-export async function uploadToGistUseCase(
+export async function uploadVaultUseCase(
   payload: UploadToGistMsg,
 ): Promise<SyncActionResponse> {
-  const token = await getGithubToken();
-  if (!token) {
+  const extRes = await getExtensionSettings();
+  const vaultMode = extRes.isOk() ? extRes.value.vaultMode : "github_gist";
+  const provider = getSyncProvider(vaultMode);
+
+  const token = await getGithubToken(vaultMode);
+  if (!await provider.isConfigured({ token: token || undefined })) {
     return { success: false, error: "github_error_missing_token" };
   }
-  const settingsRes = await getAccountSettings();
-  if (settingsRes.isErr()) {
-    return { success: false, error: settingsRes.error };
-  }
 
-  const githubConfig = settingsRes.value.githubConfig;
-  const res = await getSyncProvider().upload(payload.content || "", {
-    token,
-    gistId: githubConfig.gistId,
-    username: githubConfig.username,
-  });
-
-  if (res.isOk()) {
-    const gistId = res.value.gistId;
-    if (gistId && gistId !== githubConfig.gistId) {
-      await updateAccountSettings({
-        githubConfig: { ...githubConfig, gistId },
-        lastSync: Date.now(),
-      });
-    } else {
-      await updateAccountSettings({ lastSync: Date.now() });
-    }
-    return { success: true };
-  }
-  return { success: false, error: res.error };
-}
-
-export async function deleteGistUseCase(
-  payload: DeleteGistMsg,
-): Promise<SyncActionResponse> {
-  const token = await getGithubToken();
-  const gistId = payload.content ? asGistId(payload.content) : undefined;
-  const res = await getSyncProvider().delete(gistId, {
-    token: token || undefined,
-  });
-  if (res.isOk()) {
-    return { success: true };
-  }
-  return { success: false, error: res.error };
-}
-
-export async function downloadFromGistUseCase(): Promise<DownloadGistResponse> {
-  const token = await getGithubToken();
-  const settingsRes = await getAccountSettings();
-  const settings = settingsRes.isOk() ? settingsRes.value : null;
-  const githubConfig = settings?.githubConfig;
-
-  const res = await getSyncProvider().download({
+  const settingsRes = await getAccountSettings(vaultMode);
+  const githubConfig = settingsRes.isOk() ? settingsRes.value.githubConfig : undefined;
+  const res = await provider.upload(payload.content || "", {
     token: token || undefined,
     gistId: githubConfig?.gistId,
     username: githubConfig?.username,
@@ -82,12 +43,67 @@ export async function downloadFromGistUseCase(): Promise<DownloadGistResponse> {
   if (res.isOk()) {
     const gistId = res.value.gistId;
     if (gistId && githubConfig && gistId !== githubConfig.gistId) {
-      await updateAccountSettings({
-        githubConfig: { ...githubConfig, gistId },
-        lastSync: Date.now(),
-      });
+      await updateAccountSettings(
+        {
+          githubConfig: { ...githubConfig, gistId },
+          lastSync: Date.now(),
+        },
+        vaultMode,
+      );
+    } else {
+      await updateAccountSettings({ lastSync: Date.now() }, vaultMode);
+    }
+    return { success: true };
+  }
+  return { success: false, error: res.error };
+}
+
+export async function deleteVaultUseCase(
+  payload: DeleteGistMsg,
+): Promise<SyncActionResponse> {
+  const extRes = await getExtensionSettings();
+  const vaultMode = extRes.isOk() ? extRes.value.vaultMode : "github_gist";
+  const provider = getSyncProvider(vaultMode);
+
+  const token = await getGithubToken(vaultMode);
+  const gistId = payload.content ? asGistId(payload.content) : undefined;
+  const res = await provider.delete(gistId, {
+    token: token || undefined,
+  });
+  if (res.isOk()) {
+    return { success: true };
+  }
+  return { success: false, error: res.error };
+}
+
+export async function downloadVaultUseCase(): Promise<DownloadGistResponse> {
+  const extRes = await getExtensionSettings();
+  const vaultMode = extRes.isOk() ? extRes.value.vaultMode : "github_gist";
+  const provider = getSyncProvider(vaultMode);
+
+  const token = await getGithubToken(vaultMode);
+  const settingsRes = await getAccountSettings(vaultMode);
+  const settings = settingsRes.isOk() ? settingsRes.value : null;
+  const githubConfig = settings?.githubConfig;
+
+  const res = await provider.download({
+    token: token || undefined,
+    gistId: githubConfig?.gistId,
+    username: githubConfig?.username,
+  });
+
+  if (res.isOk()) {
+    const gistId = res.value.gistId;
+    if (gistId && githubConfig && gistId !== githubConfig.gistId) {
+      await updateAccountSettings(
+        {
+          githubConfig: { ...githubConfig, gistId },
+          lastSync: Date.now(),
+        },
+        vaultMode,
+      );
     } else if (settings) {
-      await updateAccountSettings({ lastSync: Date.now() });
+      await updateAccountSettings({ lastSync: Date.now() }, vaultMode);
     }
     return { success: true, content: res.value.content || "" };
   }

@@ -2,7 +2,7 @@ import { z } from "zod";
 import type { Result } from "neverthrow";
 import { GistIdSchema, GitHubAccessTokenSchema, type GistId, type GitHubAccessToken, type TranslationKey } from "@gistwarden/domain";
 
-export type SyncProviderId = "github_gist";
+export type SyncProviderId = "github_gist" | "local_storage";
 
 export const SyncValidationResultSchema = z.object({
   username: z.string(),
@@ -41,4 +41,5 @@ export interface ISyncProvider {
   validateConfig(
     configToken?: GitHubAccessToken,
   ): Promise<Result<SyncValidationResult, TranslationKey>>;
+  isConfigured(options?: SyncOptions): Promise<boolean>;
 }

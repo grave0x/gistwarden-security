@@ -25,7 +25,7 @@ import {
   VaultItemType,
   type VaultPayload,
 } from "@gistwarden/domain";
-import { setSessionItem, updateAccountSettings } from "@gistwarden/repository";
+import { setSessionItem, updateAccountSettings, type VaultMode } from "@gistwarden/repository";
 import { getSyncProvider } from "@gistwarden/network";
 import { err, ok, Result } from "neverthrow";
 import { deleteGistRoute } from "./messaging-contracts.ts";
@@ -36,6 +36,7 @@ import { syncVaultToGist } from "./vault-sync-usecase.ts";
 export async function executeVaultMutationUseCase(
   currentPayload: VaultPayload,
   salt: string,
+  vaultMode: VaultMode,
   mutationFn: (payload: VaultPayload) => VaultPayload | Promise<VaultPayload>,
 ): Promise<Result<VaultPayload, TranslationKey>> {
   const key = await getSessionKey();
@@ -50,6 +51,7 @@ export async function executeVaultMutationUseCase(
     key,
     salt,
     {
+      vaultMode,
       trashItems: updatedPayload.trash,
       folders: updatedPayload.folders,
     },
@@ -65,6 +67,7 @@ export async function executeVaultMutationUseCase(
 export async function addFolderUseCase(
   currentPayload: VaultPayload,
   salt: string,
+  vaultMode: VaultMode,
   name: string,
 ): Promise<
   Result<{ payload: VaultPayload; newFolder: Folder }, TranslationKey>
@@ -88,6 +91,7 @@ export async function addFolderUseCase(
   const res = await executeVaultMutationUseCase(
     currentPayload,
     salt,
+    vaultMode,
     (payload) => ({
       ...payload,
       folders: [...payload.folders, newFolder],
@@ -100,6 +104,7 @@ export async function addFolderUseCase(
 export async function renameFolderUseCase(
   currentPayload: VaultPayload,
   salt: string,
+  vaultMode: VaultMode,
   id: FolderId,
   newName: string,
 ): Promise<Result<VaultPayload, TranslationKey>> {
@@ -115,7 +120,7 @@ export async function renameFolderUseCase(
     return err("folder_error_duplicate_name");
   }
 
-  return await executeVaultMutationUseCase(currentPayload, salt, (payload) => ({
+  return await executeVaultMutationUseCase(currentPayload, salt, vaultMode, (payload) => ({
     ...payload,
     folders: payload.folders.map((f) =>
       f.id === id ? { ...f, name: trimmedName } : f
@@ -126,9 +131,10 @@ export async function renameFolderUseCase(
 export async function deleteFolderUseCase(
   currentPayload: VaultPayload,
   salt: string,
+  vaultMode: VaultMode,
   id: FolderId,
 ): Promise<Result<VaultPayload, TranslationKey>> {
-  return await executeVaultMutationUseCase(currentPayload, salt, (payload) => ({
+  return await executeVaultMutationUseCase(currentPayload, salt, vaultMode, (payload) => ({
     folders: payload.folders.filter((f) => f.id !== id),
     items: payload.items.map((item) =>
       item.folderId === id ? { ...item, folderId: null } : item
@@ -140,9 +146,10 @@ export async function deleteFolderUseCase(
 export async function saveItemUseCase(
   currentPayload: VaultPayload,
   salt: string,
+  vaultMode: VaultMode,
   item: Partial<VaultItem>,
 ): Promise<Result<VaultPayload, TranslationKey>> {
-  return await executeVaultMutationUseCase(currentPayload, salt, (payload) => {
+  return await executeVaultMutationUseCase(currentPayload, salt, vaultMode, (payload) => {
     let updatedList: VaultItem[];
     if (item.id) {
       updatedList = payload.items.map((v) => {
@@ -163,13 +170,14 @@ export async function saveItemUseCase(
 export async function deleteVaultItemsUseCase(
   currentPayload: VaultPayload,
   salt: string,
+  vaultMode: VaultMode,
   ids: VaultItemId[],
 ): Promise<Result<VaultPayload, TranslationKey>> {
   if (ids.length === 0) {
     return ok(currentPayload);
   }
 
-  return await executeVaultMutationUseCase(currentPayload, salt, (payload) => {
+  return await executeVaultMutationUseCase(currentPayload, salt, vaultMode, (payload) => {
     const idSet = new Set(ids);
     const itemsToMove = payload.items.filter((v) => idSet.has(v.id));
     const remainingItems = payload.items.filter((v) => !idSet.has(v.id));
@@ -189,6 +197,7 @@ export async function deleteVaultItemsUseCase(
 export async function moveVaultItemsToFolderUseCase(
   currentPayload: VaultPayload,
   salt: string,
+  vaultMode: VaultMode,
   ids: VaultItemId[],
   folderId: FolderId | null,
 ): Promise<Result<VaultPayload, TranslationKey>> {
@@ -197,7 +206,7 @@ export async function moveVaultItemsToFolderUseCase(
     return ok(currentPayload);
   }
 
-  return await executeVaultMutationUseCase(currentPayload, salt, (payload) => {
+  return await executeVaultMutationUseCase(currentPayload, salt, vaultMode, (payload) => {
     const idSet = new Set(ids);
     const targetFolderId = folderId ? asFolderId(folderId) : (folderId === null ? null : undefined);
     const updatedItems = payload.items.map((item) => {
@@ -222,9 +231,10 @@ export async function moveVaultItemsToFolderUseCase(
 export async function restoreVaultItemUseCase(
   currentPayload: VaultPayload,
   salt: string,
+  vaultMode: VaultMode,
   id: VaultItemId,
 ): Promise<Result<VaultPayload, TranslationKey>> {
-  return await executeVaultMutationUseCase(currentPayload, salt, (payload) => {
+  return await executeVaultMutationUseCase(currentPayload, salt, vaultMode, (payload) => {
     const trashEntry = payload.trash.find((t) => t.item.id === id);
     if (!trashEntry) return payload;
     const remainingTrash = payload.trash.filter((t) => t.item.id !== id);
@@ -243,9 +253,10 @@ export async function restoreVaultItemUseCase(
 export async function purgeTrashItemUseCase(
   currentPayload: VaultPayload,
   salt: string,
+  vaultMode: VaultMode,
   id: VaultItemId,
 ): Promise<Result<VaultPayload, TranslationKey>> {
-  return await executeVaultMutationUseCase(currentPayload, salt, (payload) => ({
+  return await executeVaultMutationUseCase(currentPayload, salt, vaultMode, (payload) => ({
     ...payload,
     trash: payload.trash.filter((t) => t.item.id !== id),
   }));
@@ -255,14 +266,16 @@ export async function purgeTrashItemUseCase(
 export async function purgeAllTrashUseCase(
   currentPayload: VaultPayload,
   salt: string,
+  vaultMode: VaultMode,
 ): Promise<Result<VaultPayload, TranslationKey>> {
-  return await executeVaultMutationUseCase(currentPayload, salt, (payload) => ({
+  return await executeVaultMutationUseCase(currentPayload, salt, vaultMode, (payload) => ({
     ...payload,
     trash: [],
   }));
 }
 
 export async function clearVaultUseCase(
+  mode: VaultMode,
   gistId?: string,
 ): Promise<Result<void, TranslationKey>> {
   if (gistId) {
@@ -283,16 +296,19 @@ export async function clearVaultUseCase(
     }
   }
 
-  const updateSettingsRes = await updateAccountSettings({
-    githubConfig: {
-      gistId: asGistId(""),
-      githubTokenEncrypted: "",
-      githubTokenIv: "",
-      username: "",
-      avatarUrl: "",
+  const updateSettingsRes = await updateAccountSettings(
+    {
+      githubConfig: {
+        gistId: asGistId(""),
+        githubTokenEncrypted: "",
+        githubTokenIv: "",
+        username: "",
+        avatarUrl: "",
+      },
+      lastSync: 0,
     },
-    lastSync: 0,
-  });
+    mode,
+  );
   if (updateSettingsRes.isErr()) {
     return err(updateSettingsRes.error);
   }
@@ -395,11 +411,12 @@ export async function batchSavePayloads(
 export async function batchImportGoogleMigrationAccountsUseCase(
   currentPayload: VaultPayload,
   salt: string,
+  vaultMode: VaultMode,
   mappings: GoogleMigrationAccountMapping[],
 ): Promise<Result<VaultPayload, TranslationKey>> {
   const nowStr = new Date().toISOString();
 
-  return executeVaultMutationUseCase(currentPayload, salt, (payload) => {
+  return executeVaultMutationUseCase(currentPayload, salt, vaultMode, (payload) => {
     const updatedItems = [...payload.items];
 
     for (const itemMap of mappings) {

@@ -2,20 +2,23 @@ import {
   checkDataBreachRoute,
   checkHIBPRoute,
   deleteGistRoute,
+  deleteLocalVaultRoute,
   downloadFromGistRoute,
+  downloadFromLocalRoute,
   fido2HeartbeatRoute,
   startGithubOauthRoute,
   uploadToGistRoute,
+  uploadToLocalRoute,
   userActivityRoute,
   validateTokenRoute,
 } from "./messaging-contracts.ts";
 import { registerInMemoryRoute } from "./messaging.ts";
 import { checkEmailBreachUseCase, checkPasswordHIBPUseCase } from "./report-usecases.ts";
 import {
-  deleteGistUseCase,
-  downloadFromGistUseCase,
+  deleteVaultUseCase,
+  downloadVaultUseCase,
   startGithubOauthUseCase,
-  uploadToGistUseCase,
+  uploadVaultUseCase,
   validateTokenUseCase,
 } from "./sync-usecases.ts";
 import type { SimpleSuccessResponse } from "@gistwarden/repository";
@@ -45,9 +48,12 @@ export function initializeWebRoutes(): void {
   });
 
   // Sync routes
-  registerInMemoryRoute(uploadToGistRoute, uploadToGistUseCase);
-  registerInMemoryRoute(deleteGistRoute, deleteGistUseCase);
-  registerInMemoryRoute(downloadFromGistRoute, downloadFromGistUseCase);
+  registerInMemoryRoute(uploadToGistRoute, uploadVaultUseCase);
+  registerInMemoryRoute(deleteGistRoute, deleteVaultUseCase);
+  registerInMemoryRoute(downloadFromGistRoute, downloadVaultUseCase);
+  registerInMemoryRoute(uploadToLocalRoute, uploadVaultUseCase);
+  registerInMemoryRoute(deleteLocalVaultRoute, deleteVaultUseCase);
+  registerInMemoryRoute(downloadFromLocalRoute, downloadVaultUseCase);
   registerInMemoryRoute(validateTokenRoute, validateTokenUseCase);
   registerInMemoryRoute(startGithubOauthRoute, startGithubOauthUseCase);
 }

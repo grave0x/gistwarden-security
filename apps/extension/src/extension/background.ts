@@ -7,6 +7,7 @@ import { registerReportRoutes } from "@/extension/handlers/report-handlers.ts";
 import { SESSION_KEY_SESSION_INITIALIZED } from "@/core/constants.ts";
 import {
   clearSession,
+  getActiveVaultMode,
   getExtensionSettings,
   getSessionItem,
   hasSessionStorage,
@@ -51,7 +52,8 @@ async function initSession() {
       console.debug(
         "[Background] Trình duyệt khởi động lại và vaultTimeoutAction là logout. Đang đăng xuất...",
       );
-      await resetAccountSettings();
+      const activeMode = await getActiveVaultMode();
+      await resetAccountSettings(activeMode);
       await clearSession();
     }
     await setSessionItem(SESSION_KEY_SESSION_INITIALIZED, true);

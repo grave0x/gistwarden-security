@@ -6,7 +6,7 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import { accountStore, setUiStore, uiStore } from "@/core/store.ts";
+import { accountStore, setUiStore, settingsStore, uiStore } from "@/core/store.ts";
 import { STORE_KEY_SYNC_ERROR, STORE_KEY_SYNCING } from "@/core/constants.ts";
 import { VaultItemType } from "@gistwarden/domain";
 import { lock, logout } from "@/features/auth/auth-service.ts";
@@ -198,6 +198,7 @@ export const Header: Component<HeaderProps> = (props) => {
           </button>
         </Show>
 
+
         {/* Profile Avatar Button */}
         <div class="profile-menu-container">
           <div
@@ -210,11 +211,11 @@ export const Header: Component<HeaderProps> = (props) => {
               e.stopPropagation();
               setShowProfileMenu(!showProfileMenu());
             }}
-            title={accountStore.githubConfig.username || "Profile"}
+            title={settingsStore.vaultMode === "local_storage" ? "Local Vault" : (accountStore.githubConfig.username || "Profile")}
           >
             <Show
-              when={accountStore.githubConfig.avatarUrl && !imgFailed()}
-              fallback={initials()}
+              when={settingsStore.vaultMode !== "local_storage" && accountStore.githubConfig.avatarUrl && !imgFailed()}
+              fallback={settingsStore.vaultMode === "local_storage" ? "LV" : initials()}
             >
               <img
                 src={accountStore.githubConfig.avatarUrl}
@@ -226,7 +227,7 @@ export const Header: Component<HeaderProps> = (props) => {
           </div>
           <Show when={showProfileMenu()}>
             <div class="profile-dropdown" onClick={(e) => e.stopPropagation()}>
-              <Show when={accountStore.githubConfig.username}>
+              <Show when={settingsStore.vaultMode !== "local_storage" && accountStore.githubConfig.username}>
                 <div class="profile-info">
                   <span
                     class="profile-username cursor-pointer"
@@ -240,14 +241,16 @@ export const Header: Component<HeaderProps> = (props) => {
               </Show>
 
               {/* Sync Option */}
-              <button
-                class="dropdown-item"
-                type="button"
-                onClick={handleSyncClick}
-              >
-                <SyncIcon class={uiStore.syncing ? "spinning" : ""} />
-                <span>{t("vault_btn_sync")}</span>
-              </button>
+              <Show when={settingsStore.vaultMode !== "local_storage"}>
+                <button
+                  class="dropdown-item"
+                  type="button"
+                  onClick={handleSyncClick}
+                >
+                  <SyncIcon class={uiStore.syncing ? "spinning" : ""} />
+                  <span>{t("vault_btn_sync")}</span>
+                </button>
+              </Show>
 
               {/* Lock Option */}
               <button

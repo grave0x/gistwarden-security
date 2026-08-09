@@ -15,6 +15,7 @@ import {
   resetUiStore,
   setAccountStore,
   setSettingsStore,
+  settingsStore,
   setUiStore,
   uiStore,
 } from "@/core/store.ts";
@@ -43,14 +44,19 @@ import {
   importAesGcmKey,
   logger,
 } from "@gistwarden/domain";
+import { getSyncProvider } from "@gistwarden/network";
 import {
   clearDerivedKey,
   createNewVaultUseCase,
+  downloadFromGistRoute,
+  downloadFromLocalRoute,
   getOrDeriveKey,
   getSessionKey,
   lockSessionUseCase,
   logoutSessionUseCase,
   setDerivedKey,
+  uploadToGistRoute,
+  uploadToLocalRoute,
 } from "@gistwarden/orchestrator";
 import {
   broadcastMessage,
@@ -59,10 +65,6 @@ import {
 } from "@/core/messaging.ts";
 import { View } from "@/core/types.ts";
 import { clearAlarm } from "@/core/alarms.ts";
-import {
-  downloadFromGistRoute,
-  uploadToGistRoute,
-} from "@gistwarden/orchestrator";
 import { GistPayloadSchema } from "@gistwarden/repository";
 import {
   type Folder,
@@ -116,7 +118,7 @@ async function setupUnlockedSession(
 
   await setSessionUnlocked(true);
 
-  const finalToken = await getGithubToken();
+  const finalToken = await getGithubToken(settingsStore.vaultMode);
   const targetView = options?.targetView;
   const selectedItem = options?.selectedItem;
   const finalView = targetView ||
@@ -185,6 +187,7 @@ export async function createNewVault(
     githubToken: accountStore.githubToken,
     githubConfig: accountStore.githubConfig,
     masterPasswordConfig: accountStore.masterPasswordConfig,
+    vaultMode: settingsStore.vaultMode,
   });
 
   if (res.isErr()) {
@@ -303,7 +306,7 @@ export async function decryptGistVault(
 export async function verifyMasterPasswordSecurity(): Promise<
   Result<{ attempts: number; salt: string }, TranslationKey>
 > {
-  const accSettingsRes = await getAccountSettings();
+  const accSettingsRes = await getAccountSettings(settingsStore.vaultMode);
   if (accSettingsRes.isErr()) return err(accSettingsRes.error);
   const accSettings = accSettingsRes.value;
   const config = accSettings.masterPasswordConfig ||
@@ -356,7 +359,10 @@ export async function recordMasterPasswordFailure(
   };
 
   setAccountStore("masterPasswordConfig", updatedConfig);
-  await updateAccountSettings({ masterPasswordConfig: updatedConfig });
+  await updateAccountSettings(
+    { masterPasswordConfig: updatedConfig },
+    settingsStore.vaultMode,
+  );
   await new Promise((r) => setTimeout(r, 600));
 }
 
@@ -371,34 +377,30 @@ export async function resetMasterPasswordSecurity(salt: string): Promise<void> {
     failedMac: resetMac,
   };
   setAccountStore("masterPasswordConfig", resetConfig);
-  await updateAccountSettings({ masterPasswordConfig: resetConfig });
+  await updateAccountSettings(
+    { masterPasswordConfig: resetConfig },
+    settingsStore.vaultMode,
+  );
 }
 
 export async function unlock(
   password: string,
 ): Promise<Result<void, TranslationKey>> {
+  const provider = getSyncProvider(settingsStore.vaultMode);
+
   const secRes = await verifyMasterPasswordSecurity();
   if (secRes.isErr()) {
     return err(secRes.error);
   }
   const { attempts, salt: secSalt } = secRes.value;
 
-  const accSettingsRes = await getAccountSettings();
+  const accSettingsRes = await getAccountSettings(settingsStore.vaultMode);
   if (accSettingsRes.isErr()) {
     await recordMasterPasswordFailure(attempts, secSalt);
     return err(accSettingsRes.error);
   }
   const accSettings = accSettingsRes.value;
   const githubConfig = accSettings.githubConfig;
-  const currentToken = await getGithubToken();
-  const githubConfigured = !!githubConfig.githubTokenEncrypted ||
-    !!currentToken || !!accountStore.githubToken;
-  if (!githubConfigured) {
-    clearDerivedKey();
-    await recordMasterPasswordFailure(attempts, secSalt);
-    return err("login_error_invalid_token");
-  }
-
   let saltBase64 = accSettings.masterPasswordConfig.salt;
   let key: CryptoKey | null = null;
   clearDerivedKey();
@@ -432,6 +434,17 @@ export async function unlock(
     }
   }
 
+  // Check provider configuration after token decryption
+  const currentToken = await getGithubToken(settingsStore.vaultMode);
+  const isReady = await provider.isConfigured({
+    token: currentToken || undefined,
+  });
+  if (!isReady) {
+    clearDerivedKey();
+    await recordMasterPasswordFailure(attempts, saltBase64 || secSalt);
+    return err("login_error_invalid_token");
+  }
+
   // B. Đọc cache hoặc tải Gist content
   const gistRes = await resolveGistContent();
   if (gistRes.isErr()) {
@@ -446,7 +459,10 @@ export async function unlock(
       ...accSettings.masterPasswordConfig,
       salt: saltBase64,
     };
-    await updateAccountSettings({ masterPasswordConfig: updatedMpConfig });
+    await updateAccountSettings(
+      { masterPasswordConfig: updatedMpConfig },
+      settingsStore.vaultMode,
+    );
     setAccountStore("masterPasswordConfig", updatedMpConfig);
   }
 
@@ -473,7 +489,7 @@ export async function unlock(
   }
 
   // E. Onboarding token mã hóa
-  const activeToken = await getGithubToken();
+  const activeToken = await getGithubToken(settingsStore.vaultMode);
   if (
     activeToken &&
     (!githubConfig.githubTokenEncrypted || !githubConfig.githubTokenIv)
@@ -489,9 +505,10 @@ export async function unlock(
       githubTokenEncrypted: encryptRes.value.ciphertext,
       githubTokenIv: encryptRes.value.iv,
     };
-    await updateAccountSettings({
-      githubConfig: updatedGithubConfig,
-    });
+    await updateAccountSettings(
+      { githubConfig: updatedGithubConfig },
+      settingsStore.vaultMode,
+    );
     setAccountStore("githubConfig", updatedGithubConfig);
     await removeSessionItem(SESSION_KEY_PENDING_GITHUB_TOKEN);
   }
@@ -525,18 +542,18 @@ export async function unlock(
 export async function unlockVaultWithKey(
   key: CryptoKey,
 ): Promise<Result<void, TranslationKey>> {
-  const accSettingsRes = await getAccountSettings();
-  if (accSettingsRes.isErr()) return err(accSettingsRes.error);
-  const accSettings = accSettingsRes.value;
-  const currentToken = await getGithubToken();
-  const githubConfigured = !!accSettings.githubConfig.githubTokenEncrypted ||
-    !!currentToken || !!accountStore.githubToken;
-  if (!githubConfigured) {
+  const provider = getSyncProvider(settingsStore.vaultMode);
+
+  await persistSessionKey(key);
+
+  const currentToken = await getGithubToken(settingsStore.vaultMode);
+  const isReady = await provider.isConfigured({
+    token: currentToken || undefined,
+  });
+  if (!isReady) {
     sessionManager.clearKey();
     return err("login_error_invalid_token");
   }
-
-  await persistSessionKey(key);
 
   const gistRes = await resolveGistContent();
   if (gistRes.isErr()) {
@@ -568,27 +585,20 @@ export async function unlockVaultWithKey(
 export async function unlockVaultWithMasterPassword(
   password: string,
 ): Promise<Result<void, TranslationKey>> {
+  const provider = getSyncProvider(settingsStore.vaultMode);
+
   const secRes = await verifyMasterPasswordSecurity();
   if (secRes.isErr()) {
     return err(secRes.error);
   }
   const { attempts, salt: secSalt } = secRes.value;
 
-  const accSettingsRes = await getAccountSettings();
+  const accSettingsRes = await getAccountSettings(settingsStore.vaultMode);
   if (accSettingsRes.isErr()) {
     await recordMasterPasswordFailure(attempts, secSalt);
     return err(accSettingsRes.error);
   }
   const accSettings = accSettingsRes.value;
-  const currentToken = await getGithubToken();
-  const githubConfigured = !!accSettings.githubConfig.githubTokenEncrypted ||
-    !!currentToken || !!accountStore.githubToken;
-  if (!githubConfigured) {
-    sessionManager.clearKey();
-    await recordMasterPasswordFailure(attempts, secSalt);
-    return err("login_error_invalid_token");
-  }
-
   const saltBase64 = accSettings.masterPasswordConfig.salt;
   if (!saltBase64) {
     sessionManager.clearKey();
@@ -601,6 +611,16 @@ export async function unlockVaultWithMasterPassword(
     sessionManager.clearKey();
     await recordMasterPasswordFailure(attempts, saltBase64);
     return err(keyRes.error);
+  }
+
+  const currentToken = await getGithubToken(settingsStore.vaultMode);
+  const isReady = await provider.isConfigured({
+    token: currentToken || undefined,
+  });
+  if (!isReady) {
+    sessionManager.clearKey();
+    await recordMasterPasswordFailure(attempts, saltBase64);
+    return err("login_error_invalid_token");
   }
 
   const unlockRes = await unlockVaultWithKey(keyRes.value);
@@ -616,7 +636,10 @@ export async function unlockVaultWithMasterPassword(
 async function clearPinUnlockState(): Promise<void> {
   setAccountStore("pinConfig", DEFAULT_PIN_CONFIG);
   setSettingsStore("requireMasterPasswordOnRestart", true);
-  await updateAccountSettings({ pinConfig: DEFAULT_PIN_CONFIG });
+  await updateAccountSettings(
+    { pinConfig: DEFAULT_PIN_CONFIG },
+    settingsStore.vaultMode,
+  );
   await updateExtensionSettings({ requireMasterPasswordOnRestart: true });
 }
 
@@ -642,7 +665,7 @@ export async function unlockVaultWithPin(
     return err("login_error_wrong_pin");
   }
 
-  const accSettingsRes = await getAccountSettings();
+  const accSettingsRes = await getAccountSettings(settingsStore.vaultMode);
   const currentConfig = accSettingsRes.isOk()
     ? accSettingsRes.value.pinConfig
     : config;
@@ -689,7 +712,10 @@ export async function unlockVaultWithPin(
   };
 
   setAccountStore("pinConfig", updatedConfig);
-  await updateAccountSettings({ pinConfig: updatedConfig });
+  await updateAccountSettings(
+    { pinConfig: updatedConfig },
+    settingsStore.vaultMode,
+  );
 
   // 4. Test PIN decryption
   const saltBufferRes = base64ToArrayBuffer(currentConfig.salt);
@@ -733,7 +759,10 @@ export async function unlockVaultWithPin(
     failedMac: resetMac,
   };
   setAccountStore("pinConfig", resetConfig);
-  await updateAccountSettings({ pinConfig: resetConfig });
+  await updateAccountSettings(
+    { pinConfig: resetConfig },
+    settingsStore.vaultMode,
+  );
 
   return await unlockVaultWithKey(importRes.value);
 }
@@ -756,7 +785,7 @@ export async function lockVaultSession(): Promise<void> {
 }
 
 export async function logoutVaultSession(): Promise<void> {
-  await logoutSessionUseCase();
+  await logoutSessionUseCase(settingsStore.vaultMode);
 
   resetAccountStore();
   resetUiStore();

@@ -1,7 +1,8 @@
-import { setAccountStore, setSettingsStore } from "@/core/store.ts";
+import { accountStore, setAccountStore, setSettingsStore, settingsStore } from "@/core/store.ts";
 import { DEFAULT_PIN_CONFIG } from "@gistwarden/repository";
 import {
   disablePinUnlockUseCase,
+  getSessionKey,
   setPinUnlockUseCase,
 } from "@gistwarden/orchestrator";
 import { unlockVaultWithPin } from "@/features/auth/auth-service.ts";
@@ -12,7 +13,17 @@ export async function setPinUnlock(
   pin: string,
   requireRestart: boolean,
 ): Promise<Result<void, TranslationKey>> {
-  const res = await setPinUnlockUseCase({ pin, requireRestart });
+  const key = await getSessionKey();
+  if (!key) {
+    return err("login_title_locked");
+  }
+
+  const res = await setPinUnlockUseCase({
+    pin,
+    requireRestart,
+    vaultMode: settingsStore.vaultMode,
+    key,
+  });
   if (res.isErr()) {
     return err(res.error);
   }
@@ -30,7 +41,7 @@ export async function unlockWithPin(
 }
 
 export async function disablePinUnlock(): Promise<void> {
-  await disablePinUnlockUseCase();
+  await disablePinUnlockUseCase(settingsStore.vaultMode);
 
   setAccountStore("pinConfig", DEFAULT_PIN_CONFIG);
   setSettingsStore("requireMasterPasswordOnRestart", true);

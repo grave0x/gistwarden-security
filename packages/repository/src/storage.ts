@@ -12,6 +12,9 @@ import {
   sessionManager,
   STORAGE_KEY_ACCOUNT_SETTINGS,
   STORAGE_KEY_EXTENSION_SETTINGS,
+  STORAGE_KEY_LOCAL_ACCOUNT_SETTINGS,
+  STORAGE_KEY_LOCAL_PASSWORD_HISTORY,
+  STORAGE_KEY_LOCAL_VAULT_PAYLOAD,
   STORAGE_KEY_PASSWORD_HISTORY,
   type TranslationKey,
 } from "@gistwarden/domain";
@@ -23,6 +26,7 @@ import {
   ExtensionSettingsSchema,
   type GeneratedPasswordHistoryItem,
   GeneratedPasswordHistoryListSchema,
+  type VaultMode,
 } from "./storage-schemas.ts";
 import {
   getWebLocalItem,
@@ -89,49 +93,73 @@ export async function updateExtensionSettings(
   return await setLocalItem(STORAGE_KEY_EXTENSION_SETTINGS, safeNext);
 }
 
+export async function getActiveVaultMode(): Promise<VaultMode> {
+  const extRes = await getExtensionSettings();
+  if (extRes.isOk()) {
+    return extRes.value.vaultMode;
+  }
+  return "github_gist";
+}
+
+export function getAccountSettingsStorageKey(mode: VaultMode): string {
+  return mode === "local_storage"
+    ? STORAGE_KEY_LOCAL_ACCOUNT_SETTINGS
+    : STORAGE_KEY_ACCOUNT_SETTINGS;
+}
+
+export function getPasswordHistoryStorageKey(mode: VaultMode): string {
+  return mode === "local_storage"
+    ? STORAGE_KEY_LOCAL_PASSWORD_HISTORY
+    : STORAGE_KEY_PASSWORD_HISTORY;
+}
+
 // ----------------------------------------------------
 // Account Settings (Wiped on logout)
 // ----------------------------------------------------
-export async function getAccountSettings(): Promise<
-  Result<AccountSettings, TranslationKey>
-> {
-  const rawRes = await getLocalItem(STORAGE_KEY_ACCOUNT_SETTINGS);
+export async function getAccountSettings(
+  mode: VaultMode,
+): Promise<Result<AccountSettings, TranslationKey>> {
+  const key = getAccountSettingsStorageKey(mode);
+  const rawRes = await getLocalItem(key);
   if (rawRes.isErr()) {
     return err(rawRes.error);
   }
   if (!rawRes.value || typeof rawRes.value !== "object") {
-    return err("storage_error");
+    return ok(AccountSettingsSchema.parse({}));
   }
   const parsed = AccountSettingsSchema.safeParse(rawRes.value);
   if (!parsed.success) {
-    return err("storage_error");
+    return ok(AccountSettingsSchema.parse({}));
   }
   return ok(parsed.data);
 }
 
 export async function updateAccountSettings(
   patch: Partial<AccountSettings>,
+  mode: VaultMode,
 ): Promise<Result<void, TranslationKey>> {
   if (!hasLocalStorage() && !hasWebLocalStorage()) {
     return err("storage_error");
   }
-  const currentRes = await getAccountSettings();
+  const key = getAccountSettingsStorageKey(mode);
+  const currentRes = await getAccountSettings(mode);
   const current = currentRes.isOk()
     ? currentRes.value
     : AccountSettingsSchema.parse({});
   const next = { ...current, ...patch };
   const safeNext = AccountSettingsSchema.parse(next);
-  return await setLocalItem(STORAGE_KEY_ACCOUNT_SETTINGS, safeNext);
+  return await setLocalItem(key, safeNext);
 }
 
 // Reset account store and storage (Logout)
-export async function resetAccountSettings(): Promise<
-  Result<void, TranslationKey>
-> {
+export async function resetAccountSettings(
+  mode: VaultMode,
+): Promise<Result<void, TranslationKey>> {
   if (!hasLocalStorage() && !hasWebLocalStorage()) {
     return err("storage_error");
   }
-  await removeLocalItem(STORAGE_KEY_ACCOUNT_SETTINGS);
+  const key = getAccountSettingsStorageKey(mode);
+  await removeLocalItem(key);
   await clearSession();
   return ok();
 }
@@ -242,8 +270,10 @@ export async function clearUnlockedSessionState(): Promise<
   return await removeSessionItem([...SESSION_KEYS_ON_LOCK]);
 }
 
-export async function getGithubToken(): Promise<GitHubAccessToken | null> {
-  const accRes = await getAccountSettings();
+export async function getGithubToken(
+  mode: VaultMode,
+): Promise<GitHubAccessToken | null> {
+  const accRes = await getAccountSettings(mode);
   if (accRes.isOk()) {
     const acc = accRes.value;
     const githubConfig = acc.githubConfig;
@@ -408,10 +438,12 @@ export async function removeLocalItem(
   return err("storage_error");
 }
 
-export async function getPasswordHistory(): Promise<
-  Result<GeneratedPasswordHistoryItem[], TranslationKey>
-> {
-  const rawRes = await getLocalItem(STORAGE_KEY_PASSWORD_HISTORY);
+export async function getPasswordHistory(
+  mode?: VaultMode,
+): Promise<Result<GeneratedPasswordHistoryItem[], TranslationKey>> {
+  const vaultMode = mode || (await getActiveVaultMode());
+  const key = getPasswordHistoryStorageKey(vaultMode);
+  const rawRes = await getLocalItem(key);
   if (rawRes.isErr()) {
     return err(rawRes.error);
   }
@@ -425,18 +457,53 @@ export async function getPasswordHistory(): Promise<
 
 export async function addPasswordHistoryItem(
   item: GeneratedPasswordHistoryItem,
+  mode?: VaultMode,
 ): Promise<Result<void, TranslationKey>> {
-  const currentRes = await getPasswordHistory();
+  const vaultMode = mode || (await getActiveVaultMode());
+  const key = getPasswordHistoryStorageKey(vaultMode);
+  const currentRes = await getPasswordHistory(vaultMode);
   const history = currentRes.isOk() ? currentRes.value : [];
   if (history.some((h) => h.password === item.password)) {
     return ok();
   }
   const updated = [item, ...history].slice(0, 10);
-  return await setLocalItem(STORAGE_KEY_PASSWORD_HISTORY, updated);
+  return await setLocalItem(key, updated);
 }
 
-export async function clearPasswordHistory(): Promise<
+export async function clearPasswordHistory(
+  mode?: VaultMode,
+): Promise<Result<void, TranslationKey>> {
+  const vaultMode = mode || (await getActiveVaultMode());
+  const key = getPasswordHistoryStorageKey(vaultMode);
+  return await setLocalItem(key, []);
+}
+
+// ----------------------------------------------------
+// Local Vault Payload Storage
+// ----------------------------------------------------
+export async function getLocalVaultPayload(): Promise<
+  Result<string | null, TranslationKey>
+> {
+  const rawRes = await getLocalItem(STORAGE_KEY_LOCAL_VAULT_PAYLOAD);
+  if (rawRes.isErr()) {
+    return err(rawRes.error);
+  }
+  const val = rawRes.value;
+  if (typeof val === "string") {
+    return ok(val);
+  }
+  return ok(null);
+}
+
+export async function setLocalVaultPayload(
+  payload: string,
+): Promise<Result<void, TranslationKey>> {
+  return await setLocalItem(STORAGE_KEY_LOCAL_VAULT_PAYLOAD, payload);
+}
+
+export async function removeLocalVaultPayload(): Promise<
   Result<void, TranslationKey>
 > {
-  return await setLocalItem(STORAGE_KEY_PASSWORD_HISTORY, []);
+  return await removeLocalItem(STORAGE_KEY_LOCAL_VAULT_PAYLOAD);
 }
+

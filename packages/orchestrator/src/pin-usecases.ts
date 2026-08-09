@@ -11,13 +11,15 @@ import {
   type PinUnlockConfig,
   updateAccountSettings,
   updateExtensionSettings,
+  type VaultMode,
 } from "@gistwarden/repository";
 import { err, ok, type Result } from "neverthrow";
-import { getSessionKey } from "./crypto-usecases.ts";
 
 export interface SetPinUnlockOptions {
   pin: string;
   requireRestart: boolean;
+  vaultMode: VaultMode;
+  key: CryptoKey;
 }
 
 export interface SetPinUnlockResult {
@@ -27,12 +29,8 @@ export interface SetPinUnlockResult {
 export async function setPinUnlockUseCase(
   options: SetPinUnlockOptions,
 ): Promise<Result<SetPinUnlockResult, TranslationKey>> {
-  const key = await getSessionKey();
-  if (!key) {
-    return err("login_title_locked");
-  }
-
-  const raw = await crypto.subtle.exportKey("raw", key);
+  const mode = options.vaultMode;
+  const raw = await crypto.subtle.exportKey("raw", options.key);
   const keyBytesB64 = arrayBufferToBase64(raw);
 
   const rawSalt = generateSalt();
@@ -51,7 +49,7 @@ export async function setPinUnlockUseCase(
   const macRes = await computeHmac("0", pinSaltBase64);
   const failedMac = macRes.isOk() ? macRes.value : "";
 
-  const pinConfig: PinUnlockConfig = {
+  const pinConfig = {
     enabled: true,
     value: ciphertext,
     iv,
@@ -60,7 +58,7 @@ export async function setPinUnlockUseCase(
     failedMac,
   };
 
-  await updateAccountSettings({ pinConfig });
+  await updateAccountSettings({ pinConfig }, mode);
   await updateExtensionSettings({
     requireMasterPasswordOnRestart: options.requireRestart,
   });
@@ -68,10 +66,10 @@ export async function setPinUnlockUseCase(
   return ok({ pinConfig });
 }
 
-export async function disablePinUnlockUseCase(): Promise<
-  Result<void, TranslationKey>
-> {
-  await updateAccountSettings({ pinConfig: DEFAULT_PIN_CONFIG });
+export async function disablePinUnlockUseCase(
+  vaultMode: VaultMode,
+): Promise<Result<void, TranslationKey>> {
+  await updateAccountSettings({ pinConfig: DEFAULT_PIN_CONFIG }, vaultMode);
   await updateExtensionSettings({
     requireMasterPasswordOnRestart: true,
   });

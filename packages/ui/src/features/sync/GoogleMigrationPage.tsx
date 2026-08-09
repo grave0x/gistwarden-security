@@ -249,6 +249,7 @@ export const GoogleMigrationPage: Component = () => {
     const res = await batchImportGoogleMigrationAccountsUseCase(
       vaultPayload,
       salt,
+      settingsStore.vaultMode,
       mappings,
     );
     setGlobalLoading(false);

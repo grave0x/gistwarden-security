@@ -16,6 +16,7 @@ import {
   View,
 } from "@gistwarden/domain";
 import {
+  getActiveVaultMode,
   getGithubToken,
   getLocalItem,
   getSessionItem,
@@ -26,6 +27,7 @@ import {
   resetAccountSettings,
   setSessionItem,
 } from "@gistwarden/repository";
+import { getSyncProvider } from "@gistwarden/network";
 import {
   downloadFromGistRoute,
   getSessionKey,
@@ -41,6 +43,7 @@ import {
   setSettingsStore,
   settingsStore,
   setUiStore,
+  uiStore,
 } from "./store.ts";
 import { GistPayloadSchema } from "@gistwarden/repository";
 import { decryptGistVault, logout } from "../features/auth/auth-service.ts";
@@ -62,7 +65,8 @@ async function handleBrowserRestartCleanup(
       console.debug(
         `[Store] Phát hiện khởi động lại trình duyệt và hành động là logout. Đang đăng xuất...`,
       );
-      await resetAccountSettings();
+      const activeMode = await getActiveVaultMode();
+      await resetAccountSettings(activeMode);
     }
     await setSessionItem(SESSION_KEY_SESSION_INITIALIZED, true);
   }
@@ -210,6 +214,9 @@ function applyInitialView(
 ): void {
   setAccountStore(STORE_KEY_IS_LOCKED, true);
   if (!isFido2Prompt) {
+    if (uiStore.view === View.Guide) {
+      return;
+    }
     if (!githubConfigured && !welcomeAccepted) {
       setUiStore(STORE_KEY_VIEW, View.Welcome);
     } else {
@@ -230,7 +237,7 @@ export async function init(): Promise<void> {
 
   setSettingsStore({ theme: currentTheme });
 
-  const decryptedToken = await getGithubToken();
+  const decryptedToken = await getGithubToken(settingsStore.vaultMode);
   const githubConfigured = !!accountStore.gistId ||
     !!decryptedToken || !!accountStore.githubToken;
 
@@ -251,7 +258,12 @@ export async function init(): Promise<void> {
     setUiStore(STORE_KEY_VIEW, View.Fido2Prompt);
   }
 
-  if (decryptedToken && key && accountStore.masterPasswordConfig.salt) {
+  const provider = getSyncProvider(settingsStore.vaultMode);
+  const isConfigured = await provider.isConfigured({
+    token: decryptedToken || undefined,
+  });
+
+  if (isConfigured && key && accountStore.masterPasswordConfig.salt) {
     await loadAndDecryptVault(key, isFido2Prompt, params);
   } else {
     if (accountStore.gistId && accountStore.masterPasswordConfig.salt) {

@@ -51,6 +51,17 @@ export const SESSION_KEY_VAULT_SEARCH_QUERY = "vault_search_query";
 export const SESSION_KEY_SHOW_FILTER_PANEL = "showFilterPanel";
 export const SESSION_KEY_SELECTED_FILTER_TYPE = "selectedFilterType";
 
+// Local Vault Storage Keys & IPC Messages
+export const STORAGE_KEY_LOCAL_VAULT_PAYLOAD =
+  `${APP_NAME.toLowerCase()}_local_vault_payload`;
+export const STORAGE_KEY_LOCAL_ACCOUNT_SETTINGS =
+  `${APP_NAME.toLowerCase()}_local_storage_account_settings`;
+export const STORAGE_KEY_LOCAL_PASSWORD_HISTORY =
+  `${APP_NAME.toLowerCase()}_local_storage_password_history`;
+export const MSG_UPLOAD_TO_LOCAL = "UPLOAD_TO_LOCAL";
+export const MSG_DOWNLOAD_FROM_LOCAL = "DOWNLOAD_FROM_LOCAL";
+export const MSG_DELETE_LOCAL_VAULT = "DELETE_LOCAL_VAULT";
+
 // Browser Local Storage Keys
 export const STORAGE_KEY_EXTENSION_SETTINGS =
   `${APP_NAME.toLowerCase()}_extension_settings`;

@@ -53,14 +53,15 @@ export async function setupGithubUseCase(
       username,
       avatarUrl,
     };
-    await updateAccountSettings({
-      githubConfig: updatedGithubConfig,
-    });
+    await updateAccountSettings(
+      { githubConfig: updatedGithubConfig },
+      "github_gist",
+    );
     await removeSessionItem(SESSION_KEY_PENDING_GITHUB_TOKEN);
     return ok({ githubConfig: updatedGithubConfig, token: options.token });
   }
 
-  await resetAccountSettings();
+  await resetAccountSettings("github_gist");
 
   const newGithubConfig: GithubConfig = {
     gistId: options.currentGistId || asGistId(""),
@@ -70,9 +71,10 @@ export async function setupGithubUseCase(
     avatarUrl,
   };
   await setSessionItem(SESSION_KEY_PENDING_GITHUB_TOKEN, options.token);
-  await updateAccountSettings({
-    githubConfig: newGithubConfig,
-  });
+  await updateAccountSettings(
+    { githubConfig: newGithubConfig },
+    "github_gist",
+  );
 
   return ok({ githubConfig: newGithubConfig, token: options.token });
 }

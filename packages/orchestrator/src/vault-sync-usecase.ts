@@ -15,6 +15,7 @@ import {
   EncryptedPayloadSchema,
   setSessionItem,
   updateAccountSettings,
+  type VaultMode,
 } from "@gistwarden/repository";
 import { err, ok, Result } from "neverthrow";
 import {
@@ -102,14 +103,15 @@ export async function syncVaultToGist(
   items: VaultItem[],
   key: CryptoKey,
   salt: string,
-  options?: {
+  options: {
+    vaultMode: VaultMode;
     trashItems?: TrashVaultItem[];
     folders?: Folder[];
     lastSync?: number;
   },
 ): Promise<Result<VaultItem[], TranslationKey>> {
-  const trashItems = options?.trashItems || [];
-  const folders = options?.folders || [];
+  const trashItems = options.trashItems || [];
+  const folders = options.folders || [];
   const parsedResult = VaultListSchema.safeParse(items);
   if (!parsedResult.success) {
     return err("storage_error");
@@ -120,7 +122,7 @@ export async function syncVaultToGist(
     validatedList,
     trashItems,
     key,
-    { folders, lastSync: options?.lastSync },
+    { folders, lastSync: options.lastSync },
   );
   if (mergeResult.isErr()) {
     return err(mergeResult.error);
@@ -147,17 +149,17 @@ export async function syncVaultToGist(
     ciphertext: encrypted.ciphertext,
   });
 
-  const payloadBytes = new TextEncoder().encode(payload).length;
-  const MAX_GIST_BYTES = 10 * 1024 * 1024;
-  const WARN_GIST_BYTES = 5 * 1024 * 1024;
-
-  if (payloadBytes > MAX_GIST_BYTES) {
-    return err("github_error_gist_size_limit");
-  }
-
-  if (payloadBytes > WARN_GIST_BYTES) {
-    const sizeMB = (payloadBytes / (1024 * 1024)).toFixed(1);
-    console.warn(`[Sync] Vault Gist size near limit: ${sizeMB} MB`);
+  if (typeof payload === "string") {
+    const payloadBytes = new TextEncoder().encode(payload).byteLength;
+    const maxGistBytes = 10 * 1024 * 1024;
+    if (payloadBytes > maxGistBytes) {
+      return err("github_error_gist_size_limit");
+    }
+    const warnThresholdBytes = 9 * 1024 * 1024;
+    if (payloadBytes >= warnThresholdBytes) {
+      const sizeMB = (payloadBytes / (1024 * 1024)).toFixed(1);
+      console.warn(`[Sync] Vault Gist size near limit: ${sizeMB} MB`);
+    }
   }
 
   const sendResult = await sendBackgroundMessage(uploadToGistRoute, {
@@ -176,7 +178,7 @@ export async function syncVaultToGist(
   }
 
   const now = Date.now();
-  await updateAccountSettings({ lastSync: now });
+  await updateAccountSettings({ lastSync: now }, options.vaultMode);
 
   return ok(finalPayloadToSave.items);
 }

@@ -47,6 +47,7 @@ export default {
     "Vault payload size exceeds GitHub Gist limit (10MB). Please reduce items or split your vault.",
   github_error_rate_limit:
     "GitHub API rate limit exceeded. Please try again in a few minutes.",
+  vault_error_not_found: "Vault data not found.",
   sync_error_corrupted_payload:
     "Sync data is corrupted or cannot be decrypted.",
   sync_error_remote_password_changed:
@@ -137,6 +138,8 @@ export default {
   login_confirm_master_password: "Re-enter to confirm",
   login_btn_create_master_password: "Create master password",
   login_checking_gist: "Checking data...",
+  login_local_vault_must_read: "Important guidelines & warnings",
+  login_local_vault_must_read_btn: "Must read",
 
   // Vault Page
   vault_search_placeholder: "Search accounts...",
@@ -446,17 +449,17 @@ export default {
   settings_mp_success: "Master Password changed successfully!",
   settings_export_success: "Backup file downloaded!",
   settings_clear_vault_msg:
-    "Are you sure you want to delete ALL items in the vault? This action cannot be undone and all data on GitHub Gist will be deleted.",
+    "Are you sure you want to delete ALL items in the vault? This action cannot be undone and all vault data will be permanently wiped.",
   settings_clear_vault_confirm_title: "Confirm Permanent Deletion",
   settings_clear_vault_confirm_msg:
     "FINAL CONFIRMATION: Permanently delete all account data? Please ensure you have exported your backup data before proceeding.",
   settings_clear_vault_success: "All vault accounts deleted successfully!",
   settings_logout_title: "Logout",
   settings_logout_msg:
-    "Are you sure you want to disconnect your GitHub account? This will remove all local configurations.",
+    "Are you sure you want to disconnect your account? This will remove all local configurations.",
   vault_sync_success: "Vault synced successfully!",
   vault_import_success:
-    "Successfully imported {count} accounts! The vault has been synced to Gist.",
+    "Successfully imported {count} accounts! The vault has been updated successfully.",
   vault_import_error_invalid: "Invalid file format or validation failed",
   vault_options_sync_manual: "Manual Sync",
   vault_options_import: "Import Data",
@@ -643,7 +646,33 @@ export default {
   guide_item_overview: "Overview & E2EE Encryption",
   guide_item_master_password: "Master Password & PBKDF2",
   guide_item_github_gist: "GitHub Token & Gist Setup",
+  guide_item_local_vault: "Local Vault & Security Warnings",
   guide_item_auto_lock: "Vault Lock & Auto-Lock Timer",
+
+  guide_start_local_lead:
+    "Local Vault allows you to store your passwords encrypted on your device without linking to any cloud accounts.",
+  guide_start_local_warn_title: "Important Warnings when using Local Vault",
+  guide_start_local_warn_desc:
+    "Local Vault is stored strictly on this device. Uninstalling the extension or clearing browser storage will permanently wipe your vault data. Please export regular manual backups!",
+  guide_start_local_passkey_warn_title:
+    "WARNING: Do NOT reuse the same FIDO2 Passkey between Local Vault and Sync Vault",
+  guide_start_local_passkey_warn_desc:
+    "FIDO2 Passkeys work completely fine on a single device's Local Vault. However, do NOT share or copy the exact same Passkey between a Local Vault and a Cloud Sync Vault across multiple devices. Signature Counter mismatches between unsynced vaults will trigger server security flags and BLOCK your Passkey login. Recommendation: If you use multiple devices, register separate Passkeys directly on each device!",
+  guide_start_local_card1_title: "1. Pure Local Encrypted Storage",
+  guide_start_local_card1_desc:
+    "Your vault payload is encrypted using AES-256-GCM and stored only in browser storage. No data is ever sent to remote servers or GitHub.",
+  guide_start_local_card2_title: "2. Risk of Data Loss",
+  guide_start_local_card2_desc:
+    "Because there is no cloud backup, clearing browser data or resetting the extension will permanently remove your vault. Unrecoverable if deleted!",
+  guide_start_local_card3_title: "3. Regular Manual Backups",
+  guide_start_local_card3_desc:
+    "Always use Settings -> Export Data to save a backup CSV or encrypted JSON file in a safe folder or external drive.",
+  guide_start_local_card4_title: "4. Independent per Device",
+  guide_start_local_card4_desc:
+    "Each device running Local Vault has its own isolated vault and settings. Changes made on Device A will not reflect on Device B.",
+  guide_start_local_card5_title: "5. Passkey Signature Counter Mismatch Risk",
+  guide_start_local_card5_desc:
+    "Each Passkey uses an internal Signature Counter verified by the server. If you authenticate with synced Passkeys across multiple devices and the counter gets out of sync (decremented or mismatched), the server will flag a cloned authenticator attack and BLOCK your login immediately. Recommendation: Register a separate Passkey directly on each device.",
 
   guide_item_logins: "Login Accounts & Domain Matching",
   guide_item_secure_notes: "Secure Notes",

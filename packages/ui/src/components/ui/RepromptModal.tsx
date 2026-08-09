@@ -1,6 +1,6 @@
 import { createEffect, createSignal, Show } from "solid-js";
 import { t } from "@/core/i18n.ts";
-import { uiStore } from "@/core/store.ts";
+import { settingsStore, uiStore } from "@/core/store.ts";
 import { resolveReprompt } from "@gistwarden/ui";
 import { verifyMasterPassword } from "@gistwarden/orchestrator";
 import Input from "@/components/ui/Input.tsx";
@@ -35,7 +35,10 @@ export default function RepromptModal() {
             return;
           }
 
-          const isCorrect = await verifyMasterPassword(value);
+          const isCorrect = await verifyMasterPassword(
+            value,
+            settingsStore.vaultMode,
+          );
           if (isCorrect) {
             triggerClose(() => {
               resolveReprompt(true);

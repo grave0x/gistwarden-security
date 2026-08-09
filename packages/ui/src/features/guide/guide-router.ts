@@ -78,6 +78,12 @@ export const GUIDE_STRUCTURE: readonly GuideCategoryDef[] = [
         icon: GithubIcon,
       },
       {
+        id: "local-vault",
+        titleKey: "guide_item_local_vault",
+        route: "getting-started/local-vault",
+        icon: LockIcon,
+      },
+      {
         id: "auto-lock",
         titleKey: "guide_item_auto_lock",
         route: "getting-started/auto-lock",
