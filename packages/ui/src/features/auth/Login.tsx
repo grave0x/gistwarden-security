@@ -8,7 +8,7 @@ import {
   Switch,
   untrack,
 } from "solid-js";
-import { accountStore, settingsStore, uiStore } from "@/core/store.ts";
+import { accountStore, setAccountStore, settingsStore, uiStore } from "@/core/store.ts";
 import { setupGithub } from "@/features/sync/github-auth.ts";
 import { sendBackgroundMessage } from "@/core/messaging.ts";
 
@@ -26,7 +26,7 @@ import { MasterPasswordForm } from "@/features/auth/components/MasterPasswordFor
 import { MasterPasswordCreate } from "@/features/auth/components/MasterPasswordCreate.tsx";
 import { AppIcon, SyncIcon } from "@/icons/svg/index.ts";
 import { t, type TranslationKey } from "@/core/i18n.ts";
-import { getSessionItem, removeSessionItem } from "@/core/storage.ts";
+import { getSessionItem, updateAccountSettings } from "@/core/storage.ts";
 import { z } from "zod";
 import {
   downloadFromGistRoute,
@@ -38,6 +38,8 @@ import {
   SESSION_KEY_PENDING_GITHUB_TOKEN,
 } from "@/core/constants.ts";
 import { type LoginViewMode } from "@/core/storage-schemas.ts";
+import { safeJsonParse } from "@gistwarden/domain";
+import { GistPayloadSchema } from "@gistwarden/repository";
 
 export const Login: Component = () => {
   const [error, setError] = createSignal("");
@@ -47,26 +49,57 @@ export const Login: Component = () => {
     "checking" | "new" | "exists"
   >("exists");
 
+  const checkGistStatus = async () => {
+    setGistStatus("checking");
+    setError("");
+    const sendResult = await sendBackgroundMessage(
+      downloadFromGistRoute,
+    );
+    if (
+      sendResult.isOk() && sendResult.value.success &&
+      sendResult.value.content
+    ) {
+      const content = sendResult.value.content;
+      const payloadJsonRes = safeJsonParse(content);
+      if (payloadJsonRes.isOk()) {
+        const parsed = GistPayloadSchema.safeParse(payloadJsonRes.value);
+        if (parsed.success && parsed.data.salt) {
+          const updatedMpConfig = {
+            ...accountStore.masterPasswordConfig,
+            salt: parsed.data.salt,
+          };
+          await updateAccountSettings({ masterPasswordConfig: updatedMpConfig });
+          setAccountStore("masterPasswordConfig", updatedMpConfig);
+        }
+      }
+      setGistStatus("exists");
+    } else if (
+      sendResult.isOk() && !sendResult.value.success &&
+      sendResult.value.error === "github_error_gist_not_found"
+    ) {
+      setGistStatus("new");
+    } else {
+      let rawErr: TranslationKey = "messaging_error_send_failed";
+      if (sendResult.isOk()) {
+        const val = sendResult.value;
+        if (!val.success && val.error) {
+          rawErr = val.error;
+        }
+      } else {
+        rawErr = sendResult.error;
+      }
+      setError(t(rawErr));
+      setGistStatus("exists");
+    }
+  };
+
   createEffect(() => {
     const isConfigured = accountStore.githubConfigured;
     const hasSalt = accountStore.masterPasswordConfig.salt;
     const mode = viewMode();
 
     if (isConfigured && !hasSalt && mode === "masterPassword") {
-      setGistStatus("checking");
-      (async () => {
-        const sendResult = await sendBackgroundMessage(
-          downloadFromGistRoute,
-        );
-        if (
-          sendResult.isOk() && sendResult.value.success &&
-          sendResult.value.content
-        ) {
-          setGistStatus("exists");
-        } else {
-          setGistStatus("new");
-        }
-      })();
+      checkGistStatus();
     } else {
       if (!untrack(() => uiStore.globalLoading)) {
         setGistStatus("exists");
@@ -97,7 +130,6 @@ export const Login: Component = () => {
 
     if (tokenToSetup) {
       setGlobalLoading(true);
-      await removeSessionItem(SESSION_KEY_PENDING_GITHUB_TOKEN);
       const setupRes = await setupGithub(tokenToSetup);
       setGlobalLoading(false);
       if (setupRes.isErr()) {

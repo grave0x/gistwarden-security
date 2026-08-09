@@ -673,7 +673,7 @@ async function handlePinFailure(
 ): Promise<Result<void, TranslationKey>> {
   if (attempts >= 3) {
     await clearPinUnlockState();
-    await logoutVaultSession();
+    await lockVaultSession();
     return err("login_error_pin_max_attempts_reached");
   }
   if (attempts === 1) {
@@ -711,14 +711,14 @@ export async function unlockVaultWithPin(
     currentConfig.failedMac !== expectedMac
   ) {
     await clearPinUnlockState();
-    await logoutVaultSession();
+    await lockVaultSession();
     return err("login_error_pin_tampered");
   }
 
   // 2. Lockout check
   if (currentConfig.failedAttempts >= 3) {
     await clearPinUnlockState();
-    await logoutVaultSession();
+    await lockVaultSession();
     return err("login_error_pin_max_attempts_reached");
   }
 

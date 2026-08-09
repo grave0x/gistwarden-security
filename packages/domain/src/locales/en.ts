@@ -425,9 +425,9 @@ export default {
   login_error_wrong_pin_2_left: "Incorrect PIN. 2 attempts remaining.",
   login_error_wrong_pin_1_left: "Incorrect PIN. 1 attempt remaining!",
   login_error_pin_max_attempts_reached:
-    "Incorrect PIN entered 3 times. Account logged out for security.",
+    "Incorrect PIN entered 3 times. PIN unlock has been disabled, please use your Master Password.",
   login_error_pin_tampered:
-    "PIN security data tampered. Account logged out for security.",
+    "PIN security data tampered. PIN unlock has been disabled, please use your Master Password.",
   settings_change_mp_title: "Change Master Password",
   vault_options_group_sync_import: "Sync & Data Transfer",
   vault_options_group_management: "Storage & Management",

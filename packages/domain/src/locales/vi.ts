@@ -428,9 +428,9 @@ export default {
   login_error_wrong_pin_1_left:
     "Mã PIN không chính xác. Bạn còn 1 lần thử cuối!",
   login_error_pin_max_attempts_reached:
-    "Đã nhập sai Mã PIN 3 lần. Hệ thống đã đăng xuất để bảo vệ tài khoản.",
+    "Đã nhập sai Mã PIN 3 lần. Tính năng mở khóa PIN đã bị tắt, vui lòng sử dụng Mật khẩu chính.",
   login_error_pin_tampered:
-    "Dữ liệu mã PIN bị thay đổi trái phép. Hệ thống đã đăng xuất để bảo vệ an toàn.",
+    "Dữ liệu Mã PIN không hợp lệ. Tính năng mở khóa PIN đã bị tắt, vui lòng sử dụng Mật khẩu chính.",
   settings_change_mp_title: "Đổi Mật khẩu chính",
   vault_options_group_sync_import: "Đồng bộ & Nhập xuất dữ liệu",
   vault_options_group_management: "Quản lý dữ liệu",
