@@ -51,6 +51,8 @@ export async function setupGithub(
   } else {
     const updatedGithubConfig = {
       ...accountStore.githubConfig,
+      githubTokenEncrypted: "",
+      githubTokenIv: "",
       username,
       avatarUrl,
     };

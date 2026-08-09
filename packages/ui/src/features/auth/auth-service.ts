@@ -787,6 +787,7 @@ export async function unlockVaultWithPin(
 }
 
 export async function lockVaultSession(): Promise<void> {
+  clearDerivedKey();
   sessionManager.clearKey();
   await removeSessionItem([...SESSION_KEYS_ON_LOCK]);
   await clearAlarm(ALARM_NAME_VAULT_TIMEOUT);
@@ -806,6 +807,7 @@ export async function lockVaultSession(): Promise<void> {
 }
 
 export async function logoutVaultSession(): Promise<void> {
+  clearDerivedKey();
   sessionManager.clearKey();
 
   resetAccountStore();
