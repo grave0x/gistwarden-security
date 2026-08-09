@@ -1,107 +1,32 @@
-import { deriveKey, encryptData, generateSalt } from "@gistwarden/domain";
-import { setDerivedKey, verifyMasterPassword } from "@gistwarden/orchestrator";
+import { changeMasterPasswordUseCase } from "@gistwarden/orchestrator";
 import { DEFAULT_PIN_CONFIG } from "@gistwarden/repository";
-import {
-  getGithubToken,
-  setSessionItem,
-  updateAccountSettings,
-} from "@/core/storage.ts";
-
-import {
-  SESSION_KEY_VERIFICATION_CIPHERTEXT,
-  SESSION_KEY_VERIFICATION_IV,
-} from "@/core/constants.ts";
 import { accountStore, setAccountStore } from "@/core/store.ts";
-import { syncVaultToGist } from "@gistwarden/orchestrator";
-
-import { err, ok, Result } from "neverthrow";
-import { type TranslationKey } from "@/core/i18n.ts";
+import { err, ok, type Result } from "neverthrow";
+import type { TranslationKey } from "@/core/i18n.ts";
 
 export async function changeMasterPassword(
   currentPass: string,
   newPass: string,
 ): Promise<Result<void, TranslationKey>> {
-  if (!newPass.trim()) {
-    return err("settings_error_mp_empty_new");
+  const res = await changeMasterPasswordUseCase({
+    currentPass,
+    newPass,
+    vaultItems: accountStore.vaultItems,
+    currentGithubConfig: accountStore.githubConfig,
+    currentMpConfig: accountStore.masterPasswordConfig,
+  });
+
+  if (res.isErr()) {
+    return err(res.error);
   }
 
-  const isCurrentPasswordCorrect = await verifyMasterPassword(currentPass);
-  if (!isCurrentPasswordCorrect) {
-    return err("settings_error_mp_wrong_current");
-  }
+  const { updatedGithubConfig, updatedMpConfig } = res.value;
 
-  // 1. Generate a new salt
-  const rawSalt = generateSalt();
-  const newSaltBase64 = rawSalt.toBase64();
-
-  // 2. Derive new key (Web Crypto API)
-  const deriveResult = await deriveKey(newPass, rawSalt);
-  if (deriveResult.isErr()) {
-    return err(deriveResult.error);
-  }
-  const newKey = deriveResult.value;
-
-  // 3. Đồng bộ lên Gist (API mạng)
-  const uploadRes = await syncVaultToGist(
-    accountStore.vaultItems,
-    newKey,
-    newSaltBase64,
-  );
-  if (uploadRes.isErr()) {
-    return err(uploadRes.error);
-  }
-
-  // 4. Update session key and verification ciphertext
-  await setDerivedKey(newKey);
-  const verificationStr = "verification_token";
-  const encryptVerifyResult = await encryptData(verificationStr, newKey);
-  if (encryptVerifyResult.isErr()) {
-    return err(encryptVerifyResult.error);
-  }
-  const { iv: vIv, ciphertext: vCiphertext } = encryptVerifyResult.value;
-
-  await setSessionItem(SESSION_KEY_VERIFICATION_IV, vIv);
-  await setSessionItem(SESSION_KEY_VERIFICATION_CIPHERTEXT, vCiphertext);
-
-  // 5. Re-encrypt GitHub token with the new key and save to account settings
-  const githubToken = await getGithubToken();
-  const updatedMpConfig = {
-    ...accountStore.masterPasswordConfig,
-    salt: newSaltBase64,
-  };
-
-  if (githubToken) {
-    const encryptTokenResult = await encryptData(githubToken, newKey);
-    if (encryptTokenResult.isErr()) {
-      return err(encryptTokenResult.error);
-    }
-    const { iv, ciphertext } = encryptTokenResult.value;
-    const updatedGithubConfig = {
-      ...accountStore.githubConfig,
-      githubTokenEncrypted: ciphertext,
-      githubTokenIv: iv,
-    };
-
-    await updateAccountSettings({
-      githubConfig: updatedGithubConfig,
-      masterPasswordConfig: updatedMpConfig,
-      pinConfig: DEFAULT_PIN_CONFIG,
-    });
-    setAccountStore({
-      githubConfig: updatedGithubConfig,
-      masterPasswordConfig: updatedMpConfig,
-      pinConfig: DEFAULT_PIN_CONFIG,
-    });
-  } else {
-    await updateAccountSettings({
-      masterPasswordConfig: updatedMpConfig,
-      pinConfig: DEFAULT_PIN_CONFIG,
-    });
-    setAccountStore({
-      masterPasswordConfig: updatedMpConfig,
-      pinConfig: DEFAULT_PIN_CONFIG,
-    });
-  }
+  setAccountStore({
+    githubConfig: updatedGithubConfig,
+    masterPasswordConfig: updatedMpConfig,
+    pinConfig: DEFAULT_PIN_CONFIG,
+  });
 
   return ok();
 }

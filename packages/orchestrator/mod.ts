@@ -12,3 +12,7 @@ export * from "./src/vault-mutation-usecases.ts";
 export * from "./src/autofill-usecases.ts";
 export * from "./src/vault-repository-usecase.ts";
 export * from "./src/web-router.ts";
+export * from "./src/github-auth-usecases.ts";
+export * from "./src/vault-auth-usecases.ts";
+export * from "./src/master-password-usecases.ts";
+export * from "./src/pin-usecases.ts";

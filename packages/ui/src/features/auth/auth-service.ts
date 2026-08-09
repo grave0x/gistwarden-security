@@ -45,8 +45,11 @@ import {
 } from "@gistwarden/domain";
 import {
   clearDerivedKey,
+  createNewVaultUseCase,
   getOrDeriveKey,
   getSessionKey,
+  lockSessionUseCase,
+  logoutSessionUseCase,
   setDerivedKey,
 } from "@gistwarden/orchestrator";
 import {
@@ -177,75 +180,24 @@ async function resolveGistContent(): Promise<
 export async function createNewVault(
   password: string,
 ): Promise<Result<void, TranslationKey>> {
-  const tokenToEncrypt = accountStore.githubToken ||
-    (await getGithubToken()) || "";
-  clearDerivedKey();
+  const res = await createNewVaultUseCase({
+    password,
+    githubToken: accountStore.githubToken,
+    githubConfig: accountStore.githubConfig,
+    masterPasswordConfig: accountStore.masterPasswordConfig,
+  });
 
-  const rawSalt = generateSalt();
-  const saltBase64 = rawSalt.toBase64();
-  const updatedMpConfig = {
-    ...accountStore.masterPasswordConfig,
-    salt: saltBase64,
-  };
-  await updateAccountSettings({ masterPasswordConfig: updatedMpConfig });
+  if (res.isErr()) {
+    return err(res.error);
+  }
+
+  const { key, updatedGithubConfig, updatedMpConfig } = res.value;
+
   setAccountStore("masterPasswordConfig", updatedMpConfig);
-
-  const keyRes = await getOrDeriveKey(password, saltBase64);
-  if (keyRes.isErr()) {
-    clearDerivedKey();
-    return err(keyRes.error);
-  }
-  const key = keyRes.value;
-
-  if (tokenToEncrypt) {
-    const encryptRes = await encryptData(tokenToEncrypt, key);
-    if (encryptRes.isErr()) {
-      clearDerivedKey();
-      return err(encryptRes.error);
-    }
-    const { iv, ciphertext } = encryptRes.value;
-    const updatedGithubConfig = {
-      ...accountStore.githubConfig,
-      githubTokenEncrypted: ciphertext,
-      githubTokenIv: iv,
-    };
-    await updateAccountSettings({
-      githubConfig: updatedGithubConfig,
-    });
+  if (updatedGithubConfig) {
     setAccountStore("githubConfig", updatedGithubConfig);
-    await removeSessionItem(SESSION_KEY_PENDING_GITHUB_TOKEN);
   }
 
-  const initialPayloadObject = { items: [], trash: [] };
-  const encryptVaultRes = await encryptData(
-    JSON.stringify(initialPayloadObject),
-    key,
-  );
-  if (encryptVaultRes.isErr()) {
-    clearDerivedKey();
-    return err(encryptVaultRes.error);
-  }
-
-  const { iv: vaultIv, ciphertext: vaultCiphertext } = encryptVaultRes.value;
-  const payloadToUpload = JSON.stringify({
-    ciphertext: vaultCiphertext,
-    iv: vaultIv,
-    salt: saltBase64,
-  });
-
-  const sendResult = await sendBackgroundMessage(uploadToGistRoute, {
-    content: payloadToUpload,
-  });
-  if (sendResult.isErr()) {
-    clearDerivedKey();
-    return err(sendResult.error);
-  }
-  if (!sendResult.value.success) {
-    clearDerivedKey();
-    return err(sendResult.value.error || "messaging_error_send_failed");
-  }
-
-  await setSessionItem(SESSION_KEY_ENCRYPTED_VAULT, payloadToUpload);
   return await setupUnlockedSession(key, { folders: [], items: [], trash: [] });
 }
 
@@ -787,10 +739,7 @@ export async function unlockVaultWithPin(
 }
 
 export async function lockVaultSession(): Promise<void> {
-  clearDerivedKey();
-  sessionManager.clearKey();
-  await removeSessionItem([...SESSION_KEYS_ON_LOCK]);
-  await clearAlarm(ALARM_NAME_VAULT_TIMEOUT);
+  await lockSessionUseCase();
 
   setAccountStore({
     folders: [],
@@ -807,16 +756,10 @@ export async function lockVaultSession(): Promise<void> {
 }
 
 export async function logoutVaultSession(): Promise<void> {
-  clearDerivedKey();
-  sessionManager.clearKey();
+  await logoutSessionUseCase();
 
   resetAccountStore();
   resetUiStore();
-
-  await removeSessionItem([...SESSION_KEYS_ON_LOCK]);
-  await resetAccountSettings();
-  await clearAlarm(ALARM_NAME_VAULT_TIMEOUT);
-  await broadcastMessage({ type: MSG_VAULT_LOGGED_OUT });
 }
 
 export async function lock(): Promise<void> {
