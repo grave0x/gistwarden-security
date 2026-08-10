@@ -108,13 +108,8 @@ export const Login: Component = () => {
       return "exists";
     }
 
-    const isConfigured = await provider.isConfigured({
-      token: activeToken,
-      gistId: acc?.githubConfig.gistId || undefined,
-    });
-
-    if (!isConfigured) {
-      return "new";
+    if (!activeToken) {
+      return "exists";
     }
 
     const downloadRes = await provider.download({
@@ -124,6 +119,7 @@ export const Login: Component = () => {
 
     if (downloadRes.isOk() && downloadRes.value.content) {
       const content = downloadRes.value.content;
+      const foundGistId = downloadRes.value.gistId;
       const payloadJsonRes = safeJsonParse(content);
       if (payloadJsonRes.isOk()) {
         const parsed = GistPayloadSchema.safeParse(payloadJsonRes.value);
@@ -132,17 +128,34 @@ export const Login: Component = () => {
             ...accountStore.masterPasswordConfig,
             salt: parsed.data.salt,
           };
+          const updatedGithubConfig = {
+            ...accountStore.githubConfig,
+            ...(foundGistId ? { gistId: foundGistId } : {}),
+          };
           await updateAccountSettings(
-            { masterPasswordConfig: updatedMpConfig },
+            {
+              masterPasswordConfig: updatedMpConfig,
+              githubConfig: updatedGithubConfig,
+            },
             mode,
           );
           setAccountStore("masterPasswordConfig", updatedMpConfig);
+          setAccountStore("githubConfig", updatedGithubConfig);
+          if (foundGistId) {
+            setAccountStore("gistId", foundGistId);
+          }
           return "exists";
         }
       }
     }
 
-    return "new";
+    if (
+      downloadRes.isErr() && downloadRes.error === "github_error_gist_not_found"
+    ) {
+      return "new";
+    }
+
+    return "exists";
   };
 
   onMount(async () => {
@@ -206,18 +219,27 @@ export const Login: Component = () => {
     setGlobalLoading(false);
   };
 
-  const handleSaveToken = async (token: string) => {
-    if (!token.trim()) {
+  const handleConnectGithubToken = async (rawToken: string) => {
+    const trimmed = rawToken.trim();
+    if (!trimmed) {
       setError(t("login_error_empty_pat"));
       return;
     }
     setGlobalLoading(true);
     setError("");
-    const result = await setupGithub(token.trim());
-    setGlobalLoading(false);
-    if (result.isErr()) {
-      setError(t(result.error));
+    const setupRes = await setupGithub(trimmed);
+    if (setupRes.isErr()) {
+      setGlobalLoading(false);
+      setError(t(setupRes.error));
+      return;
     }
+    const status = await checkVaultStatusForMode(settingsStore.vaultMode);
+    setGistStatus(status);
+    setGlobalLoading(false);
+  };
+
+  const handleSaveToken = async (token: string) => {
+    await handleConnectGithubToken(token);
   };
 
   const handleGithubOauth = async () => {
@@ -242,14 +264,7 @@ export const Login: Component = () => {
       return;
     }
 
-    // Setup GitHub with the obtained token
-    const setupRes = await setupGithub(sendResult.value.token);
-    if (setupRes.isErr()) {
-      handleOauthError(setupRes.error);
-      return;
-    }
-
-    setGlobalLoading(false);
+    await handleConnectGithubToken(sendResult.value.token);
   };
 
   const handleSwitchVaultMode = async (mode: VaultMode) => {

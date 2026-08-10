@@ -6,11 +6,11 @@ import {
   SESSION_KEY_PENDING_GITHUB_TOKEN,
   type TranslationKey,
 } from "@gistwarden/domain";
-import { validateToken } from "@gistwarden/network";
+import { downloadFromGist, validateToken } from "@gistwarden/network";
 import {
+  getAccountSettings,
   type GithubConfig,
   removeSessionItem,
-  resetAccountSettings,
   setSessionItem,
   updateAccountSettings,
 } from "@gistwarden/repository";
@@ -30,14 +30,25 @@ export interface SetupGithubResult {
 export async function setupGithubUseCase(
   options: SetupGithubOptions,
 ): Promise<Result<SetupGithubResult, TranslationKey>> {
-  const validateRes = await validateToken(
-    asGitHubAccessToken(options.token),
-  );
+  const parsedToken = asGitHubAccessToken(options.token);
+  const validateRes = await validateToken(parsedToken);
   if (validateRes.isErr()) {
     return err(validateRes.error);
   }
 
   const { username, avatarUrl } = validateRes.value;
+
+  const accRes = await getAccountSettings("github_gist");
+  const currentAcc = accRes.isOk() ? accRes.value : null;
+
+  let gistId = options.currentGistId || currentAcc?.githubConfig.gistId || asGistId("");
+  if (!gistId) {
+    const downloadRes = await downloadFromGist({ token: parsedToken });
+    if (downloadRes.isOk() && downloadRes.value.gistId) {
+      gistId = downloadRes.value.gistId;
+    }
+  }
+
   const key = await getSessionKey();
 
   if (key) {
@@ -47,7 +58,7 @@ export async function setupGithubUseCase(
     }
     const { iv, ciphertext } = encryptRes.value;
     const updatedGithubConfig: GithubConfig = {
-      gistId: options.currentGistId || asGistId(""),
+      gistId,
       githubTokenEncrypted: ciphertext,
       githubTokenIv: iv,
       username,
@@ -61,10 +72,8 @@ export async function setupGithubUseCase(
     return ok({ githubConfig: updatedGithubConfig, token: options.token });
   }
 
-  await resetAccountSettings("github_gist");
-
   const newGithubConfig: GithubConfig = {
-    gistId: options.currentGistId || asGistId(""),
+    gistId,
     githubTokenEncrypted: "",
     githubTokenIv: "",
     username,

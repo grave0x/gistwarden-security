@@ -1,4 +1,5 @@
 import { reconcile } from "solid-js/store";
+import { navigate } from "@/core/navigation.ts";
 import { sessionManager } from "@/core/session-manager.ts";
 import {
   persistSessionKey,
@@ -138,10 +139,8 @@ async function setupUnlockedSession(
     sessionUnlocked: true,
     hasUnlockedInSession: true,
   });
-  setUiStore({
-    view: finalView,
-    selectedItem: selectedItem || null,
-  });
+  setUiStore("selectedItem", selectedItem || null);
+  navigate(finalView);
   notifyBackground({ type: MSG_USER_ACTIVITY });
   return ok();
 }

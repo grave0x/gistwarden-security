@@ -61,7 +61,9 @@ export class LocalStorageProvider implements ISyncProvider {
     });
   }
 
-  async isConfigured(_options?: SyncOptions): Promise<boolean> {
-    return Promise.resolve(true);
+  async isConfigured(options?: SyncOptions): Promise<boolean> {
+    return Promise.resolve(
+      options?.hasStoredSalt !== undefined ? options.hasStoredSalt : true,
+    );
   }
 }

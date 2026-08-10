@@ -110,6 +110,47 @@ flowchart TD
 
 ---
 
+## 🌐 GIAI ĐOẠN 4: Điều Hướng Router & Đồng Bộ Trạng Thái Web App / Extension
+
+Giai đoạn này đảm bảo khi ứng dụng hoàn tất mở khóa, thông tin điều hướng và URL trình duyệt được đồng bộ thống nhất giữa Extension và Web App:
+
+```mermaid
+flowchart TD
+    UnlockSuccess([Xác thực Mở khóa thành công]) --> SetupSession[Nạp Key & Unlocked state vào Store]
+    SetupSession --> TriggerNavigate[Gọi hàm navigate(View.Vault)]
+    TriggerNavigate --> UpdateStoreView[setUiStore view = View.Vault]
+    UpdateStoreView --> UpdateRouterUrl[navigationManager.navigate('/vault') đổi URL trình duyệt sang /vault]
+    UpdateRouterUrl --> RenderVaultView[Router & Switch hiển thị màn hình Vault]
+```
+
+## 🔑 GIAI ĐOẠN 5: Luồng Xử Lý Token Thống Nhất (Unified PAT & OAuth Token Flow)
+
+Cả hai phương thức đăng nhập bằng PAT và OAuth đều sử dụng chung một hàm xử lý Token thống nhất `handleConnectGithubToken(token: string)` để đảm bảo tính đồng nhất 100%:
+
+```mermaid
+flowchart TD
+    PAT[Người dùng nhập PAT] --> UnifiedTokenHandler[Hàm xử lý Token thống nhất handleConnectGithubToken]
+    OAuth[Đăng nhập OAuth hoàn tất] --> UnifiedTokenHandler
+    
+    UnifiedTokenHandler --> ValidateTokenAPI[Xác thực Token qua GET api.github.com/user]
+    ValidateTokenAPI --> CheckValidate{Token hợp lệ?}
+    CheckValidate -- False --> ShowTokenError[Hiển thị báo lỗi Token không hợp lệ]
+    
+    CheckValidate -- True --> PreserveSettings[Bảo toàn masterPasswordConfig & Salt hiện có]
+    PreserveSettings --> AutoFindGist[Tự động tìm kiếm Gist ID qua findGistId token]
+    AutoFindGist --> CheckGistFound{Tìm thấy Gist cũ?}
+    
+    CheckGistFound -- True --> SaveGistIdAndSalt[Lưu gistId & trích xuất salt từ Gist về local storage]
+    CheckGistFound -- False --> SaveTokenOnly[Lưu thông tin token & username]
+    
+    SaveGistIdAndSalt --> CheckVaultStatus[Tải lại checkVaultStatusForMode]
+    SaveTokenOnly --> CheckVaultStatus
+    
+    CheckVaultStatus --> RenderLockState[Chuyển giao diện sang màn hình Mở khóa hoặc Tạo mới]
+```
+
+---
+
 ## 📊 TÓM TẮT QUY TRÌNH XỬ LÝ ĐIỀU KIỆN TỔNG HỢP (Decision Matrix)
 
 | Bước    | Câu hỏi điều kiện                                              | Kết quả TRUE                                              | Kết quả FALSE                            |
@@ -120,12 +161,17 @@ flowchart TD
 | **2.1** | Giải mã `verificationCiphertext` bằng Argon2id Key thành công? | Xác thực Master Password đúng $\rightarrow$ Nạp Vault     | Báo lỗi: Mật khẩu Master không chính xác |
 | **2.2** | Giải mã `pinUnlockValue` bằng PIN thành công?                  | Xác thực Mã PIN đúng $\rightarrow$ Khôi phục `DerivedKey` | Báo lỗi: Mã PIN không chính xác          |
 | **3.1** | Hàng chờ Queue `unapproved_pending_logins` có tài khoản?       | Tự động lưu Batch vào Vault & Upload Gist                 | Đăng nhập thành công, sẵn sàng sử dụng   |
+| **4.1** | Đăng nhập trên Web App / SPA với URL Router?                   | Gọi `navigate(View.Vault)` cập nhật URL `/vault`          | Cập nhật view nội bộ Extension Popup     |
+| **4.2** | Màn hình đăng nhập xác định trạng thái Gist (`gistStatus`)?    | Nếu có Salt/GistId hoặc chưa kết nối token $\rightarrow$ `"exists"` | Chỉ khi có Token & GitHub API xác nhận 0 Gist $\rightarrow$ `"new"` |
+| **5.1** | Nhận Token từ PAT hoặc OAuth?                                  | Gọi chung `handleConnectGithubToken(token)`               | Báo lỗi Token không hợp lệ               |
+| **5.2** | Kết nối Token mới có ghi đè cấu hình cũ không?                 | Bảo tồn `masterPasswordConfig.salt` & tự động tìm `gistId`| Không xóa trắng Local Storage            |
 
 ---
 
 ## 📁 Danh Sách File Mã Nguồn Liên Quan
 
 1. **[`src/core/crypto.ts`](../../packages/domain/src/crypto.ts)**: Hàm
+
    `deriveKey` sử dụng thuật toán **Argon2id (`hash-wasm`) với 3 vòng lặp
    (iterations) và 64MB RAM (`ARGON2_MEMORY = 65536`)**, cùng các hàm mã
    hóa/giải mã AES-GCM-256 (`encryptData`, `decryptData`).
@@ -137,11 +183,11 @@ flowchart TD
 4. **[`src/features/auth/auth-service.ts`](../../packages/ui/src/features/auth/auth-service.ts)**:
    Điều phối quá trình Đăng nhập (`login`), Mở khóa (`unlock`), Khóa kho
    (`lock`) và Đăng xuất (`logout`).
-5. **[`src/features/auth/session-service.ts`](../../packages/domain/src/session-manager.ts)**:
-   Quản lý bộ đếm Vault Timeout Alarm (`ALARM_NAME_VAULT_TIMEOUT`) và lưu trữ
-   Session Storage.
+5. **[`src/core/navigation.ts`](../../packages/ui/src/core/navigation.ts)**:
+   Điều phối chuyển đổi Router View (`navigate(View.Vault)`) và cập nhật URL trình duyệt `/vault`.
 6. **[`src/features/auth/components/MasterPasswordForm.tsx`](../../packages/ui/src/features/auth/components/MasterPasswordForm.tsx)**:
    Component giao diện biểu mẫu nhập Master Password / PIN.
 7. **[`src/extension/background.ts`](../../apps/extension/src/extension/background.ts)**:
    Tự động xử lý Hàng chờ `processPendingUnapprovedCredentials` ngay khi mở khóa
    Vault.
+

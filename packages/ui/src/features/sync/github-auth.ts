@@ -1,5 +1,5 @@
 import { setupGithubUseCase } from "@gistwarden/orchestrator";
-import { accountStore, resetAccountStore, setAccountStore } from "@/core/store.ts";
+import { accountStore, setAccountStore } from "@/core/store.ts";
 import { err, ok, type Result } from "neverthrow";
 import type { TranslationKey } from "@/core/i18n.ts";
 
@@ -16,10 +16,6 @@ export async function setupGithub(
   }
 
   const { githubConfig } = result.value;
-
-  if (!githubConfig.githubTokenEncrypted) {
-    resetAccountStore();
-  }
 
   setAccountStore({
     githubConfig,

@@ -15,6 +15,7 @@ export const SyncOptionsSchema = z.object({
   gistId: GistIdSchema.optional(),
   username: z.string().optional(),
   hasStoredEncryptedToken: z.boolean().optional(),
+  hasStoredSalt: z.boolean().optional(),
 }).readonly();
 export type SyncOptions = z.infer<typeof SyncOptionsSchema>;
 

@@ -203,7 +203,7 @@ export async function checkVaultConfiguredUseCase(
     () => null,
   );
 
-  if (!acc || !acc.masterPasswordConfig.salt) {
+  if (!acc) {
     return false;
   }
 
@@ -212,6 +212,9 @@ export async function checkVaultConfiguredUseCase(
   return await provider.isConfigured({
     gistId: acc.githubConfig.gistId || undefined,
     token: decryptedToken || undefined,
-    hasStoredEncryptedToken: Boolean(acc.githubConfig.githubTokenEncrypted),
+    hasStoredEncryptedToken: Boolean(
+      acc.githubConfig.githubTokenEncrypted || acc.githubConfig.username,
+    ),
+    hasStoredSalt: Boolean(acc.masterPasswordConfig.salt),
   });
 }
