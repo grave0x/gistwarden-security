@@ -62,7 +62,7 @@ export const readmeData = {
     },
     {
       label: "TypeScript",
-      badgeUrl: "https://img.shields.io/badge/TypeScript-5.9-3178c6?style=for-the-badge&logo=typescript&logoColor=white",
+      badgeUrl: "https://img.shields.io/badge/TypeScript-7.0-3178c6?style=for-the-badge&logo=typescript&logoColor=white",
       targetUrl: "https://www.typescriptlang.org",
     },
     {
@@ -88,8 +88,8 @@ export const readmeData = {
   ] as BadgeInfo[],
   intro: {
     p1: {
-      en: "Gistwarden is an open-source browser extension designed to manage passwords, one-time passwords (TOTP), secure notes, credit cards, identities, SSH keys, and passkeys (FIDO2/WebAuthn) securely, privately, and completely free of charge.",
-      vi: "Gistwarden là một tiện ích mở rộng (Browser Extension) mã nguồn mở, được thiết kế để quản lý mật khẩu, mã OTP (TOTP), ghi chú bảo mật, thẻ ngân hàng, định danh, SSH key và mã khóa đăng nhập (Passkeys) hoàn toàn miễn phí, an toàn và riêng tư tuyệt đối.",
+      en: "Gistwarden is an open-source password manager available as a **Browser Extension (Manifest V3)** and an independent **Zero-Knowledge Web Vault (SPA)** designed to manage passwords, one-time passwords (TOTP), secure notes, credit cards, identities, SSH keys, and passkeys (FIDO2/WebAuthn) securely, privately, and completely free of charge.",
+      vi: "Gistwarden là ứng dụng quản lý mật khẩu mã nguồn mở hỗ trợ cả hai phiên bản **Browser Extension (Manifest V3)** và **Web Vault độc lập (SPA)**, được thiết kế để quản lý mật khẩu, mã OTP (TOTP), ghi chú bảo mật, thẻ ngân hàng, định danh, SSH key và mã khóa đăng nhập (Passkeys) hoàn toàn miễn phí, an toàn và riêng tư tuyệt đối.",
     } satisfies I18nText,
     p2: {
       en: "Instead of paying annual fees for third-party cloud servers, Gistwarden provides an **equivalent alternative** that runs independently, leveraging your personal **GitHub Gist** as the encrypted database storage. Most importantly, it is optimized for high security and is fully compatible with Bitwarden exports.",
@@ -500,30 +500,52 @@ export const readmeData = {
   commands: [
     {
       title: {
-        en: "1. Build the Extension & Web App",
-        vi: "1. Đóng gói Extension",
+        en: "1. Build Extension Target",
+        vi: "1. Đóng gói Extension Target",
       },
       description: {
-        en: "Compile, bundle, and package the production zip archives:",
-        vi: "Biên dịch mã nguồn, Vanilla CSS và đóng gói thành các tệp ZIP hoàn chỉnh:",
+        en: "Compile and bundle the Chrome/Firefox browser extension into `dist/chrome` and `dist/firefox`:",
+        vi: "Biên dịch mã nguồn và đóng gói tiện ích mở rộng Chrome/Firefox vào `dist/chrome` và `dist/firefox`:",
       },
-      command: "bun run build",
+      command: "bun run build:extension",
     },
     {
       title: {
-        en: "2. Live Rebuild (Watch Mode)",
-        vi: "2. Chế độ Watch (Tự động biên dịch khi sửa file)",
+        en: "2. Build Web Vault Target",
+        vi: "2. Đóng gói Web Vault Target",
       },
       description: {
-        en: "Re-compile extension automatically on file modifications:",
-        vi: "Tự động biên dịch lại khi phát hiện thay đổi trong tập tin:",
+        en: "Compile and bundle the standalone Web Vault Single Page App into `dist/web`:",
+        vi: "Biên dịch ứng dụng Web Vault Single Page App độc lập vào `dist/web`:",
       },
-      command: "bun run watch",
+      command: "bun run build:web",
     },
     {
       title: {
-        en: "3. Type Check",
-        vi: "3. Kiểm tra kiểu (TypeCheck)",
+        en: "3. Build All Targets",
+        vi: "3. Đóng gói Tất cả (Build All)",
+      },
+      description: {
+        en: "Compile all extension and web production archives:",
+        vi: "Biên dịch toàn bộ cả Extension và Web Vault:",
+      },
+      command: "bun run build:all",
+    },
+    {
+      title: {
+        en: "4. Serve Web Vault Locally",
+        vi: "4. Chạy HTTP Server thử nghiệm Web Vault Cục bộ",
+      },
+      description: {
+        en: "Launch local dev HTTP server serving `dist/web` at `http://localhost:3000`:",
+        vi: "Khởi chạy HTTP server phục vụ `dist/web` tại `http://localhost:3000`:",
+      },
+      command: "bun run serve",
+    },
+    {
+      title: {
+        en: "5. Type Check",
+        vi: "5. Kiểm tra kiểu (TypeCheck)",
       },
       description: {
         en: "Verify TypeScript type compliance:",
@@ -533,14 +555,25 @@ export const readmeData = {
     },
     {
       title: {
-        en: "4. Run Unit Tests",
-        vi: "4. Chạy bộ kiểm thử (Unit Tests)",
+        en: "6. Run Unit Tests",
+        vi: "6. Chạy bộ kiểm thử (Unit Tests)",
       },
       description: {
         en: "Run standard cryptographic and utility test suites:",
         vi: "Khởi chạy các bộ unit test cho mã hóa và tiện ích:",
       },
       command: "bun run test",
+    },
+    {
+      title: {
+        en: "7. Run Custom Linter",
+        vi: "7. Chạy bộ kiểm tra Lint (Custom Linter)",
+      },
+      description: {
+        en: "Execute custom linting rules on codebase:",
+        vi: "Chạy công cụ linter kiểm tra quy tắc mã nguồn:",
+      },
+      command: "bun run lint",
     },
   ] as CommandItem[],
 };

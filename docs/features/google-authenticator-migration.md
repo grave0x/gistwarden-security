@@ -135,6 +135,6 @@ bun test tests/google_migration_test.ts
 ### Build Verification
 Chạy lệnh kiểm tra typecheck và đóng gói ứng dụng:
 ```bash
-bun run build
+bun run build:all
 ```
 *Kết quả*: **TypeCheck & Tests passed, Bundling & ZIP packaging successful (0 errors)**.

@@ -1,13 +1,13 @@
 # Gistwarden - High-Security Personal Password Vault Extension 🔒🔑
 
 [![SolidJS](https://img.shields.io/badge/SolidJS-1.9-2c4f7c?style=for-the-badge&logo=solid&logoColor=white)](https://solidjs.com)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178c6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-7.0-3178c6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Bun](https://img.shields.io/badge/Bun-1.x-black?style=for-the-badge&logo=bun&logoColor=white)](https://bun.sh)
 [![Esbuild](https://img.shields.io/badge/Esbuild-0.28-ffcf00?style=for-the-badge&logo=esbuild&logoColor=black)](https://esbuild.github.io)
 [![Manifest V3](https://img.shields.io/badge/Manifest-V3-4285f4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://developer.chrome.com/docs/extensions/mv3/intro/)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue?style=for-the-badge)](https://opensource.org/licenses/ISC)
 
-Gistwarden is an open-source browser extension designed to manage passwords, one-time passwords (TOTP), secure notes, credit cards, identities, SSH keys, and passkeys (FIDO2/WebAuthn) securely, privately, and completely free of charge.
+Gistwarden is an open-source password manager available as a **Browser Extension (Manifest V3)** and an independent **Zero-Knowledge Web Vault (SPA)** designed to manage passwords, one-time passwords (TOTP), secure notes, credit cards, identities, SSH keys, and passkeys (FIDO2/WebAuthn) securely, privately, and completely free of charge.
 
 Instead of paying annual fees for third-party cloud servers, Gistwarden provides an **equivalent alternative** that runs independently, leveraging your personal **GitHub Gist** as the encrypted database storage. Most importantly, it is optimized for high security and is fully compatible with Bitwarden exports.
 
@@ -147,23 +147,39 @@ To securely connect your vault with the cloud, the extension utilizes your perso
 
 This project uses **Bun** natively to develop, test, typecheck, and bundle.
 
-### 1. Build the Extension & Web App
+### 1. Build Extension Target
 
-Compile, bundle, and package the production zip archives:
-
-```bash
-bun run build
-```
-
-### 2. Live Rebuild (Watch Mode)
-
-Re-compile extension automatically on file modifications:
+Compile and bundle the Chrome/Firefox browser extension into `dist/chrome` and `dist/firefox`:
 
 ```bash
-bun run watch
+bun run build:extension
 ```
 
-### 3. Type Check
+### 2. Build Web Vault Target
+
+Compile and bundle the standalone Web Vault Single Page App into `dist/web`:
+
+```bash
+bun run build:web
+```
+
+### 3. Build All Targets
+
+Compile all extension and web production archives:
+
+```bash
+bun run build:all
+```
+
+### 4. Serve Web Vault Locally
+
+Launch local dev HTTP server serving `dist/web` at `http://localhost:3000`:
+
+```bash
+bun run serve
+```
+
+### 5. Type Check
 
 Verify TypeScript type compliance:
 
@@ -171,10 +187,18 @@ Verify TypeScript type compliance:
 bun run typecheck
 ```
 
-### 4. Run Unit Tests
+### 6. Run Unit Tests
 
 Run standard cryptographic and utility test suites:
 
 ```bash
 bun run test
+```
+
+### 7. Run Custom Linter
+
+Execute custom linting rules on codebase:
+
+```bash
+bun run lint
 ```

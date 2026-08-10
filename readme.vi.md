@@ -1,13 +1,13 @@
 # Gistwarden - Tiện ích Két sắt Mật khẩu Cá nhân Bảo mật Cao 🔒🔑
 
 [![SolidJS](https://img.shields.io/badge/SolidJS-1.9-2c4f7c?style=for-the-badge&logo=solid&logoColor=white)](https://solidjs.com)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.9-3178c6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-7.0-3178c6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
 [![Bun](https://img.shields.io/badge/Bun-1.x-black?style=for-the-badge&logo=bun&logoColor=white)](https://bun.sh)
 [![Esbuild](https://img.shields.io/badge/Esbuild-0.28-ffcf00?style=for-the-badge&logo=esbuild&logoColor=black)](https://esbuild.github.io)
 [![Manifest V3](https://img.shields.io/badge/Manifest-V3-4285f4?style=for-the-badge&logo=google-chrome&logoColor=white)](https://developer.chrome.com/docs/extensions/mv3/intro/)
 [![License: ISC](https://img.shields.io/badge/License-ISC-blue?style=for-the-badge)](https://opensource.org/licenses/ISC)
 
-Gistwarden là một tiện ích mở rộng (Browser Extension) mã nguồn mở, được thiết kế để quản lý mật khẩu, mã OTP (TOTP), ghi chú bảo mật, thẻ ngân hàng, định danh, SSH key và mã khóa đăng nhập (Passkeys) hoàn toàn miễn phí, an toàn và riêng tư tuyệt đối.
+Gistwarden là ứng dụng quản lý mật khẩu mã nguồn mở hỗ trợ cả hai phiên bản **Browser Extension (Manifest V3)** và **Web Vault độc lập (SPA)**, được thiết kế để quản lý mật khẩu, mã OTP (TOTP), ghi chú bảo mật, thẻ ngân hàng, định danh, SSH key và mã khóa đăng nhập (Passkeys) hoàn toàn miễn phí, an toàn và riêng tư tuyệt đối.
 
 Thay vì phải trả phí duy trì hàng năm cho server đám mây của bên thứ ba, Gistwarden được phát triển nhằm mang lại một giải pháp **thay thế tương đương**, hoạt động độc lập, tận dụng kho lưu trữ cá nhân **GitHub Gist** làm cơ sở dữ liệu và đặc biệt là tối ưu hóa bảo mật ở mức cao nhất, có khả năng tương thích tuyệt đối với dữ liệu xuất ra từ Bitwarden.
 
@@ -147,23 +147,39 @@ Sau khi biên dịch, các file sản phẩm sẽ được tạo trong thư mụ
 
 Dự án sử dụng **Bun** nguyên bản để phát triển, kiểm tra cú pháp và đóng gói.
 
-### 1. Đóng gói Extension
+### 1. Đóng gói Extension Target
 
-Biên dịch mã nguồn, Vanilla CSS và đóng gói thành các tệp ZIP hoàn chỉnh:
-
-```bash
-bun run build
-```
-
-### 2. Chế độ Watch (Tự động biên dịch khi sửa file)
-
-Tự động biên dịch lại khi phát hiện thay đổi trong tập tin:
+Biên dịch mã nguồn và đóng gói tiện ích mở rộng Chrome/Firefox vào `dist/chrome` và `dist/firefox`:
 
 ```bash
-bun run watch
+bun run build:extension
 ```
 
-### 3. Kiểm tra kiểu (TypeCheck)
+### 2. Đóng gói Web Vault Target
+
+Biên dịch ứng dụng Web Vault Single Page App độc lập vào `dist/web`:
+
+```bash
+bun run build:web
+```
+
+### 3. Đóng gói Tất cả (Build All)
+
+Biên dịch toàn bộ cả Extension và Web Vault:
+
+```bash
+bun run build:all
+```
+
+### 4. Chạy HTTP Server thử nghiệm Web Vault Cục bộ
+
+Khởi chạy HTTP server phục vụ `dist/web` tại `http://localhost:3000`:
+
+```bash
+bun run serve
+```
+
+### 5. Kiểm tra kiểu (TypeCheck)
 
 Kiểm tra sự tuân thủ kiểu TypeScript:
 
@@ -171,10 +187,18 @@ Kiểm tra sự tuân thủ kiểu TypeScript:
 bun run typecheck
 ```
 
-### 4. Chạy bộ kiểm thử (Unit Tests)
+### 6. Chạy bộ kiểm thử (Unit Tests)
 
 Khởi chạy các bộ unit test cho mã hóa và tiện ích:
 
 ```bash
 bun run test
+```
+
+### 7. Chạy bộ kiểm tra Lint (Custom Linter)
+
+Chạy công cụ linter kiểm tra quy tắc mã nguồn:
+
+```bash
+bun run lint
 ```

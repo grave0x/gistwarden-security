@@ -86,15 +86,15 @@ flowchart TD
 
 ## 📁 Danh Sách File Mã Nguồn Cần Cập Nhật
 
-1. **[`src/core/storage.ts`](../../packages/repository/src/storage.ts)**: Thêm
+1. **[`packages/repository/src/storage.ts`](../../packages/repository/src/storage.ts)**: Thêm
    `autoSubmitOnAutofill: z.boolean().default(true)` vào `SettingsSchema`.
-2. **[`src/core/store.ts`](../../packages/ui/src/core/store.ts)**: Thêm thuộc
+2. **[`packages/ui/src/core/store.ts`](../../packages/ui/src/core/store.ts)**: Thêm thuộc
    tính `autoSubmitOnAutofill` vào trạng thái reactive store.
-3. **[`src/features/settings/AutofillOptions.tsx`](../../packages/ui/src/features/settings/AutofillOptions.tsx)**:
+3. **[`packages/ui/src/features/settings/AutofillOptions.tsx`](../../packages/ui/src/features/settings/AutofillOptions.tsx)**:
    Trang Cài đặt mới cho phép bật/tắt Auto-submit.
-4. **[`src/extension/autofill-core.ts`](../../apps/extension/src/extension/autofill-core.ts)**:
+4. **[`apps/extension/src/extension/autofill-core.ts`](../../apps/extension/src/extension/autofill-core.ts)**:
    Bổ sung hàm `autoSubmitLogin` quét nút bấm và submit form theo phong cách
    Bitwarden.
-5. **[`src/extension/autofill-content-script.ts`](../../apps/extension/src/extension/autofill-content-script.ts)**:
+5. **[`apps/extension/src/extension/autofill-content-script.ts`](../../apps/extension/src/extension/autofill-content-script.ts)**:
    Truyền cấu hình `autoSubmitOnAutofill` vào `performAutofill` khi người dùng
    chọn tài khoản.
