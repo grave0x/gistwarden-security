@@ -241,16 +241,14 @@ export const Header: Component<HeaderProps> = (props) => {
               </Show>
 
               {/* Sync Option */}
-              <Show when={settingsStore.vaultMode !== "local_storage"}>
-                <button
-                  class="dropdown-item"
-                  type="button"
-                  onClick={handleSyncClick}
-                >
-                  <SyncIcon class={uiStore.syncing ? "spinning" : ""} />
-                  <span>{t("vault_btn_sync")}</span>
-                </button>
-              </Show>
+              <button
+                class="dropdown-item"
+                type="button"
+                onClick={handleSyncClick}
+              >
+                <SyncIcon class={uiStore.syncing ? "spinning" : ""} />
+                <span>{t("vault_btn_sync")}</span>
+              </button>
 
               {/* Lock Option */}
               <button

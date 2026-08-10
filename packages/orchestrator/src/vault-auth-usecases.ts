@@ -199,10 +199,6 @@ export async function checkVaultConfiguredUseCase(
   mode: VaultMode,
   accountSettings?: AccountSettings | null,
 ): Promise<boolean> {
-  if (mode === "local_storage") {
-    return true;
-  }
-
   const acc = accountSettings || (await getAccountSettings(mode)).match(
     (val) => val,
     () => null,
