@@ -1,0 +1,96 @@
+name: Build & Release All (Extension & Web)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  actions: write
+
+jobs:
+  build-and-release-all:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Bump version and commit
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+          bun run bump-version
+
+          if [ -n "$(git status --porcelain apps/extension/src/manifest.json)" ]; then
+            git add apps/extension/src/manifest.json
+            VERSION=$(jq -r '.version' apps/extension/src/manifest.json)
+            git commit -m "chore: bump version to $VERSION [skip ci]"
+            git push
+          else
+            echo "No version bump needed."
+          fi
+
+      - name: Build Extension (Chrome & Firefox)
+        run: bun run build:extension
+
+      - name: Create Release and Upload Extension packages
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=$(jq -r '.version' apps/extension/src/manifest.json)
+          TAG_NAME="v$VERSION"
+
+          if gh release view "$TAG_NAME" >/dev/null 2>&1; then
+            echo "Release $TAG_NAME already exists. Skipping release creation."
+          else
+            echo "New version detected: $TAG_NAME. Creating release and uploading extension packages..."
+            CHROME_FILE="gistwarden-chrome-${TAG_NAME}.zip"
+            FIREFOX_FILE="gistwarden-firefox-${TAG_NAME}.zip"
+
+            cp dist/chrome.zip "$CHROME_FILE"
+            cp dist/firefox.zip "$FIREFOX_FILE"
+
+            gh release create "$TAG_NAME" "$CHROME_FILE" "$FIREFOX_FILE" --title "$TAG_NAME" --generate-notes
+          fi
+
+      - name: Build Web App
+        run: bun run build:web
+
+      - name: Deploy Web App to gh-pages branch
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./dist/web
+          force_orphan: true
+          user_name: 'github-actions[bot]'
+          user_email: '41898282+github-actions[bot]@users.noreply.github.com'
+
+      - name: Cleanup old releases and workflow runs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Cleaning up old releases (keeping 20 most recent)..."
+          gh release list --limit 100 --json tagName --jq '.[20:].[] | .tagName' | while read -r tag; do
+            if [ -n "$tag" ]; then
+              echo "Deleting old release and tag: $tag"
+              gh release delete "$tag" --yes --cleanup-tag || true
+            fi
+          done
+
+          echo "Cleaning up old workflow runs (keeping 20 most recent)..."
+          gh run list --limit 100 --json databaseId --jq '.[20:].[] | .databaseId' | while read -r run_id; do
+            if [ -n "$run_id" ]; then
+              echo "Deleting old workflow run: $run_id"
+              gh run delete "$run_id" || true
+            fi
+          done
