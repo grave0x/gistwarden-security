@@ -65,6 +65,16 @@ export const GUIDE_STRUCTURE: readonly GuideCategoryDef[] = [
             },
           ]
         : []),
+      ...(isExtension()
+        ? [
+            {
+              id: "web-version",
+              titleKey: "guide_item_web_version" as const,
+              route: "getting-started/web-version",
+              icon: GlobeIcon,
+            },
+          ]
+        : []),
       {
         id: "master-password",
         titleKey: "guide_item_master_password",

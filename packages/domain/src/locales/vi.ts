@@ -917,6 +917,20 @@ export default {
   guide_dl_ext_edge_desc: "Tải và cài đặt Extension {APP_NAME} chính thức trên Microsoft Edge Add-ons Store.",
   guide_dl_ext_btn: "Cài đặt Extension",
 
+  // Web Version Guide
+  guide_item_web_version: "Phiên bản Web",
+  guide_web_ver_lead: "Truy cập két mật khẩu {APP_NAME} trực tiếp trên trình duyệt web mà không cần cài đặt Extension.",
+  guide_web_ver_btn: "Truy cập Gistwarden Web",
+  guide_web_ver_advantages_title: "Truy cập linh hoạt mọi nơi",
+  guide_web_ver_advantages_desc: "Thích hợp khi bạn sử dụng máy tính công cộng, thiết bị lạ hoặc môi trường trình duyệt không cho phép cài đặt Extension.",
+  guide_web_ver_limits_title: "Các tính năng bị giới hạn trên phiên bản Web",
+  guide_web_ver_limit_autofill_title: "Không có Tự động điền (Autofill)",
+  guide_web_ver_limit_autofill_desc: "Phiên bản Web không thể tự động điền tài khoản và mật khẩu vào biểu mẫu đăng nhập trên các trang web khác.",
+  guide_web_ver_limit_passkey_title: "Hạn chế Passkey / FIDO2",
+  guide_web_ver_limit_passkey_desc: "Không thể đóng vai trò làm trình quản lý Passkey cho trình duyệt để xác thực đăng nhập trên các trang web bên ngoài.",
+  guide_web_ver_limit_capture_title: "Không tự động bắt đăng nhập mới",
+  guide_web_ver_limit_capture_desc: "Không thể tự động phát hiện và gợi ý lưu mật khẩu khi bạn đăng nhập trên các trang web.",
+
 
   // Guide Gist Token Steps
   guide_token_desc:

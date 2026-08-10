@@ -911,6 +911,20 @@ export default {
   guide_dl_ext_edge_desc: "Download and install the official {APP_NAME} extension from Microsoft Edge Add-ons Store.",
   guide_dl_ext_btn: "Install Extension",
 
+  // Web Version Guide
+  guide_item_web_version: "Web Version",
+  guide_web_ver_lead: "Access your {APP_NAME} vault directly in any web browser without installing an extension.",
+  guide_web_ver_btn: "Open Gistwarden Web",
+  guide_web_ver_advantages_title: "Flexible Access Anywhere",
+  guide_web_ver_advantages_desc: "Ideal when using public computers, guest devices, or browser environments where installing extensions is restricted.",
+  guide_web_ver_limits_title: "Limitations on the Web Version",
+  guide_web_ver_limit_autofill_title: "No Autofill Support",
+  guide_web_ver_limit_autofill_desc: "The Web version cannot automatically fill credentials into login forms on other websites.",
+  guide_web_ver_limit_passkey_title: "Limited Passkey / FIDO2 Support",
+  guide_web_ver_limit_passkey_desc: "Cannot act as the browser's default Passkey manager for authenticating on external websites.",
+  guide_web_ver_limit_capture_title: "No Automatic Login Capture",
+  guide_web_ver_limit_capture_desc: "Cannot automatically detect and prompt to save new credentials when you log in on websites.",
+
 
   // Guide Gist Token Steps
   guide_token_desc:

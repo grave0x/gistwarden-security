@@ -832,6 +832,20 @@ const LangSchema = z.object({
   guide_dl_ext_edge_desc: z.string(),
   guide_dl_ext_btn: z.string(),
 
+  // Web Version Guide
+  guide_item_web_version: z.string(),
+  guide_web_ver_lead: z.string(),
+  guide_web_ver_btn: z.string(),
+  guide_web_ver_advantages_title: z.string(),
+  guide_web_ver_advantages_desc: z.string(),
+  guide_web_ver_limits_title: z.string(),
+  guide_web_ver_limit_autofill_title: z.string(),
+  guide_web_ver_limit_autofill_desc: z.string(),
+  guide_web_ver_limit_passkey_title: z.string(),
+  guide_web_ver_limit_passkey_desc: z.string(),
+  guide_web_ver_limit_capture_title: z.string(),
+  guide_web_ver_limit_capture_desc: z.string(),
+
   // Guide Gist Token Steps
   guide_token_desc: z.string(),
   guide_token_step1_title: z.string(),
