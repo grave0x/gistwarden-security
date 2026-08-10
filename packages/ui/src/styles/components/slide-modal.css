@@ -1,131 +1,134 @@
-.modal-overlay {
-  &.bottom-slide {
-    position: fixed;
-    top: 0;
-    left: 0;
+.modal-overlay.bottom-slide {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 9999;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  will-change: opacity;
+  animation: fadeIn 0.2s ease-out forwards;
+
+  &.is-closing {
+    animation: fadeOut 0.18s ease-in forwards;
+
+    .modal-slide-panel {
+      animation: slideDown 0.18s cubic-bezier(0.4, 0, 1, 1) forwards;
+    }
+  }
+
+  .modal-slide-panel {
+    background-color: var(--surface);
+    border-top: 1px solid var(--border);
+    border-top-left-radius: var(--radius-lg);
+    border-top-right-radius: var(--radius-lg);
     width: 100%;
-    height: 100%;
-    z-index: 9999;
+    max-width: 480px;
+    max-height: 85%;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+    padding: var(--space-4);
     display: flex;
-    align-items: flex-end;
-    justify-content: center;
-    background: rgba(0, 0, 0, 0.55);
-    will-change: opacity;
-    animation: fadeIn 0.2s ease-out forwards;
+    flex-direction: column;
+    will-change: transform;
+    animation: slideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 
-    &.is-closing {
-      animation: fadeOut 0.18s ease-in forwards;
+    &.modal-panel-spacious {
+      min-height: 250px;
+    }
 
-      .modal-slide-panel {
-        animation: slideDown 0.18s cubic-bezier(0.4, 0, 1, 1) forwards;
+    .modal-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: var(--space-4);
+
+      .modal-panel-title {
+        font-size: 15px;
+        font-weight: 600;
+        color: var(--text);
+      }
+
+      .modal-close-btn {
+        background: none;
+        border: none;
+        color: var(--text-muted);
+        font-size: 24px;
+        cursor: pointer;
+        line-height: 1;
+        padding: var(--space-1);
+
+        &:hover {
+          color: var(--text);
+        }
       }
     }
 
-    .modal-slide-panel {
-      background-color: var(--surface);
-      border-top: 1px solid var(--border);
-      border-top-left-radius: 16px;
-      border-top-right-radius: 16px;
-      width: 100%;
-      max-width: 480px;
-      max-height: 85%;
-      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
-      padding: 16px;
+    .modal-panel-body {
       display: flex;
       flex-direction: column;
-      will-change: transform;
-      animation: slideUp 0.22s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      gap: var(--space-3);
+      margin-bottom: var(--space-5);
+      overflow-y: auto;
 
-      &.modal-panel-spacious {
+      &.overflow-visible {
+        overflow: visible;
+      }
+
+      &.min-height-spacious {
         min-height: 250px;
       }
 
-      .modal-panel-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 16px;
-
-        .modal-panel-title {
-          font-size: 15px;
-          font-weight: 600;
-          color: var(--text);
-        }
-
-        .modal-close-btn {
-          background: none;
-          border: none;
-          color: var(--text-muted);
-          font-size: 24px;
-          cursor: pointer;
-          line-height: 1;
-          padding: 4px;
-
-          &:hover {
-            color: var(--text);
-          }
-        }
+      &.min-height-tall {
+        min-height: 350px;
       }
+    }
 
-      .modal-panel-body {
-        display: flex;
-        flex-direction: column;
-        gap: 12px;
-        margin-bottom: 20px;
-        overflow-y: auto;
+    .modal-panel-footer {
+      display: flex;
+      gap: var(--space-2);
+      align-items: center;
+      justify-content: flex-start;
+      margin-top: auto;
 
-        &.overflow-visible {
-          overflow: visible;
-        }
-
-        &.min-height-spacious {
-          min-height: 250px;
-        }
-
-        &.min-height-tall {
-          min-height: 350px;
-        }
-      }
-
-      .modal-panel-footer {
-        display: flex;
-        gap: 12px;
-        align-items: center;
-        justify-content: space-between;
-        margin-top: auto;
-
-        button {
-          &:not(.delete-folder-btn) {
-            flex: none;
-            min-width: 90px;
-          }
-        }
-
-        .delete-folder-btn {
-          min-width: auto !important;
-          width: 36px;
+      button {
+        &:not(.delete-folder-btn) {
+          flex: none;
+          width: auto;
+          min-width: 80px;
           height: 36px;
-          padding: 0;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          background: transparent;
-          border: none;
-          border-radius: 6px;
-          cursor: pointer;
-          margin-left: auto;
-          color: var(--error);
-          transition: background-color 0.2s, opacity 0.2s;
+          padding: 0 var(--space-4);
+          font-size: 13px;
+          border-radius: var(--radius-sm);
+        }
+      }
 
-          &:hover {
-            background-color: var(--hover-bg);
-          }
+      .delete-folder-btn {
+        min-width: auto !important;
+        width: 36px;
+        height: 36px;
+        padding: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: transparent;
+        border: none;
+        border-radius: var(--radius-sm);
+        cursor: pointer;
+        margin-left: auto;
+        color: var(--error);
+        transition: background-color 0.2s, opacity 0.2s;
 
-          svg {
-            width: 20px;
-            height: 20px;
-            fill: var(--error);
-          }
+        &:hover {
+          background-color: var(--hover-bg);
+        }
+
+        svg {
+          width: 20px;
+          height: 20px;
+          fill: var(--error);
         }
       }
     }
@@ -173,8 +176,6 @@
     .modal-slide-panel {
       border: 1px solid var(--border);
       border-bottom: none;
-      border-radius: 16px 16px 0 0;
-      box-shadow: 0 -4px 25px rgba(0, 0, 0, 0.45);
     }
   }
 }

@@ -137,6 +137,7 @@ export async function createNewVaultUseCase(
 
   const sendResult = await sendBackgroundMessage(uploadToGistRoute, {
     content: payloadToUpload,
+    mode,
   });
   if (sendResult.isErr()) {
     await clearDerivedKey();

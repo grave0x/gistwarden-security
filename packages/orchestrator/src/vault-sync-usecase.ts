@@ -13,6 +13,7 @@ import {
 } from "@gistwarden/domain";
 import {
   EncryptedPayloadSchema,
+  getActiveVaultMode,
   setSessionItem,
   updateAccountSettings,
   type VaultMode,
@@ -29,15 +30,18 @@ export async function fetchAndMergeRemoteVaultUseCase(
   localItems: VaultItem[],
   localTrash: TrashVaultItem[],
   key: CryptoKey,
-  options?: {
+  options: {
+    vaultMode: VaultMode;
     folders?: Folder[];
     lastSync?: number;
   },
 ): Promise<Result<VaultPayload, TranslationKey>> {
-  const localFolders = options?.folders || [];
-  const lastSync = options?.lastSync || 0;
+  const localFolders = options.folders || [];
+  const lastSync = options.lastSync || 0;
 
-  const sendResult = await sendBackgroundMessage(downloadFromGistRoute);
+  const sendResult = await sendBackgroundMessage(downloadFromGistRoute, {
+    mode: options.vaultMode,
+  });
   if (sendResult.isErr()) {
     return err(sendResult.error);
   }
@@ -122,7 +126,7 @@ export async function syncVaultToGist(
     validatedList,
     trashItems,
     key,
-    { folders, lastSync: options.lastSync },
+    { vaultMode: options.vaultMode, folders, lastSync: options.lastSync },
   );
   if (mergeResult.isErr()) {
     return err(mergeResult.error);
@@ -164,6 +168,7 @@ export async function syncVaultToGist(
 
   const sendResult = await sendBackgroundMessage(uploadToGistRoute, {
     content: payload,
+    mode: options.vaultMode,
   });
   if (sendResult.isErr()) {
     return err(sendResult.error);

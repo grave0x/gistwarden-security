@@ -1,0 +1,126 @@
+:root {
+  /* Font Family Tokens */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', 'Roboto Mono', SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --font-family: var(--font-sans);
+
+  /* Border Radius Tokens */
+  --radius-xs: 4px;
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* Spacing System Tokens (4px / 8px grid) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+
+  /* Constant Colors */
+  --white: #ffffff;
+  --black: #000000;
+
+  /* Default Theme (Dark) */
+  --primary: #175ddc;
+  --primary-hover: #0d43af;
+  --primary-accent: #65abff;
+
+  --bg: #0f172b;
+  --surface: #1d293d;
+  --text: #f7f9fa;
+  --text-muted: #8496b0;
+  --border: #314158;
+  --border-light: rgba(255, 255, 255, 0.05);
+  --header-bg: #1d293d;
+
+  /* Translucent & State Colors */
+  --white-translucent-4: rgba(255, 255, 255, 0.04);
+  --white-translucent-5: rgba(255, 255, 255, 0.05);
+  --black-translucent-2: rgba(0, 0, 0, 0.02);
+
+  --hover-bg: var(--white-translucent-4);
+  --btn-secondary-hover-bg: var(--white-translucent-5);
+  --primary-translucent-4: rgba(23, 93, 220, 0.04);
+  --primary-translucent-8: rgba(23, 93, 220, 0.08);
+  --primary-translucent-10: rgba(23, 93, 220, 0.1);
+  --primary-translucent-15: rgba(23, 93, 220, 0.15);
+  --primary-translucent-20: rgba(23, 93, 220, 0.2);
+
+  --error: #ff4e63;
+  --success: #18dc7a;
+  --warning: #f59e0b;
+  --error-translucent-15: rgba(229, 62, 62, 0.15);
+  --success-translucent-15: rgba(56, 161, 105, 0.15);
+  --warning-translucent-15: rgba(245, 158, 11, 0.15);
+
+  --shadow-4: rgba(0, 0, 0, 0.3);
+  --shadow-2: rgba(0, 0, 0, 0.1);
+  --shadow-large: rgba(0, 0, 0, 0.15);
+  --shadow-dropdown: rgba(0, 0, 0, 0.35);
+
+  /* FIDO2 Prompt States */
+  --fido2-bg-success: #22c55e;
+  --fido2-bg-warning: #f59e0b;
+  --btn-danger-hover: #c53030;
+
+  /* Alert Text Colors */
+  --alert-danger-text: #feb2b2;
+  --alert-success-text: #c6f6d5;
+  --alert-info-text: #bee3f8;
+
+  /* Link Colors */
+  --link-color: #93c5fd;
+  --link-hover-color: #bfdbfe;
+}
+
+body.light-theme {
+  --primary: #175ddc;
+  --primary-hover: #0d43af;
+  --primary-accent: #175ddc;
+
+  --link-color: #175ddc;
+  --link-hover-color: #0d43af;
+
+  --bg: #f7f9fa;
+  --surface: #ffffff;
+  --text: #0f172b;
+  --text-muted: #45556c;
+  --border: #d5dde8;
+  --border-light: rgba(0, 0, 0, 0.04);
+  --header-bg: #175ddc;
+
+  --black-translucent-4: rgba(0, 0, 0, 0.04);
+  --black-translucent-5: rgba(0, 0, 0, 0.05);
+
+  --hover-bg: var(--black-translucent-4);
+  --btn-secondary-hover-bg: var(--black-translucent-5);
+  --primary-translucent-4: rgba(23, 93, 220, 0.04);
+  --primary-translucent-8: rgba(23, 93, 220, 0.08);
+  --primary-translucent-10: rgba(23, 93, 220, 0.06);
+  --primary-translucent-15: rgba(23, 93, 220, 0.1);
+  --primary-translucent-20: rgba(23, 93, 220, 0.12);
+
+  --error: #c10007;
+  --success: #008236;
+  --warning: #d97706;
+  --error-translucent-15: rgba(193, 0, 7, 0.08);
+  --success-translucent-15: rgba(0, 130, 54, 0.08);
+  --warning-translucent-15: rgba(245, 158, 11, 0.08);
+
+  --shadow-4: rgba(0, 0, 0, 0.1);
+  --shadow-2: rgba(0, 0, 0, 0.05);
+  --shadow-large: rgba(0, 0, 0, 0.08);
+  --shadow-dropdown: rgba(0, 0, 0, 0.15);
+
+  --fido2-bg-success: #1b9e4d;
+  --fido2-bg-warning: #d97706;
+  --btn-danger-hover: #a60005;
+
+  --alert-danger-text: #600003;
+  --alert-success-text: #004d20;
+  --alert-info-text: #0d43af;
+}

@@ -134,6 +134,11 @@ export default {
   login_forgot_password_title: "Quên Mật khẩu chính",
   login_forgot_password_msg:
     "{APP_NAME} sử dụng cơ chế mã hóa đầu-cuối (Zero-Knowledge). Mật khẩu chính không bao giờ được gửi đi hay lưu trữ trên máy chủ, do đó <strong class='text-error'>KHÔNG CÓ CÁCH NÀO</strong> để khôi phục hoặc đặt lại.<br/><br/>Để bắt đầu lại, hệ thống sẽ <strong>ĐĂNG XUẤT</strong> và <strong>XÓA DỮ LIỆU CỤC BỘ</strong>.<br/><br/>Nếu bạn muốn tiếp tục sử dụng tài khoản GitHub này, hệ thống sẽ mở trang GitHub Gist chứa két sắt cũ để bạn có thể <strong>SAO LƯU</strong> dữ liệu hoặc tiến hành <strong class='text-error'>XÓA THỦ CÔNG</strong> Gist này trên GitHub trước khi đăng nhập lại.<br/><br/>Bạn có chắc chắn muốn đăng xuất và mở trang Gist cũ không?",
+  login_local_forgot_password_title: "Quên Mật khẩu chính Local Vault",
+  login_local_forgot_password_msg:
+    "Local Vault được mã hóa 100% cục bộ trên thiết bị của bạn và không lưu trữ chìa khóa khôi phục dự phòng. Nếu quên Mật khẩu chính, dữ liệu Két sắt hiện tại sẽ <strong class='text-error'>KHÔNG THỂ</strong> giải mã hay khôi phục.<br/><br/>Để xác nhận xóa toàn bộ dữ liệu bị khóa và đặt lại Két sắt, vui lòng nhập chính xác chữ <strong class='text-error'>RESET</strong> vào ô bên dưới:",
+  login_local_reset_btn: "Xóa & Đặt lại Két sắt",
+  login_local_reset_placeholder: "Nhập RESET để xác nhận...",
   app_loading: "Đang tải {APP_NAME}...",
   login_or: "Hoặc",
   login_error_password_mismatch: "Mật khẩu xác nhận không khớp",
@@ -451,11 +456,10 @@ export default {
   settings_error_fields_required: "Vui lòng điền đầy đủ tất cả các trường",
   settings_mp_success: "Đổi Mật khẩu chính thành công!",
   settings_export_success: "Đã tải xuống file sao lưu!",
-  settings_clear_vault_msg:
-    "Bạn có chắc chắn muốn xóa TOÀN BỘ tài khoản trong két sắt? Hành động này không thể hoàn tác và toàn bộ dữ liệu trong két sắt sẽ bị xóa sạch.",
   settings_clear_vault_confirm_title: "Xác nhận xóa vĩnh viễn",
-  settings_clear_vault_confirm_msg:
-    "XÁC NHẬN LẦN CUỐI: Xóa vĩnh viễn toàn bộ dữ liệu tài khoản? Vui lòng đảm bảo bạn đã xuất dữ liệu sao lưu (backup) trước khi tiếp tục.",
+  clear_vault_confirm_prompt_msg:
+    "Hành động này sẽ XÓA SẠCH toàn bộ tài khoản, thư mục và lịch sử trong Két sắt. Thao tác này <strong class='text-error'>KHÔNG THỂ HOÀN TÁC</strong>.<br/><br/>Để xác nhận xóa vĩnh viễn Két sắt, vui lòng nhập chính xác chữ <strong class='text-error'>DELETE</strong> vào ô bên dưới:",
+  clear_vault_confirm_placeholder: "Nhập DELETE để xác nhận...",
   settings_clear_vault_success:
     "Đã xóa toàn bộ tài khoản trong két sắt thành công!",
   settings_logout_title: "Đăng xuất",
@@ -672,7 +676,7 @@ export default {
     "Do không lưu trên Cloud, việc dọn dẹp dữ liệu web hoặc gỡ ứng dụng sẽ xóa sạch Két sắt. Dữ liệu một khi đã mất sẽ KHÔNG thể khôi phục!",
   guide_start_local_card3_title: "3. Sao lưu Thủ công Định kỳ",
   guide_start_local_card3_desc:
-    "Luôn vào Cài đặt -> Xuất dữ liệu để lưu file sao lưu CSV hoặc JSON mã hóa ra thư mục an toàn hoặc ổ cứng ngoài.",
+    "Luôn vào {settings_header} → {settings_vault_options_label} → {vault_options_export} để lưu file sao lưu CSV hoặc JSON mã hóa ra thư mục an toàn hoặc ổ cứng ngoài.",
   guide_start_local_card4_title: "4. Độc lập theo từng Thiết bị",
   guide_start_local_card4_desc:
     "Mỗi thiết bị dùng Local Vault sẽ có một két sắt và cấu hình riêng biệt. Thay đổi ở Máy A sẽ không tự đồng bộ sang Máy B.",

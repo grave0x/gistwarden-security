@@ -24,10 +24,12 @@ import PinUnlockForm from "@/features/auth/PinUnlockForm.tsx";
 import { GithubSetupForm } from "@/features/auth/components/GithubSetupForm.tsx";
 import { MasterPasswordForm } from "@/features/auth/components/MasterPasswordForm.tsx";
 import { MasterPasswordCreate } from "@/features/auth/components/MasterPasswordCreate.tsx";
+import TypedConfirmModal from "@/components/ui/TypedConfirmModal.tsx";
 import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
 import { AppIcon, ShieldAlertIcon, SyncIcon } from "@/icons/svg/index.ts";
 import { t, type TranslationKey } from "@/core/i18n.ts";
-import { getAccountSettings, getGithubToken, getSessionItem, updateAccountSettings, updateExtensionSettings } from "@/core/storage.ts";
+import { getAccountSettings, getGithubToken, getSessionItem, resetAccountSettings, updateAccountSettings, updateExtensionSettings } from "@/core/storage.ts";
+import { DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG } from "@gistwarden/repository";
 import { z } from "zod";
 import {
   downloadFromGistRoute,
@@ -51,6 +53,7 @@ export const Login: Component = () => {
   const [gistStatus, setGistStatus] = createSignal<
     "checking" | "new" | "exists"
   >("exists");
+  const [showResetLocalModal, setShowResetLocalModal] = createSignal(false);
 
   const checkVaultStatusForMode = async (
     mode: VaultMode,
@@ -62,6 +65,11 @@ export const Login: Component = () => {
       setAccountStore("masterPasswordConfig", acc.masterPasswordConfig);
       setAccountStore("pinConfig", acc.pinConfig);
       setAccountStore("githubConfig", acc.githubConfig);
+      setAccountStore("gistId", acc.githubConfig.gistId || "");
+      setAccountStore(
+        "githubConfigured",
+        !!acc.githubConfig.gistId && !!acc.masterPasswordConfig.salt,
+      );
     }
 
     if (acc?.masterPasswordConfig.salt) {
@@ -261,6 +269,11 @@ export const Login: Component = () => {
   };
 
   const handleForgotPassword = async () => {
+    if (settingsStore.vaultMode === "local_storage") {
+      setShowResetLocalModal(true);
+      return;
+    }
+
     const gistId = accountStore.gistId;
     if (
       await confirm(
@@ -276,15 +289,21 @@ export const Login: Component = () => {
     }
   };
 
+  const handleConfirmResetLocalVault = async () => {
+    setShowResetLocalModal(false);
+    await resetAccountSettings("local_storage");
+    setAccountStore("masterPasswordConfig", DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG);
+    setGistStatus("new");
+  };
+
   return (
     <div class="app-body justify-center h-full">
       {/* Floating Language Switcher */}
       <div class="login-lang-selector">
         <button
           type="button"
-          class={`lang-toggle-btn ${
-            settingsStore.language === "en" ? "active" : ""
-          }`}
+          class={`lang-toggle-btn ${settingsStore.language === "en" ? "active" : ""
+            }`}
           onClick={() => updateLanguage("en")}
         >
           EN
@@ -292,9 +311,8 @@ export const Login: Component = () => {
         <span class="lang-divider">|</span>
         <button
           type="button"
-          class={`lang-toggle-btn ${
-            settingsStore.language === "vi" ? "active" : ""
-          }`}
+          class={`lang-toggle-btn ${settingsStore.language === "vi" ? "active" : ""
+            }`}
           onClick={() => updateLanguage("vi")}
         >
           VI
@@ -400,6 +418,18 @@ export const Login: Component = () => {
           />
         </Show>
       </Show>
+
+      <TypedConfirmModal
+        isOpen={showResetLocalModal()}
+        title={t("login_local_forgot_password_title")}
+        messageHtml={t("login_local_forgot_password_msg")}
+        requiredWord="RESET"
+        placeholder={t("login_local_reset_placeholder")}
+        confirmButtonText={t("login_local_reset_btn")}
+        variant="danger"
+        onClose={() => setShowResetLocalModal(false)}
+        onConfirm={handleConfirmResetLocalVault}
+      />
     </div>
   );
 };

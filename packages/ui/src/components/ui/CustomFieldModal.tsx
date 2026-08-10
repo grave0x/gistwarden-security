@@ -121,7 +121,7 @@ export default function CustomFieldModal(props: CustomFieldModalProps) {
               </Show>
             </div>
 
-            <div class="modal-panel-footer">
+            <div class="modal-panel-footer d-flex gap-8">
               <Button type="button" variant="primary" onClick={handleSave}>
                 {props.isEdit ? t("btn_save") : t("btn_create")}
               </Button>

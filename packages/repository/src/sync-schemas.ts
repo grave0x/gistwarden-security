@@ -14,6 +14,7 @@ import {
   VaultItemType,
 } from "@gistwarden/domain";
 import { Fido2CredentialSchema } from "@gistwarden/domain";
+import { VaultModeSchema } from "./storage-schemas.ts";
 
 export const ImportFolderSchema = z.object({
   id: FolderIdSchema,
@@ -227,6 +228,7 @@ export type StartGithubOauthResponse = z.infer<
 
 export const UploadToGistMsgSchema = z.object({
   type: z.literal(MSG_UPLOAD_TO_GIST),
+  mode: VaultModeSchema,
   content: z.string().optional(),
 }).readonly();
 export type UploadToGistMsg = z.infer<typeof UploadToGistMsgSchema>;
@@ -239,6 +241,7 @@ export type DeleteGistMsg = z.infer<typeof DeleteGistMsgSchema>;
 
 export const DownloadFromGistMsgSchema = z.object({
   type: z.literal(MSG_DOWNLOAD_FROM_GIST),
+  mode: VaultModeSchema,
 }).readonly();
 export type DownloadFromGistMsg = z.infer<typeof DownloadFromGistMsgSchema>;
 

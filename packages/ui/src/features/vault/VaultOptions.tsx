@@ -21,6 +21,7 @@ import {
 } from "@/icons/svg/index.ts";
 import { t } from "@/core/i18n.ts";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
+import TypedConfirmModal from "@/components/ui/TypedConfirmModal.tsx";
 import { handlePopout, isPopout } from "@/core/popout-utils.ts";
 import { isExtension, isFirefox } from "@/core/runtime.ts";
 import { setSessionItem } from "@/core/storage.ts";
@@ -32,6 +33,7 @@ import {
 
 export const VaultOptions: Component = () => {
   const [error, setError] = createSignal("");
+  const [showClearModal, setShowClearModal] = createSignal(false);
 
   const handleBack = () => {
     navigate(View.Settings);
@@ -53,26 +55,12 @@ export const VaultOptions: Component = () => {
     setUiStore(STORE_KEY_SYNCING, false);
   };
 
-  const handleClearVault = async () => {
-    if (
-      !(await confirm(
-        t("settings_clear_vault"),
-        t("settings_clear_vault_msg"),
-        "danger",
-      ))
-    ) {
-      return;
-    }
-    if (
-      !(await confirm(
-        t("settings_clear_vault_confirm_title"),
-        t("settings_clear_vault_confirm_msg"),
-        "danger",
-      ))
-    ) {
-      return;
-    }
+  const handleClearVault = () => {
+    setShowClearModal(true);
+  };
 
+  const handleConfirmClearVault = async () => {
+    setShowClearModal(false);
     const verified = await requestReprompt();
     if (!verified) {
       return;
@@ -268,6 +256,18 @@ export const VaultOptions: Component = () => {
           </div>
         </div>
       </div>
+
+      <TypedConfirmModal
+        isOpen={showClearModal()}
+        title={t("settings_clear_vault_confirm_title")}
+        messageHtml={t("clear_vault_confirm_prompt_msg")}
+        requiredWord="DELETE"
+        placeholder={t("clear_vault_confirm_placeholder")}
+        confirmButtonText={t("settings_clear_vault")}
+        variant="danger"
+        onClose={() => setShowClearModal(false)}
+        onConfirm={handleConfirmClearVault}
+      />
     </div>
   );
 };

@@ -87,7 +87,7 @@ export default function SetPinModal(props: SetPinModalProps) {
               />
             </div>
 
-            <div class="modal-panel-footer p-0 border-none">
+            <div class="modal-panel-footer p-0 border-none d-flex gap-8">
               <Button type="submit" variant="primary">
                 {t("set_pin_title")}
               </Button>

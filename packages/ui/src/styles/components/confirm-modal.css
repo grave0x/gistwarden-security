@@ -24,17 +24,17 @@
   align-items: center;
   justify-content: center;
   z-index: 20000;
-  padding: 24px;
+  padding: var(--space-6);
   box-sizing: border-box;
   will-change: opacity;
 
   .confirm-modal-box {
     background-color: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 8px;
+    border-radius: var(--radius-md);
     width: 100%;
     max-width: 320px;
-    padding: 20px;
+    padding: var(--space-5);
     box-shadow: 0 10px 25px var(--shadow-dropdown);
     will-change: transform, opacity;
     animation: modalScaleIn 0.15s ease-out;
@@ -54,7 +54,7 @@
 
     .confirm-modal-title {
       margin-top: 0;
-      margin-bottom: 12px;
+      margin-bottom: var(--space-3);
       font-size: 15px;
       font-weight: 600;
       color: var(--text);
@@ -63,7 +63,7 @@
 
     .confirm-modal-message {
       margin-top: 0;
-      margin-bottom: 20px;
+      margin-bottom: var(--space-5);
       font-size: 12.5px;
       color: var(--text-muted);
       line-height: 1.5;
@@ -85,15 +85,17 @@
 
     .confirm-modal-actions {
       display: flex;
-      justify-content: flex-end;
-      gap: 8px;
+      justify-content: flex-start;
+      gap: var(--space-2);
 
       button {
-        flex: 1;
-        max-width: 100px;
-        height: 32px;
-        padding: 0 12px;
-        font-size: 12px;
+        flex: none;
+        width: auto;
+        min-width: 80px;
+        height: 36px;
+        padding: 0 var(--space-4);
+        font-size: 13px;
+        border-radius: var(--radius-sm);
       }
     }
   }
@@ -109,40 +111,51 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10000;
-  will-change: opacity;
+  z-index: 99999;
+  flex-direction: column;
+  gap: var(--space-3);
 
-  .global-loading-content {
+  .loading-box {
+    background-color: var(--surface);
+    border: 1px solid var(--border);
+    padding: var(--space-5) var(--space-6);
+    border-radius: var(--radius-md);
+    box-shadow: 0 10px 25px var(--shadow-dropdown);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
-    color: var(--white);
-    text-align: center;
-    will-change: transform, opacity;
-    animation: fadeIn 0.15s ease-out;
+    gap: var(--space-3);
 
-    .spinning {
-      width: 36px;
-      height: 36px;
-      fill: var(--primary);
+    .loading-spinner {
+      width: 28px;
+      height: 28px;
+      border: 3px solid var(--border);
+      border-top-color: var(--primary);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
     }
 
-    .global-loading-text {
-      font-size: 14px;
+    .loading-text {
+      color: var(--text);
+      font-size: 13px;
       font-weight: 500;
-      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
     }
+  }
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
   }
 }
 
 @keyframes modalScaleIn {
   from {
-    transform: scale(0.95);
     opacity: 0;
+    transform: scale(0.95);
   }
   to {
-    transform: scale(1);
     opacity: 1;
+    transform: scale(1);
   }
 }

@@ -155,6 +155,7 @@ async function resolveGistContent(): Promise<
   } else {
     const sendResult = await sendBackgroundMessage(
       downloadFromGistRoute,
+      { mode: settingsStore.vaultMode },
     );
     if (sendResult.isErr()) {
       return err(sendResult.error);
@@ -213,7 +214,9 @@ export async function fetchEncryptedVaultContent(): Promise<
     return ok(cachedVal);
   }
 
-  const sendResult = await sendBackgroundMessage(downloadFromGistRoute);
+  const sendResult = await sendBackgroundMessage(downloadFromGistRoute, {
+    mode: settingsStore.vaultMode,
+  });
   if (sendResult.isOk()) {
     if (sendResult.value.success && sendResult.value.content) {
       const content = sendResult.value.content;

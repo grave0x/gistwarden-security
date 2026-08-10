@@ -76,7 +76,7 @@ export default function RepromptModal() {
               </div>
             </div>
 
-            <div class="modal-panel-footer p-0 border-none">
+            <div class="modal-panel-footer p-0 border-none d-flex gap-8">
               <Button type="submit" variant="primary">
                 {t("reprompt_modal_confirm")}
               </Button>

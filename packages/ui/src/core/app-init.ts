@@ -93,7 +93,9 @@ async function fetchEncryptedVaultContent(): Promise<
     return ok(cachedVal);
   }
 
-  const sendResult = await sendBackgroundMessage(downloadFromGistRoute);
+  const sendResult = await sendBackgroundMessage(downloadFromGistRoute, {
+    mode: settingsStore.vaultMode,
+  });
   if (
     sendResult.isOk() &&
     isRecord(sendResult.value) &&
@@ -269,6 +271,7 @@ export async function init(): Promise<void> {
     if (accountStore.gistId && accountStore.masterPasswordConfig.salt) {
       const sendResult = await sendBackgroundMessage(
         downloadFromGistRoute,
+        { mode: settingsStore.vaultMode },
       );
       if (
         sendResult.isOk() &&

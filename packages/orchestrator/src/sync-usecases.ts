@@ -5,6 +5,7 @@ import {
 } from "@gistwarden/network";
 import {
   type DeleteGistMsg,
+  type DownloadFromGistMsg,
   type DownloadGistResponse,
   getAccountSettings,
   getExtensionSettings,
@@ -23,8 +24,7 @@ import { asGistId, SESSION_KEY_PENDING_GITHUB_TOKEN } from "@gistwarden/domain";
 export async function uploadVaultUseCase(
   payload: UploadToGistMsg,
 ): Promise<SyncActionResponse> {
-  const extRes = await getExtensionSettings();
-  const vaultMode = extRes.isOk() ? extRes.value.vaultMode : "github_gist";
+  const vaultMode = payload.mode;
   const provider = getSyncProvider(vaultMode);
 
   const token = await getGithubToken(vaultMode);
@@ -76,9 +76,10 @@ export async function deleteVaultUseCase(
   return { success: false, error: res.error };
 }
 
-export async function downloadVaultUseCase(): Promise<DownloadGistResponse> {
-  const extRes = await getExtensionSettings();
-  const vaultMode = extRes.isOk() ? extRes.value.vaultMode : "github_gist";
+export async function downloadVaultUseCase(
+  payload: DownloadFromGistMsg,
+): Promise<DownloadGistResponse> {
+  const vaultMode = payload.mode;
   const provider = getSyncProvider(vaultMode);
 
   const token = await getGithubToken(vaultMode);

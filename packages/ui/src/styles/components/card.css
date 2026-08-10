@@ -1,23 +1,21 @@
 .card {
   background-color: var(--surface);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 16px;
-  margin-bottom: 16px;
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  margin-bottom: var(--space-4);
   overflow: hidden;
   flex-shrink: 0;
 
-  .form-group {
-    &:last-child {
-      margin-bottom: 0;
-    }
+  .form-group:last-child {
+    margin-bottom: 0;
   }
-}
 
-.overflow-visible {
-  overflow: visible !important;
-}
+  &.card-list {
+    padding: 0 var(--space-4);
+  }
 
-.card-list {
-  padding: 0 16px;
+  &.overflow-visible {
+    overflow: visible !important;
+  }
 }

@@ -28,18 +28,18 @@ export const ConfirmModal: Component = () => {
             />
             <div class="confirm-modal-actions">
               <Button
-                variant="secondary"
-                onClick={() => resolveConfirm(false)}
-              >
-                {t("btn_cancel")}
-              </Button>
-              <Button
                 variant={uiStore.confirmModal.type === "danger"
                   ? "danger"
                   : "primary"}
                 onClick={() => resolveConfirm(true)}
               >
                 {t("btn_confirm")}
+              </Button>
+              <Button
+                variant="secondary"
+                onClick={() => resolveConfirm(false)}
+              >
+                {t("btn_cancel")}
               </Button>
             </div>
           </div>

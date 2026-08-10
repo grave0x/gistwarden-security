@@ -131,6 +131,11 @@ export default {
   login_forgot_password_title: "Forgot Master Password",
   login_forgot_password_msg:
     "{APP_NAME} uses end-to-end encryption (Zero-Knowledge). The Master Password is never sent or stored on any server, hence there is <strong class='text-error'>NO WAY</strong> to recover or reset it.<br/><br/>To start over, the system will <strong>LOG OUT</strong> and <strong>CLEAR LOCAL DATA</strong>.<br/><br/>If you want to continue using this GitHub account, the system will open the GitHub Gist page containing the old vault so you can <strong>BACK UP</strong> the data or <strong class='text-error'>MANUALLY DELETE</strong> this Gist on GitHub before logging in again.<br/><br/>Are you sure you want to log out and open the old Gist page?",
+  login_local_forgot_password_title: "Forgot Local Vault Master Password?",
+  login_local_forgot_password_msg:
+    "Local Vault encrypts data 100% locally on your device and holds no recovery key. If you forget your Master Password, your current vault data <strong class='text-error'>CANNOT</strong> be decrypted or recovered.<br/><br/>To confirm wiping the locked vault and resetting, please type <strong class='text-error'>RESET</strong> in the box below:",
+  login_local_reset_btn: "Wipe & Reset Vault",
+  login_local_reset_placeholder: "Type RESET to confirm...",
   app_loading: "Loading {APP_NAME}...",
   login_or: "Or",
   login_error_password_mismatch: "Confirm password does not match",
@@ -448,11 +453,10 @@ export default {
   settings_error_fields_required: "Please fill in all fields",
   settings_mp_success: "Master Password changed successfully!",
   settings_export_success: "Backup file downloaded!",
-  settings_clear_vault_msg:
-    "Are you sure you want to delete ALL items in the vault? This action cannot be undone and all vault data will be permanently wiped.",
   settings_clear_vault_confirm_title: "Confirm Permanent Deletion",
-  settings_clear_vault_confirm_msg:
-    "FINAL CONFIRMATION: Permanently delete all account data? Please ensure you have exported your backup data before proceeding.",
+  clear_vault_confirm_prompt_msg:
+    "This action will PERMANENTLY DELETE all items, folders, and data in the vault. This action <strong class='text-error'>CANNOT BE UNDONE</strong>.<br/><br/>To confirm permanently deleting the vault, please type <strong class='text-error'>DELETE</strong> in the box below:",
+  clear_vault_confirm_placeholder: "Type DELETE to confirm...",
   settings_clear_vault_success: "All vault accounts deleted successfully!",
   settings_logout_title: "Logout",
   settings_logout_msg:
@@ -666,7 +670,7 @@ export default {
     "Because there is no cloud backup, clearing browser data or resetting the extension will permanently remove your vault. Unrecoverable if deleted!",
   guide_start_local_card3_title: "3. Regular Manual Backups",
   guide_start_local_card3_desc:
-    "Always use Settings -> Export Data to save a backup CSV or encrypted JSON file in a safe folder or external drive.",
+    "Always go to {settings_header} → {settings_vault_options_label} → {vault_options_export} to save an encrypted JSON or CSV backup to a safe folder or external drive.",
   guide_start_local_card4_title: "4. Independent per Device",
   guide_start_local_card4_desc:
     "Each device running Local Vault has its own isolated vault and settings. Changes made on Device A will not reflect on Device B.",
