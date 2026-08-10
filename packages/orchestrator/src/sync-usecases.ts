@@ -20,6 +20,7 @@ import {
   type ValidateTokenResponse,
 } from "@gistwarden/repository";
 import { asGistId, SESSION_KEY_PENDING_GITHUB_TOKEN } from "@gistwarden/domain";
+import { checkVaultConfiguredUseCase } from "./vault-auth-usecases.ts";
 
 export async function uploadVaultUseCase(
   payload: UploadToGistMsg,
@@ -27,10 +28,11 @@ export async function uploadVaultUseCase(
   const vaultMode = payload.mode;
   const provider = getSyncProvider(vaultMode);
 
-  const token = await getGithubToken(vaultMode);
-  if (!await provider.isConfigured({ token: token || undefined })) {
+  if (!await checkVaultConfiguredUseCase(vaultMode)) {
     return { success: false, error: "github_error_missing_token" };
   }
+
+  const token = await getGithubToken(vaultMode);
 
   const settingsRes = await getAccountSettings(vaultMode);
   const githubConfig = settingsRes.isOk() ? settingsRes.value.githubConfig : undefined;

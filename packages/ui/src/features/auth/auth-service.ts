@@ -527,10 +527,7 @@ export async function unlockVaultWithKey(
 
   await persistSessionKey(key);
 
-  const currentToken = await getGithubToken(settingsStore.vaultMode);
-  const isReady = await provider.isConfigured({
-    token: currentToken || undefined,
-  });
+  const isReady = await checkVaultConfiguredUseCase(settingsStore.vaultMode);
   if (!isReady) {
     sessionManager.clearKey();
     return err("login_error_invalid_token");
@@ -594,10 +591,10 @@ export async function unlockVaultWithMasterPassword(
     return err(keyRes.error);
   }
 
-  const currentToken = await getGithubToken(settingsStore.vaultMode);
-  const isReady = await provider.isConfigured({
-    token: currentToken || undefined,
-  });
+  const isReady = await checkVaultConfiguredUseCase(
+    settingsStore.vaultMode,
+    accSettings,
+  );
   if (!isReady) {
     sessionManager.clearKey();
     await recordMasterPasswordFailure(attempts, saltBase64);

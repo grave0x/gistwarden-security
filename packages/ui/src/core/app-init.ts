@@ -257,12 +257,7 @@ export async function init(): Promise<void> {
     setUiStore(STORE_KEY_VIEW, View.Fido2Prompt);
   }
 
-  const provider = getSyncProvider(settingsStore.vaultMode);
-  const isConfigured = await provider.isConfigured({
-    token: decryptedToken || undefined,
-  });
-
-  if (isConfigured && key && accountStore.masterPasswordConfig.salt) {
+  if (githubConfigured && key && accountStore.masterPasswordConfig.salt) {
     await loadAndDecryptVault(key, isFido2Prompt, params);
   } else {
     if (accountStore.gistId && accountStore.masterPasswordConfig.salt) {
