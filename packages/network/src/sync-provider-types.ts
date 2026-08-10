@@ -14,6 +14,7 @@ export const SyncOptionsSchema = z.object({
   token: GitHubAccessTokenSchema.optional(),
   gistId: GistIdSchema.optional(),
   username: z.string().optional(),
+  hasStoredEncryptedToken: z.boolean().optional(),
 }).readonly();
 export type SyncOptions = z.infer<typeof SyncOptionsSchema>;
 

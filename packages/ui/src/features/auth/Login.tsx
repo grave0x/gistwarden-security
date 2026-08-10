@@ -71,16 +71,42 @@ export const Login: Component = () => {
       setAccountStore("githubConfigured", isConfigured);
     }
 
-    if (acc?.masterPasswordConfig.salt) {
-      return "exists";
-    }
-
     const provider = getSyncProvider(mode);
     const retrievedToken = await getGithubToken(mode);
     const activeToken = retrievedToken ||
       (accountStore.githubToken
         ? asGitHubAccessToken(accountStore.githubToken)
         : undefined);
+
+    if (acc?.masterPasswordConfig.salt) {
+      if (mode === "github_gist" && acc.githubConfig.gistId) {
+        const downloadRes = await provider.download({
+          token: activeToken,
+          gistId: acc.githubConfig.gistId,
+        });
+        if (downloadRes.isOk() && downloadRes.value.content) {
+          const payloadJsonRes = safeJsonParse(downloadRes.value.content);
+          if (payloadJsonRes.isOk()) {
+            const parsed = GistPayloadSchema.safeParse(payloadJsonRes.value);
+            if (
+              parsed.success && parsed.data.salt &&
+              parsed.data.salt !== acc.masterPasswordConfig.salt
+            ) {
+              const updatedMpConfig = {
+                ...acc.masterPasswordConfig,
+                salt: parsed.data.salt,
+              };
+              await updateAccountSettings(
+                { masterPasswordConfig: updatedMpConfig },
+                mode,
+              );
+              setAccountStore("masterPasswordConfig", updatedMpConfig);
+            }
+          }
+        }
+      }
+      return "exists";
+    }
 
     const isConfigured = await provider.isConfigured({
       token: activeToken,

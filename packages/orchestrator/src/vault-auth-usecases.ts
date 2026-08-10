@@ -1,7 +1,6 @@
 import {
   ALARM_NAME_VAULT_TIMEOUT,
   asGistId,
-  asGitHubAccessToken,
   base64ToArrayBuffer,
   computeHmac,
   decryptData,
@@ -209,10 +208,10 @@ export async function checkVaultConfiguredUseCase(
   }
 
   const provider = getSyncProvider(mode);
+  const decryptedToken = await getGithubToken(mode);
   return await provider.isConfigured({
     gistId: acc.githubConfig.gistId || undefined,
-    token: acc.githubConfig.githubTokenEncrypted
-      ? asGitHubAccessToken(acc.githubConfig.githubTokenEncrypted)
-      : undefined,
+    token: decryptedToken || undefined,
+    hasStoredEncryptedToken: Boolean(acc.githubConfig.githubTokenEncrypted),
   });
 }

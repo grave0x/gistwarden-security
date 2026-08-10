@@ -51,6 +51,10 @@ export class GithubGistProvider implements ISyncProvider {
   }
 
   async isConfigured(options?: SyncOptions): Promise<boolean> {
-    return Promise.resolve(!!options?.token || !!options?.gistId);
+    return Promise.resolve(
+      !!options?.token ||
+        Boolean(options?.hasStoredEncryptedToken) ||
+        !!options?.gistId,
+    );
   }
 }

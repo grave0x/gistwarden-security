@@ -396,128 +396,117 @@ export async function unlock(
     return err(accSettingsRes.error);
   }
   const accSettings = accSettingsRes.value;
-  const githubConfig = accSettings.githubConfig;
+  let githubConfig = accSettings.githubConfig;
   let saltBase64 = accSettings.masterPasswordConfig.salt;
-  let key: CryptoKey | null = null;
   clearDerivedKey();
 
-  // A. Nếu có salt cục bộ, derive key và giải mã Token
-  if (saltBase64) {
-    const keyRes = await getOrDeriveKey(password, saltBase64);
-    if (keyRes.isErr()) {
-      clearDerivedKey();
-      await recordMasterPasswordFailure(attempts, saltBase64 || secSalt);
-      return err(keyRes.error);
-    }
-    key = keyRes.value;
-    if (!key) {
-      clearDerivedKey();
-      await recordMasterPasswordFailure(attempts, saltBase64 || secSalt);
-      return err("login_error_wrong_mp");
-    }
-    if (githubConfig.githubTokenEncrypted && githubConfig.githubTokenIv) {
-      const decryptRes = await decryptData(
-        githubConfig.githubTokenEncrypted,
-        githubConfig.githubTokenIv,
-        key,
-      );
-      if (decryptRes.isErr()) {
-        logger.storage.warn("Failed to decrypt githubToken");
-        clearDerivedKey();
-        await recordMasterPasswordFailure(attempts, saltBase64 || secSalt);
-        return err(decryptRes.error);
-      }
-    }
-  }
-
-  // Check provider configuration after token decryption
-  const isReady = await checkVaultConfiguredUseCase(settingsStore.vaultMode, accSettings);
-  if (!isReady) {
-    clearDerivedKey();
-    await recordMasterPasswordFailure(attempts, saltBase64 || secSalt);
-    return err("login_error_invalid_token");
-  }
-
-  // B. Đọc cache hoặc tải Gist content
+  // A. Đọc cache hoặc tải Gist content trước để trích xuất Salt từ Remote Gist (nếu có)
   const gistRes = await resolveGistContent();
-  if (gistRes.isErr()) {
-    clearDerivedKey();
-    await recordMasterPasswordFailure(attempts, saltBase64 || secSalt);
-    return err(gistRes.error);
-  }
-  const { content: existingGistContent, salt: extractedSalt } = gistRes.value;
-  if (extractedSalt && !saltBase64) {
-    saltBase64 = extractedSalt;
-    const updatedMpConfig = {
-      ...accSettings.masterPasswordConfig,
-      salt: saltBase64,
-    };
-    await updateAccountSettings(
-      { masterPasswordConfig: updatedMpConfig },
-      settingsStore.vaultMode,
-    );
-    setAccountStore("masterPasswordConfig", updatedMpConfig);
+  let existingGistContent = "";
+  if (gistRes.isOk()) {
+    existingGistContent = gistRes.value.content || "";
+    const extractedSalt = gistRes.value.salt;
+    if (extractedSalt && extractedSalt !== saltBase64) {
+      saltBase64 = extractedSalt;
+      const updatedMpConfig = {
+        ...accSettings.masterPasswordConfig,
+        salt: saltBase64,
+      };
+      await updateAccountSettings(
+        { masterPasswordConfig: updatedMpConfig },
+        settingsStore.vaultMode,
+      );
+      setAccountStore("masterPasswordConfig", updatedMpConfig);
+    }
   }
 
-  // C. Nếu chưa có salt, trả về lỗi không tìm thấy Gist
+  // B. Nếu chưa có salt (cả cục bộ lẫn remote Gist), trả về lỗi không tìm thấy Gist
   if (!saltBase64) {
     clearDerivedKey();
     await recordMasterPasswordFailure(attempts, saltBase64 || secSalt);
     return err("github_error_gist_not_found");
   }
 
-  // D. Đảm bảo key đã được derive
-  if (!key) {
-    const keyRes = await getOrDeriveKey(password, saltBase64);
-    if (keyRes.isErr()) {
-      clearDerivedKey();
-      await recordMasterPasswordFailure(attempts, saltBase64);
-      return err(keyRes.error);
-    }
-    key = keyRes.value;
+  // C. Derive Key từ Password và Salt mới nhất
+  const keyRes = await getOrDeriveKey(password, saltBase64);
+  if (keyRes.isErr()) {
+    clearDerivedKey();
+    await recordMasterPasswordFailure(attempts, saltBase64 || secSalt);
+    return err(keyRes.error);
   }
+  const key = keyRes.value;
   if (!key) {
-    await recordMasterPasswordFailure(attempts, saltBase64);
-    return err("settings_error_mp_fail");
+    clearDerivedKey();
+    await recordMasterPasswordFailure(attempts, saltBase64 || secSalt);
+    return err("login_error_wrong_mp");
   }
 
-  // E. Onboarding token mã hóa
-  const activeToken = await getGithubToken(settingsStore.vaultMode);
-  if (
-    activeToken &&
-    (!githubConfig.githubTokenEncrypted || !githubConfig.githubTokenIv)
-  ) {
-    const encryptRes = await encryptData(activeToken, key);
-    if (encryptRes.isErr()) {
-      clearDerivedKey();
-      await recordMasterPasswordFailure(attempts, saltBase64);
-      return err(encryptRes.error);
-    }
-    const updatedGithubConfig = {
-      ...githubConfig,
-      githubTokenEncrypted: encryptRes.value.ciphertext,
-      githubTokenIv: encryptRes.value.iv,
-    };
-    await updateAccountSettings(
-      { githubConfig: updatedGithubConfig },
-      settingsStore.vaultMode,
-    );
-    setAccountStore("githubConfig", updatedGithubConfig);
-    await removeSessionItem(SESSION_KEY_PENDING_GITHUB_TOKEN);
-  }
-
-  // F. Giải mã két sắt từ Gist
+  // D. Giải mã Két sắt trước để đảm bảo Master Password nhập vào là chính xác
   if (!existingGistContent) {
     clearDerivedKey();
-    await recordMasterPasswordFailure(attempts, saltBase64);
+    await recordMasterPasswordFailure(attempts, saltBase64 || secSalt);
     return err("github_error_gist_not_found");
   }
 
   const decryptVaultRes = await decryptGistVault(existingGistContent, key);
   if (decryptVaultRes.isErr()) {
     clearDerivedKey();
-    await recordMasterPasswordFailure(attempts, saltBase64);
+    await recordMasterPasswordFailure(attempts, saltBase64 || secSalt);
     return err(decryptVaultRes.error);
+  }
+
+  // E. Giải mã / Kiểm tra Token GitHub (nếu có)
+  if (githubConfig.githubTokenEncrypted && githubConfig.githubTokenIv) {
+    const decryptTokenRes = await decryptData(
+      githubConfig.githubTokenEncrypted,
+      githubConfig.githubTokenIv,
+      key,
+    );
+    if (decryptTokenRes.isErr()) {
+      logger.storage.warn(
+        "Failed to decrypt githubToken with current key, clearing invalid encrypted token config",
+      );
+      const clearedGithubConfig = {
+        ...githubConfig,
+        githubTokenEncrypted: "",
+        githubTokenIv: "",
+      };
+      await updateAccountSettings(
+        { githubConfig: clearedGithubConfig },
+        settingsStore.vaultMode,
+      );
+      setAccountStore("githubConfig", clearedGithubConfig);
+      githubConfig = clearedGithubConfig;
+    }
+  }
+
+  // Check provider configuration
+  const isReady = await checkVaultConfiguredUseCase(
+    settingsStore.vaultMode,
+    { ...accSettings, githubConfig },
+  );
+  setAccountStore("githubConfigured", isReady);
+
+  // F. Onboarding token mã hóa nếu đang có pending token
+  const activeToken = await getGithubToken(settingsStore.vaultMode);
+  if (
+    activeToken &&
+    (!githubConfig.githubTokenEncrypted || !githubConfig.githubTokenIv)
+  ) {
+    const encryptRes = await encryptData(activeToken, key);
+    if (encryptRes.isOk()) {
+      const updatedGithubConfig = {
+        ...githubConfig,
+        githubTokenEncrypted: encryptRes.value.ciphertext,
+        githubTokenIv: encryptRes.value.iv,
+      };
+      await updateAccountSettings(
+        { githubConfig: updatedGithubConfig },
+        settingsStore.vaultMode,
+      );
+      setAccountStore("githubConfig", updatedGithubConfig);
+      await removeSessionItem(SESSION_KEY_PENDING_GITHUB_TOKEN);
+    }
   }
 
   await resetMasterPasswordSecurity(saltBase64);
