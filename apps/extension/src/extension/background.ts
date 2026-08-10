@@ -56,7 +56,6 @@ async function initSession() {
       await resetAccountSettings(activeMode);
       await clearSession();
     }
-    await setSessionItem(SESSION_KEY_SESSION_INITIALIZED, true);
   }
 
   await syncLockStateBadge();

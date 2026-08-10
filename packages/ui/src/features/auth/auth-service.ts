@@ -46,6 +46,7 @@ import {
 } from "@gistwarden/domain";
 import { getSyncProvider } from "@gistwarden/network";
 import {
+  checkVaultConfiguredUseCase,
   clearDerivedKey,
   createNewVaultUseCase,
   downloadFromGistRoute,
@@ -57,6 +58,7 @@ import {
   setDerivedKey,
   uploadToGistRoute,
   uploadToLocalRoute,
+  validateSecurityConfigUseCase,
 } from "@gistwarden/orchestrator";
 import {
   broadcastMessage,
@@ -134,6 +136,7 @@ async function setupUnlockedSession(
     githubConfigured: true,
     isLocked: false,
     sessionUnlocked: true,
+    hasUnlockedInSession: true,
   });
   setUiStore({
     view: finalView,
@@ -317,27 +320,17 @@ export async function verifyMasterPasswordSecurity(): Promise<
   const secSalt = config.salt;
 
   if (secSalt) {
-    if (
-      config.failedAttempts > 0 || config.lockoutUntil > 0 || config.failedMac
-    ) {
-      const macRes = await computeHmac(
-        `${config.failedAttempts}:${config.lockoutUntil}`,
-        secSalt,
-      );
-      const expectedMac = macRes.isOk() ? macRes.value : "";
-      if (!config.failedMac || config.failedMac !== expectedMac) {
-        logger.storage.error(
-          "Master password security data tampered! Logging out.",
-        );
-        await logoutVaultSession();
-        return err("login_error_mp_tampered");
-      }
-    }
+    await validateSecurityConfigUseCase(settingsStore.vaultMode, secSalt);
+    const updatedAccRes = await getAccountSettings(settingsStore.vaultMode);
+    const updatedConfig = updatedAccRes.isOk()
+      ? updatedAccRes.value.masterPasswordConfig
+      : config;
 
     const now = Date.now();
-    if (now < config.lockoutUntil) {
+    if (now < updatedConfig.lockoutUntil) {
       return err("login_error_mp_cooldown");
     }
+    return ok({ attempts: updatedConfig.failedAttempts, salt: secSalt });
   }
 
   return ok({ attempts: config.failedAttempts, salt: secSalt });
@@ -438,10 +431,7 @@ export async function unlock(
   }
 
   // Check provider configuration after token decryption
-  const currentToken = await getGithubToken(settingsStore.vaultMode);
-  const isReady = await provider.isConfigured({
-    token: currentToken || undefined,
-  });
+  const isReady = await checkVaultConfiguredUseCase(settingsStore.vaultMode, accSettings);
   if (!isReady) {
     clearDerivedKey();
     await recordMasterPasswordFailure(attempts, saltBase64 || secSalt);

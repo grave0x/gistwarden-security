@@ -26,6 +26,11 @@ import type {
   VaultPayload,
 } from "@gistwarden/domain";
 
+import {
+  checkVaultConfiguredUseCase,
+  validateSecurityConfigUseCase,
+} from "@gistwarden/orchestrator";
+
 export interface ExtensionSettingsStore {
   language: "en" | "vi";
   welcomeAccepted: boolean;
@@ -51,6 +56,7 @@ export interface AccountStore {
   isLoaded: boolean;
   isLocked: boolean;
   sessionUnlocked: boolean;
+  hasUnlockedInSession: boolean;
   folders: Folder[];
   vaultItems: VaultItem[];
   trashItems: TrashVaultItem[];
@@ -116,6 +122,7 @@ export const initialAccountState: Omit<AccountStore, "isLoaded"> = {
   lastSync: 0,
   isLocked: true,
   sessionUnlocked: false,
+  hasUnlockedInSession: false,
   folders: [],
   vaultItems: [],
   trashItems: [],
@@ -202,51 +209,21 @@ export async function loadAllStores(): Promise<void> {
   if (accRes.isOk()) {
     const acc = accRes.value;
     const githubConfig = acc.githubConfig || DEFAULT_GITHUB_CONFIG;
-    let pinConfig = acc.pinConfig;
-    if (pinConfig.enabled) {
-      const macRes = await computeHmac(
-        String(pinConfig.failedAttempts),
-        pinConfig.salt,
-      );
-      const expectedMac = macRes.isOk() ? macRes.value : "";
-      if (
-        !pinConfig.failedMac ||
-        pinConfig.failedMac !== expectedMac ||
-        pinConfig.failedAttempts >= 3
-      ) {
-        pinConfig = DEFAULT_PIN_CONFIG;
-        await updateAccountSettings({ pinConfig }, activeMode);
-      }
-    }
-
-    let masterPasswordConfig = acc.masterPasswordConfig ||
+    const masterPasswordConfig = acc.masterPasswordConfig ||
       DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG;
     const secSalt = masterPasswordConfig.salt || "master_password_hmac_secret";
-    if (
-      masterPasswordConfig.failedAttempts > 0 ||
-      masterPasswordConfig.lockoutUntil > 0
-    ) {
-      const macRes = await computeHmac(
-        `${masterPasswordConfig.failedAttempts}:${masterPasswordConfig.lockoutUntil}`,
-        secSalt,
-      );
-      const expectedMac = macRes.isOk() ? macRes.value : "";
-      if (
-        !masterPasswordConfig.failedMac ||
-        masterPasswordConfig.failedMac !== expectedMac
-      ) {
-        masterPasswordConfig = DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG;
-        await updateAccountSettings({ masterPasswordConfig }, activeMode);
-      }
-    }
+    await validateSecurityConfigUseCase(activeMode, secSalt);
+    const updatedAcc = (await getAccountSettings(activeMode)).unwrapOr(acc);
+
+    const isConfigured = await checkVaultConfiguredUseCase(activeMode, acc);
 
     setAccountStore({
-      gistId: githubConfig.gistId,
-      githubConfig,
-      lastSync: acc.lastSync,
-      pinConfig,
-      masterPasswordConfig,
-      githubConfigured: !!githubConfig.gistId && !!masterPasswordConfig.salt,
+      gistId: updatedAcc.githubConfig.gistId,
+      githubConfig: updatedAcc.githubConfig,
+      lastSync: updatedAcc.lastSync,
+      pinConfig: updatedAcc.pinConfig,
+      masterPasswordConfig: updatedAcc.masterPasswordConfig,
+      githubConfigured: isConfigured,
     });
   } else {
     setAccountStore({

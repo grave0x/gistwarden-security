@@ -7,6 +7,7 @@ import {
   logger,
   SESSION_KEY_DERIVED_KEY,
   SESSION_KEY_PENDING_GITHUB_TOKEN,
+  SESSION_KEY_SESSION_INITIALIZED,
   SESSION_KEY_SESSION_UNLOCKED,
   SESSION_KEYS_ON_LOCK,
   sessionManager,
@@ -334,9 +335,15 @@ export async function isSessionUnlocked(): Promise<boolean> {
   return val === "true";
 }
 
+export async function hasUnlockedInSession(): Promise<boolean> {
+  const res = await getSessionItem(SESSION_KEY_SESSION_INITIALIZED);
+  return res.isOk() && res.value === true;
+}
+
 export async function setSessionUnlocked(unlocked: boolean): Promise<void> {
   if (unlocked) {
     await setSessionItem(SESSION_KEY_SESSION_UNLOCKED, "true");
+    await setSessionItem(SESSION_KEY_SESSION_INITIALIZED, true);
   } else {
     await removeSessionItem(SESSION_KEY_SESSION_UNLOCKED);
   }

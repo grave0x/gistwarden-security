@@ -32,6 +32,7 @@ import { getAccountSettings, getGithubToken, getSessionItem, resetAccountSetting
 import { DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG } from "@gistwarden/repository";
 import { z } from "zod";
 import {
+  checkVaultConfiguredUseCase,
   downloadFromGistRoute,
   startGithubOauthRoute,
 } from "@gistwarden/orchestrator";
@@ -66,10 +67,8 @@ export const Login: Component = () => {
       setAccountStore("pinConfig", acc.pinConfig);
       setAccountStore("githubConfig", acc.githubConfig);
       setAccountStore("gistId", acc.githubConfig.gistId || "");
-      setAccountStore(
-        "githubConfigured",
-        !!acc.githubConfig.gistId && !!acc.masterPasswordConfig.salt,
-      );
+      const isConfigured = await checkVaultConfiguredUseCase(mode, acc);
+      setAccountStore("githubConfigured", isConfigured);
     }
 
     if (acc?.masterPasswordConfig.salt) {
@@ -157,8 +156,11 @@ export const Login: Component = () => {
   createEffect(() => {
     if (accountStore.isLoaded && settingsStore.isLoaded) {
       if (accountStore.pinConfig.enabled) {
-        if (settingsStore.requireMasterPasswordOnRestart) {
-          setViewMode(accountStore.sessionUnlocked ? "pin" : "masterPassword");
+        if (
+          settingsStore.requireMasterPasswordOnRestart &&
+          !accountStore.hasUnlockedInSession
+        ) {
+          setViewMode("masterPassword");
         } else {
           setViewMode("pin");
         }

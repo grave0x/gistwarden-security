@@ -21,6 +21,7 @@ import {
   getLocalItem,
   getSessionItem,
   getSessionItems,
+  hasUnlockedInSession,
   hasSessionStorage,
   isRecord,
   isSessionUnlocked,
@@ -29,6 +30,7 @@ import {
 } from "@gistwarden/repository";
 import { getSyncProvider } from "@gistwarden/network";
 import {
+  checkVaultConfiguredUseCase,
   downloadFromGistRoute,
   getSessionKey,
   notifyBackground,
@@ -51,16 +53,9 @@ import { decryptGistVault, logout } from "../features/auth/auth-service.ts";
 async function handleBrowserRestartCleanup(
   vaultTimeoutAction: string,
 ): Promise<void> {
-  if (!hasSessionStorage()) {
-    return;
-  }
-  const sessionInitRes = await getSessionItem(
-    SESSION_KEY_SESSION_INITIALIZED,
-  );
-  const sessionInitialized = sessionInitRes.isOk()
-    ? sessionInitRes.value
-    : null;
-  if (!sessionInitialized) {
+  const isInitialized = await hasUnlockedInSession();
+
+  if (!isInitialized) {
     if (vaultTimeoutAction === "logout") {
       console.debug(
         `[Store] Phát hiện khởi động lại trình duyệt và hành động là logout. Đang đăng xuất...`,
@@ -68,7 +63,6 @@ async function handleBrowserRestartCleanup(
       const activeMode = await getActiveVaultMode();
       await resetAccountSettings(activeMode);
     }
-    await setSessionItem(SESSION_KEY_SESSION_INITIALIZED, true);
   }
 }
 
@@ -235,18 +229,21 @@ export async function init(): Promise<void> {
 
   const key = await getSessionKey();
   const sessionUnlockedVal = await isSessionUnlocked();
+  const unlockedInSessionVal = await hasUnlockedInSession();
   const currentTheme = await loadAndApplyTheme();
 
   setSettingsStore({ theme: currentTheme });
 
   const decryptedToken = await getGithubToken(settingsStore.vaultMode);
-  const githubConfigured = !!accountStore.gistId ||
-    !!decryptedToken || !!accountStore.githubToken;
+  const githubConfigured = await checkVaultConfiguredUseCase(
+    settingsStore.vaultMode,
+  );
 
   setAccountStore({
     githubToken: decryptedToken || undefined,
     githubConfigured,
     sessionUnlocked: sessionUnlockedVal,
+    hasUnlockedInSession: unlockedInSessionVal,
   });
 
   setLanguage(

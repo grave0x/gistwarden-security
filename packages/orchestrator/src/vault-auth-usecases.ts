@@ -1,6 +1,7 @@
 import {
   ALARM_NAME_VAULT_TIMEOUT,
   asGistId,
+  asGitHubAccessToken,
   base64ToArrayBuffer,
   computeHmac,
   decryptData,
@@ -25,6 +26,7 @@ import {
 } from "@gistwarden/domain";
 import { getSyncProvider } from "@gistwarden/network";
 import {
+  type AccountSettings,
   DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
   getAccountSettings,
   getActiveVaultMode,
@@ -191,4 +193,30 @@ export async function logoutSessionUseCase(mode: VaultMode): Promise<void> {
   await resetAccountSettings(mode);
   await clearAlarm(ALARM_NAME_VAULT_TIMEOUT);
   await broadcastMessage({ type: MSG_VAULT_LOGGED_OUT });
+}
+
+export async function checkVaultConfiguredUseCase(
+  mode: VaultMode,
+  accountSettings?: AccountSettings | null,
+): Promise<boolean> {
+  if (mode === "local_storage") {
+    return true;
+  }
+
+  const acc = accountSettings || (await getAccountSettings(mode)).match(
+    (val) => val,
+    () => null,
+  );
+
+  if (!acc || !acc.masterPasswordConfig.salt) {
+    return false;
+  }
+
+  const provider = getSyncProvider(mode);
+  return await provider.isConfigured({
+    gistId: acc.githubConfig.gistId || undefined,
+    token: acc.githubConfig.githubTokenEncrypted
+      ? asGitHubAccessToken(acc.githubConfig.githubTokenEncrypted)
+      : undefined,
+  });
 }

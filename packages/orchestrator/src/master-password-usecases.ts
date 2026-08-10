@@ -1,4 +1,5 @@
 import {
+  computeHmac,
   deriveKey,
   encryptData,
   generateSalt,
@@ -8,7 +9,9 @@ import {
   type VaultItem,
 } from "@gistwarden/domain";
 import {
+  DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
   DEFAULT_PIN_CONFIG,
+  getAccountSettings,
   getActiveVaultMode,
   getGithubToken,
   type GithubConfig,
@@ -116,4 +119,59 @@ export async function changeMasterPasswordUseCase(
     updatedGithubConfig,
     updatedMpConfig,
   });
+}
+
+export async function validateSecurityConfigUseCase(
+  mode: VaultMode,
+  secSalt: string,
+): Promise<void> {
+  const accRes = await getAccountSettings(mode);
+  if (accRes.isErr()) return;
+  const acc = accRes.value;
+
+  let pinConfig = { ...acc.pinConfig };
+  let masterPasswordConfig = { ...acc.masterPasswordConfig };
+  let updated = false;
+
+  if (
+    pinConfig.failedAttempts > 0 ||
+    pinConfig.failedMac
+  ) {
+    const macRes = await computeHmac(
+      String(pinConfig.failedAttempts),
+      pinConfig.salt || secSalt,
+    );
+    const expectedMac = macRes.isOk() ? macRes.value : "";
+    if (
+      !pinConfig.failedMac ||
+      pinConfig.failedMac !== expectedMac ||
+      pinConfig.failedAttempts >= 3
+    ) {
+      pinConfig = DEFAULT_PIN_CONFIG;
+      updated = true;
+    }
+  }
+
+  if (
+    masterPasswordConfig.failedAttempts > 0 ||
+    masterPasswordConfig.lockoutUntil > 0 ||
+    masterPasswordConfig.failedMac
+  ) {
+    const macRes = await computeHmac(
+      `${masterPasswordConfig.failedAttempts}:${masterPasswordConfig.lockoutUntil}`,
+      secSalt,
+    );
+    const expectedMac = macRes.isOk() ? macRes.value : "";
+    if (
+      !masterPasswordConfig.failedMac ||
+      masterPasswordConfig.failedMac !== expectedMac
+    ) {
+      masterPasswordConfig = DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG;
+      updated = true;
+    }
+  }
+
+  if (updated) {
+    await updateAccountSettings({ pinConfig, masterPasswordConfig }, mode);
+  }
 }
