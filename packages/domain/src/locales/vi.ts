@@ -670,7 +670,7 @@ export default {
     "Passkey FIDO2 vẫn hoạt động bình thường trên Local Vault của thiết bị hiện tại. Tuy nhiên, tuyệt đối KHÔNG dùng chung hay sao chép cùng một Passkey giữa Local Vault và Cloud Sync Vault trên nhiều thiết bị. Sự lệch nhịp Bộ đếm (Signature Counter) giữa các két sắt không đồng bộ sẽ khiến máy chủ nghi ngờ bị hack và CHẶN ĐĂNG NHẬP PASSKEY. Lời khuyên: Nếu muốn dùng ở nhiều thiết bị, hãy đăng ký các Passkey riêng biệt trực tiếp trên từng máy!",
   guide_start_local_card1_title: "1. Lưu trữ Mã hóa Cục bộ 100%",
   guide_start_local_card1_desc:
-    "Két mật khẩu được mã hóa bằng AES-256-GCM và lưu duy nhất trong bộ nhớ trình duyệt. Không có bất kỳ dữ liệu nào gửi lên máy chủ hay GitHub.",
+    "Két mật khẩu được mã hóa bằng AES-256-GCM và lưu duy nhất trong bộ nhớ trình duyệt. Không có bất kỳ dữ liệu nào được gửi lên máy chủ hay các dịch vụ lưu trữ bên ngoài.",
   guide_start_local_card2_title: "2. Nguy cơ Mất dữ liệu vĩnh viễn",
   guide_start_local_card2_desc:
     "Do không lưu trên Cloud, việc dọn dẹp dữ liệu web hoặc gỡ ứng dụng sẽ xóa sạch Két sắt. Dữ liệu một khi đã mất sẽ KHÔNG thể khôi phục!",
@@ -784,7 +784,7 @@ export default {
   // Getting Started Guides
   guide_start_ov_lead: "{APP_NAME} là giải pháp két mật khẩu cá nhân mã hóa Zero-Knowledge, tự động đồng bộ hóa đám mây riêng tư thông qua GitHub Gist.",
   guide_start_ov_card1_title: "Mã Hóa Bảo Mật Tuyệt Đối (Zero-Knowledge)",
-  guide_start_ov_card1_desc: "Toàn bộ dữ liệu mật khẩu của bạn đều được mã hóa trực tiếp trên thiết bị của bạn trước khi truyền đi hoặc lưu trữ. Tuyệt đối không ai (kể cả nhà phát triển hay GitHub) có thể đọc được dữ liệu nếu không có Mật khẩu chính của bạn.",
+  guide_start_ov_card1_desc: "Toàn bộ dữ liệu mật khẩu của bạn đều được mã hóa trực tiếp trên thiết bị của bạn trước khi truyền đi hoặc lưu trữ. Tuyệt đối không ai (kể cả nhà phát triển hay nhà cung cấp dịch vụ lưu trữ) có thể đọc được dữ liệu nếu không có Mật khẩu chính của bạn.",
   guide_start_ov_card2_title: "Đồng Bộ Đám Mây Cá Nhân Riêng Tư",
   guide_start_ov_card2_desc: "Thay vì gửi dữ liệu về máy chủ trung gian của bên thứ 3, {APP_NAME} trực tiếp đồng bộ dữ liệu vào một tệp bí mật (Private Gist) trên tài khoản GitHub cá nhân của chính bạn.",
   guide_start_ov_card3_title: "Đăng Nhập Không Mật Khẩu (Passkeys)",
@@ -818,7 +818,7 @@ export default {
   guide_start_pin_step3_title: "3. Mở khóa nhanh bằng PIN khi két bị khóa",
   guide_start_pin_step3_desc: "Khi két mật khẩu bị khóa theo thời gian chờ, bạn chỉ cần gõ Mã PIN và nhấn 'Mở khóa'. Chìa khóa mã hóa sẽ tự động mở mà không cần gõ lại Mật khẩu chính.",
   guide_start_pin_note_title: "Lưu ý bảo mật quan trọng về Mã PIN:",
-  guide_start_pin_note_desc: "Mã PIN chỉ được lưu an toàn trong bộ nhớ thiết bị. Nếu bạn nhập sai Mã PIN 3 lần liên tiếp, hệ thống sẽ tự động hủy Mã PIN và đăng xuất để bảo vệ an toàn. Đồng thời, khi bạn Đăng xuất tài khoản GitHub, Mã PIN cũng sẽ tự động được xóa bỏ.",
+  guide_start_pin_note_desc: "Mã PIN chỉ được lưu an toàn trong bộ nhớ thiết bị. Nếu bạn nhập sai Mã PIN 3 lần liên tiếp, hệ thống sẽ tự động hủy Mã PIN và đăng xuất để bảo vệ an toàn. Đồng thời, khi bạn Đăng xuất tài khoản lưu trữ, Mã PIN cũng sẽ tự động được xóa bỏ.",
 
   // Passkey & TOTP Authenticator Guides
   guide_passkey_concept_lead: "Passkey (chuẩn FIDO2 / WebAuthn) là giải pháp đăng nhập không dùng mật khẩu bảo mật nhất hiện nay, chống lừa đảo (Anti-Phishing) tuyệt đối.",
@@ -1000,7 +1000,7 @@ export default {
   welcome_warning_bold:
     "Quên Mật khẩu chính sẽ làm MẤT DỮ LIỆU VĨNH VIỄN, KHÔNG thể khôi phục.",
   welcome_warning_sub:
-    "Chúng tôi không lưu trữ mật khẩu của bạn trên bất kỳ máy chủ nào và GitHub cũng chỉ thấy dữ liệu két sắt dưới dạng các ký tự mã hóa vô nghĩa. (Lưu ý: Bạn vẫn có thể đổi Mật khẩu chính trong phần Cài đặt bất cứ lúc nào nếu muốn).",
+    "Chúng tôi không lưu trữ mật khẩu của bạn trên bất kỳ máy chủ nào và nhà cung cấp dịch vụ lưu trữ cũng chỉ thấy dữ liệu két sắt dưới dạng các ký tự mã hóa vô nghĩa. (Lưu ý: Bạn vẫn có thể đổi Mật khẩu chính trong phần Cài đặt bất cứ lúc nào nếu muốn).",
   welcome_checkbox_label:
     "Tôi đã hiểu rằng nếu quên Mật khẩu chính, tôi chấp nhận mất toàn bộ dữ liệu vĩnh viễn và không thể khôi phục.",
   welcome_btn_continue: "Bắt đầu thiết lập",

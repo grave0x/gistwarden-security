@@ -664,7 +664,7 @@ export default {
     "FIDO2 Passkeys work completely fine on a single device's Local Vault. However, do NOT share or copy the exact same Passkey between a Local Vault and a Cloud Sync Vault across multiple devices. Signature Counter mismatches between unsynced vaults will trigger server security flags and BLOCK your Passkey login. Recommendation: If you use multiple devices, register separate Passkeys directly on each device!",
   guide_start_local_card1_title: "1. Pure Local Encrypted Storage",
   guide_start_local_card1_desc:
-    "Your vault payload is encrypted using AES-256-GCM and stored only in browser storage. No data is ever sent to remote servers or GitHub.",
+    "Your vault payload is encrypted using AES-256-GCM and stored only in browser storage. No data is ever sent to remote servers or external storage services.",
   guide_start_local_card2_title: "2. Risk of Data Loss",
   guide_start_local_card2_desc:
     "Because there is no cloud backup, clearing browser data or resetting the extension will permanently remove your vault. Unrecoverable if deleted!",
@@ -778,7 +778,7 @@ export default {
   // Getting Started Guides
   guide_start_ov_lead: "{APP_NAME} is a Zero-Knowledge encrypted personal password vault solution, automatically syncing to your private personal cloud via GitHub Gist.",
   guide_start_ov_card1_title: "Zero-Knowledge Encryption Security",
-  guide_start_ov_card1_desc: "All vault data is encrypted directly on your device before transmission or storage. Absolutely no one (including developers or GitHub) can read your data without your Master Password.",
+  guide_start_ov_card1_desc: "All vault data is encrypted directly on your device before transmission or storage. Absolutely no one (including developers or cloud storage providers) can read your data without your Master Password.",
   guide_start_ov_card2_title: "Private Personal Cloud Sync",
   guide_start_ov_card2_desc: "Instead of sending data to third-party servers, {APP_NAME} syncs data directly into a Private Gist on your personal GitHub account.",
   guide_start_ov_card3_title: "Passwordless Login (Passkeys)",
@@ -812,7 +812,7 @@ export default {
   guide_start_pin_step3_title: "3. Quick unlock with PIN when vault locks",
   guide_start_pin_step3_desc: "When the vault is locked due to timeout, simply type your PIN code and click Unlock. Encryption keys will be restored smoothly without typing your full Master Password.",
   guide_start_pin_note_title: "Important Security Note on PIN:",
-  guide_start_pin_note_desc: "PIN code is stored securely in local device storage. If you enter incorrect PIN 3 times, PIN mode is automatically disabled and you will be logged out to prevent brute-force attempts. Logging out of GitHub also removes PIN data automatically.",
+  guide_start_pin_note_desc: "PIN code is stored securely in local device storage. If you enter incorrect PIN 3 times, PIN mode is automatically disabled and you will be logged out to prevent brute-force attempts. Logging out of your account also removes PIN data automatically.",
 
   // Passkey & TOTP Authenticator Guides
   guide_passkey_concept_lead: "Passkey (FIDO2 / WebAuthn standard) is the most secure passwordless login solution today, providing absolute Anti-Phishing protection.",
@@ -992,7 +992,7 @@ export default {
   welcome_warning_bold:
     "Forgetting your Master Password results in PERMANENT DATA LOSS with NO recovery.",
   welcome_warning_sub:
-    "We do not store your password on any server, and GitHub only sees your vault data as meaningless encrypted cipher text. (Note: You can still change your Master Password anytime in Settings if needed).",
+    "We do not store your password on any server, and storage providers only see your vault data as meaningless encrypted cipher text. (Note: You can still change your Master Password anytime in Settings if needed).",
   welcome_checkbox_label:
     "I understand and agree that if I forget my Master Password, I accept losing all my data permanently.",
   welcome_btn_continue: "Get Started",
