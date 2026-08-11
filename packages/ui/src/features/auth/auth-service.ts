@@ -19,7 +19,7 @@ import {
   checkVaultConfiguredUseCase,
   clearDerivedKey,
   createNewVaultUseCase,
-  downloadFromGistRoute,
+  downloadVaultRoute,
   getOrDeriveKey,
   getSessionKey,
   lockSessionUseCase,
@@ -131,7 +131,7 @@ async function setupUnlockedSession(
   return ok();
 }
 
-async function resolveGistContent(): Promise<
+async function resolveEncryptedVaultContent(): Promise<
   Result<{ content: string; salt?: string }, TranslationKey>
 > {
   let content = "";
@@ -141,7 +141,7 @@ async function resolveGistContent(): Promise<
   if (typeof cachedVal === "string" && cachedVal) {
     content = cachedVal;
   } else {
-    const sendResult = await sendBackgroundMessage(downloadFromGistRoute, {
+    const sendResult = await sendBackgroundMessage(downloadVaultRoute, {
       mode: settingsStore.vaultMode,
     });
     if (sendResult.isErr()) {
@@ -203,7 +203,7 @@ export async function fetchEncryptedVaultContent(): Promise<
     return ok(cachedVal);
   }
 
-  const sendResult = await sendBackgroundMessage(downloadFromGistRoute, {
+  const sendResult = await sendBackgroundMessage(downloadVaultRoute, {
     mode: settingsStore.vaultMode,
   });
   if (sendResult.isOk()) {
@@ -225,7 +225,7 @@ export async function fetchEncryptedVaultContent(): Promise<
   return ok(null);
 }
 
-export async function decryptGistVault(
+export async function decryptVaultPayload(
   content: string,
   key: CryptoKey,
 ): Promise<
@@ -371,8 +371,6 @@ export async function resetMasterPasswordSecurity(salt: string): Promise<void> {
 export async function unlock(
   password: string,
 ): Promise<Result<void, TranslationKey>> {
-  const _provider = getSyncProvider(settingsStore.vaultMode);
-
   const secRes = await verifyMasterPasswordSecurity();
   if (secRes.isErr()) {
     return err(secRes.error);
@@ -389,12 +387,12 @@ export async function unlock(
   let saltBase64 = accSettings.masterPasswordConfig.salt;
   clearDerivedKey();
 
-  // A. Đọc cache hoặc tải Gist content trước để trích xuất Salt từ Remote Gist (nếu có)
-  const gistRes = await resolveGistContent();
-  let existingGistContent = "";
-  if (gistRes.isOk()) {
-    existingGistContent = gistRes.value.content || "";
-    const extractedSalt = gistRes.value.salt;
+  // A. Đọc cache hoặc tải Encrypted Vault content trước để trích xuất Salt từ Remote/Local Vault (nếu có)
+  const vaultRes = await resolveEncryptedVaultContent();
+  let existingVaultContent = "";
+  if (vaultRes.isOk()) {
+    existingVaultContent = vaultRes.value.content || "";
+    const extractedSalt = vaultRes.value.salt;
     if (extractedSalt && extractedSalt !== saltBase64) {
       saltBase64 = extractedSalt;
       const updatedMpConfig = {
@@ -409,11 +407,11 @@ export async function unlock(
     }
   }
 
-  const notFoundErrorKey: TranslationKey = gistRes.isErr()
-    ? gistRes.error
+  const notFoundErrorKey: TranslationKey = vaultRes.isErr()
+    ? vaultRes.error
     : "vault_error_not_found";
 
-  // B. Nếu chưa có salt (cả cục bộ lẫn remote Gist), trả về lỗi không tìm thấy Vault/Gist
+  // B. Nếu chưa có salt (cả cục bộ lẫn remote), trả về lỗi không tìm thấy Vault
   if (!saltBase64) {
     clearDerivedKey();
     return err(notFoundErrorKey);
@@ -434,12 +432,12 @@ export async function unlock(
   }
 
   // D. Giải mã Két sắt trước để đảm bảo Master Password nhập vào là chính xác
-  if (!existingGistContent) {
+  if (!existingVaultContent) {
     clearDerivedKey();
     return err(notFoundErrorKey);
   }
 
-  const decryptVaultRes = await decryptGistVault(existingGistContent, key);
+  const decryptVaultRes = await decryptVaultPayload(existingVaultContent, key);
   if (decryptVaultRes.isErr()) {
     clearDerivedKey();
     await recordMasterPasswordFailure(attempts, saltBase64 || secSalt);
@@ -504,7 +502,7 @@ export async function unlock(
 
   const { folders, items, trash, targetView, selectedItem } =
     decryptVaultRes.value;
-  await setSessionItem(SESSION_KEY_ENCRYPTED_VAULT, existingGistContent);
+  await setSessionItem(SESSION_KEY_ENCRYPTED_VAULT, existingVaultContent);
   return await setupUnlockedSession(
     key,
     { folders, items, trash },
@@ -525,18 +523,22 @@ export async function unlockVaultWithKey(
     return err("login_error_invalid_token");
   }
 
-  const gistRes = await resolveGistContent();
-  if (gistRes.isErr()) {
+  const vaultRes = await resolveEncryptedVaultContent();
+  if (vaultRes.isErr()) {
     sessionManager.clearKey();
-    return err(gistRes.error);
+    return err(vaultRes.error);
   }
-  const { content: existingGistContent } = gistRes.value;
-  if (!existingGistContent) {
+  const { content: existingVaultContent } = vaultRes.value;
+  if (!existingVaultContent) {
     sessionManager.clearKey();
-    return err("github_error_gist_not_found");
+    return err(
+      settingsStore.vaultMode === "local_storage"
+        ? "vault_error_not_found"
+        : "github_error_gist_not_found",
+    );
   }
 
-  const decryptVaultRes = await decryptGistVault(existingGistContent, key);
+  const decryptVaultRes = await decryptVaultPayload(existingVaultContent, key);
   if (decryptVaultRes.isErr()) {
     sessionManager.clearKey();
     return err(decryptVaultRes.error);
@@ -544,7 +546,7 @@ export async function unlockVaultWithKey(
 
   const { folders, items, trash, targetView, selectedItem } =
     decryptVaultRes.value;
-  await setSessionItem(SESSION_KEY_ENCRYPTED_VAULT, existingGistContent);
+  await setSessionItem(SESSION_KEY_ENCRYPTED_VAULT, existingVaultContent);
   return await setupUnlockedSession(
     key,
     { folders, items, trash },
@@ -780,7 +782,7 @@ export async function reloadVaultItems(): Promise<void> {
   const contentRes = await fetchEncryptedVaultContent();
   if (contentRes.isErr() || !contentRes.value) return;
 
-  const decryptVaultRes = await decryptGistVault(contentRes.value, key);
+  const decryptVaultRes = await decryptVaultPayload(contentRes.value, key);
   if (decryptVaultRes.isErr()) return;
 
   const { items, trash } = decryptVaultRes.value;

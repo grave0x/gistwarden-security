@@ -125,6 +125,10 @@ export const Login: Component = () => {
       }
     }
 
+    if (statusResult.status === "new") {
+      setAccountStore("vaultConfigured", false);
+    }
+
     return statusResult.status;
   };
 

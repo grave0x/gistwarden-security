@@ -243,7 +243,7 @@ export const deleteGistRoute = defineRoute({
   internalOnly: true,
 });
 
-export const downloadFromGistRoute = defineRoute({
+export const downloadVaultRoute = defineRoute({
   type: MSG_DOWNLOAD_FROM_GIST,
   payloadSchema: DownloadFromGistMsgSchema,
   responseSchema: DownloadGistResponseSchema,

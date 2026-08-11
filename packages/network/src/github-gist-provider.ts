@@ -1,13 +1,15 @@
 import {
   asGistId,
-  asGitHubAccessToken,
   type GistId,
   type GitHubAccessToken,
   safeJsonParse,
   type TranslationKey,
 } from "@gistwarden/domain";
-import { GistPayloadSchema } from "@gistwarden/repository";
-import type { Result } from "neverthrow";
+import {
+  GistPayloadSchema,
+  resetAccountSettings,
+} from "@gistwarden/repository";
+import { err, type Result } from "neverthrow";
 import {
   deleteGist,
   downloadFromGist,
@@ -31,7 +33,7 @@ export class GithubGistProvider implements ISyncProvider {
   readonly name = "GitHub Gist";
 
   /**
-   * Tải nội dung Vault mã hóa lên Gist trên GitHub.
+   * Tải chuỗi mã hóa Vault lên GitHub Gist.
    */
   async upload(
     content: string,
@@ -41,7 +43,7 @@ export class GithubGistProvider implements ISyncProvider {
   }
 
   /**
-   * Tải nội dung Vault mã hóa từ Gist trên GitHub về.
+   * Tải chuỗi mã hóa Vault từ GitHub Gist.
    */
   async download(
     options?: SyncOptions,
@@ -50,63 +52,45 @@ export class GithubGistProvider implements ISyncProvider {
   }
 
   /**
-   * Xóa Gist mã hóa khỏi tài khoản GitHub.
+   * Xóa file Gist khỏi GitHub.
    */
   async delete(
-    targetId?: GistId,
+    targetGistId?: GistId,
     options?: SyncOptions,
   ): Promise<Result<void, TranslationKey>> {
-    return await deleteGist(targetId || asGistId(""), options?.token);
+    return await deleteGist(targetGistId || asGistId(""), options?.token);
   }
 
   /**
-   * Xác thực GitHub Access Token bằng cách kiểm tra tài khoản người dùng qua API GitHub.
+   * Kiểm tra và xác thực Token GitHub API.
    */
   async validateConfig(
     configToken?: GitHubAccessToken,
   ): Promise<Result<SyncValidationResult, TranslationKey>> {
-    return await validateToken(configToken || asGitHubAccessToken(""));
+    if (!configToken) {
+      return err("github_error_missing_token");
+    }
+    return await validateToken(configToken);
   }
 
   /**
-   * Kiểm tra xem đã có Token, Gist ID hoặc thông tin cấu hình GitHub được lưu trữ chưa.
+   * Kiểm tra GitHub Gist đã được cấu hình đủ điều kiện hay chưa.
    */
   async isConfigured(options?: SyncOptions): Promise<boolean> {
     return Promise.resolve(
-      !!options?.token ||
-        Boolean(options?.hasStoredEncryptedToken) ||
-        Boolean(options?.hasStoredSalt) ||
-        !!options?.gistId,
+      Boolean(options?.hasStoredEncryptedToken || options?.token),
     );
   }
 
   /**
    * Kiểm tra đa hình trạng thái của Cloud Vault (Gist):
-   * - Đã có salt địa phương -> "exists" (nhập Master Password)
-   * - Chưa có token -> "exists" (hiển thị form kết nối GitHub)
-   * - Có token: Tải Gist từ xa để kiểm tra tồn tại và lấy salt/gistId mới nhất
-   * - Gist không tồn tại từ xa (`github_error_gist_not_found`) -> "new" (cần khởi tạo Gist mới)
+   * 1. Chưa có Token -> "exists" (hiển thị form nhập Token / OAuth)
+   * 2. Đã có Token: Gọi download() kiểm tra Gist thực tế từ xa
+   * 3. Gist tồn tại -> Trả về "exists", salt, gistId
+   * 4. Gist KHÔNG tồn tại trên GitHub (github_error_gist_not_found) -> Tự dọn dẹp account_settings rác và trả về "new"
+   * 5. Lỗi mạng / offline mà đã có salt địa phương -> Trả về "exists" để dùng offline
    */
   async checkVaultStatus(options?: SyncOptions): Promise<SyncStatusResult> {
-    if (options?.hasStoredSalt) {
-      if (options.gistId && options.token) {
-        const downloadRes = await this.download(options);
-        if (downloadRes.isOk() && downloadRes.value.content) {
-          const payloadJsonRes = safeJsonParse(downloadRes.value.content);
-          if (payloadJsonRes.isOk()) {
-            const parsed = GistPayloadSchema.safeParse(payloadJsonRes.value);
-            if (parsed.success && parsed.data.salt) {
-              return {
-                status: "exists",
-                salt: parsed.data.salt,
-              };
-            }
-          }
-        }
-      }
-      return { status: "exists" };
-    }
-
     if (!options?.token) {
       return { status: "exists" };
     }
@@ -127,15 +111,23 @@ export class GithubGistProvider implements ISyncProvider {
           };
         }
       }
+      return { status: "exists", gistId: foundGistId };
     }
 
     if (
       downloadRes.isErr() &&
       downloadRes.error === "github_error_gist_not_found"
     ) {
+      if (options?.hasStoredSalt) {
+        await resetAccountSettings("github_gist");
+      }
       return { status: "new" };
     }
 
-    return { status: "exists" };
+    if (options?.hasStoredSalt) {
+      return { status: "exists" };
+    }
+
+    return { status: "new" };
   }
 }

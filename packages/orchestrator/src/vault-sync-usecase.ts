@@ -20,7 +20,7 @@ import {
 import { err, ok, type Result } from "neverthrow";
 import { sendBackgroundMessage } from "./messaging.ts";
 import {
-  downloadFromGistRoute,
+  downloadVaultRoute,
   uploadToGistRoute,
 } from "./messaging-contracts.ts";
 import { mergeVaultPayload } from "./vault-merge-usecase.ts";
@@ -38,7 +38,7 @@ export async function fetchAndMergeRemoteVaultUseCase(
   const localFolders = options.folders || [];
   const lastSync = options.lastSync || 0;
 
-  const sendResult = await sendBackgroundMessage(downloadFromGistRoute, {
+  const sendResult = await sendBackgroundMessage(downloadVaultRoute, {
     mode: options.vaultMode,
   });
   if (sendResult.isErr()) {

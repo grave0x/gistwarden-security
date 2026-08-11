@@ -16,7 +16,7 @@ import {
 } from "@gistwarden/domain";
 import {
   checkVaultConfiguredUseCase,
-  downloadFromGistRoute,
+  downloadVaultRoute,
   getSessionKey,
   notifyBackground,
   sendBackgroundMessage,
@@ -36,7 +36,7 @@ import {
 } from "@gistwarden/repository";
 import { ok, type Result } from "neverthrow";
 import { z } from "zod";
-import { decryptGistVault, logout } from "../features/auth/auth-service.ts";
+import { decryptVaultPayload, logout } from "../features/auth/auth-service.ts";
 import {
   accountStore,
   applyVaultPayloadToStore,
@@ -85,7 +85,7 @@ async function fetchEncryptedVaultContent(): Promise<
     return ok(cachedVal);
   }
 
-  const sendResult = await sendBackgroundMessage(downloadFromGistRoute, {
+  const sendResult = await sendBackgroundMessage(downloadVaultRoute, {
     mode: settingsStore.vaultMode,
   });
   if (
@@ -175,7 +175,7 @@ async function loadAndDecryptVault(
     return;
   }
 
-  const decryptVaultRes = await decryptGistVault(content, key);
+  const decryptVaultRes = await decryptVaultPayload(content, key);
   if (decryptVaultRes.isErr()) {
     handleInitError(decryptVaultRes.error);
     return;
@@ -259,7 +259,7 @@ export async function init(): Promise<void> {
     await loadAndDecryptVault(key, isFido2Prompt, params);
   } else {
     if (accountStore.gistId && accountStore.masterPasswordConfig.salt) {
-      const sendResult = await sendBackgroundMessage(downloadFromGistRoute, {
+      const sendResult = await sendBackgroundMessage(downloadVaultRoute, {
         mode: settingsStore.vaultMode,
       });
       if (

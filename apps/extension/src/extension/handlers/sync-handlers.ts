@@ -1,7 +1,7 @@
 import {
   deleteGistRoute,
   deleteVaultUseCase,
-  downloadFromGistRoute,
+  downloadVaultRoute,
   downloadVaultUseCase,
   startGithubOauthRoute,
   startGithubOauthUseCase,
@@ -16,7 +16,7 @@ export function registerSyncRoutes(router: MessageRouter): void {
   router
     .register(uploadToGistRoute, uploadVaultUseCase)
     .register(deleteGistRoute, deleteVaultUseCase)
-    .register(downloadFromGistRoute, downloadVaultUseCase)
+    .register(downloadVaultRoute, downloadVaultUseCase)
     .register(validateTokenRoute, validateTokenUseCase)
     .register(startGithubOauthRoute, startGithubOauthUseCase);
 }

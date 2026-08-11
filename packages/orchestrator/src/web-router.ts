@@ -5,8 +5,8 @@ import {
   checkHIBPRoute,
   deleteGistRoute,
   deleteLocalVaultRoute,
-  downloadFromGistRoute,
   downloadFromLocalRoute,
+  downloadVaultRoute,
   fido2HeartbeatRoute,
   startGithubOauthRoute,
   uploadToGistRoute,
@@ -56,7 +56,7 @@ export function initializeWebRoutes(): void {
   // Sync routes
   registerInMemoryRoute(uploadToGistRoute, uploadVaultUseCase);
   registerInMemoryRoute(deleteGistRoute, deleteVaultUseCase);
-  registerInMemoryRoute(downloadFromGistRoute, downloadVaultUseCase);
+  registerInMemoryRoute(downloadVaultRoute, downloadVaultUseCase);
   registerInMemoryRoute(uploadToLocalRoute, uploadVaultUseCase);
   registerInMemoryRoute(deleteLocalVaultRoute, deleteVaultUseCase);
   registerInMemoryRoute(downloadFromLocalRoute, downloadVaultUseCase);

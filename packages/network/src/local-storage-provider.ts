@@ -8,6 +8,7 @@ import {
   GistPayloadSchema,
   getLocalVaultPayload,
   removeLocalVaultPayload,
+  resetAccountSettings,
   setLocalVaultPayload,
 } from "@gistwarden/repository";
 import { err, ok, type Result } from "neverthrow";
@@ -28,7 +29,7 @@ export class LocalStorageProvider implements ISyncProvider {
   readonly name = "Local Vault";
 
   /**
-   * Lưu chuỗi Vault mã hóa vào Local Storage dưới key `gistwarden_local_vault_payload`.
+   * Lưu chuỗi Vault mã hóa vào Local Storage.
    */
   async upload(
     content: string,
@@ -82,17 +83,16 @@ export class LocalStorageProvider implements ISyncProvider {
   /**
    * Kiểm tra Local Vault đã được cài đặt cấu hình/salt hay chưa.
    */
-  async isConfigured(options?: SyncOptions): Promise<boolean> {
+  async isConfigured(_options?: SyncOptions): Promise<boolean> {
     return Promise.resolve(
-      options?.hasStoredSalt !== undefined ? options.hasStoredSalt : true,
+      _options?.hasStoredSalt !== undefined ? _options.hasStoredSalt : true,
     );
   }
 
   /**
    * Kiểm tra đa hình trạng thái của Local Vault:
-   * - Có salt trong settings -> "exists"
-   * - Đọc được salt từ payload địa phương -> "exists" (khôi phục salt)
-   * - Thiếu cả 2 -> "new" (cần khởi tạo Vault mới)
+   * - Có payload hợp lệ trong local storage -> "exists" (khôi phục salt)
+   * - Thiếu payload -> tự dọn dẹp account_settings rác và trả về "new"
    */
   async checkVaultStatus(_options?: SyncOptions): Promise<SyncStatusResult> {
     const downloadRes = await this.download();
@@ -108,6 +108,10 @@ export class LocalStorageProvider implements ISyncProvider {
         }
       }
       return { status: "exists" };
+    }
+
+    if (_options?.hasStoredSalt) {
+      await resetAccountSettings("local_storage");
     }
 
     return { status: "new" };
