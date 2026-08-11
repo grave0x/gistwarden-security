@@ -5,7 +5,7 @@
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self';"
   },
   "name": "Gistwarden",
-  "version": "2026.8.10.3",
+  "version": "2026.8.11",
   "description": "Secure password, passkey, and TOTP manager synced to your private GitHub Gist.",
   "permissions": [
     "storage",
@@ -36,21 +36,36 @@
   },
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": ["fido2-content-script.js"],
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "fido2-content-script.js"
+      ],
       "run_at": "document_start",
       "all_frames": true
     },
     {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": ["fido2-page-script.js"],
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "fido2-page-script.js"
+      ],
       "run_at": "document_start",
       "all_frames": true,
       "world": "MAIN"
     },
     {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": ["autofill-content-script.js"],
+      "matches": [
+        "http://*/*",
+        "https://*/*"
+      ],
+      "js": [
+        "autofill-content-script.js"
+      ],
       "run_at": "document_end",
       "all_frames": true
     }
@@ -63,8 +78,14 @@
   },
   "web_accessible_resources": [
     {
-      "resources": ["fonts/*", "icons/*", "images/*"],
-      "matches": ["<all_urls>"]
+      "resources": [
+        "fonts/*",
+        "icons/*",
+        "images/*"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
     }
   ]
 }
