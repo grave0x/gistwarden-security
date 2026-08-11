@@ -409,11 +409,14 @@ export async function unlock(
     }
   }
 
-  // B. Nếu chưa có salt (cả cục bộ lẫn remote Gist), trả về lỗi không tìm thấy Gist
+  const notFoundErrorKey: TranslationKey = gistRes.isErr()
+    ? gistRes.error
+    : "vault_error_not_found";
+
+  // B. Nếu chưa có salt (cả cục bộ lẫn remote Gist), trả về lỗi không tìm thấy Vault/Gist
   if (!saltBase64) {
     clearDerivedKey();
-    await recordMasterPasswordFailure(attempts, saltBase64 || secSalt);
-    return err("github_error_gist_not_found");
+    return err(notFoundErrorKey);
   }
 
   // C. Derive Key từ Password và Salt mới nhất
@@ -433,8 +436,7 @@ export async function unlock(
   // D. Giải mã Két sắt trước để đảm bảo Master Password nhập vào là chính xác
   if (!existingGistContent) {
     clearDerivedKey();
-    await recordMasterPasswordFailure(attempts, saltBase64 || secSalt);
-    return err("github_error_gist_not_found");
+    return err(notFoundErrorKey);
   }
 
   const decryptVaultRes = await decryptGistVault(existingGistContent, key);

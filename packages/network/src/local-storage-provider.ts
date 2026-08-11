@@ -94,11 +94,7 @@ export class LocalStorageProvider implements ISyncProvider {
    * - Đọc được salt từ payload địa phương -> "exists" (khôi phục salt)
    * - Thiếu cả 2 -> "new" (cần khởi tạo Vault mới)
    */
-  async checkVaultStatus(options?: SyncOptions): Promise<SyncStatusResult> {
-    if (options?.hasStoredSalt) {
-      return { status: "exists" };
-    }
-
+  async checkVaultStatus(_options?: SyncOptions): Promise<SyncStatusResult> {
     const downloadRes = await this.download();
     if (downloadRes.isOk() && downloadRes.value.content) {
       const payloadJsonRes = safeJsonParse(downloadRes.value.content);
@@ -111,6 +107,7 @@ export class LocalStorageProvider implements ISyncProvider {
           };
         }
       }
+      return { status: "exists" };
     }
 
     return { status: "new" };
