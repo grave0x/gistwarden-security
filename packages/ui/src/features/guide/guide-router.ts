@@ -87,6 +87,12 @@ export const GUIDE_STRUCTURE: readonly GuideCategoryDef[] = [
         icon: GithubIcon,
       },
       {
+        id: "self-hosted-server",
+        titleKey: "guide_item_self_hosted_server",
+        route: "getting-started/self-hosted-server",
+        icon: GlobeIcon,
+      },
+      {
         id: "local-vault",
         titleKey: "guide_item_local_vault",
         route: "getting-started/local-vault",

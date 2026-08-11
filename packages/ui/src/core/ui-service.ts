@@ -29,8 +29,8 @@ import { logout } from "@/features/auth/auth-service.ts";
 let toastTimeoutId: ReturnType<typeof setTimeout> | null = null;
 
 export function handleGlobalApiError(errorKey?: TranslationKey): boolean {
-  if (errorKey === "github_error_unauthorized") {
-    showToast(t("github_error_unauthorized"), "error");
+  if (errorKey === "network_error_unauthorized") {
+    showToast(t("network_error_unauthorized"), "error");
     setTimeout(async () => {
       await logout();
       if (

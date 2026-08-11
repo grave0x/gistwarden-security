@@ -22,6 +22,7 @@ export const SyncOptionsSchema = z
   .object({
     token: GitHubAccessTokenSchema.optional(),
     gistId: GistIdSchema.optional(),
+    serverUrl: z.string().optional(),
     username: z.string().optional(),
     hasStoredEncryptedToken: z.boolean().optional(),
     hasStoredSalt: z.boolean().optional(),

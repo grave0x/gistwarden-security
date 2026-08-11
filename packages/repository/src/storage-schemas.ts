@@ -133,6 +133,7 @@ export const DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG: MasterPasswordSecurityConf
 
 export const SyncConfigSchema = z
   .object({
+    serverUrl: z.string().default(""),
     gistId: GistIdSchema.or(z.string())
       .transform((v) => asGistId(v))
       .default(asGistId("")),
@@ -145,6 +146,7 @@ export const SyncConfigSchema = z
 export type SyncConfig = z.infer<typeof SyncConfigSchema>;
 
 export const DEFAULT_SYNC_CONFIG: SyncConfig = Object.freeze({
+  serverUrl: "",
   gistId: asGistId(""),
   syncTokenEncrypted: "",
   syncTokenIv: "",

@@ -217,12 +217,12 @@ export async function fetchEncryptedVaultContent(): Promise<
     }
     if (
       !sendResult.value.success &&
-      sendResult.value.error === "github_error_unauthorized"
+      sendResult.value.error === "network_error_unauthorized"
     ) {
-      return err("github_error_unauthorized");
+      return err("network_error_unauthorized");
     }
-  } else if (sendResult.error === "github_error_unauthorized") {
-    return err("github_error_unauthorized");
+  } else if (sendResult.error === "network_error_unauthorized") {
+    return err("network_error_unauthorized");
   }
 
   return ok(null);

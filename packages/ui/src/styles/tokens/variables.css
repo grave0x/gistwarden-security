@@ -20,6 +20,23 @@
   --space-6: 24px;
   --space-8: 32px;
 
+  /* Font Size Tokens */
+  --font-size-xs: 0.75rem;
+  --font-size-sm: 0.85rem;
+  --font-size-base: 0.95rem;
+  --font-size-lg: 1.1rem;
+
+  /* Font Weight Tokens */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  --font-weight-extrabold: 800;
+
+  /* Transition Tokens */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.2s ease;
+
   /* Constant Colors */
   --white: #ffffff;
   --black: #000000;
@@ -75,6 +92,14 @@
   /* Link Colors */
   --link-color: #93c5fd;
   --link-hover-color: #bfdbfe;
+
+  /* Swagger & HTTP Method Badge Tokens */
+  --swagger-post-bg: #10b981;
+  --swagger-get-bg: #3b82f6;
+  --swagger-delete-bg: #ef4444;
+  --swagger-put-bg: #f59e0b;
+  --swagger-code-bg: #1e1e1e;
+  --swagger-code-text: #d4d4d4;
 }
 
 body.light-theme {
@@ -123,4 +148,11 @@ body.light-theme {
   --alert-danger-text: #600003;
   --alert-success-text: #004d20;
   --alert-info-text: #0d43af;
+
+  --swagger-post-bg: #059669;
+  --swagger-get-bg: #2563eb;
+  --swagger-delete-bg: #dc2626;
+  --swagger-put-bg: #d97706;
+  --swagger-code-bg: #1e293b;
+  --swagger-code-text: #f1f5f9;
 }

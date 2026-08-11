@@ -30,13 +30,16 @@ export async function fetchText(
 
   if (!res.ok) {
     if (res.status === 401) {
-      return err("github_error_unauthorized");
+      return err("network_error_unauthorized");
+    }
+    if (res.status === 404) {
+      return err("vault_error_not_found");
     }
     if (res.status === 413 || res.status === 422) {
-      return err("github_error_gist_size_limit");
+      return err("network_error_payload_too_large");
     }
     if (res.status === 403 || res.status === 429) {
-      return err("github_error_rate_limit");
+      return err("network_error_rate_limit");
     }
     return err("network_error_http_status");
   }

@@ -2,6 +2,7 @@ import {
   APP_NAME,
   asGistId,
   asGitHubAccessToken,
+  DEFAULT_GITHUB_API_BASE,
   type GistId,
   type GitHubAccessToken,
   isExtension,
@@ -13,8 +14,6 @@ import { err, ok, type Result } from "neverthrow";
 import { z } from "zod";
 import { fetchText } from "./fetch-utils.ts";
 import type { SyncOptions, SyncResult } from "./sync-provider-types.ts";
-
-const GITHUB_API_BASE = "https://api.github.com";
 
 const GIST_DESCRIPTION = `${APP_NAME.toLowerCase()}_vault`;
 const GIST_FILE_NAME = `${APP_NAME.toLowerCase()}.json`;
@@ -53,7 +52,7 @@ async function githubRequest(
 ): Promise<Result<unknown, TranslationKey>> {
   if (!authToken) return err("github_error_missing_token");
 
-  const res = await fetchText(`${GITHUB_API_BASE}${path}`, {
+  const res = await fetchText(`${DEFAULT_GITHUB_API_BASE}${path}`, {
     ...options,
     cache: "no-store",
     headers: {
@@ -78,7 +77,7 @@ async function githubRequest(
 export async function validateToken(
   token: GitHubAccessToken,
 ): Promise<Result<{ username: string; avatarUrl: string }, TranslationKey>> {
-  const fetchRes = await fetchText(`${GITHUB_API_BASE}/user`, {
+  const fetchRes = await fetchText(`${DEFAULT_GITHUB_API_BASE}/user`, {
     cache: "no-store",
     headers: {
       Authorization: `token ${token}`,

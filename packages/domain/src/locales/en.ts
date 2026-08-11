@@ -34,8 +34,6 @@ export default {
 
   // Detailed Error Messages
   github_error_missing_token: "GitHub access token is missing.",
-  github_error_unauthorized:
-    "GitHub access token has expired or been revoked (401). Auto logging out...",
   github_error_user_parse_failed: "Failed to authenticate GitHub user info.",
   github_error_gist_not_found: "Vault Gist not found on GitHub.",
   github_error_create_gist_failed: "Failed to create a new Gist on GitHub.",
@@ -43,10 +41,6 @@ export default {
   github_error_gist_parse_failed:
     "Gist data from GitHub is invalid or corrupted.",
   github_error_missing_gist_id: "Missing Gist ID to process request.",
-  github_error_gist_size_limit:
-    "Vault payload size exceeds GitHub Gist limit (10MB). Please reduce items or split your vault.",
-  github_error_rate_limit:
-    "GitHub API rate limit exceeded. Please try again in a few minutes.",
   vault_error_not_found: "Vault data not found.",
   sync_error_corrupted_payload:
     "Sync data is corrupted or cannot be decrypted.",
@@ -75,6 +69,12 @@ export default {
     "Network request failed. Please check internet connection.",
   network_error_http_status: "Server returned an HTTP error status.",
   network_error_read_failed: "Failed to read response data from server.",
+  network_error_unauthorized:
+    "Access token expired or unauthorized (401). System is logging out...",
+  network_error_payload_too_large:
+    "Vault payload size exceeds limit (413). Please reduce vault size.",
+  network_error_rate_limit:
+    "Server rate limit exceeded (429). Please try again later.",
   crypto_error_encrypt_failed: "Data encryption failed.",
   totp_error_invalid_secret: "Invalid TOTP secret key.",
   clipboard_copy_failed: "Failed to copy content to clipboard.",
@@ -650,8 +650,94 @@ export default {
   guide_item_overview: "Overview & E2EE Encryption",
   guide_item_master_password: "Master Password & PBKDF2",
   guide_item_github_gist: "GitHub Token & Gist Setup",
+  guide_item_self_hosted_server: "Self-Hosted Server Setup",
   guide_item_local_vault: "Local Vault & Security Warnings",
   guide_item_auto_lock: "Vault Lock & Auto-Lock Timer",
+
+  guide_start_self_hosted_lead:
+    "Self-Hosted Server Provider allows you to build or run your own personal server (VPS, Docker, Cloudflare Workers, NAS Synology...) to store and synchronize your encrypted vault safely.",
+  guide_start_self_hosted_step1_title: "1. Enter Server Base URL",
+  guide_start_self_hosted_step1_desc:
+    "Enter your server URL (e.g. https://abc.com or http://192.168.1.100:3000). GistWarden will connect directly to your server endpoints.",
+  guide_start_self_hosted_step2_title: "2. Register or Login Server Account",
+  guide_start_self_hosted_step2_desc:
+    "Switch to Register tab to create a new server account (POST /auth/register) or Login (POST /auth/login) to receive your Access Token.",
+  guide_start_self_hosted_step3_title:
+    "3. Initialize or Unlock Vault with Master Password",
+  guide_start_self_hosted_step3_desc:
+    "After obtaining Access Token, the client calls GET /vault. HTTP 200 (Existing Vault) -> Enter Master Password to Unlock; HTTP 404 (New Vault) -> Set a new Master Password.",
+  guide_start_self_hosted_step4_title:
+    "4. Automatic End-to-End Encrypted Sync (E2EE)",
+  guide_start_self_hosted_step4_desc:
+    "All vault modifications are encrypted locally using your Master Password before being transmitted to POST /vault. Your server cannot read your plaintext passwords.",
+  guide_start_self_hosted_note_title: "Important E2EE Security Note",
+  guide_start_self_hosted_note_desc:
+    "Server Account Password is used exclusively for server API authentication. Your Master Password derives the AES-256-GCM encryption key and is NEVER sent to the server.",
+  guide_start_self_hosted_app_title: "Connecting from GistWarden App",
+  guide_start_self_hosted_app_desc:
+    "On GistWarden Login/Initialization screen, select Self-Hosted Server tab, enter Base URL, Register/Login, and begin syncing.",
+
+  swagger_explorer_title: "GistWarden Self-Hosted REST API Explorer",
+  swagger_base_url_label: "Base URL",
+  swagger_collapse: "Collapse",
+  swagger_expand: "Details",
+  swagger_request_body_title: "Request Body Example (JSON)",
+  swagger_responses_title: "Responses & HTTP Status Codes",
+
+  swagger_ep_register_summary: "Register new server account",
+  swagger_ep_register_desc:
+    "Create a new user account on the Self-Host server and receive an Access Token.",
+  swagger_res_201_title: "200 OK — Account Created",
+  swagger_res_201_desc:
+    "Returns accessToken for subsequent authenticated API calls.",
+  swagger_res_400_title: "400 Bad Request — Invalid Data",
+  swagger_res_400_desc: "Missing username or password is too short.",
+  swagger_res_409_title: "409 Conflict — Username Taken",
+  swagger_res_409_desc: "Username is already registered on the server.",
+
+  swagger_ep_login_summary: "Server Account Login & Get Access Token",
+  swagger_ep_login_desc:
+    "Authenticate existing server user account and issue Bearer Access Token.",
+  swagger_res_200_login_title: "200 OK — Login Successful",
+  swagger_res_200_login_desc: "Returns valid accessToken.",
+  swagger_res_401_login_title: "401 Unauthorized — Invalid Credentials",
+  swagger_res_401_login_desc: "Wrong username or password.",
+
+  swagger_ep_user_summary: "Validate Access Token & Get User Profile",
+  swagger_ep_user_desc:
+    "Validates access token and returns user account profile (Username, Avatar).",
+
+  swagger_ep_get_vault_summary:
+    "Read Encrypted Vault, Validate Token & Check Status",
+  swagger_ep_get_vault_desc:
+    "Fetch encrypted vault payload. Returns HTTP 200 if vault exists, 404 if new account.",
+  swagger_res_200_get_vault_title: "200 OK — Existing Vault Found",
+  swagger_res_200_get_vault_desc:
+    "Client reads ciphertext content, extracts salt, and shows Unlock screen.",
+  swagger_res_401_token_title: "401 Unauthorized — Invalid Token",
+  swagger_res_401_token_desc: "Token is invalid or has been revoked.",
+  swagger_res_404_title: "404 Not Found — New Vault Account",
+  swagger_res_404_desc:
+    "Client flags account as New Vault and displays Master Password setup screen.",
+
+  swagger_ep_post_vault_summary: "Save / Update Encrypted Vault Payload",
+  swagger_ep_post_vault_desc:
+    "Overwrite latest client-encrypted vault backup payload onto server.",
+  swagger_res_200_post_vault_title: "200 OK — Sync Successful",
+  swagger_res_200_post_vault_desc: "Successfully saved vault ciphertext.",
+  swagger_res_401_expired_title: "401 Unauthorized — Token Expired",
+  swagger_res_401_expired_desc: "Re-login to your server account.",
+  swagger_res_413_title: "413 Payload Too Large — Vault Size Exceeded",
+  swagger_res_413_desc:
+    "Vault ciphertext exceeds server size limit (e.g., > 10MB).",
+
+  swagger_ep_delete_vault_summary: "Delete Vault from Server",
+  swagger_ep_delete_vault_desc:
+    "Remove user's vault file/record permanently from server.",
+  swagger_res_200_delete_vault_title: "200 OK / 204 No Content — Deleted",
+  swagger_res_200_delete_vault_desc: "Server has removed the vault data.",
+  swagger_res_401_unauthorized_title: "401 Unauthorized — Access Denied",
+  swagger_res_401_unauthorized_desc: "Invalid access token.",
 
   guide_start_local_lead:
     "Local Vault allows you to store your passwords encrypted on your device without linking to any cloud accounts.",

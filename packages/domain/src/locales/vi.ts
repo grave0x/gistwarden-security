@@ -35,8 +35,6 @@ export default {
 
   // Detailed Error Messages
   github_error_missing_token: "Không tìm thấy token truy cập GitHub.",
-  github_error_unauthorized:
-    "Token truy cập GitHub đã hết hạn hoặc bị thu hồi (Lỗi 401). Hệ thống đang tự động đăng xuất...",
   github_error_user_parse_failed:
     "Không thể xác thực thông tin người dùng GitHub.",
   github_error_gist_not_found:
@@ -47,10 +45,6 @@ export default {
   github_error_gist_parse_failed:
     "Dữ liệu Gist từ GitHub bị lỗi hoặc không đúng định dạng.",
   github_error_missing_gist_id: "Thiếu Gist ID để xử lý yêu cầu.",
-  github_error_gist_size_limit:
-    "Kích thước Két sắt vượt quá giới hạn của GitHub Gist (10MB). Vui lòng giảm bớt dữ liệu hoặc chia nhỏ két sắt.",
-  github_error_rate_limit:
-    "Đã vượt quá giới hạn lượt gọi GitHub API (Rate Limit). Vui lòng thử lại sau ít phút.",
   vault_error_not_found: "Không tìm thấy dữ liệu két sắt.",
   sync_error_corrupted_payload:
     "Dữ liệu đồng bộ bị lỗi cấu trúc hoặc không giải mã được.",
@@ -79,6 +73,12 @@ export default {
     "Kết nối mạng thất bại. Vui lòng kiểm tra kết nối internet.",
   network_error_http_status: "Máy chủ phản hồi với mã lỗi HTTP.",
   network_error_read_failed: "Không thể đọc dữ liệu phản hồi từ máy chủ.",
+  network_error_unauthorized:
+    "Token truy cập đã hết hạn hoặc bị thu hồi (Lỗi 401). Hệ thống đang tự động đăng xuất...",
+  network_error_payload_too_large:
+    "Kích thước Két sắt vượt quá giới hạn cho phép (Lỗi 413). Vui lòng giảm bớt dữ liệu.",
+  network_error_rate_limit:
+    "Đã vượt quá giới hạn lượt gọi máy chủ (Lỗi 429). Vui lòng thử lại sau ít phút.",
   crypto_error_encrypt_failed: "Mã hóa dữ liệu thất bại.",
   totp_error_invalid_secret: "Khóa bí mật TOTP không hợp lệ.",
   clipboard_copy_failed: "Không thể sao chép vào bộ nhớ tạm.",
@@ -656,8 +656,98 @@ export default {
   guide_item_overview: "Tổng quan & Mã hóa E2EE",
   guide_item_master_password: "Mật khẩu chính (Master Password)",
   guide_item_github_gist: "Tạo GitHub Token & Cấu hình Gist",
+  guide_item_self_hosted_server: "Self-Hosted Server (Máy chủ Tự dựng)",
   guide_item_local_vault: "Két sắt Cục bộ & Cảnh báo Bảo mật",
   guide_item_auto_lock: "Khóa Két & Tự Động Khóa",
+
+  guide_start_self_hosted_lead:
+    "Self-Hosted Server Provider cho phép bạn tự vận hành máy chủ cá nhân (VPS, Docker, Cloudflare Workers, NAS Synology...) làm nơi lưu trữ và đồng bộ két mật khẩu mã hóa an toàn.",
+  guide_start_self_hosted_step1_title:
+    "1. Nhập Địa chỉ Máy chủ (Server Base URL)",
+  guide_start_self_hosted_step1_desc:
+    "Nhập URL máy chủ cá nhân của bạn (ví dụ: https://abc.com hoặc http://192.168.1.100:3000). GistWarden sẽ tự động kết nối trực tiếp tới các Endpoint của máy chủ.",
+  guide_start_self_hosted_step2_title:
+    "2. Đăng ký hoặc Đăng nhập Tài khoản Máy chủ",
+  guide_start_self_hosted_step2_desc:
+    "Chuyển sang tab Đăng ký để tạo tài khoản máy chủ mới (POST /auth/register) hoặc Đăng nhập (POST /auth/login) để lấy Access Token kết nối.",
+  guide_start_self_hosted_step3_title:
+    "3. Khởi tạo hoặc Mở khóa Két bằng Master Password",
+  guide_start_self_hosted_step3_desc:
+    "Sau khi lấy được Access Token, ứng dụng gọi GET /vault để kiểm tra. Nếu server trả về 200 (đã có Vault) -> Nhập Master Password để Unlock; nếu 404 (chưa có Vault) -> Tạo Master Password mới.",
+  guide_start_self_hosted_step4_title:
+    "4. Tự động Đồng bộ hóa Mã hóa Đầu-cuối (E2EE)",
+  guide_start_self_hosted_step4_desc:
+    "Mọi thao tác thêm/sửa/xóa mật khẩu đều được mã hóa tại Client bằng Master Password trước khi đẩy qua API POST /vault. Máy chủ hoàn toàn không thể đọc được nội dung két.",
+  guide_start_self_hosted_note_title:
+    "Lưu ý Quan trọng về Bảo mật Mã hóa Đầu-cuối (E2EE)",
+  guide_start_self_hosted_note_desc:
+    "Mật khẩu tài khoản Server (Server Account Password) chỉ dùng để xác thực API với máy chủ. Master Password dùng để tạo khóa mã hóa AES-256-GCM và KHÔNG BAO GIỜ được gửi lên máy chủ.",
+  guide_start_self_hosted_app_title: "Hướng Dẫn Kết Nối Trên App GistWarden",
+  guide_start_self_hosted_app_desc:
+    "Tại màn hình Đăng nhập/Khởi tạo của GistWarden, chọn tab Self-Hosted Server, điền Base URL, Đăng ký/Đăng nhập và bắt đầu sử dụng.",
+
+  swagger_explorer_title: "GistWarden Self-Hosted REST API Explorer",
+  swagger_base_url_label: "Base URL",
+  swagger_collapse: "Thu gọn",
+  swagger_expand: "Chi tiết",
+  swagger_request_body_title: "Request Body Example (JSON)",
+  swagger_responses_title: "Responses & HTTP Status Codes",
+
+  swagger_ep_register_summary: "Đăng ký tài khoản người dùng máy chủ mới",
+  swagger_ep_register_desc:
+    "Tạo tài khoản người dùng mới trên máy chủ Self-Host và trả về Access Token.",
+  swagger_res_201_title: "200 OK — Tạo tài khoản thành công",
+  swagger_res_201_desc:
+    "Trả về accessToken để client dùng cho các request tiếp theo.",
+  swagger_res_400_title: "400 Bad Request — Dữ liệu không hợp lệ",
+  swagger_res_400_desc: "Thiếu username hoặc password quá ngắn.",
+  swagger_res_409_title: "409 Conflict — Username đã tồn tại",
+  swagger_res_409_desc: "Tên đăng nhập đã được đăng ký trước đó trên server.",
+
+  swagger_ep_login_summary: "Đăng nhập tài khoản máy chủ & Nhận Access Token",
+  swagger_ep_login_desc:
+    "Xác thực tài khoản người dùng đã có và cấp Bearer Access Token.",
+  swagger_res_200_login_title: "200 OK — Đăng nhập thành công",
+  swagger_res_200_login_desc: "Trả về accessToken hợp lệ.",
+  swagger_res_401_login_title: "401 Unauthorized — Sai tài khoản hoặc mật khẩu",
+  swagger_res_401_login_desc: "Sai thông tin xác thực tài khoản máy chủ.",
+
+  swagger_ep_user_summary: "Xác thực Access Token & Lấy Thông Tin Người Dùng",
+  swagger_ep_user_desc:
+    "Kiểm tra tính hợp lệ của Access Token và trả về hồ sơ tài khoản (Username, Avatar).",
+
+  swagger_ep_get_vault_summary:
+    "Đọc Vault mã hóa, Kiểm tra Token & Trạng thái Exists/New",
+  swagger_ep_get_vault_desc:
+    "Tải chuỗi Vault ciphertext. Trả 200 nếu đã có Vault, 404 nếu là Vault Mới.",
+  swagger_res_200_get_vault_title: "200 OK — Vault đã tồn tại (Existing Vault)",
+  swagger_res_200_get_vault_desc:
+    "Client đọc content, trích xuất salt và mở form Unlock.",
+  swagger_res_401_token_title: "401 Unauthorized — Token không hợp lệ",
+  swagger_res_401_token_desc: "Token sai hoặc đã bị thu hồi.",
+  swagger_res_404_title: "404 Not Found — Chưa từng có Vault (New Vault)",
+  swagger_res_404_desc:
+    "Client xác định đây là Vault Mới và chuyển tới form Tạo Master Password.",
+
+  swagger_ep_post_vault_summary: "Lưu / Cập nhật chuỗi dữ liệu Vault mã hóa",
+  swagger_ep_post_vault_desc:
+    "Ghi đè bản sao lưu Vault mã hóa mới nhất từ Client lên Server.",
+  swagger_res_200_post_vault_title: "200 OK — Đồng bộ thành công",
+  swagger_res_200_post_vault_desc: "Đã lưu thành công Vault ciphertext.",
+  swagger_res_401_expired_title: "401 Unauthorized — Token hết hạn",
+  swagger_res_401_expired_desc: "Cần đăng nhập lại tài khoản máy chủ.",
+  swagger_res_413_title: "413 Payload Too Large — Dung lượng quá lớn",
+  swagger_res_413_desc:
+    "Chuỗi Vault vượt quá giới hạn dung lượng của server (vd: > 10MB).",
+
+  swagger_ep_delete_vault_summary: "Xóa toàn bộ Vault khỏi máy chủ",
+  swagger_ep_delete_vault_desc:
+    "Xóa tệp/bản ghi Vault của tài khoản khỏi server.",
+  swagger_res_200_delete_vault_title:
+    "200 OK / 204 No Content — Xóa thành công",
+  swagger_res_200_delete_vault_desc: "Server đã xóa dữ liệu Vault.",
+  swagger_res_401_unauthorized_title: "401 Unauthorized — Từ chối truy cập",
+  swagger_res_401_unauthorized_desc: "Token không hợp lệ.",
 
   guide_start_local_lead:
     "Local Vault cho phép bạn lưu trữ két mật khẩu được mã hóa trực tiếp trên thiết bị hiện tại mà không cần kết nối tài khoản đám mây.",

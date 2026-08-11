@@ -6,6 +6,7 @@ export const APP_NAME = "Gistwarden";
 export const OAUTH_CLIENT_ID = "Ov23liRxwWqLXD5AOkNW";
 export const OAUTH_WORKER_URL = "https://gistwarden.uongsuadaubung.workers.dev";
 export const FIREFOX_ADDON_SLUG = "gistwarden";
+export const DEFAULT_GITHUB_API_BASE = "https://api.github.com";
 
 // Chrome Session Storage Keys
 export const SESSION_KEY_DERIVED_KEY = "derivedKey";

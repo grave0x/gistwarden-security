@@ -1,6 +1,7 @@
 import {
   asGistId,
   asGitHubAccessToken,
+  DEFAULT_GITHUB_API_BASE,
   encryptData,
   type GistId,
   SESSION_KEY_PENDING_SYNC_TOKEN,
@@ -19,6 +20,7 @@ import { getSessionKey } from "./crypto-usecases.ts";
 
 export interface SetupGithubOptions {
   token: string;
+  serverUrl?: string;
   currentGistId?: GistId;
 }
 
@@ -59,6 +61,7 @@ export async function setupGithubUseCase(
     }
     const { iv, ciphertext } = encryptRes.value;
     const updatedSyncConfig: SyncConfig = {
+      serverUrl: options.serverUrl || DEFAULT_GITHUB_API_BASE,
       gistId,
       syncTokenEncrypted: ciphertext,
       syncTokenIv: iv,
@@ -74,6 +77,7 @@ export async function setupGithubUseCase(
   }
 
   const newSyncConfig: SyncConfig = {
+    serverUrl: options.serverUrl || DEFAULT_GITHUB_API_BASE,
     gistId,
     syncTokenEncrypted: "",
     syncTokenIv: "",

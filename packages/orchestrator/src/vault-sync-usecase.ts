@@ -162,7 +162,7 @@ export async function syncVaultToGist(
     const payloadBytes = new TextEncoder().encode(payload).byteLength;
     const maxGistBytes = 10 * 1024 * 1024;
     if (payloadBytes > maxGistBytes) {
-      return err("github_error_gist_size_limit");
+      return err("network_error_payload_too_large");
     }
     const warnThresholdBytes = 9 * 1024 * 1024;
     if (payloadBytes >= warnThresholdBytes) {
