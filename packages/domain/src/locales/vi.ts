@@ -686,6 +686,52 @@ export default {
   guide_start_self_hosted_app_desc:
     "Tại màn hình Đăng nhập/Khởi tạo của GistWarden, chọn tab Self-Hosted Server, điền Base URL, Đăng ký/Đăng nhập và bắt đầu sử dụng.",
 
+  guide_self_hosted_why_title: "Tại Sao Cần Bộ REST API Self-Hosted Này?",
+  guide_self_hosted_why_desc:
+    "Self-Hosted Server API được thiết kế tinh gọn với đúng 6 REST endpoints chuẩn hóa, giúp người dùng tự làm chủ hạ tầng đám mây riêng (Private Cloud/VPS) mà không cần phụ thuộc vào GitHub. Toàn bộ dữ liệu mật khẩu được mã hóa E2EE bằng AES-256-GCM tại Client trước khi gửi lên máy chủ.",
+  guide_self_hosted_matrix_title:
+    "Bảng So Sánh Tương Thích 1-to-1 Với GitHub API",
+  guide_self_hosted_matrix_col_action: "Thao Tác Ứng Dụng",
+  guide_self_hosted_matrix_col_github: "Luồng API GitHub Gist",
+  guide_self_hosted_matrix_col_self_hosted: "Luồng API Self-Hosted Server",
+  guide_self_hosted_matrix_col_purpose: "Vai Trò & Lý Do Cần Thiết",
+
+  guide_self_hosted_row1_action: "Đăng Ký Tài Khoản",
+  guide_self_hosted_row1_github: "Tạo tài khoản trên GitHub.com",
+  guide_self_hosted_row1_self_hosted: "POST /auth/register",
+  guide_self_hosted_row1_purpose:
+    "Tạo tài khoản người dùng mới trên máy chủ cá nhân.",
+
+  guide_self_hosted_row2_action: "Đăng Nhập Máy Chủ",
+  guide_self_hosted_row2_github: "GitHub OAuth / Token",
+  guide_self_hosted_row2_self_hosted: "POST /auth/login",
+  guide_self_hosted_row2_purpose:
+    "Xác thực tài khoản server & nhận Bearer Access Token.",
+
+  guide_self_hosted_row3_action: "Xác Thực Token",
+  guide_self_hosted_row3_github: "GET /user",
+  guide_self_hosted_row3_self_hosted: "GET /user",
+  guide_self_hosted_row3_purpose:
+    "Kiểm tra Access Token còn hạn và trả về thông tin người dùng.",
+
+  guide_self_hosted_row4_action: "Kiểm Tra Vault Mới / Cũ",
+  guide_self_hosted_row4_github: "GET /gists (200 OK / 404 Not Found)",
+  guide_self_hosted_row4_self_hosted: "GET /vault (200 OK / 404 Not Found)",
+  guide_self_hosted_row4_purpose:
+    "Client dựa vào HTTP 200/404 để mở form Unlock hay Tạo Master Password.",
+
+  guide_self_hosted_row5_action: "Lưu / Cập Nhật Két",
+  guide_self_hosted_row5_github: "POST / PATCH /gists",
+  guide_self_hosted_row5_self_hosted: "POST /vault",
+  guide_self_hosted_row5_purpose:
+    "Đẩy bản lưu két sắt mã hóa E2EE mới nhất từ Client lên Server.",
+
+  guide_self_hosted_row6_action: "Xóa Két Sắt",
+  guide_self_hosted_row6_github: "DELETE /gists/{id}",
+  guide_self_hosted_row6_self_hosted: "DELETE /vault",
+  guide_self_hosted_row6_purpose:
+    "Xóa toàn bộ dữ liệu két mật khẩu khỏi máy chủ từ xa.",
+
   swagger_explorer_title: "GistWarden Self-Hosted REST API Explorer",
   swagger_base_url_label: "Base URL",
   swagger_collapse: "Thu gọn",

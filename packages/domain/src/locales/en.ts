@@ -677,6 +677,52 @@ export default {
   guide_start_self_hosted_app_desc:
     "On GistWarden Login/Initialization screen, select Self-Hosted Server tab, enter Base URL, Register/Login, and begin syncing.",
 
+  guide_self_hosted_why_title: "Why Are These REST APIs Needed?",
+  guide_self_hosted_why_desc:
+    "The Self-Hosted Server API is designed with 6 standardized REST endpoints, empowering users to host their own private infrastructure (Private Cloud/VPS) independently of GitHub. All vault contents are end-to-end encrypted (E2EE) using AES-256-GCM on the client before being sent to the server.",
+  guide_self_hosted_matrix_title:
+    "1-to-1 API Feature Comparison Matrix vs GitHub API",
+  guide_self_hosted_matrix_col_action: "App Operation",
+  guide_self_hosted_matrix_col_github: "GitHub Gist API Flow",
+  guide_self_hosted_matrix_col_self_hosted: "Self-Hosted Server API Flow",
+  guide_self_hosted_matrix_col_purpose: "Role & Necessity",
+
+  guide_self_hosted_row1_action: "Register Account",
+  guide_self_hosted_row1_github: "Create account on GitHub.com",
+  guide_self_hosted_row1_self_hosted: "POST /auth/register",
+  guide_self_hosted_row1_purpose:
+    "Creates a new user account on your private server.",
+
+  guide_self_hosted_row2_action: "Server Login",
+  guide_self_hosted_row2_github: "GitHub OAuth / Token",
+  guide_self_hosted_row2_self_hosted: "POST /auth/login",
+  guide_self_hosted_row2_purpose:
+    "Authenticates server credentials & issues Bearer Access Token.",
+
+  guide_self_hosted_row3_action: "Validate Token",
+  guide_self_hosted_row3_github: "GET /user",
+  guide_self_hosted_row3_self_hosted: "GET /user",
+  guide_self_hosted_row3_purpose:
+    "Validates active Access Token and returns user profile.",
+
+  guide_self_hosted_row4_action: "Check Vault Status",
+  guide_self_hosted_row4_github: "GET /gists (200 OK / 404 Not Found)",
+  guide_self_hosted_row4_self_hosted: "GET /vault (200 OK / 404 Not Found)",
+  guide_self_hosted_row4_purpose:
+    "Client relies on HTTP 200/404 to display Unlock or Master Password setup screen.",
+
+  guide_self_hosted_row5_action: "Save / Update Vault",
+  guide_self_hosted_row5_github: "POST / PATCH /gists",
+  guide_self_hosted_row5_self_hosted: "POST /vault",
+  guide_self_hosted_row5_purpose:
+    "Uploads latest client E2EE encrypted vault backup to server.",
+
+  guide_self_hosted_row6_action: "Delete Vault",
+  guide_self_hosted_row6_github: "DELETE /gists/{id}",
+  guide_self_hosted_row6_self_hosted: "DELETE /vault",
+  guide_self_hosted_row6_purpose:
+    "Purges remote vault data from server upon account reset.",
+
   swagger_explorer_title: "GistWarden Self-Hosted REST API Explorer",
   swagger_base_url_label: "Base URL",
   swagger_collapse: "Collapse",

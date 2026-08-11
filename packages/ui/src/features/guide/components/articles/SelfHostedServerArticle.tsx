@@ -22,6 +22,93 @@ export const SelfHostedServerArticle: Component = () => {
         </div>
       </div>
 
+      <h3 class="mb-12">{t("guide_self_hosted_why_title")}</h3>
+      <p class="article-paragraph mb-20">{t("guide_self_hosted_why_desc")}</p>
+
+      <h3 class="mb-12">{t("guide_self_hosted_matrix_title")}</h3>
+      <div class="guide-matrix-container mb-24">
+        <table class="guide-matrix-table">
+          <thead>
+            <tr>
+              <th>{t("guide_self_hosted_matrix_col_action")}</th>
+              <th>{t("guide_self_hosted_matrix_col_github")}</th>
+              <th>{t("guide_self_hosted_matrix_col_self_hosted")}</th>
+              <th>{t("guide_self_hosted_matrix_col_purpose")}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <strong>{t("guide_self_hosted_row1_action")}</strong>
+              </td>
+              <td>{t("guide_self_hosted_row1_github")}</td>
+              <td>
+                <code>{t("guide_self_hosted_row1_self_hosted")}</code>
+              </td>
+              <td>{t("guide_self_hosted_row1_purpose")}</td>
+            </tr>
+            <tr>
+              <td>
+                <strong>{t("guide_self_hosted_row2_action")}</strong>
+              </td>
+              <td>{t("guide_self_hosted_row2_github")}</td>
+              <td>
+                <code>{t("guide_self_hosted_row2_self_hosted")}</code>
+              </td>
+              <td>{t("guide_self_hosted_row2_purpose")}</td>
+            </tr>
+            <tr>
+              <td>
+                <strong>{t("guide_self_hosted_row3_action")}</strong>
+              </td>
+              <td>
+                <code>{t("guide_self_hosted_row3_github")}</code>
+              </td>
+              <td>
+                <code>{t("guide_self_hosted_row3_self_hosted")}</code>
+              </td>
+              <td>{t("guide_self_hosted_row3_purpose")}</td>
+            </tr>
+            <tr>
+              <td>
+                <strong>{t("guide_self_hosted_row4_action")}</strong>
+              </td>
+              <td>
+                <code>{t("guide_self_hosted_row4_github")}</code>
+              </td>
+              <td>
+                <code>{t("guide_self_hosted_row4_self_hosted")}</code>
+              </td>
+              <td>{t("guide_self_hosted_row4_purpose")}</td>
+            </tr>
+            <tr>
+              <td>
+                <strong>{t("guide_self_hosted_row5_action")}</strong>
+              </td>
+              <td>
+                <code>{t("guide_self_hosted_row5_github")}</code>
+              </td>
+              <td>
+                <code>{t("guide_self_hosted_row5_self_hosted")}</code>
+              </td>
+              <td>{t("guide_self_hosted_row5_purpose")}</td>
+            </tr>
+            <tr>
+              <td>
+                <strong>{t("guide_self_hosted_row6_action")}</strong>
+              </td>
+              <td>
+                <code>{t("guide_self_hosted_row6_github")}</code>
+              </td>
+              <td>
+                <code>{t("guide_self_hosted_row6_self_hosted")}</code>
+              </td>
+              <td>{t("guide_self_hosted_row6_purpose")}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <h3 class="mb-12">Swagger / OpenAPI Interactive API Specification</h3>
       <SwaggerApiGuide />
 

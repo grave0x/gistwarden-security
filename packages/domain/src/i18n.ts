@@ -597,6 +597,44 @@ const LangSchema = z.object({
   guide_start_self_hosted_app_title: z.string(),
   guide_start_self_hosted_app_desc: z.string(),
 
+  guide_self_hosted_why_title: z.string(),
+  guide_self_hosted_why_desc: z.string(),
+  guide_self_hosted_matrix_title: z.string(),
+  guide_self_hosted_matrix_col_action: z.string(),
+  guide_self_hosted_matrix_col_github: z.string(),
+  guide_self_hosted_matrix_col_self_hosted: z.string(),
+  guide_self_hosted_matrix_col_purpose: z.string(),
+
+  guide_self_hosted_row1_action: z.string(),
+  guide_self_hosted_row1_github: z.string(),
+  guide_self_hosted_row1_self_hosted: z.string(),
+  guide_self_hosted_row1_purpose: z.string(),
+
+  guide_self_hosted_row2_action: z.string(),
+  guide_self_hosted_row2_github: z.string(),
+  guide_self_hosted_row2_self_hosted: z.string(),
+  guide_self_hosted_row2_purpose: z.string(),
+
+  guide_self_hosted_row3_action: z.string(),
+  guide_self_hosted_row3_github: z.string(),
+  guide_self_hosted_row3_self_hosted: z.string(),
+  guide_self_hosted_row3_purpose: z.string(),
+
+  guide_self_hosted_row4_action: z.string(),
+  guide_self_hosted_row4_github: z.string(),
+  guide_self_hosted_row4_self_hosted: z.string(),
+  guide_self_hosted_row4_purpose: z.string(),
+
+  guide_self_hosted_row5_action: z.string(),
+  guide_self_hosted_row5_github: z.string(),
+  guide_self_hosted_row5_self_hosted: z.string(),
+  guide_self_hosted_row5_purpose: z.string(),
+
+  guide_self_hosted_row6_action: z.string(),
+  guide_self_hosted_row6_github: z.string(),
+  guide_self_hosted_row6_self_hosted: z.string(),
+  guide_self_hosted_row6_purpose: z.string(),
+
   swagger_explorer_title: z.string(),
   swagger_base_url_label: z.string(),
   swagger_collapse: z.string(),
