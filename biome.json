@@ -42,6 +42,11 @@
       "quoteStyle": "double"
     }
   },
+  "json": {
+    "formatter": {
+      "enabled": false
+    }
+  },
   "css": {
     "formatter": {
       "enabled": false
