@@ -47,9 +47,11 @@ export async function assertRejects(
 }
 
 export function test(
-  name: string | { name: string },
+  name: string | { name: string; timeout?: number },
   fn: () => void | Promise<void>,
+  timeout?: number,
 ): void {
   const testName = typeof name === "string" ? name : name.name;
-  bunTest(testName, fn);
+  const timeoutMs = typeof name === "object" ? name.timeout : timeout;
+  bunTest(testName, fn, timeoutMs);
 }

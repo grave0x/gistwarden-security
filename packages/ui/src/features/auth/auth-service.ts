@@ -184,12 +184,15 @@ export async function createNewVault(
     return err(res.error);
   }
 
-  const { key, updatedSyncConfig, updatedMpConfig } = res.value;
+  const { key, updatedSyncConfig, updatedMpConfig, encryptedVaultPayload } =
+    res.value;
 
   setAccountStore("masterPasswordConfig", updatedMpConfig);
   if (updatedSyncConfig) {
     setAccountStore("syncConfig", updatedSyncConfig);
   }
+
+  await setSessionItem(SESSION_KEY_ENCRYPTED_VAULT, encryptedVaultPayload);
 
   return await setupUnlockedSession(key, { folders: [], items: [], trash: [] });
 }

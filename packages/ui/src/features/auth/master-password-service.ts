@@ -11,7 +11,11 @@ export async function changeMasterPassword(
   const res = await changeMasterPasswordUseCase({
     currentPass,
     newPass,
-    vaultItems: accountStore.vaultItems,
+    payload: {
+      folders: accountStore.folders,
+      items: accountStore.vaultItems,
+      trash: accountStore.trashItems,
+    },
     currentSyncConfig: accountStore.syncConfig,
     currentMpConfig: accountStore.masterPasswordConfig,
     vaultMode: settingsStore.vaultMode,

@@ -111,6 +111,7 @@ export async function syncVaultToGist(
     trashItems?: TrashVaultItem[];
     folders?: Folder[];
     lastSync?: number;
+    skipRemoteMerge?: boolean;
   },
 ): Promise<Result<VaultItem[], TranslationKey>> {
   const trashItems = options.trashItems || [];
@@ -121,16 +122,24 @@ export async function syncVaultToGist(
   }
   const validatedList = parsedResult.data;
 
-  const mergeResult = await fetchAndMergeRemoteVaultUseCase(
-    validatedList,
-    trashItems,
-    key,
-    { vaultMode: options.vaultMode, folders, lastSync: options.lastSync },
-  );
-  if (mergeResult.isErr()) {
-    return err(mergeResult.error);
+  let finalPayloadToSave: VaultPayload = {
+    folders,
+    items: validatedList,
+    trash: trashItems,
+  };
+
+  if (!options.skipRemoteMerge) {
+    const mergeResult = await fetchAndMergeRemoteVaultUseCase(
+      validatedList,
+      trashItems,
+      key,
+      { vaultMode: options.vaultMode, folders, lastSync: options.lastSync },
+    );
+    if (mergeResult.isErr()) {
+      return err(mergeResult.error);
+    }
+    finalPayloadToSave = mergeResult.value;
   }
-  const finalPayloadToSave = mergeResult.value;
 
   const payloadObject = {
     folders: finalPayloadToSave.folders,

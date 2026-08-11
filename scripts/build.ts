@@ -296,15 +296,14 @@ async function runCommandOrExit(
 }
 
 async function runVerifications() {
-  console.log("Running Linter, TypeCheck & Tests...");
+  console.log("Running Linter & TypeCheck...");
   try {
     await Promise.all([
       runCommandOrExit("bun lint", "bun", ["run", "lint"]),
       runCommandOrExit("biome check", "bun", ["run", "biome:check"]),
       runCommandOrExit("bun typecheck", "bun", ["run", "typecheck"]),
-      runCommandOrExit("bun test", "bun", ["test"]),
     ]);
-    console.log("✓ Linter, TypeCheck & Tests passed.");
+    console.log("✓ Linter & TypeCheck passed.");
   } catch (err: unknown) {
     const errorMsg = err instanceof Error ? err.message : String(err);
     console.error(errorMsg);

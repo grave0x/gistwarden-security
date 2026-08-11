@@ -124,9 +124,9 @@ export const initialAccountState: Omit<AccountStore, "isLoaded"> = {
   folders: [],
   vaultItems: [],
   trashItems: [],
-  syncConfig: DEFAULT_SYNC_CONFIG,
-  pinConfig: DEFAULT_PIN_CONFIG,
-  masterPasswordConfig: DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
+  syncConfig: { ...DEFAULT_SYNC_CONFIG },
+  pinConfig: { ...DEFAULT_PIN_CONFIG },
+  masterPasswordConfig: { ...DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG },
 };
 
 export const initialUiState: UiSessionStore = {
@@ -179,6 +179,9 @@ export function applyVaultPayloadToStore(payload: VaultPayload): void {
 export function resetAccountStore(): void {
   setAccountStore({
     ...initialAccountState,
+    syncConfig: { ...DEFAULT_SYNC_CONFIG },
+    pinConfig: { ...DEFAULT_PIN_CONFIG },
+    masterPasswordConfig: { ...DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG },
     isLoaded: true,
   });
 }

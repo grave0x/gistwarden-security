@@ -51,6 +51,7 @@ export async function executeVaultMutationUseCase(
     vaultMode,
     trashItems: updatedPayload.trash,
     folders: updatedPayload.folders,
+    skipRemoteMerge: true,
   });
 
   if (uploadRes.isErr()) {

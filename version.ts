@@ -42,7 +42,9 @@ if (currentVersion.startsWith(datePrefix)) {
 
 manifest.version = newVersion;
 writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
-console.log(`✓ Updated src/manifest.json version to ${newVersion}`);
+console.log(
+  `✓ Updated apps/extension/src/manifest.json version to ${newVersion}`,
+);
 
 console.log(
   `\n🎉 Successfully bumped version from ${

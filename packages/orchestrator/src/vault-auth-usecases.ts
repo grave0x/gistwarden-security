@@ -99,12 +99,21 @@ export async function createNewVaultUseCase(
     await removeSessionItem(SESSION_KEY_PENDING_SYNC_TOKEN);
   }
 
+  const initialPayloadObject = { folders: [], items: [], trash: [] };
+  const encryptVaultRes = await encryptData(
+    JSON.stringify(initialPayloadObject),
+    key,
+  );
+  if (encryptVaultRes.isErr()) {
+    await clearDerivedKey();
+    return err(encryptVaultRes.error);
+  }
+
+  const { iv: vaultIv, ciphertext: vaultCiphertext } = encryptVaultRes.value;
   const payloadToUpload = JSON.stringify({
+    ciphertext: vaultCiphertext,
+    iv: vaultIv,
     salt: saltBase64,
-    items: [],
-    folders: [],
-    trash: [],
-    updatedAt: Date.now(),
   });
 
   const sendResult = await sendBackgroundMessage(uploadToGistRoute, {

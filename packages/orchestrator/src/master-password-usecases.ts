@@ -6,7 +6,7 @@ import {
   SESSION_KEY_VERIFICATION_CIPHERTEXT,
   SESSION_KEY_VERIFICATION_IV,
   type TranslationKey,
-  type VaultItem,
+  type VaultPayload,
 } from "@gistwarden/domain";
 import {
   DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
@@ -26,7 +26,7 @@ import { syncVaultToGist } from "./vault-sync-usecase.ts";
 export interface ChangeMasterPasswordOptions {
   currentPass: string;
   newPass: string;
-  vaultItems: VaultItem[];
+  payload: VaultPayload;
   currentSyncConfig: SyncConfig;
   currentMpConfig: MasterPasswordSecurityConfig;
   vaultMode: VaultMode;
@@ -63,10 +63,15 @@ export async function changeMasterPasswordUseCase(
   const newKey = deriveResult.value;
 
   const uploadRes = await syncVaultToGist(
-    options.vaultItems,
+    options.payload.items,
     newKey,
     newSaltBase64,
-    { vaultMode: options.vaultMode },
+    {
+      vaultMode: options.vaultMode,
+      folders: options.payload.folders,
+      trashItems: options.payload.trash,
+      skipRemoteMerge: true,
+    },
   );
   if (uploadRes.isErr()) {
     return err(uploadRes.error);

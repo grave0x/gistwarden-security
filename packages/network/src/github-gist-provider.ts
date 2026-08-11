@@ -92,7 +92,10 @@ export class GithubGistProvider implements ISyncProvider {
    */
   async checkVaultStatus(options?: SyncOptions): Promise<SyncStatusResult> {
     if (!options?.token) {
-      return { status: "exists" };
+      if (options?.hasStoredSalt) {
+        return { status: "exists" };
+      }
+      return { status: "new" };
     }
 
     const downloadRes = await this.download(options);
