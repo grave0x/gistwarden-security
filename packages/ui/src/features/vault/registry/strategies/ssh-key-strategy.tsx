@@ -1,15 +1,15 @@
-import { type Component, Show } from "solid-js";
 import {
   isSshKeyItem,
   type SshKeyVaultItem,
   type VaultItem,
   VaultItemType,
 } from "@gistwarden/domain";
+import { type Component, Show } from "solid-js";
 import { t } from "@/core/i18n.ts";
-import { SshKeyIcon } from "@/icons/svg/index.ts";
 import SshKeyDetailFields from "@/features/vault/item-detail/SshKeyDetailFields.tsx";
 import SshKeyEditFields from "@/features/vault/item-edit/SshKeyEditFields.tsx";
 import type { ItemEditFormState } from "@/features/vault/item-edit/vault-edit-helper.ts";
+import { SshKeyIcon } from "@/icons/svg/index.ts";
 import type {
   CopyMenuProps,
   DetailComponentProps,
@@ -80,9 +80,7 @@ export const sshKeyStrategy: VaultItemStrategy = {
   getEditTitle: () => t("edit_title_edit_ssh_key"),
   getDetailTitle: () => t("detail_title_ssh_key"),
   getToastMsg: (isEdit: boolean) =>
-    isEdit
-      ? t("edit_toast_updated_ssh_key")
-      : t("edit_toast_created_ssh_key"),
+    isEdit ? t("edit_toast_updated_ssh_key") : t("edit_toast_created_ssh_key"),
   renderIcon: (_item: VaultItem) => {
     return <SshKeyIcon />;
   },

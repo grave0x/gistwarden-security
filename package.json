@@ -14,6 +14,9 @@
     "test": "bun test tests/",
     "typecheck": "tsc --noEmit",
     "lint": "bun run scripts/custom_linter.ts",
+    "biome:check": "biome check .",
+    "biome:format": "biome format --write .",
+    "biome:lint": "biome lint .",
     "build:readme": "bun run scripts/generate_readme.ts",
     "bump-version": "bun run version.ts"
   },
@@ -36,6 +39,7 @@
     "zod": "^4.4.3"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.5.7",
     "@types/chrome": "^0.2.5",
     "@types/node": "^26.2.0",
     "@types/papaparse": "^5.5.2",

@@ -1,8 +1,8 @@
-import { type Component } from "solid-js";
-import { t } from "@/core/i18n.ts";
+import type { Component } from "solid-js";
+import FormField from "@/components/ui/FormField.tsx";
 import Input from "@/components/ui/Input.tsx";
 import Select from "@/components/ui/Select.tsx";
-import FormField from "@/components/ui/FormField.tsx";
+import { t } from "@/core/i18n.ts";
 import type { ItemEditFormState } from "@/features/vault/item-edit/vault-edit-helper.ts";
 
 const BRAND_OPTIONS = [
@@ -59,7 +59,8 @@ export const CardEditFields: Component<CardEditFieldsProps> = (props) => {
             type="text"
             value={props.formState.cardholderName}
             onInput={(e) =>
-              props.updateForm("cardholderName", e.currentTarget.value)}
+              props.updateForm("cardholderName", e.currentTarget.value)
+            }
             placeholder="e.g. John Doe"
           />
         </FormField>
@@ -73,7 +74,8 @@ export const CardEditFields: Component<CardEditFieldsProps> = (props) => {
               class="password-font"
               value={props.formState.cardNumber}
               onInput={(e) =>
-                props.updateForm("cardNumber", e.currentTarget.value)}
+                props.updateForm("cardNumber", e.currentTarget.value)
+              }
               placeholder="•••• •••• •••• ••••"
             />
           </div>
@@ -85,22 +87,21 @@ export const CardEditFields: Component<CardEditFieldsProps> = (props) => {
             id="card-brand"
             value={props.formState.cardBrand}
             onChange={(e) =>
-              props.updateForm("cardBrand", e.currentTarget.value)}
+              props.updateForm("cardBrand", e.currentTarget.value)
+            }
             options={BRAND_OPTIONS}
           />
         </FormField>
 
         {/* Expiration date */}
         <div class="grid-2">
-          <FormField
-            id="card-exp-month"
-            label={t("detail_card_expiration")}
-          >
+          <FormField id="card-exp-month" label={t("detail_card_expiration")}>
             <Select
               id="card-exp-month"
               value={props.formState.cardExpMonth}
               onChange={(e) =>
-                props.updateForm("cardExpMonth", e.currentTarget.value)}
+                props.updateForm("cardExpMonth", e.currentTarget.value)
+              }
               options={EXP_MONTH_OPTIONS}
             />
           </FormField>
@@ -110,7 +111,8 @@ export const CardEditFields: Component<CardEditFieldsProps> = (props) => {
               type="number"
               value={props.formState.cardExpYear}
               onInput={(e) =>
-                props.updateForm("cardExpYear", e.currentTarget.value)}
+                props.updateForm("cardExpYear", e.currentTarget.value)
+              }
               placeholder="2026"
             />
           </FormField>
@@ -125,7 +127,8 @@ export const CardEditFields: Component<CardEditFieldsProps> = (props) => {
               class="password-font"
               value={props.formState.cardCode}
               onInput={(e) =>
-                props.updateForm("cardCode", e.currentTarget.value)}
+                props.updateForm("cardCode", e.currentTarget.value)
+              }
               placeholder="123"
             />
           </div>

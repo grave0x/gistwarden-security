@@ -1,4 +1,4 @@
-import { type Component } from "solid-js";
+import type { Component } from "solid-js";
 
 export const PasskeyIllustration: Component = () => (
   <svg viewBox="0 0 200 150" class="tour-svg">

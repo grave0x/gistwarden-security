@@ -19,9 +19,10 @@ export interface SelectOption {
 interface SelectProps {
   id?: string;
   value?: string | number;
-  onChange?: (
-    e: { currentTarget: { value: string }; target: { value: string } },
-  ) => void;
+  onChange?: (e: {
+    currentTarget: { value: string };
+    target: { value: string };
+  }) => void;
   options: SelectOption[];
   class?: string;
   disabled?: boolean;
@@ -39,7 +40,9 @@ export const Select: Component<SelectProps> = (props) => {
   const handleClickOutside = (e: MouseEvent) => {
     const target = e.target;
     if (
-      containerRef && target instanceof Node && !containerRef.contains(target)
+      containerRef &&
+      target instanceof Node &&
+      !containerRef.contains(target)
     ) {
       setIsOpen(false);
       setSearchQuery("");
@@ -63,9 +66,13 @@ export const Select: Component<SelectProps> = (props) => {
   });
 
   const selectedOption = () => {
-    return props.options.find((opt) =>
-      !opt.isHeader && String(opt.value) === String(props.value)
-    ) || props.options.find((opt) => !opt.isHeader) || props.options[0];
+    return (
+      props.options.find(
+        (opt) => !opt.isHeader && String(opt.value) === String(props.value),
+      ) ||
+      props.options.find((opt) => !opt.isHeader) ||
+      props.options[0]
+    );
   };
 
   const filteredOptions = () => {
@@ -131,7 +138,9 @@ export const Select: Component<SelectProps> = (props) => {
                   ref={searchInputRef}
                   type="text"
                   class="select-search-input"
-                  placeholder={props.searchPlaceholder || t("select_search_placeholder")}
+                  placeholder={
+                    props.searchPlaceholder || t("select_search_placeholder")
+                  }
                   value={searchQuery()}
                   onInput={(e) => setSearchQuery(e.currentTarget.value)}
                   onClick={(e) => e.stopPropagation()}
@@ -144,14 +153,14 @@ export const Select: Component<SelectProps> = (props) => {
                 <Show
                   when={!opt.isHeader}
                   fallback={
-                    <div class="select-dropdown-header">
-                      {opt.label}
-                    </div>
+                    <div class="select-dropdown-header">{opt.label}</div>
                   }
                 >
                   <div
                     class={`select-dropdown-item ${
-                      String(opt.value) === String(props.value) ? "selected" : ""
+                      String(opt.value) === String(props.value)
+                        ? "selected"
+                        : ""
                     } ${opt.disabled ? "disabled" : ""}`}
                     onClick={() => !opt.disabled && handleSelect(opt.value)}
                   >

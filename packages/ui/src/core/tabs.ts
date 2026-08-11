@@ -1,8 +1,9 @@
 /**
  * Utility functions for interacting with Chrome tabs
  */
-import { err, ok, Result } from "neverthrow";
+
 import { logger, type TranslationKey } from "@gistwarden/domain";
+import { err, ok, type Result } from "neverthrow";
 
 export async function getCurrentTab(): Promise<
   Result<chrome.tabs.Tab | null, TranslationKey>
@@ -29,7 +30,9 @@ export async function sendMessageToTab(
   message: unknown,
 ): Promise<Result<unknown, TranslationKey>> {
   if (
-    typeof chrome === "undefined" || !chrome.tabs || !chrome.tabs.sendMessage
+    typeof chrome === "undefined" ||
+    !chrome.tabs ||
+    !chrome.tabs.sendMessage
   ) {
     return err("tab_error_send_message");
   }
@@ -46,11 +49,13 @@ export async function sendMessageToTab(
 /**
  * Capture the visible area of the currently active tab in the specified window.
  */
-export async function captureVisibleTab(
-  options?: { format?: "jpeg" | "png"; quality?: number },
-): Promise<Result<string, TranslationKey>> {
+export async function captureVisibleTab(options?: {
+  format?: "jpeg" | "png";
+  quality?: number;
+}): Promise<Result<string, TranslationKey>> {
   if (
-    typeof chrome === "undefined" || !chrome.tabs ||
+    typeof chrome === "undefined" ||
+    !chrome.tabs ||
     !chrome.tabs.captureVisibleTab
   ) {
     return err("tab_error_capture");
@@ -97,7 +102,8 @@ export async function openTab(
  */
 export async function openPopup(): Promise<Result<void, TranslationKey>> {
   if (
-    typeof chrome === "undefined" || !chrome.action ||
+    typeof chrome === "undefined" ||
+    !chrome.action ||
     !chrome.action.openPopup
   ) {
     return err("tab_error_open");
@@ -111,4 +117,3 @@ export async function openPopup(): Promise<Result<void, TranslationKey>> {
     return err("tab_error_open");
   }
 }
-

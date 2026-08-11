@@ -1,14 +1,13 @@
-import { assert, assertEquals, test } from "./assert.ts";
 import { isLoginItem, parseCSV, type VaultItem } from "@gistwarden/domain";
 import {
   parseAndValidateBitwardenCsv,
   parseAndValidateBrowserCsv,
 } from "../packages/ui/src/features/sync/csv-import.ts";
+import { assert, assertEquals, test } from "./assert.ts";
 
 test("CSV Parser - RFC 4180 parsing", () => {
   // 1. Simple parsing
-  const simpleCsv =
-    `url,username,password\nhttps://google.com,manh,kien\nhttps://facebook.com,kien,manh`;
+  const simpleCsv = `url,username,password\nhttps://google.com,manh,kien\nhttps://facebook.com,kien,manh`;
   const parsedSimple = parseCSV(simpleCsv);
   assertEquals(parsedSimple.length, 3);
   assertEquals(parsedSimple[0], ["url", "username", "password"]);
@@ -16,8 +15,7 @@ test("CSV Parser - RFC 4180 parsing", () => {
   assertEquals(parsedSimple[2], ["https://facebook.com", "kien", "manh"]);
 
   // 2. Quoted fields and commas inside quotes
-  const quotedCsv =
-    `"url","username","password","note"\n"https://google.com","manh","kien","some, note with, commas"\n"https://facebook.com","kien","manh",""`;
+  const quotedCsv = `"url","username","password","note"\n"https://google.com","manh","kien","some, note with, commas"\n"https://facebook.com","kien","manh",""`;
   const parsedQuoted = parseCSV(quotedCsv);
   assertEquals(parsedQuoted.length, 3);
   assert(parsedQuoted[1]);
@@ -85,8 +83,7 @@ test("CSV Import - Parse different password manager exports", () => {
   }
 
   // 3. Bitwarden CSV format
-  const bitwardenCsv =
-    `folder,favorite,type,name,notes,fields,reprompt,login_uri,login_username,login_password,login_totp
+  const bitwardenCsv = `folder,favorite,type,name,notes,fields,reprompt,login_uri,login_username,login_password,login_totp
 "Social",1,"login","Facebook","Notes","pin: 1234",0,"https://facebook.com","uongsuadaubung","12345","TOTPSECRET"`;
 
   const resBw = parseAndValidateBitwardenCsv(bitwardenCsv, existingItems);

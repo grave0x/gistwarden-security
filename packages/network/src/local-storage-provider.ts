@@ -1,26 +1,35 @@
-import { err, ok, type Result } from "neverthrow";
-import type {
-  GistId,
-  GitHubAccessToken,
-  TranslationKey,
+import {
+  type GistId,
+  type GitHubAccessToken,
+  safeJsonParse,
+  type TranslationKey,
 } from "@gistwarden/domain";
 import {
+  GistPayloadSchema,
   getLocalVaultPayload,
   removeLocalVaultPayload,
   setLocalVaultPayload,
 } from "@gistwarden/repository";
+import { err, ok, type Result } from "neverthrow";
 import type {
   ISyncProvider,
   SyncOptions,
   SyncProviderId,
   SyncResult,
+  SyncStatusResult,
   SyncValidationResult,
 } from "./sync-provider-types.ts";
 
+/**
+ * Provider quản lý lưu trữ Vault hoàn toàn cục bộ trong Local Storage.
+ */
 export class LocalStorageProvider implements ISyncProvider {
   readonly id: SyncProviderId = "local_storage";
   readonly name = "Local Vault";
 
+  /**
+   * Lưu chuỗi Vault mã hóa vào Local Storage dưới key `gistwarden_local_vault_payload`.
+   */
   async upload(
     content: string,
     _options?: SyncOptions,
@@ -32,6 +41,9 @@ export class LocalStorageProvider implements ISyncProvider {
     return ok({ content });
   }
 
+  /**
+   * Đọc chuỗi Vault mã hóa từ Local Storage.
+   */
   async download(
     _options?: SyncOptions,
   ): Promise<Result<SyncResult, TranslationKey>> {
@@ -45,6 +57,9 @@ export class LocalStorageProvider implements ISyncProvider {
     return ok({ content: res.value });
   }
 
+  /**
+   * Xóa payload mã hóa Local Vault khỏi Local Storage.
+   */
   async delete(
     _targetId?: GistId,
     _options?: SyncOptions,
@@ -52,6 +67,9 @@ export class LocalStorageProvider implements ISyncProvider {
     return await removeLocalVaultPayload();
   }
 
+  /**
+   * Giả lập xác thực cấu hình cho Local Vault (luôn thành công nội bộ).
+   */
   async validateConfig(
     _configToken?: GitHubAccessToken,
   ): Promise<Result<SyncValidationResult, TranslationKey>> {
@@ -61,9 +79,40 @@ export class LocalStorageProvider implements ISyncProvider {
     });
   }
 
+  /**
+   * Kiểm tra Local Vault đã được cài đặt cấu hình/salt hay chưa.
+   */
   async isConfigured(options?: SyncOptions): Promise<boolean> {
     return Promise.resolve(
       options?.hasStoredSalt !== undefined ? options.hasStoredSalt : true,
     );
+  }
+
+  /**
+   * Kiểm tra đa hình trạng thái của Local Vault:
+   * - Có salt trong settings -> "exists"
+   * - Đọc được salt từ payload địa phương -> "exists" (khôi phục salt)
+   * - Thiếu cả 2 -> "new" (cần khởi tạo Vault mới)
+   */
+  async checkVaultStatus(options?: SyncOptions): Promise<SyncStatusResult> {
+    if (options?.hasStoredSalt) {
+      return { status: "exists" };
+    }
+
+    const downloadRes = await this.download();
+    if (downloadRes.isOk() && downloadRes.value.content) {
+      const payloadJsonRes = safeJsonParse(downloadRes.value.content);
+      if (payloadJsonRes.isOk()) {
+        const parsed = GistPayloadSchema.safeParse(payloadJsonRes.value);
+        if (parsed.success && parsed.data.salt) {
+          return {
+            status: "exists",
+            salt: parsed.data.salt,
+          };
+        }
+      }
+    }
+
+    return { status: "new" };
   }
 }

@@ -707,224 +707,328 @@ export default {
 
   guide_app_lead: "Customize Light/Dark Mode themes and application languages.",
   guide_app_theme_title: "Appearance Theme",
-  guide_app_theme_desc: "Seamlessly switch between Dark and Light themes with balanced Bitwarden color palettes.",
+  guide_app_theme_desc:
+    "Seamlessly switch between Dark and Light themes with balanced Bitwarden color palettes.",
   guide_app_lang_title: "Multilingual Support (English / Vietnamese)",
-  guide_app_lang_desc: "100% supported interface and user guides in both English and Vietnamese.",
+  guide_app_lang_desc:
+    "100% supported interface and user guides in both English and Vietnamese.",
 
-  guide_report_lead: "Check overall vault health and scan for breached passwords (HIBP).",
+  guide_report_lead:
+    "Check overall vault health and scan for breached passwords (HIBP).",
   guide_report_step1_title: "Exposed Passwords Report",
-  guide_report_step1_desc: "Scan all vault passwords using HIBP k-Anonymity (first 5 SHA-1 hash chars). Your raw password never leaves your browser, yet accurately identifies if any password appeared in major data breaches.",
+  guide_report_step1_desc:
+    "Scan all vault passwords using HIBP k-Anonymity (first 5 SHA-1 hash chars). Your raw password never leaves your browser, yet accurately identifies if any password appeared in major data breaches.",
   guide_report_step2_title: "Reused Passwords Report",
-  guide_report_step2_desc: "Detect accounts using identical passwords across multiple websites. Reusing passwords creates chain-reaction risks when a single service gets breached.",
+  guide_report_step2_desc:
+    "Detect accounts using identical passwords across multiple websites. Reusing passwords creates chain-reaction risks when a single service gets breached.",
   guide_report_step3_title: "Weak Passwords Report",
-  guide_report_step3_desc: "Evaluate password strength based on length, character diversity (uppercase, lowercase, numbers, symbols), and detect easily guessable patterns.",
+  guide_report_step3_desc:
+    "Evaluate password strength based on length, character diversity (uppercase, lowercase, numbers, symbols), and detect easily guessable patterns.",
   guide_report_step4_title: "Unsecured HTTP Websites Report",
-  guide_report_step4_desc: "Alert on website URIs stored in your vault that still use unencrypted http:// protocols instead of secure https://.",
+  guide_report_step4_desc:
+    "Alert on website URIs stored in your vault that still use unencrypted http:// protocols instead of secure https://.",
   guide_report_step5_title: "Inactive 2FA Accounts Report",
-  guide_report_step5_desc: "List important accounts (financial, email, social media) that lack two-factor TOTP configuration so you can promptly add 2FA protection.",
+  guide_report_step5_desc:
+    "List important accounts (financial, email, social media) that lack two-factor TOTP configuration so you can promptly add 2FA protection.",
 
   // Vault Management Guides
-  guide_vm_logins_lead: "Manage web login accounts, URIs, smart domain matching options, and item security.",
+  guide_vm_logins_lead:
+    "Manage web login accounts, URIs, smart domain matching options, and item security.",
   guide_vm_logins_card1_title: "Detailed Domain Match Modes & Use Cases",
-  guide_vm_logins_card1_item1: "Base Domain (Default): Matches all subdomains. Example: Saving 'https://github.com' suggests credentials on 'gist.github.com', 'education.github.com', and 'login.github.com'. Recommended for 90% of standard web services.",
-  guide_vm_logins_card1_item2: "Host / Exact Host: Matches the exact hostname only. Example: Saving 'https://mail.google.com' offers autofill on 'mail.google.com' ONLY, NOT on 'drive.google.com' or 'calendar.google.com'.",
-  guide_vm_logins_card1_item3: "Exact / Full URL: Matches exact characters including Port and Path. Example: Saving 'https://192.168.1.1:8080/admin/login' matches only this admin login URL, NOT '/user/login'. Ideal for Routers, NAS servers, or internal admin portals.",
-  guide_vm_logins_card1_item4: "RegEx Pattern: Matches via flexible Regular Expressions. Example: Pattern '^https:\\/\\/(dev|staging)\\.company\\.com' offers autofill on both 'dev.company.com' and 'staging.company.com', while skipping 'prod.company.com'. Great for Developers & SysAdmins.",
-  guide_vm_logins_card1_item5: "Never: Never offers or displays autofill suggestions for this item on any site (prevents malicious scripts from auto-capturing credentials). Ideal for high-risk accounts where manual copy/paste is preferred.",
+  guide_vm_logins_card1_item1:
+    "Base Domain (Default): Matches all subdomains. Example: Saving 'https://github.com' suggests credentials on 'gist.github.com', 'education.github.com', and 'login.github.com'. Recommended for 90% of standard web services.",
+  guide_vm_logins_card1_item2:
+    "Host / Exact Host: Matches the exact hostname only. Example: Saving 'https://mail.google.com' offers autofill on 'mail.google.com' ONLY, NOT on 'drive.google.com' or 'calendar.google.com'.",
+  guide_vm_logins_card1_item3:
+    "Exact / Full URL: Matches exact characters including Port and Path. Example: Saving 'https://192.168.1.1:8080/admin/login' matches only this admin login URL, NOT '/user/login'. Ideal for Routers, NAS servers, or internal admin portals.",
+  guide_vm_logins_card1_item4:
+    "RegEx Pattern: Matches via flexible Regular Expressions. Example: Pattern '^https:\\/\\/(dev|staging)\\.company\\.com' offers autofill on both 'dev.company.com' and 'staging.company.com', while skipping 'prod.company.com'. Great for Developers & SysAdmins.",
+  guide_vm_logins_card1_item5:
+    "Never: Never offers or displays autofill suggestions for this item on any site (prevents malicious scripts from auto-capturing credentials). Ideal for high-risk accounts where manual copy/paste is preferred.",
   guide_vm_logins_card2_title: "Multiple URIs Support",
-  guide_vm_logins_card2_desc: "Each login item allows storing multiple URIs with distinct match options.",
+  guide_vm_logins_card2_desc:
+    "Each login item allows storing multiple URIs with distinct match options.",
   guide_vm_logins_card3_title: "Master Password Re-prompt",
-  guide_vm_logins_card3_desc: "Enable this protection for sensitive financial or high-risk accounts. Every time you view, edit, or copy the password, {APP_NAME} will require re-entering your Master Password to verify identity.",
+  guide_vm_logins_card3_desc:
+    "Enable this protection for sensitive financial or high-risk accounts. Every time you view, edit, or copy the password, {APP_NAME} will require re-entering your Master Password to verify identity.",
   guide_vm_logins_card4_title: "Item Password Revision History",
-  guide_vm_logins_card4_desc: "Whenever you update an item's password, {APP_NAME} automatically saves previous passwords into the item's revision history. Open item details ➔ click 'Password History' to view or restore previous passwords anytime.",
+  guide_vm_logins_card4_desc:
+    "Whenever you update an item's password, {APP_NAME} automatically saves previous passwords into the item's revision history. Open item details ➔ click 'Password History' to view or restore previous passwords anytime.",
 
-  guide_vm_notes_lead: "Securely store private text, account recovery codes, software keys, or sensitive notes.",
+  guide_vm_notes_lead:
+    "Securely store private text, account recovery codes, software keys, or sensitive notes.",
   guide_vm_notes_card_title: "Secure Note Privacy",
-  guide_vm_notes_card_desc: "All text in Secure Notes is encrypted directly on your device before syncing. You can also turn on Master Password Reprompt when opening.",
+  guide_vm_notes_card_desc:
+    "All text in Secure Notes is encrypted directly on your device before syncing. You can also turn on Master Password Reprompt when opening.",
 
-  guide_vm_cards_lead: "Store credit card details and personal identity information for 1-click form autofill and payments.",
+  guide_vm_cards_lead:
+    "Store credit card details and personal identity information for 1-click form autofill and payments.",
   guide_vm_cards_card1_title: "Credit Cards",
-  guide_vm_cards_card1_desc: "Store card number, CVV code, expiration date, and cardholder name under full encryption.",
+  guide_vm_cards_card1_desc:
+    "Store card number, CVV code, expiration date, and cardholder name under full encryption.",
   guide_vm_cards_card2_title: "Identities",
-  guide_vm_cards_card2_desc: "Store full name, phone number, address, and ID/passport details for instant checkout autofill.",
+  guide_vm_cards_card2_desc:
+    "Store full name, phone number, address, and ID/passport details for instant checkout autofill.",
 
-  guide_vm_ssh_lead: "Manage SSH Public/Private Key pairs used for secure remote server access.",
+  guide_vm_ssh_lead:
+    "Manage SSH Public/Private Key pairs used for secure remote server access.",
   guide_vm_ssh_card_title: "Professional SSH Key Management",
-  guide_vm_ssh_card_desc: "Store OpenSSH/PEM private keys along with Key Fingerprint and Passphrases.",
+  guide_vm_ssh_card_desc:
+    "Store OpenSSH/PEM private keys along with Key Fingerprint and Passphrases.",
 
-  guide_vm_fields_lead: "Extend vault item fields with flexible custom data types.",
+  guide_vm_fields_lead:
+    "Extend vault item fields with flexible custom data types.",
   guide_vm_fields_card_title: "Custom Field Types",
   guide_vm_fields_item1: "Text: Standard text field.",
-  guide_vm_fields_item2: "Hidden: Obfuscated text (PIN codes, security answers).",
+  guide_vm_fields_item2:
+    "Hidden: Obfuscated text (PIN codes, security answers).",
   guide_vm_fields_item3: "Boolean: Toggle switch (True/False).",
-  guide_vm_fields_item4: "Linked: Automatically references values from another field.",
+  guide_vm_fields_item4:
+    "Linked: Automatically references values from another field.",
 
-  guide_vm_folders_lead: "Organize item data with Folders and safely manage deleted items in Trash.",
+  guide_vm_folders_lead:
+    "Organize item data with Folders and safely manage deleted items in Trash.",
   guide_vm_folders_sec1_title: "1. Folder Creation & Management",
   guide_vm_folders_step1_title: "Create New Folders",
-  guide_vm_folders_step1_desc: "Open {APP_NAME} → navigate to {settings_header} → {settings_vault_options_label} → {folder_management_title}. Enter folder name and click Save.",
+  guide_vm_folders_step1_desc:
+    "Open {APP_NAME} → navigate to {settings_header} → {settings_vault_options_label} → {folder_management_title}. Enter folder name and click Save.",
   guide_vm_folders_step2_title: "Assign Items to Folders",
-  guide_vm_folders_step2_desc: "When Adding or Editing a vault item, select the folder in the 'Folder' dropdown. Alternatively, select multiple items in the Vault list and click 'Move to Folder'.",
+  guide_vm_folders_step2_desc:
+    "When Adding or Editing a vault item, select the folder in the 'Folder' dropdown. Alternatively, select multiple items in the Vault list and click 'Move to Folder'.",
   guide_vm_folders_step3_title: "Edit or Delete Folders",
-  guide_vm_folders_step3_desc: "In the Folder list, click Edit to rename or Trash icon to remove a folder (Note: Deleting a folder does not delete the items inside).",
+  guide_vm_folders_step3_desc:
+    "In the Folder list, click Edit to rename or Trash icon to remove a folder (Note: Deleting a folder does not delete the items inside).",
   guide_vm_trash_sec2_title: "2. Trash Management & Recovery",
   guide_vm_trash_step1_title: "Moving Items to Trash",
-  guide_vm_trash_step1_desc: "Deleting an item moves it safely to the Trash instead of removing it permanently, preventing accidental loss.",
+  guide_vm_trash_step1_desc:
+    "Deleting an item moves it safely to the Trash instead of removing it permanently, preventing accidental loss.",
   guide_vm_trash_step2_title: "Accessing Trash & Restoring Items",
-  guide_vm_trash_step2_desc: "Open {APP_NAME} → navigate to {settings_header} → {settings_vault_options_label} → {trash_title}. Click 'Restore' next to an item to put it back into your active Vault.",
+  guide_vm_trash_step2_desc:
+    "Open {APP_NAME} → navigate to {settings_header} → {settings_vault_options_label} → {trash_title}. Click 'Restore' next to an item to put it back into your active Vault.",
   guide_vm_trash_step3_title: "Permanent Deletion (Purge)",
-  guide_vm_trash_step3_desc: "Click 'Purge' on individual items or 'Empty Trash' to permanently erase data from device and GitHub Gist. Note: Purged items cannot be recovered.",
+  guide_vm_trash_step3_desc:
+    "Click 'Purge' on individual items or 'Empty Trash' to permanently erase data from device and GitHub Gist. Note: Purged items cannot be recovered.",
 
   // Getting Started Guides
-  guide_start_ov_lead: "{APP_NAME} is a Zero-Knowledge encrypted personal password vault solution, automatically syncing to your private personal cloud via GitHub Gist.",
+  guide_start_ov_lead:
+    "{APP_NAME} is a Zero-Knowledge encrypted personal password vault solution, automatically syncing to your private personal cloud via GitHub Gist.",
   guide_start_ov_card1_title: "Zero-Knowledge Encryption Security",
-  guide_start_ov_card1_desc: "All vault data is encrypted directly on your device before transmission or storage. Absolutely no one (including developers or cloud storage providers) can read your data without your Master Password.",
+  guide_start_ov_card1_desc:
+    "All vault data is encrypted directly on your device before transmission or storage. Absolutely no one (including developers or cloud storage providers) can read your data without your Master Password.",
   guide_start_ov_card2_title: "Private Personal Cloud Sync",
-  guide_start_ov_card2_desc: "Instead of sending data to third-party servers, {APP_NAME} syncs data directly into a Private Gist on your personal GitHub account.",
+  guide_start_ov_card2_desc:
+    "Instead of sending data to third-party servers, {APP_NAME} syncs data directly into a Private Gist on your personal GitHub account.",
   guide_start_ov_card3_title: "Passwordless Login (Passkeys)",
-  guide_start_ov_card3_desc: "Support storing and logging in with Passkeys (FIDO2 / WebAuthn) using biometrics or device PIN, eliminating password leaks.",
+  guide_start_ov_card3_desc:
+    "Support storing and logging in with Passkeys (FIDO2 / WebAuthn) using biometrics or device PIN, eliminating password leaks.",
 
-  guide_start_mp_lead: "The Master Password is the sole key used to decrypt and protect your entire vault data.",
+  guide_start_mp_lead:
+    "The Master Password is the sole key used to decrypt and protect your entire vault data.",
   guide_start_mp_step1_title: "1. Master Password Role",
-  guide_start_mp_step1_desc: "The Master Password unlocks your vault and acts as the root key encrypting all items. Make it strong and memorable.",
+  guide_start_mp_step1_desc:
+    "The Master Password unlocks your vault and acts as the root key encrypting all items. Make it strong and memorable.",
   guide_start_mp_step2_title: "2. No Master Password Storage Principle",
-  guide_start_mp_step2_desc: "{APP_NAME} adheres to Zero-Knowledge: the app never stores or sends your Master Password anywhere. If forgotten, data cannot be recovered.",
+  guide_start_mp_step2_desc:
+    "{APP_NAME} adheres to Zero-Knowledge: the app never stores or sends your Master Password anywhere. If forgotten, data cannot be recovered.",
   guide_start_mp_step3_title: "3. How to Change Master Password",
-  guide_start_mp_step3_desc: "Change your Master Password anytime in {settings_header} → {settings_account_security} → {settings_change_mp}. Re-encrypts your entire vault with the new key.",
+  guide_start_mp_step3_desc:
+    "Change your Master Password anytime in {settings_header} → {settings_account_security} → {settings_change_mp}. Re-encrypts your entire vault with the new key.",
 
-  guide_start_lock_lead: "Automatically lock vault data when inactive or on browser restart.",
+  guide_start_lock_lead:
+    "Automatically lock vault data when inactive or on browser restart.",
   guide_start_lock_step1_title: "1. Open Account Security Settings",
-  guide_start_lock_step1_desc: "Open {APP_NAME} → navigate to {settings_header} → {settings_account_security}.",
+  guide_start_lock_step1_desc:
+    "Open {APP_NAME} → navigate to {settings_header} → {settings_account_security}.",
   guide_start_lock_step2_title: "2. Customize Vault Timeout",
-  guide_start_lock_step2_desc: "Choose timeout duration: On Restart, 1 minute, 5 minutes, 15 minutes, 30 minutes, 1 hour, or 4 hours.",
+  guide_start_lock_step2_desc:
+    "Choose timeout duration: On Restart, 1 minute, 5 minutes, 15 minutes, 30 minutes, 1 hour, or 4 hours.",
   guide_start_lock_step3_title: "3. Choose Timeout Action",
-  guide_start_lock_step3_lock: "Lock: Clears decryption keys from RAM. Requires Master Password or PIN to unlock.",
-  guide_start_lock_step3_logout: "Log out: Clears session state and requires logging in again.",
+  guide_start_lock_step3_lock:
+    "Lock: Clears decryption keys from RAM. Requires Master Password or PIN to unlock.",
+  guide_start_lock_step3_logout:
+    "Log out: Clears session state and requires logging in again.",
   guide_start_lock_step4_title: "4. PIN Unlock & Master Password Requirements",
-  guide_start_lock_step4_desc: "Enable Unlock with PIN for smooth access. Check Require Master Password on Restart for maximum security.",
+  guide_start_lock_step4_desc:
+    "Enable Unlock with PIN for smooth access. Check Require Master Password on Restart for maximum security.",
 
   guide_start_pin_title: "Configure & Use PIN Quick Unlock",
-  guide_start_pin_lead: "PIN code allows unlocking your vault quickly with a short numeric code without re-typing a long Master Password every time.",
+  guide_start_pin_lead:
+    "PIN code allows unlocking your vault quickly with a short numeric code without re-typing a long Master Password every time.",
   guide_start_pin_step1_title: "1. Turn on Unlock with PIN option",
-  guide_start_pin_step1_desc: "Open {APP_NAME} ➔ go to {settings_header} ➔ {settings_account_security}. Check the 'Unlock with PIN' option.",
+  guide_start_pin_step1_desc:
+    "Open {APP_NAME} ➔ go to {settings_header} ➔ {settings_account_security}. Check the 'Unlock with PIN' option.",
   guide_start_pin_step2_title: "2. Set up your new PIN code (Minimum 4 digits)",
-  guide_start_pin_step2_desc: "A PIN setup dialog will appear. Enter your preferred PIN (at least 4 digits) and click Confirm to save.",
+  guide_start_pin_step2_desc:
+    "A PIN setup dialog will appear. Enter your preferred PIN (at least 4 digits) and click Confirm to save.",
   guide_start_pin_step3_title: "3. Quick unlock with PIN when vault locks",
-  guide_start_pin_step3_desc: "When the vault is locked due to timeout, simply type your PIN code and click Unlock. Encryption keys will be restored smoothly without typing your full Master Password.",
+  guide_start_pin_step3_desc:
+    "When the vault is locked due to timeout, simply type your PIN code and click Unlock. Encryption keys will be restored smoothly without typing your full Master Password.",
   guide_start_pin_note_title: "Important Security Note on PIN:",
-  guide_start_pin_note_desc: "PIN code is stored securely in local device storage. If you enter incorrect PIN 3 times, PIN mode is automatically disabled and you will be logged out to prevent brute-force attempts. Logging out of your account also removes PIN data automatically.",
+  guide_start_pin_note_desc:
+    "PIN code is stored securely in local device storage. If you enter incorrect PIN 3 times, PIN mode is automatically disabled and you will be logged out to prevent brute-force attempts. Logging out of your account also removes PIN data automatically.",
 
   // Passkey & TOTP Authenticator Guides
-  guide_passkey_concept_lead: "Passkey (FIDO2 / WebAuthn standard) is the most secure passwordless login solution today, providing absolute Anti-Phishing protection.",
+  guide_passkey_concept_lead:
+    "Passkey (FIDO2 / WebAuthn standard) is the most secure passwordless login solution today, providing absolute Anti-Phishing protection.",
   guide_passkey_concept_card1_title: "Absolute Anti-Phishing",
-  guide_passkey_concept_card1_desc: "Passkeys are bound to the exact domain name of a website. Even if you visit a phishing site, Passkey will never authenticate.",
+  guide_passkey_concept_card1_desc:
+    "Passkeys are bound to the exact domain name of a website. Even if you visit a phishing site, Passkey will never authenticate.",
   guide_passkey_concept_card2_title: "Asymmetric Key Pair Security",
-  guide_passkey_concept_card2_desc: "Each Passkey consists of a public key sent to the site and a private key stored safely in your encrypted {APP_NAME} vault.",
+  guide_passkey_concept_card2_desc:
+    "Each Passkey consists of a public key sent to the site and a private key stored safely in your encrypted {APP_NAME} vault.",
 
-  guide_passkey_gmig_lead: "Migrate 2FA codes from Google Authenticator to {APP_NAME}.",
+  guide_passkey_gmig_lead:
+    "Migrate 2FA codes from Google Authenticator to {APP_NAME}.",
   guide_passkey_gmig_step1_title: "1. Open Google Authenticator App",
   guide_passkey_gmig_step1_desc: "Open Google Authenticator on your phone.",
   guide_passkey_gmig_step2_title: "2. Open Transfer Codes Menu",
-  guide_passkey_gmig_step2_desc: "Tap the top menu icon and select Transfer codes.",
+  guide_passkey_gmig_step2_desc:
+    "Tap the top menu icon and select Transfer codes.",
   guide_passkey_gmig_step3_title: "3. Select Export Codes",
   guide_passkey_gmig_step3_desc: "Select Export codes.",
   guide_passkey_gmig_step4_title: "4. Select Codes to Export",
-  guide_passkey_gmig_step4_desc: "Check the 2FA codes you wish to transfer to {APP_NAME}.",
+  guide_passkey_gmig_step4_desc:
+    "Check the 2FA codes you wish to transfer to {APP_NAME}.",
   guide_passkey_gmig_step5_title: "5. Scan Migration QR Code into {APP_NAME}",
-  guide_passkey_gmig_step5_desc: "The export QR code displays. Open {APP_NAME} → {settings_header} → {settings_vault_options_label} → {settings_tools_google_auth} to scan or upload the QR image.",
+  guide_passkey_gmig_step5_desc:
+    "The export QR code displays. Open {APP_NAME} → {settings_header} → {settings_vault_options_label} → {settings_tools_google_auth} to scan or upload the QR image.",
 
   // Autofill & Password Generator Guides
-  guide_auto_lead: "Automatically detect forms and autofill Username / Password on websites.",
+  guide_auto_lead:
+    "Automatically detect forms and autofill Username / Password on websites.",
   guide_auto_card1_title: "Gistwarden Icon in Input Fields",
-  guide_auto_card1_desc: "Clicking any login field on a website displays the {APP_NAME} icon, allowing 1-click account selection and instant autofill.",
+  guide_auto_card1_desc:
+    "Clicking any login field on a website displays the {APP_NAME} icon, allowing 1-click account selection and instant autofill.",
   guide_auto_card2_title: "Auto-Submit Forms",
-  guide_auto_card2_desc: "Enable Auto-Submit after autofill in {settings_header} → {settings_autofill_options_label} for seamless 1-click logins.",
+  guide_auto_card2_desc:
+    "Enable Auto-Submit after autofill in {settings_header} → {settings_autofill_options_label} for seamless 1-click logins.",
 
-  guide_pwdgen_lead: "Generate high-security random passwords or passphrases resistant to brute-force attacks.",
+  guide_pwdgen_lead:
+    "Generate high-security random passwords or passphrases resistant to brute-force attacks.",
   guide_pwdgen_step1_title: "1. Password Generator Location",
-  guide_pwdgen_step1_desc: "Open {APP_NAME} → select the {nav_generator} tab on the navigation bar (or click the Generator icon when editing an item).",
+  guide_pwdgen_step1_desc:
+    "Open {APP_NAME} → select the {nav_generator} tab on the navigation bar (or click the Generator icon when editing an item).",
   guide_pwdgen_step2_title: "2. Random Password Mode",
-  guide_pwdgen_step2_length: "Custom Length: Adjust password length from 5 to 128 characters (16+ characters recommended).",
-  guide_pwdgen_step2_charset: "Character Sets: Toggle Uppercase (A-Z), Lowercase (a-z), Numbers (0-9), and Special Symbols (!@#$%^...).",
-  guide_pwdgen_step2_ambiguous: "Avoid Ambiguous Characters: Toggle to exclude confusing characters like I, l, 1, O, 0.",
+  guide_pwdgen_step2_length:
+    "Custom Length: Adjust password length from 5 to 128 characters (16+ characters recommended).",
+  guide_pwdgen_step2_charset:
+    "Character Sets: Toggle Uppercase (A-Z), Lowercase (a-z), Numbers (0-9), and Special Symbols (!@#$%^...).",
+  guide_pwdgen_step2_ambiguous:
+    "Avoid Ambiguous Characters: Toggle to exclude confusing characters like I, l, 1, O, 0.",
   guide_pwdgen_step3_title: "3. Passphrase Mode",
-  guide_pwdgen_step3_desc: "Generate passphrases combining multiple words into memorable yet highly secure passwords. Choose word counts (3-20), separator character (-), capitalize words, and insert numbers.",
+  guide_pwdgen_step3_desc:
+    "Generate passphrases combining multiple words into memorable yet highly secure passwords. Choose word counts (3-20), separator character (-), capitalize words, and insert numbers.",
   guide_pwdgen_step4_title: "4. Password Strength Meter",
-  guide_pwdgen_step4_desc: "The strength indicator visually rates security from Weak, Good, Strong, to Fantastic.",
+  guide_pwdgen_step4_desc:
+    "The strength indicator visually rates security from Weak, Good, Strong, to Fantastic.",
 
   guide_hist_lead: "History of recently generated passwords.",
   guide_hist_card_title: "View Generated Password History",
-  guide_hist_card_desc: "All passwords generated using the Generator are stored in temporary history so you can retrieve them if forgotten before saving.",
+  guide_hist_card_desc:
+    "All passwords generated using the Generator are stored in temporary history so you can retrieve them if forgotten before saving.",
 
   // Sync & Import/Export Data Guides
-  guide_sync_lead: "Private two-way cloud data synchronization between devices and your personal GitHub Gist.",
+  guide_sync_lead:
+    "Private two-way cloud data synchronization between devices and your personal GitHub Gist.",
   guide_sync_card1_title: "Automatic Data Merge",
-  guide_sync_card1_desc: "When syncing across multiple devices, {APP_NAME} automatically compares edit timestamps to merge the latest account data without data loss.",
+  guide_sync_card1_desc:
+    "When syncing across multiple devices, {APP_NAME} automatically compares edit timestamps to merge the latest account data without data loss.",
   guide_sync_card2_title: "Private Personal Cloud Storage",
-  guide_sync_card2_desc: "Vault data is stored in your personal GitHub Gist under full encryption. Anyone viewing it on GitHub will only see meaningless cipher text.",
+  guide_sync_card2_desc:
+    "Vault data is stored in your personal GitHub Gist under full encryption. Anyone viewing it on GitHub will only see meaningless cipher text.",
 
-  guide_imp_csv_lead: "Import login passwords from Browser and Bitwarden CSV files into {APP_NAME}.",
-  guide_imp_csv_step1_title: "1. Import CSV file from Web Browsers (Chrome, Firefox, Edge, Brave, Safari)",
-  guide_imp_csv_step1_desc: "Export a CSV file from your web browser password settings. {APP_NAME} automatically parses and imports all login credentials into your vault.",
+  guide_imp_csv_lead:
+    "Import login passwords from Browser and Bitwarden CSV files into {APP_NAME}.",
+  guide_imp_csv_step1_title:
+    "1. Import CSV file from Web Browsers (Chrome, Firefox, Edge, Brave, Safari)",
+  guide_imp_csv_step1_desc:
+    "Export a CSV file from your web browser password settings. {APP_NAME} automatically parses and imports all login credentials into your vault.",
   guide_imp_csv_step2_title: "2. Import CSV file from Bitwarden",
-  guide_imp_csv_step2_desc: "Export a CSV file from Bitwarden to migrate to {APP_NAME}. The app imports passwords, notes, and automatically recreates matching Folder structures.",
+  guide_imp_csv_step2_desc:
+    "Export a CSV file from Bitwarden to migrate to {APP_NAME}. The app imports passwords, notes, and automatically recreates matching Folder structures.",
   guide_imp_csv_step3_title: "3. Steps in the Application",
-  guide_imp_csv_step3_desc: "Open {APP_NAME} → navigate to {settings_header} → {settings_vault_options_label} → {vault_options_import}. Select your file format (Browser CSV or Bitwarden CSV), pick your file, and click Confirm Import.",
+  guide_imp_csv_step3_desc:
+    "Open {APP_NAME} → navigate to {settings_header} → {settings_vault_options_label} → {vault_options_import}. Select your file format (Browser CSV or Bitwarden CSV), pick your file, and click Confirm Import.",
 
-  guide_imp_json_lead: "Restore 100% complete vault structure from a JSON backup file.",
+  guide_imp_json_lead:
+    "Restore 100% complete vault structure from a JSON backup file.",
   guide_imp_json_step1_title: "1. Import Feature Location",
-  guide_imp_json_step1_desc: "Open {APP_NAME} → navigate to {settings_header} → {settings_vault_options_label} → {vault_options_import}.",
+  guide_imp_json_step1_desc:
+    "Open {APP_NAME} → navigate to {settings_header} → {settings_vault_options_label} → {vault_options_import}.",
   guide_imp_json_step2_title: "2. Select JSON File Format",
-  guide_imp_json_step2_desc: "In the file format selector, choose Gistwarden / Bitwarden JSON (.json).",
+  guide_imp_json_step2_desc:
+    "In the file format selector, choose Gistwarden / Bitwarden JSON (.json).",
   guide_imp_json_step3_title: "3. Upload JSON File & Preview Results",
-  guide_imp_json_step3_desc: "Select your JSON file from your computer. {APP_NAME} displays a Preview window showing the number of items about to be imported.",
-  guide_imp_json_step4_title: "4. Full Restoration of All 5 Data Types & Folders",
-  guide_imp_json_step4_desc: "JSON files restore 100% of all 5 data types: Logins, Secure Notes, Credit Cards, Identities, and SSH Keys alongside Folders, Custom Fields, and 2FA TOTP codes.",
+  guide_imp_json_step3_desc:
+    "Select your JSON file from your computer. {APP_NAME} displays a Preview window showing the number of items about to be imported.",
+  guide_imp_json_step4_title:
+    "4. Full Restoration of All 5 Data Types & Folders",
+  guide_imp_json_step4_desc:
+    "JSON files restore 100% of all 5 data types: Logins, Secure Notes, Credit Cards, Identities, and SSH Keys alongside Folders, Custom Fields, and 2FA TOTP codes.",
   guide_imp_json_step5_title: "5. Automatic Data & Folder Merge",
-  guide_imp_json_step5_desc: "The app automatically merges folders with duplicate names, eliminates duplicates, and retains the newest data entries.",
+  guide_imp_json_step5_desc:
+    "The app automatically merges folders with duplicate names, eliminates duplicates, and retains the newest data entries.",
 
-  guide_exp_csv_lead: "Export password entries to a CSV file for viewing or application migration.",
+  guide_exp_csv_lead:
+    "Export password entries to a CSV file for viewing or application migration.",
   guide_exp_csv_step1_title: "1. Access Export Feature",
-  guide_exp_csv_step1_desc: "Open {APP_NAME} → navigate to {settings_header} → {settings_vault_options_label} → {vault_options_export}.",
-  guide_exp_csv_step2_title: "2. Enter Master Password for Security Verification",
-  guide_exp_csv_step2_desc: "For security reasons, the app prompts for your Master Password to verify access before generating the CSV file.",
+  guide_exp_csv_step1_desc:
+    "Open {APP_NAME} → navigate to {settings_header} → {settings_vault_options_label} → {vault_options_export}.",
+  guide_exp_csv_step2_title:
+    "2. Enter Master Password for Security Verification",
+  guide_exp_csv_step2_desc:
+    "For security reasons, the app prompts for your Master Password to verify access before generating the CSV file.",
   guide_exp_csv_step3_title: "3. Choose CSV File Format",
-  guide_exp_csv_step3_browser: "Browser CSV: Basic format for direct import into Google Chrome, Firefox, Edge, Safari, Brave.",
-  guide_exp_csv_step3_bitwarden: "Bitwarden CSV: Comprehensive export including item fields and Folder structures.",
+  guide_exp_csv_step3_browser:
+    "Browser CSV: Basic format for direct import into Google Chrome, Firefox, Edge, Safari, Brave.",
+  guide_exp_csv_step3_bitwarden:
+    "Bitwarden CSV: Comprehensive export including item fields and Folder structures.",
   guide_exp_csv_step4_title: "4. Plaintext CSV Security Warning",
-  guide_exp_csv_step4_desc: "CSV files contain unencrypted passwords (including only Logins & Secure Notes, excluding Passkeys and SSH Keys). Keep the file safe or delete it after migration.",
+  guide_exp_csv_step4_desc:
+    "CSV files contain unencrypted passwords (including only Logins & Secure Notes, excluding Passkeys and SSH Keys). Keep the file safe or delete it after migration.",
 
-  guide_exp_json_lead: "Create a full backup of your entire password vault in JSON format.",
+  guide_exp_json_lead:
+    "Create a full backup of your entire password vault in JSON format.",
   guide_exp_json_step1_title: "1. Backup 100% Vault Structure",
-  guide_exp_json_step1_desc: "JSON backup captures all 5 item types (Logins, Secure Notes, Cards, Identities, SSH Keys), Folders, Favorites, and Custom Fields.",
+  guide_exp_json_step1_desc:
+    "JSON backup captures all 5 item types (Logins, Secure Notes, Cards, Identities, SSH Keys), Folders, Favorites, and Custom Fields.",
   guide_exp_json_step2_title: "2. Encrypted or Unencrypted Export Options",
-  guide_exp_json_step2_desc: "Encrypted JSON is recommended so your backup remains protected by your Master Password. Others cannot read it without your Master Password.",
+  guide_exp_json_step2_desc:
+    "Encrypted JSON is recommended so your backup remains protected by your Master Password. Others cannot read it without your Master Password.",
   guide_exp_json_step3_title: "3. Steps to Export JSON Backup",
-  guide_exp_json_step3_desc: "Open {APP_NAME} → navigate to {settings_header} → {settings_vault_options_label} → {vault_options_export} → enter Master Password → choose JSON format and click Download JSON Backup.",
+  guide_exp_json_step3_desc:
+    "Open {APP_NAME} → navigate to {settings_header} → {settings_vault_options_label} → {vault_options_export} → enter Master Password → choose JSON format and click Download JSON Backup.",
 
   // Extension Downloads Guide
   guide_item_download_extension: "Download Extension",
-  guide_dl_ext_lead: "Install the {APP_NAME} Extension on your browser to enjoy Autofill, FIDO2 Passkeys, and Auto-Lock.",
+  guide_dl_ext_lead:
+    "Install the {APP_NAME} Extension on your browser to enjoy Autofill, FIDO2 Passkeys, and Auto-Lock.",
   guide_dl_ext_firefox_title: "Firefox Browser (Firefox Add-on)",
-  guide_dl_ext_firefox_desc: "Download and install the official {APP_NAME} extension from Mozilla Firefox Add-ons Store.",
+  guide_dl_ext_firefox_desc:
+    "Download and install the official {APP_NAME} extension from Mozilla Firefox Add-ons Store.",
   guide_dl_ext_edge_title: "Microsoft Edge Browser (Edge Add-on)",
-  guide_dl_ext_edge_desc: "Download and install the official {APP_NAME} extension from Microsoft Edge Add-ons Store.",
+  guide_dl_ext_edge_desc:
+    "Download and install the official {APP_NAME} extension from Microsoft Edge Add-ons Store.",
   guide_dl_ext_btn: "Install Extension",
 
   // Web Version Guide
   guide_item_web_version: "Web Version",
-  guide_web_ver_lead: "Access your {APP_NAME} vault directly in any web browser without installing an extension.",
+  guide_web_ver_lead:
+    "Access your {APP_NAME} vault directly in any web browser without installing an extension.",
   guide_web_ver_btn: "Open Gistwarden Web",
   guide_web_ver_advantages_title: "Flexible Access Anywhere",
-  guide_web_ver_advantages_desc: "Ideal when using public computers, guest devices, or browser environments where installing extensions is restricted.",
+  guide_web_ver_advantages_desc:
+    "Ideal when using public computers, guest devices, or browser environments where installing extensions is restricted.",
   guide_web_ver_limits_title: "Limitations on the Web Version",
   guide_web_ver_limit_autofill_title: "No Autofill Support",
-  guide_web_ver_limit_autofill_desc: "The Web version cannot automatically fill credentials into login forms on other websites.",
+  guide_web_ver_limit_autofill_desc:
+    "The Web version cannot automatically fill credentials into login forms on other websites.",
   guide_web_ver_limit_passkey_title: "Limited Passkey / FIDO2 Support",
-  guide_web_ver_limit_passkey_desc: "Cannot act as the browser's default Passkey manager for authenticating on external websites.",
+  guide_web_ver_limit_passkey_desc:
+    "Cannot act as the browser's default Passkey manager for authenticating on external websites.",
   guide_web_ver_limit_capture_title: "No Automatic Login Capture",
-  guide_web_ver_limit_capture_desc: "Cannot automatically detect and prompt to save new credentials when you log in on websites.",
-
+  guide_web_ver_limit_capture_desc:
+    "Cannot automatically detect and prompt to save new credentials when you log in on websites.",
 
   // Guide Gist Token Steps
   guide_token_desc:
@@ -1036,16 +1140,20 @@ export default {
   select_search_placeholder: "Search...",
   select_no_results: "No results found",
   settings_tools_google_auth: "Google Authenticator Decoder Tool",
-  settings_tools_google_auth_sub: "Decode offline export QR, display raw otpauth:// URIs and link to Vault",
+  settings_tools_google_auth_sub:
+    "Decode offline export QR, display raw otpauth:// URIs and link to Vault",
   google_tool_paste_label: "Paste offline export string or upload QR image:",
   google_tool_btn_parse: "Decode & Parse",
   google_tool_btn_upload_qr: "Upload QR Code Image",
-  import_google_migration_invalid: "Invalid Google Authenticator QR or migration data",
-  google_migration_subtitle: "Found {count} 2FA account(s). Choose how to import each account:",
+  import_google_migration_invalid:
+    "Invalid Google Authenticator QR or migration data",
+  google_migration_subtitle:
+    "Found {count} 2FA account(s). Choose how to import each account:",
   google_migration_raw_uri: "Raw URI",
   google_migration_action_link: "Attach to existing Vault item",
   google_migration_action_create: "Create new Vault item",
   google_migration_action_skip: "Skip / Do not import",
   google_migration_save_batch: "Save & Import ({count})",
-  google_migration_save_success: "Successfully imported/updated {count} 2FA account(s)",
+  google_migration_save_success:
+    "Successfully imported/updated {count} 2FA account(s)",
 };

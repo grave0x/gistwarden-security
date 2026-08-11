@@ -1,9 +1,3 @@
-import { MessageRouter } from "@/extension/message-router.ts";
-import { registerAutofillRoutes } from "@/extension/handlers/autofill-handlers.ts";
-import { registerAuthRoutes } from "@/extension/handlers/auth-handlers.ts";
-import { registerSyncRoutes } from "@/extension/handlers/sync-handlers.ts";
-import { registerFido2Routes } from "@/extension/handlers/fido2-handlers.ts";
-import { registerReportRoutes } from "@/extension/handlers/report-handlers.ts";
 import { SESSION_KEY_SESSION_INITIALIZED } from "@/core/constants.ts";
 import {
   clearSession,
@@ -12,11 +6,16 @@ import {
   getSessionItem,
   hasSessionStorage,
   resetAccountSettings,
-  setSessionItem,
 } from "@/core/storage.ts";
 import { ExtensionSettingsSchema } from "@/core/storage-schemas.ts";
-import { syncLockStateBadge } from "@/extension/background-badge.ts";
 import { setupAlarmsListener } from "@/extension/background-alarms.ts";
+import { syncLockStateBadge } from "@/extension/background-badge.ts";
+import { registerAuthRoutes } from "@/extension/handlers/auth-handlers.ts";
+import { registerAutofillRoutes } from "@/extension/handlers/autofill-handlers.ts";
+import { registerFido2Routes } from "@/extension/handlers/fido2-handlers.ts";
+import { registerReportRoutes } from "@/extension/handlers/report-handlers.ts";
+import { registerSyncRoutes } from "@/extension/handlers/sync-handlers.ts";
+import { MessageRouter } from "@/extension/message-router.ts";
 
 new MessageRouter()
   .use(registerAutofillRoutes)

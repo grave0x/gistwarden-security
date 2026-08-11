@@ -1,9 +1,9 @@
-import { type Component, Show } from "solid-js";
-import { VaultItemType } from "@gistwarden/domain";
 import type { VaultItem, VaultItemId } from "@gistwarden/domain";
-import { CopyIcon } from "@/icons/svg/index.ts";
+import { VaultItemType } from "@gistwarden/domain";
+import { type Component, Show } from "solid-js";
 import { t } from "@/core/i18n.ts";
 import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
+import { CopyIcon } from "@/icons/svg/index.ts";
 
 interface VaultItemCopyMenuProps {
   item: VaultItem;
@@ -14,11 +14,7 @@ interface VaultItemCopyMenuProps {
   onCopyTotpDirect: (item: VaultItem, e: MouseEvent) => void;
 }
 
-
-
-export const VaultItemCopyMenu: Component<VaultItemCopyMenuProps> = (
-  props,
-) => {
+export const VaultItemCopyMenu: Component<VaultItemCopyMenuProps> = (props) => {
   const strategy = () => getVaultItemStrategy(props.item.type);
   const isNotes = () => props.item.type === VaultItemType.SecureNote;
 
@@ -30,11 +26,7 @@ export const VaultItemCopyMenu: Component<VaultItemCopyMenuProps> = (
         title={isNotes() ? t("vault_copy_notes") : t("vault_copy_options")}
         onClick={(e) => {
           if (isNotes()) {
-            props.onCopyText(
-              props.item.notes || "",
-              t("edit_type_note"),
-              e,
-            );
+            props.onCopyText(props.item.notes || "", t("edit_type_note"), e);
           } else {
             props.onToggleMenu(props.item.id, e);
           }

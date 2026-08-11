@@ -1,11 +1,9 @@
-import { createSignal, onCleanup, type Component } from "solid-js";
-import { type TranslationKey } from "@gistwarden/domain";
-import type { IconProps } from "@/icons/svg/types.ts";
+import type { TranslationKey } from "@gistwarden/domain";
+import { type Component, createSignal, onCleanup } from "solid-js";
 import { isExtension, isWeb } from "@/core/runtime.ts";
 import {
   AutofillIcon,
   CardIcon,
-  CloseIcon,
   DownloadIcon,
   FolderIcon,
   GeneratorIcon,
@@ -28,6 +26,7 @@ import {
   UploadIcon,
   VaultIcon,
 } from "@/icons/svg/index.ts";
+import type { IconProps } from "@/icons/svg/types.ts";
 
 export const DEFAULT_GUIDE_ROUTE = "getting-started/overview";
 
@@ -280,7 +279,7 @@ export function getRouteFromHash(): string {
   if (!hash) return DEFAULT_GUIDE_ROUTE;
 
   const validRoutes = GUIDE_STRUCTURE.flatMap((cat) =>
-    cat.items.map((item) => item.route)
+    cat.items.map((item) => item.route),
   );
 
   if (validRoutes.includes(hash)) {
@@ -289,7 +288,7 @@ export function getRouteFromHash(): string {
 
   // Fallback matching category root
   const matchedCategory = GUIDE_STRUCTURE.find((cat) => cat.id === hash);
-  if (matchedCategory && matchedCategory.items[0]) {
+  if (matchedCategory?.items[0]) {
     return matchedCategory.items[0].route;
   }
 

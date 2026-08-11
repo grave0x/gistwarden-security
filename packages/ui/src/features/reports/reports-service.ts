@@ -1,10 +1,4 @@
 import {
-  checkDataBreachRoute,
-  checkHIBPRoute,
-  sendBackgroundMessage,
-} from "@gistwarden/orchestrator";
-import { safeFetch } from "@gistwarden/network";
-import {
   hashPasswordSHA1PrefixSuffix,
   isExtension,
   isLoginItem,
@@ -12,16 +6,22 @@ import {
   type TranslationKey,
   type VaultItem,
 } from "@gistwarden/domain";
+import { safeFetch } from "@gistwarden/network";
+import {
+  checkDataBreachRoute,
+  checkHIBPRoute,
+  sendBackgroundMessage,
+} from "@gistwarden/orchestrator";
 import { t } from "@/core/i18n.ts";
 import { saveItem } from "@/features/vault/vault-service.ts";
 
-export function getUnsecureLoginItems(vaultItems?: VaultItem[] | null): LoginVaultItem[] {
+export function getUnsecureLoginItems(
+  vaultItems?: VaultItem[] | null,
+): LoginVaultItem[] {
   const items = (vaultItems || []).filter(isLoginItem);
   return items.filter((item) => {
     const uris = item.login?.uris || [];
-    return uris.some((u) =>
-      u.uri && u.uri.trim().toLowerCase().startsWith("http://")
-    );
+    return uris.some((u) => u.uri?.trim().toLowerCase().startsWith("http://"));
   });
 }
 
@@ -31,7 +31,7 @@ export async function upgradeLoginItemToHttpsUseCase(
   if (!item.login?.uris) return;
 
   const updatedUris = item.login.uris.map((u) => {
-    if (u.uri && u.uri.trim().toLowerCase().startsWith("http://")) {
+    if (u.uri?.trim().toLowerCase().startsWith("http://")) {
       return {
         ...u,
         uri: u.uri.replace(/^http:\/\//i, "https://"),
@@ -59,10 +59,7 @@ export function formatVaultItemUsername(item: LoginVaultItem): string {
 export async function checkPasswordHIBPUseCase(
   password: string,
 ): Promise<{ count: number; errorKey?: TranslationKey }> {
-  if (
-    isExtension() &&
-    typeof chrome.runtime?.sendMessage === "function"
-  ) {
+  if (isExtension() && typeof chrome.runtime?.sendMessage === "function") {
     const bgRes = await sendBackgroundMessage(checkHIBPRoute, { password });
     if (bgRes.isOk()) {
       return {
@@ -104,10 +101,7 @@ export async function checkEmailBreachUseCase(email: string): Promise<{
   breaches?: string[];
   errorKey?: TranslationKey;
 }> {
-  if (
-    isExtension() &&
-    typeof chrome.runtime?.sendMessage === "function"
-  ) {
+  if (isExtension() && typeof chrome.runtime?.sendMessage === "function") {
     const bgRes = await sendBackgroundMessage(checkDataBreachRoute, { email });
     if (bgRes.isOk()) {
       const val = bgRes.value;
@@ -147,9 +141,13 @@ export async function checkEmailBreachUseCase(email: string): Promise<{
 
     const data: unknown = await res.json();
     if (
-      data && typeof data === "object" && "status" in data &&
-      data.status === "success" && "breaches" in data &&
-      Array.isArray(data.breaches) && data.breaches.length > 0
+      data &&
+      typeof data === "object" &&
+      "status" in data &&
+      data.status === "success" &&
+      "breaches" in data &&
+      Array.isArray(data.breaches) &&
+      data.breaches.length > 0
     ) {
       const rawList = Array.isArray(data.breaches[0])
         ? data.breaches[0]

@@ -1,10 +1,9 @@
-import { createEffect, createSignal } from "solid-js";
 import { asFolderId, type Folder, type FolderId } from "@gistwarden/domain";
-import { t } from "@/core/i18n.ts";
-import Button from "@/components/ui/Button.tsx";
+import { createEffect, createSignal } from "solid-js";
 import BaseSlideModal from "@/components/ui/BaseSlideModal.tsx";
+import Button from "@/components/ui/Button.tsx";
 import Select, { type SelectOption } from "@/components/ui/Select.tsx";
-
+import { t } from "@/core/i18n.ts";
 
 export interface MoveToFolderModalProps {
   isOpen: boolean;
@@ -13,9 +12,10 @@ export interface MoveToFolderModalProps {
   onConfirm: (folderId: FolderId | null) => Promise<boolean>;
 }
 
-
 export default function MoveToFolderModal(props: MoveToFolderModalProps) {
-  const [selectedFolderId, setSelectedFolderId] = createSignal<FolderId | "no_folder">("no_folder");
+  const [selectedFolderId, setSelectedFolderId] = createSignal<
+    FolderId | "no_folder"
+  >("no_folder");
 
   createEffect(() => {
     if (props.isOpen) {
@@ -57,18 +57,17 @@ export default function MoveToFolderModal(props: MoveToFolderModalProps) {
         return (
           <form onSubmit={handleSubmit} class="modal-panel-body">
             <div class="form-group pos-relative">
-              <label for="move-folder-select">
-                {t("folder_select_label")}
-              </label>
+              <label for="move-folder-select">{t("folder_select_label")}</label>
               <Select
                 id="move-folder-select"
                 value={selectedFolderId()}
                 options={getOptions()}
                 onChange={(e) => {
                   const val = e.currentTarget.value;
-                  setSelectedFolderId(val === "no_folder" ? "no_folder" : asFolderId(val));
+                  setSelectedFolderId(
+                    val === "no_folder" ? "no_folder" : asFolderId(val),
+                  );
                 }}
-
                 class="w-100"
                 inFlow={true}
               />

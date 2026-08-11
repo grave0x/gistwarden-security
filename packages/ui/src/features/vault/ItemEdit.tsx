@@ -1,36 +1,38 @@
+import {
+  asFolderId,
+  type Fido2CredentialId,
+  VaultItemType,
+} from "@gistwarden/domain";
+import { confirm, setGlobalLoading, showToast } from "@gistwarden/ui";
 import { type Component, createSignal, onMount, Show } from "solid-js";
 import { createStore, reconcile } from "solid-js/store";
-import { accountStore, uiStore } from "@/core/store.ts";
-import { View } from "@/core/types.ts";
-import { asFolderId, type Fido2CredentialId, VaultItemType } from "@gistwarden/domain";
-
-
-import { navigate, selectItem } from "@/core/navigation.ts";
-import { saveItem } from "@/features/vault/vault-service.ts";
-import { confirm, setGlobalLoading, showToast } from "@gistwarden/ui";
-import {
-  deleteVaultItemWithConfirm,
-  getVaultItemTitle,
-  getVaultItemToastMsg,
-} from "@/features/vault/vault-utils.ts";
 import Button from "@/components/ui/Button.tsx";
+import Checkbox from "@/components/ui/Checkbox.tsx";
+import DetailHeader from "@/components/ui/DetailHeader.tsx";
+import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
 import Input from "@/components/ui/Input.tsx";
 import Select from "@/components/ui/Select.tsx";
-import Checkbox from "@/components/ui/Checkbox.tsx";
-import { TrashIcon } from "@/icons/svg/index.ts";
-import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
+import { getHostname, safeParseUrl } from "@/core/domain-utils.ts";
 import { t } from "@/core/i18n.ts";
-import DetailHeader from "@/components/ui/DetailHeader.tsx";
-import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
+import { navigate, selectItem } from "@/core/navigation.ts";
+import { accountStore, uiStore } from "@/core/store.ts";
+import { captureVisibleTab, getCurrentTab } from "@/core/tabs.ts";
+import { safeDecodeQr } from "@/core/totp-utils.ts";
+import { View } from "@/core/types.ts";
+import CustomFieldsEdit from "@/features/vault/item-edit/CustomFieldsEdit.tsx";
 import {
   getInitialFormState,
   type ItemEditFormState,
   mapFormStateToVaultItem,
 } from "@/features/vault/item-edit/vault-edit-helper.ts";
-import CustomFieldsEdit from "@/features/vault/item-edit/CustomFieldsEdit.tsx";
-import { captureVisibleTab, getCurrentTab } from "@/core/tabs.ts";
-import { getHostname, safeParseUrl } from "@/core/domain-utils.ts";
-import { safeDecodeQr } from "@/core/totp-utils.ts";
+import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
+import { saveItem } from "@/features/vault/vault-service.ts";
+import {
+  deleteVaultItemWithConfirm,
+  getVaultItemTitle,
+  getVaultItemToastMsg,
+} from "@/features/vault/vault-utils.ts";
+import { TrashIcon } from "@/icons/svg/index.ts";
 
 export const ItemEdit: Component = () => {
   const isEdit = () => {
@@ -62,7 +64,7 @@ export const ItemEdit: Component = () => {
 
     if (!item?.id) {
       const tabRes = await getCurrentTab();
-      if (tabRes.isOk() && tabRes.value && tabRes.value.url) {
+      if (tabRes.isOk() && tabRes.value?.url) {
         const url = tabRes.value.url;
         if (
           !url.startsWith("chrome://") &&
@@ -132,18 +134,18 @@ export const ItemEdit: Component = () => {
   };
 
   const handleDeleteFidoCredential = async (credId: Fido2CredentialId) => {
-
     if (
       !(await confirm(
         t("edit_confirm_delete_passkey_title"),
         t("edit_confirm_delete_passkey_msg"),
         "danger",
       ))
-    ) return;
+    )
+      return;
     updateForm(
       "fidoCredentials",
-      (formState.fidoCredentials || []).filter((c) =>
-        c.credentialId !== credId
+      (formState.fidoCredentials || []).filter(
+        (c) => c.credentialId !== credId,
       ),
     );
   };
@@ -168,8 +170,8 @@ export const ItemEdit: Component = () => {
       // If was editing, return to detail view, else go back to vault
       if (isEdit()) {
         // Update selectedItem locally so the detail view shows updated content immediately
-        const savedItem = accountStore.vaultItems.find((v) =>
-          v.id === uiStore.selectedItem?.id
+        const savedItem = accountStore.vaultItems.find(
+          (v) => v.id === uiStore.selectedItem?.id,
         );
         if (savedItem) {
           selectItem(savedItem);
@@ -218,11 +220,13 @@ export const ItemEdit: Component = () => {
                 type="text"
                 value={formState.name}
                 onInput={(e) => updateForm("name", e.currentTarget.value)}
-                placeholder={formState.itemType === VaultItemType.SecureNote
-                  ? t("edit_placeholder_name_note")
-                  : formState.itemType === VaultItemType.Card
-                  ? "e.g. Visa, Mastercard..."
-                  : t("edit_placeholder_name_login")}
+                placeholder={
+                  formState.itemType === VaultItemType.SecureNote
+                    ? t("edit_placeholder_name_note")
+                    : formState.itemType === VaultItemType.Card
+                      ? "e.g. Visa, Mastercard..."
+                      : t("edit_placeholder_name_login")
+                }
               />
             </div>
 
@@ -232,8 +236,13 @@ export const ItemEdit: Component = () => {
                 id="item-folder"
                 value={formState.folderId || ""}
                 onChange={(e) =>
-                  updateForm("folderId", e.currentTarget.value ? asFolderId(e.currentTarget.value) : null)}
-
+                  updateForm(
+                    "folderId",
+                    e.currentTarget.value
+                      ? asFolderId(e.currentTarget.value)
+                      : null,
+                  )
+                }
                 options={[
                   { value: "", label: t("folder_no_folder_option") },
                   ...(accountStore.folders || []).map((f) => ({
@@ -281,7 +290,8 @@ export const ItemEdit: Component = () => {
                   id="item-reprompt"
                   checked={formState.reprompt === 1}
                   onChange={(checked) =>
-                    updateForm("reprompt", checked ? 1 : 0)}
+                    updateForm("reprompt", checked ? 1 : 0)
+                  }
                   label={t("edit_label_reprompt")}
                   suffix={<GuideHelpButton route="vault-management/logins" />}
                 />
@@ -299,17 +309,10 @@ export const ItemEdit: Component = () => {
         {/* Footer */}
         <div class="detail-footer-bar">
           <div class="d-flex gap-8">
-            <Button
-              type="submit"
-              variant="primary"
-            >
+            <Button type="submit" variant="primary">
               {uiStore.selectedItem?.id ? t("btn_save") : t("btn_create")}
             </Button>
-            <Button
-              type="button"
-              variant="secondary"
-              onClick={handleCancel}
-            >
+            <Button type="button" variant="secondary" onClick={handleCancel}>
               {t("btn_cancel")}
             </Button>
           </div>

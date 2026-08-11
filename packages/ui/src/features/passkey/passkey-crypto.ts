@@ -1,14 +1,13 @@
-import { err, ok, Result } from "neverthrow";
-import { asFido2CredentialId, asRpId, type Fido2Credential, type Fido2CredentialId } from "@gistwarden/domain";
-
-
-
-import type { TranslationKey } from "@/core/i18n.ts";
-import { safeParseUrl } from "@/core/domain-utils.ts";
 import {
-  encodeCoseEC2PublicKey,
-  packAttestationObject,
-} from "@/core/cbor-utils.ts";
+  asFido2CredentialId,
+  asRpId,
+  type Fido2Credential,
+  type Fido2CredentialId,
+} from "@gistwarden/domain";
+import { err, ok, type Result } from "neverthrow";
+import { packAttestationObject } from "@/core/cbor-utils.ts";
+import { safeParseUrl } from "@/core/domain-utils.ts";
+import type { TranslationKey } from "@/core/i18n.ts";
 import { getCoseAlgorithmStrategy } from "./cose-strategy.ts";
 
 // IANA COSE Key Parameters & Algorithm Identifiers (RFC 8152 / RFC 9052)
@@ -323,7 +322,6 @@ export async function generateAssertionSignature(
 export function getRawCredentialId(
   credId: Fido2CredentialId | string,
 ): Result<Uint8Array, TranslationKey> {
-
   const clean = credId.trim();
   if (clean.includes("-") && clean.length === 36) {
     const hex = clean.replace(/-/g, "");
@@ -425,11 +423,12 @@ export async function generatePasskeyRegisterResponse(
     keyCurve: "P-256",
     keyValue: pkcs8Base64Url,
     rpId: asRpId(options.rp.id || options.rp.name),
-    userHandle: typeof options.user.id === "string"
-      ? options.user.id
-      : (options.user.id
-        ? bufferToBase64Url(new Uint8Array(options.user.id))
-        : undefined),
+    userHandle:
+      typeof options.user.id === "string"
+        ? options.user.id
+        : options.user.id
+          ? bufferToBase64Url(new Uint8Array(options.user.id))
+          : undefined,
     userName: options.user.name,
     counter: 0,
     rpName: options.rp.name,
@@ -548,9 +547,7 @@ export async function generatePasskeyAssertResponse(
   // Tu dong tuong thich nguoc: Kiem tra xem trang web dang yeu cau dinh dang ID nao
   // - Neu yeu cau chuoi ASCII UUID 36 ky tu (co che cu), chung ta tra ve dinh dang do.
   // - Mac dinh dung 16-byte raw UUID (co che moi chuan WebAuthn).
-  const b64_36 = bufferToBase64Url(
-    new TextEncoder().encode(cred.credentialId),
-  );
+  const b64_36 = bufferToBase64Url(new TextEncoder().encode(cred.credentialId));
 
   const useOld36ByteFormat = (options.allowCredentials || []).some(
     (allowed: { id: string }) => allowed.id === b64_36,

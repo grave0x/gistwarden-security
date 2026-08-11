@@ -1,19 +1,19 @@
+import type { Folder, FolderId } from "@gistwarden/domain";
+import { setGlobalLoading, showToast } from "@gistwarden/ui";
 import { type Component, createSignal, For } from "solid-js";
+import Button from "@/components/ui/Button.tsx";
+import DetailHeader from "@/components/ui/DetailHeader.tsx";
+import FolderModal from "@/components/ui/FolderModal.tsx";
+import { t } from "@/core/i18n.ts";
+import { navigate } from "@/core/navigation.ts";
 import { accountStore } from "@/core/store.ts";
 import { View } from "@/core/types.ts";
-import { type Folder, type FolderId } from "@gistwarden/domain";
-import { navigate } from "@/core/navigation.ts";
 import {
   addFolder,
   deleteFolder,
   renameFolder,
 } from "@/features/vault/vault-service.ts";
-import { setGlobalLoading, showToast } from "@gistwarden/ui";
-import DetailHeader from "@/components/ui/DetailHeader.tsx";
-import FolderModal from "@/components/ui/FolderModal.tsx";
-import Button from "@/components/ui/Button.tsx";
 import { EditIcon, PlusIcon } from "@/icons/svg/index.ts";
-import { t } from "@/core/i18n.ts";
 
 export const Folders: Component = () => {
   const [showFolderModal, setShowFolderModal] = createSignal(false);
@@ -117,7 +117,6 @@ export const Folders: Component = () => {
                   }}
                   title={t("btn_edit")}
                 >
-
                   <EditIcon class="icon-inline" />
                 </button>
               </div>

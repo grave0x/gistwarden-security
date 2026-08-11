@@ -1,6 +1,13 @@
 import { type Component, Show } from "solid-js";
 import { t } from "@/core/i18n.ts";
-import { CardIcon, FolderIcon, GlobeIcon, NoteIcon, SettingsIcon, SshKeyIcon } from "@/icons/svg/index.ts";
+import {
+  CardIcon,
+  FolderIcon,
+  GlobeIcon,
+  NoteIcon,
+  SettingsIcon,
+  SshKeyIcon,
+} from "@/icons/svg/index.ts";
 
 export interface GuideSectionProps {
   readonly route: string;
@@ -18,9 +25,7 @@ export const VaultManagementSection: Component<GuideSectionProps> = (props) => {
               <GlobeIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_logins")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_vm_logins_lead")}
-            </p>
+            <p class="hero-lead">{t("guide_vm_logins_lead")}</p>
           </div>
 
           <div class="article-cards-grid">
@@ -36,21 +41,15 @@ export const VaultManagementSection: Component<GuideSectionProps> = (props) => {
             </div>
             <div class="guide-card">
               <h3>{t("guide_vm_logins_card2_title")}</h3>
-              <p>
-                {t("guide_vm_logins_card2_desc")}
-              </p>
+              <p>{t("guide_vm_logins_card2_desc")}</p>
             </div>
             <div class="guide-card">
               <h3>{t("guide_vm_logins_card3_title")}</h3>
-              <p>
-                {t("guide_vm_logins_card3_desc")}
-              </p>
+              <p>{t("guide_vm_logins_card3_desc")}</p>
             </div>
             <div class="guide-card">
               <h3>{t("guide_vm_logins_card4_title")}</h3>
-              <p>
-                {t("guide_vm_logins_card4_desc")}
-              </p>
+              <p>{t("guide_vm_logins_card4_desc")}</p>
             </div>
           </div>
         </div>
@@ -63,16 +62,12 @@ export const VaultManagementSection: Component<GuideSectionProps> = (props) => {
               <NoteIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_secure_notes")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_vm_notes_lead")}
-            </p>
+            <p class="hero-lead">{t("guide_vm_notes_lead")}</p>
           </div>
 
           <div class="guide-card">
             <h3>{t("guide_vm_notes_card_title")}</h3>
-            <p>
-              {t("guide_vm_notes_card_desc")}
-            </p>
+            <p>{t("guide_vm_notes_card_desc")}</p>
           </div>
         </div>
       </Show>
@@ -84,23 +79,17 @@ export const VaultManagementSection: Component<GuideSectionProps> = (props) => {
               <CardIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_cards_identities")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_vm_cards_lead")}
-            </p>
+            <p class="hero-lead">{t("guide_vm_cards_lead")}</p>
           </div>
 
           <div class="article-cards-grid">
             <div class="guide-card">
               <h3>{t("guide_vm_cards_card1_title")}</h3>
-              <p>
-                {t("guide_vm_cards_card1_desc")}
-              </p>
+              <p>{t("guide_vm_cards_card1_desc")}</p>
             </div>
             <div class="guide-card">
               <h3>{t("guide_vm_cards_card2_title")}</h3>
-              <p>
-                {t("guide_vm_cards_card2_desc")}
-              </p>
+              <p>{t("guide_vm_cards_card2_desc")}</p>
             </div>
           </div>
         </div>
@@ -113,16 +102,12 @@ export const VaultManagementSection: Component<GuideSectionProps> = (props) => {
               <SshKeyIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_ssh_keys")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_vm_ssh_lead")}
-            </p>
+            <p class="hero-lead">{t("guide_vm_ssh_lead")}</p>
           </div>
 
           <div class="guide-card">
             <h3>{t("guide_vm_ssh_card_title")}</h3>
-            <p>
-              {t("guide_vm_ssh_card_desc")}
-            </p>
+            <p>{t("guide_vm_ssh_card_desc")}</p>
           </div>
         </div>
       </Show>
@@ -134,9 +119,7 @@ export const VaultManagementSection: Component<GuideSectionProps> = (props) => {
               <SettingsIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_custom_fields")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_vm_fields_lead")}
-            </p>
+            <p class="hero-lead">{t("guide_vm_fields_lead")}</p>
           </div>
 
           <div class="guide-card">
@@ -158,9 +141,7 @@ export const VaultManagementSection: Component<GuideSectionProps> = (props) => {
               <FolderIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_folders_trash")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_vm_folders_lead")}
-            </p>
+            <p class="hero-lead">{t("guide_vm_folders_lead")}</p>
           </div>
 
           <div class="step-section-group">

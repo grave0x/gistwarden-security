@@ -1,8 +1,8 @@
-import { type Component, createEffect, type JSX, For, Show } from "solid-js";
 import { View } from "@gistwarden/domain";
-import { navigate } from "@/core/navigation.ts";
-import { t, type TranslationKey } from "@/core/i18n.ts";
+import { createEffect, For, type JSX, Show } from "solid-js";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
+import { type TranslationKey, t } from "@/core/i18n.ts";
+import { navigate } from "@/core/navigation.ts";
 import { DownloadIcon, SyncIcon } from "@/icons/svg/index.ts";
 
 export interface ReportLayoutProps<T> {
@@ -127,8 +127,8 @@ export function ReportLayout<T>(props: ReportLayoutProps<T>): JSX.Element {
                   (props.progress ?? 0).toString(),
                 )
               : props.scanButtonTextKey
-              ? t(props.scanButtonTextKey)
-              : ""}
+                ? t(props.scanButtonTextKey)
+                : ""}
           </button>
 
           <Show when={props.isScanning}>
@@ -198,7 +198,7 @@ export function ReportLayout<T>(props: ReportLayoutProps<T>): JSX.Element {
           <Show when={props.renderItem}>
             <div class="item-list mt-2">
               <For each={props.items}>
-                {(item, index) => props.renderItem!(item, index)}
+                {(item, index) => props.renderItem?.(item, index)}
               </For>
             </div>
           </Show>

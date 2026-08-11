@@ -1,10 +1,10 @@
-import { APP_NAME } from "@/core/constants.ts";
 import {
   fido2CredentialCreationRoute,
   fido2CredentialGetRoute,
 } from "@gistwarden/orchestrator";
-import { sendBackgroundMessage } from "@/core/messaging.ts";
 import { z } from "zod";
+import { APP_NAME } from "@/core/constants.ts";
+import { sendBackgroundMessage } from "@/core/messaging.ts";
 
 const Fido2ResponseSchema = z.object({
   success: z.boolean().catch(false),
@@ -26,7 +26,8 @@ if (document.documentElement) {
 window.addEventListener("message", async (event) => {
   // Only handle messages coming from our own page script with correct token
   if (
-    event.source !== window || !event.data ||
+    event.source !== window ||
+    !event.data ||
     event.data.source !== `${APP_NAME.toLowerCase()}-page-script` ||
     event.data.token !== fido2Token
   ) {
@@ -42,16 +43,16 @@ window.addEventListener("message", async (event) => {
   }
 
   // Send request to background script
-  const sendResult = type === fido2CredentialCreationRoute.type
-    ? await sendBackgroundMessage(fido2CredentialCreationRoute, { data })
-    : await sendBackgroundMessage(fido2CredentialGetRoute, { data });
+  const sendResult =
+    type === fido2CredentialCreationRoute.type
+      ? await sendBackgroundMessage(fido2CredentialCreationRoute, { data })
+      : await sendBackgroundMessage(fido2CredentialGetRoute, { data });
 
   if (sendResult.isOk()) {
     const response = sendResult.value;
 
-    const targetOrigin = window.location.origin !== "null"
-      ? window.location.origin
-      : "*";
+    const targetOrigin =
+      window.location.origin !== "null" ? window.location.origin : "*";
 
     // Forward the response back to page script
     const parsed = Fido2ResponseSchema.safeParse(response);
@@ -71,9 +72,8 @@ window.addEventListener("message", async (event) => {
       targetOrigin,
     );
   } else {
-    const targetOrigin = window.location.origin !== "null"
-      ? window.location.origin
-      : "*";
+    const targetOrigin =
+      window.location.origin !== "null" ? window.location.origin : "*";
 
     window.postMessage(
       {

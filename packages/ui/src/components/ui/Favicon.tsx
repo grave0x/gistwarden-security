@@ -68,9 +68,9 @@ export const Favicon: Component<{ domain: string; fallback: JSX.Element }> = (
     // Lazy load: Only fetch network resource when scrolled into viewport
     if (!isVisible()) return;
 
-    const faviconUrl = `https://www.google.com/s2/favicons?domain=${
-      encodeURIComponent(domain)
-    }&sz=32`;
+    const faviconUrl = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(
+      domain,
+    )}&sz=32`;
 
     fetchBlob(faviconUrl, { cache: "force-cache" }).then((res) => {
       if (res.isOk()) {

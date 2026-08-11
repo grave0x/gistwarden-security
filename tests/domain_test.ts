@@ -1,5 +1,5 @@
-import { assertEquals, test } from "./assert.ts";
 import { getBaseDomain, getHostname } from "@gistwarden/domain";
+import { assertEquals, test } from "./assert.ts";
 
 test("Domain Utils - getHostname", () => {
   assertEquals(

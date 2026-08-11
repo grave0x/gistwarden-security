@@ -1,6 +1,5 @@
 import { type Component, Show } from "solid-js";
 import { t } from "@/core/i18n.ts";
-import { APP_NAME } from "@/core/constants.ts";
 import { AutofillIcon, GeneratorIcon, ListIcon } from "@/icons/svg/index.ts";
 
 export interface GuideSectionProps {
@@ -19,23 +18,17 @@ export const AutofillToolsSection: Component<GuideSectionProps> = (props) => {
               <AutofillIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_autofill_usage")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_auto_lead")}
-            </p>
+            <p class="hero-lead">{t("guide_auto_lead")}</p>
           </div>
 
           <div class="article-cards-grid">
             <div class="guide-card">
               <h3>{t("guide_auto_card1_title")}</h3>
-              <p>
-                {t("guide_auto_card1_desc")}
-              </p>
+              <p>{t("guide_auto_card1_desc")}</p>
             </div>
             <div class="guide-card">
               <h3>{t("guide_auto_card2_title")}</h3>
-              <p>
-                {t("guide_auto_card2_desc")}
-              </p>
+              <p>{t("guide_auto_card2_desc")}</p>
             </div>
           </div>
         </div>
@@ -48,9 +41,7 @@ export const AutofillToolsSection: Component<GuideSectionProps> = (props) => {
               <GeneratorIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_password_generator")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_pwdgen_lead")}
-            </p>
+            <p class="hero-lead">{t("guide_pwdgen_lead")}</p>
           </div>
 
           <div class="step-guide-container">
@@ -58,9 +49,7 @@ export const AutofillToolsSection: Component<GuideSectionProps> = (props) => {
               <span class="step-number">1</span>
               <div class="step-content">
                 <h4>{t("guide_pwdgen_step1_title")}</h4>
-                <p>
-                  {t("guide_pwdgen_step1_desc")}
-                </p>
+                <p>{t("guide_pwdgen_step1_desc")}</p>
               </div>
             </div>
 
@@ -80,9 +69,7 @@ export const AutofillToolsSection: Component<GuideSectionProps> = (props) => {
               <span class="step-number">3</span>
               <div class="step-content">
                 <h4>{t("guide_pwdgen_step3_title")}</h4>
-                <p>
-                  {t("guide_pwdgen_step3_desc")}
-                </p>
+                <p>{t("guide_pwdgen_step3_desc")}</p>
               </div>
             </div>
 
@@ -90,9 +77,7 @@ export const AutofillToolsSection: Component<GuideSectionProps> = (props) => {
               <span class="step-number">4</span>
               <div class="step-content">
                 <h4>{t("guide_pwdgen_step4_title")}</h4>
-                <p>
-                  {t("guide_pwdgen_step4_desc")}
-                </p>
+                <p>{t("guide_pwdgen_step4_desc")}</p>
               </div>
             </div>
           </div>
@@ -106,16 +91,12 @@ export const AutofillToolsSection: Component<GuideSectionProps> = (props) => {
               <ListIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_password_history")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_hist_lead")}
-            </p>
+            <p class="hero-lead">{t("guide_hist_lead")}</p>
           </div>
 
           <div class="guide-card">
             <h3>{t("guide_hist_card_title")}</h3>
-            <p>
-              {t("guide_hist_card_desc")}
-            </p>
+            <p>{t("guide_hist_card_desc")}</p>
           </div>
         </div>
       </Show>

@@ -1,11 +1,11 @@
+import { requestReprompt, showToast } from "@gistwarden/ui";
 import { type Component, createSignal, For, Show } from "solid-js";
+import DetailHeader from "@/components/ui/DetailHeader.tsx";
+import { t } from "@/core/i18n.ts";
+import { navigate } from "@/core/navigation.ts";
 import { accountStore } from "@/core/store.ts";
 import { View } from "@/core/types.ts";
-import { navigate } from "@/core/navigation.ts";
-import { requestReprompt, showToast } from "@gistwarden/ui";
 import { ChevronRightIcon, DownloadIcon } from "@/icons/svg/index.ts";
-import { t } from "@/core/i18n.ts";
-import DetailHeader from "@/components/ui/DetailHeader.tsx";
 import {
   getAllExportStrategies,
   getExportStrategy,
@@ -62,12 +62,8 @@ export const ExportAccounts: Component = () => {
                 <div class="setting-row-left">
                   <DownloadIcon />
                   <div>
-                    <div class="setting-label">
-                      {t(strategy.nameKey)}
-                    </div>
-                    <div class="setting-sub">
-                      {t(strategy.subKey)}
-                    </div>
+                    <div class="setting-label">{t(strategy.nameKey)}</div>
+                    <div class="setting-sub">{t(strategy.subKey)}</div>
                   </div>
                 </div>
                 <ChevronRightIcon />

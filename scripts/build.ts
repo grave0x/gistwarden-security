@@ -9,15 +9,15 @@ import {
   writeFileSync,
 } from "node:fs";
 import { dirname, join, relative } from "node:path";
-import { zipSync } from "fflate";
 import * as esbuild from "esbuild";
 import { solidPlugin } from "esbuild-plugin-solid";
+import { zipSync } from "fflate";
 
 const startTime = performance.now();
 const projectRoot = join(import.meta.dirname || ".", "..");
 const distDir = join(projectRoot, "dist");
 const chromeDir = join(distDir, "chrome");
-const firefoxDir = join(distDir, "firefox");
+const _firefoxDir = join(distDir, "firefox");
 const webDistDir = join(distDir, "web");
 const extSrcDir = join(projectRoot, "apps", "extension", "src");
 const webSrcDir = join(projectRoot, "apps", "web", "src");
@@ -48,10 +48,13 @@ function bundleCss(entryPath: string): string {
   if (!existsSync(entryPath)) return "";
   const dir = dirname(entryPath);
   let content = readFileSync(entryPath, "utf8");
-  content = content.replace(/@import\s+["'](\.\/[^"']+)["'];/g, (_, relPath) => {
-    const importedFilePath = join(dir, relPath);
-    return bundleCss(importedFilePath);
-  });
+  content = content.replace(
+    /@import\s+["'](\.\/[^"']+)["'];/g,
+    (_, relPath) => {
+      const importedFilePath = join(dir, relPath);
+      return bundleCss(importedFilePath);
+    },
+  );
   return content;
 }
 
@@ -65,7 +68,7 @@ function copyAssets() {
   const appNameMatch = constantsContent.match(
     /export const APP_NAME = "([^"]+)";/,
   );
-  const appName = (appNameMatch && appNameMatch[1]) ? appNameMatch[1] : "Gistwarden";
+  const appName = appNameMatch?.[1] ? appNameMatch[1] : "Gistwarden";
   const appNameLower = appName.toLowerCase().replace(/[^a-z0-9]/g, "");
   const bundledAppCss = bundleCss(join(uiDir, "styles", "app.css"));
 
@@ -151,7 +154,10 @@ function copyAssets() {
   console.log("✓ Assets copied successfully.");
 }
 
-function getFolderFilesRecursive(dir: string, baseDir: string): Record<string, Uint8Array> {
+function getFolderFilesRecursive(
+  dir: string,
+  baseDir: string,
+): Record<string, Uint8Array> {
   const files: Record<string, Uint8Array> = {};
   const entries = readdirSync(dir);
   for (const entry of entries) {
@@ -166,7 +172,10 @@ function getFolderFilesRecursive(dir: string, baseDir: string): Record<string, U
   return files;
 }
 
-async function zipFolderNative(sourceDir: string, outputFile: string): Promise<void> {
+async function _zipFolderNative(
+  sourceDir: string,
+  outputFile: string,
+): Promise<void> {
   if (!existsSync(sourceDir)) return;
   const filesMap = getFolderFilesRecursive(sourceDir, sourceDir);
   if (Object.keys(filesMap).length === 0) return;
@@ -178,14 +187,17 @@ async function zipFolderNative(sourceDir: string, outputFile: string): Promise<v
     }
     writeFileSync(outputFile, zipped);
   } catch (e) {
-    console.warn(`[Build] Warning: Could not write ${outputFile} (file may be locked by browser):`, e);
+    console.warn(
+      `[Build] Warning: Could not write ${outputFile} (file may be locked by browser):`,
+      e,
+    );
   }
 }
 
 function getFirefoxManifestContent(): string {
   const filePath = join(extSrcDir, "manifest.json");
   if (!existsSync(filePath)) return "";
-  let content = readFileSync(filePath, "utf8");
+  const content = readFileSync(filePath, "utf8");
   const manifestObj = JSON.parse(content);
   const constantsContent = readFileSync(
     join(projectRoot, "packages", "domain", "src", "constants.ts"),
@@ -194,7 +206,7 @@ function getFirefoxManifestContent(): string {
   const appNameMatch = constantsContent.match(
     /export const APP_NAME = "([^"]+)";/,
   );
-  const appName = (appNameMatch && appNameMatch[1]) ? appNameMatch[1] : "Gistwarden";
+  const appName = appNameMatch?.[1] ? appNameMatch[1] : "Gistwarden";
   const appNameLower = appName.toLowerCase().replace(/[^a-z0-9]/g, "");
 
   manifestObj.name = appName;
@@ -239,7 +251,9 @@ async function createZipPackages() {
 
     // 2. Create firefox.zip by swapping manifest in memory (3x faster!)
     if (!args.includes("--no-zip-firefox")) {
-      chromeFilesMap["manifest.json"] = new TextEncoder().encode(getFirefoxManifestContent());
+      chromeFilesMap["manifest.json"] = new TextEncoder().encode(
+        getFirefoxManifestContent(),
+      );
       const zippedFirefox = zipSync(chromeFilesMap, { level });
       try {
         if (existsSync(firefoxZipPath)) rmSync(firefoxZipPath, { force: true });
@@ -256,7 +270,11 @@ async function createZipPackages() {
   }
 }
 
-async function runCommandOrExit(name: string, command: string, cmdArgs: string[]) {
+async function runCommandOrExit(
+  name: string,
+  command: string,
+  cmdArgs: string[],
+) {
   const proc = Bun.spawn([command, ...cmdArgs], {
     stdout: "pipe",
     stderr: "pipe",
@@ -282,6 +300,7 @@ async function runVerifications() {
   try {
     await Promise.all([
       runCommandOrExit("bun lint", "bun", ["run", "lint"]),
+      runCommandOrExit("biome check", "bun", ["run", "biome:check"]),
       runCommandOrExit("bun typecheck", "bun", ["run", "typecheck"]),
       runCommandOrExit("bun test", "bun", ["test"]),
     ]);
@@ -317,9 +336,18 @@ async function buildTargetDirectory(outputDir: string) {
   ];
 
   const iifeEntryPoints = [
-    { in: join(extSrcDir, "extension/fido2-content-script.ts"), out: "fido2-content-script" },
-    { in: join(extSrcDir, "extension/fido2-page-script.ts"), out: "fido2-page-script" },
-    { in: join(extSrcDir, "extension/autofill-content-script.ts"), out: "autofill-content-script" },
+    {
+      in: join(extSrcDir, "extension/fido2-content-script.ts"),
+      out: "fido2-content-script",
+    },
+    {
+      in: join(extSrcDir, "extension/fido2-page-script.ts"),
+      out: "fido2-page-script",
+    },
+    {
+      in: join(extSrcDir, "extension/autofill-content-script.ts"),
+      out: "autofill-content-script",
+    },
   ];
 
   await esbuild.build({
@@ -331,7 +359,7 @@ async function buildTargetDirectory(outputDir: string) {
     plugins: [solidPlugin()],
     define: {
       "process.env.NODE_ENV": '"production"',
-      "APP_VERSION": JSON.stringify(appVersion),
+      APP_VERSION: JSON.stringify(appVersion),
     },
     sourcemap: enableSourcemap,
   });
@@ -345,7 +373,7 @@ async function buildTargetDirectory(outputDir: string) {
     plugins: [solidPlugin()],
     define: {
       "process.env.NODE_ENV": '"production"',
-      "APP_VERSION": JSON.stringify(appVersion),
+      APP_VERSION: JSON.stringify(appVersion),
     },
     sourcemap: enableSourcemap,
   });
@@ -362,7 +390,9 @@ async function runBuild() {
 
     if (buildWeb) {
       await esbuild.build({
-        entryPoints: [{ in: join(webSrcDir, "web-entry.tsx"), out: "web-entry" }],
+        entryPoints: [
+          { in: join(webSrcDir, "web-entry.tsx"), out: "web-entry" },
+        ],
         bundle: true,
         outdir: webDistDir,
         format: "esm",
@@ -370,7 +400,7 @@ async function runBuild() {
         plugins: [solidPlugin()],
         define: {
           "process.env.NODE_ENV": '"production"',
-          "APP_VERSION": JSON.stringify(appVersion),
+          APP_VERSION: JSON.stringify(appVersion),
         },
         sourcemap: false,
       });

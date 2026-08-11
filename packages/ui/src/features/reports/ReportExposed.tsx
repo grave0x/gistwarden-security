@@ -1,17 +1,14 @@
-import {
-  type Component,
-  createSignal,
-} from "solid-js";
 import { isLoginItem, type LoginVaultItem, View } from "@gistwarden/domain";
-import { accountStore } from "@/core/store.ts";
-import { navigate, selectItem } from "@/core/navigation.ts";
+import { type Component, createSignal } from "solid-js";
 import { t } from "@/core/i18n.ts";
+import { navigate, selectItem } from "@/core/navigation.ts";
+import { accountStore } from "@/core/store.ts";
 import { ShieldAlertIcon } from "@/icons/svg/index.ts";
+import { ReportLayout } from "./components/ReportLayout.tsx";
 import {
   checkPasswordHIBPUseCase,
   formatVaultItemUsername,
 } from "./reports-service.ts";
-import { ReportLayout } from "./components/ReportLayout.tsx";
 
 interface ExposedResult {
   item: LoginVaultItem;

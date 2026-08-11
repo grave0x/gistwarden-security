@@ -1,19 +1,18 @@
-import { type Component, createSignal, For, Show } from "solid-js";
-import { View } from "@/core/types.ts";
-import { navigate } from "@/core/navigation.ts";
-import { importVaultData } from "@/features/sync/import-service.ts";
 import { setGlobalLoading, showToast } from "@gistwarden/ui";
-import { ChevronRightIcon, UploadIcon } from "@/icons/svg/index.ts";
-import { t } from "@/core/i18n.ts";
+import { type Component, createSignal, For, Show } from "solid-js";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
-import {
-  getAllImportStrategies,
-} from "./import-export-registry.ts";
+import { t } from "@/core/i18n.ts";
+import { navigate } from "@/core/navigation.ts";
+import { View } from "@/core/types.ts";
+import { importVaultData } from "@/features/sync/import-service.ts";
+import { ChevronRightIcon, UploadIcon } from "@/icons/svg/index.ts";
+import { getAllImportStrategies } from "./import-export-registry.ts";
 import type { ImportStrategy } from "./import-export-types.ts";
 
 export const ImportAccounts: Component = () => {
   const [error, setError] = createSignal("");
-  const [activeStrategy, setActiveStrategy] = createSignal<ImportStrategy | null>(null);
+  const [activeStrategy, setActiveStrategy] =
+    createSignal<ImportStrategy | null>(null);
   let fileInputRef: HTMLInputElement | undefined;
 
   const handleBack = () => {
@@ -49,10 +48,7 @@ export const ImportAccounts: Component = () => {
       setGlobalLoading(false);
 
       if (res.isOk()) {
-        showToast(
-          t("vault_import_success", { count: res.value }),
-          "success",
-        );
+        showToast(t("vault_import_success", { count: res.value }), "success");
         navigate(View.Vault);
       } else {
         setError(t(res.error));
@@ -93,12 +89,8 @@ export const ImportAccounts: Component = () => {
                 <div class="setting-row-left">
                   <UploadIcon />
                   <div>
-                    <div class="setting-label">
-                      {t(strategy.nameKey)}
-                    </div>
-                    <div class="setting-sub">
-                      {t(strategy.subKey)}
-                    </div>
+                    <div class="setting-label">{t(strategy.nameKey)}</div>
+                    <div class="setting-sub">{t(strategy.subKey)}</div>
                   </div>
                 </div>
                 <ChevronRightIcon />

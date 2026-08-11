@@ -1,9 +1,14 @@
-import { assert, assertEquals, test } from "./assert.ts";
+import {
+  asVaultItemId,
+  parseCSV,
+  type VaultItem,
+  VaultItemType,
+} from "@gistwarden/domain";
 import {
   exportToBitwardenCsv,
   exportToBrowserCsv,
 } from "../packages/ui/src/features/sync/csv-export.ts";
-import { asVaultItemId, parseCSV, type VaultItem, VaultItemType } from "@gistwarden/domain";
+import { assert, assertEquals, test } from "./assert.ts";
 
 test("Export CSV - Browser CSV format", () => {
   const items: VaultItem[] = [
@@ -51,8 +56,20 @@ test("Export CSV - Browser CSV format", () => {
   const rows = parseCSV(csv);
   assertEquals(rows.length, 3); // Header + 2 login rows
   assertEquals(rows[0], ["name", "url", "username", "password", "note"]);
-  assertEquals(rows[1], ["Google, Inc.", "https://google.com", "user1", 'password"123', "Line1\nLine2"]);
-  assertEquals(rows[2], ["GitHub", "https://github.com", "user2", "password2", ""]);
+  assertEquals(rows[1], [
+    "Google, Inc.",
+    "https://google.com",
+    "user1",
+    'password"123',
+    "Line1\nLine2",
+  ]);
+  assertEquals(rows[2], [
+    "GitHub",
+    "https://github.com",
+    "user2",
+    "password2",
+    "",
+  ]);
 });
 
 test("Export CSV - Bitwarden CSV format", () => {

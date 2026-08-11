@@ -1,7 +1,6 @@
-import { z } from "zod";
+import type { VaultItem } from "@gistwarden/domain";
 import {
   asFolderId,
-  createBaseVaultItem,
   createDefaultVaultItem as createDomainDefaultVaultItem,
   Fido2CredentialSchema,
   FolderIdSchema,
@@ -9,16 +8,8 @@ import {
   VaultFieldSchema,
   VaultItemType,
 } from "@gistwarden/domain";
-
-import type {
-  CardVaultItem,
-  IdentityVaultItem,
-  LoginVaultItem,
-  SecureNoteVaultItem,
-  SshKeyVaultItem,
-  VaultItem,
-} from "@gistwarden/domain";
 import { unwrap } from "solid-js/store";
+import { z } from "zod";
 import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
 
 export const ItemEditFormSchema = z.object({
@@ -62,8 +53,6 @@ export const ItemEditFormSchema = z.object({
   postalCode: z.string(),
   country: z.string(),
 });
-
-
 
 export type ItemEditFormState = z.infer<typeof ItemEditFormSchema>;
 
@@ -139,7 +128,11 @@ export function mapFormStateToVaultItem(
 
   const commonData = {
     id: selectedItem?.id ?? undefined,
-    folderId: validatedForm.folderId ? asFolderId(validatedForm.folderId) : (validatedForm.folderId === null ? null : undefined),
+    folderId: validatedForm.folderId
+      ? asFolderId(validatedForm.folderId)
+      : validatedForm.folderId === null
+        ? null
+        : undefined,
     name: validatedForm.name.trim(),
 
     notes: validatedForm.notes.trim(),
@@ -153,7 +146,8 @@ export function mapFormStateToVaultItem(
   };
 
   const strategy = getVaultItemStrategy(validatedForm.itemType);
-  const specificPayload = strategy.mapToPayload?.(validatedForm, selectedItem) ?? {};
+  const specificPayload =
+    strategy.mapToPayload?.(validatedForm, selectedItem) ?? {};
 
   const result: Partial<VaultItem> = {
     ...commonData,

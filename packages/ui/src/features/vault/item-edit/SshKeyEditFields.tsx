@@ -1,10 +1,10 @@
 import { type Component, createSignal, Show } from "solid-js";
-import { t } from "@/core/i18n.ts";
-import Input from "@/components/ui/Input.tsx";
-import { UploadIcon } from "@/icons/svg/index.ts";
-import { parseSshKey } from "@/core/crypto.ts";
 import FormField from "@/components/ui/FormField.tsx";
+import Input from "@/components/ui/Input.tsx";
+import { parseSshKey } from "@/core/crypto.ts";
+import { t } from "@/core/i18n.ts";
 import type { ItemEditFormState } from "@/features/vault/item-edit/vault-edit-helper.ts";
+import { UploadIcon } from "@/icons/svg/index.ts";
 
 interface SshKeyEditFieldsProps {
   formState: ItemEditFormState;

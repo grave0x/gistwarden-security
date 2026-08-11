@@ -4,7 +4,7 @@ import {
   MSG_FIDO2_CREDENTIAL_GET_REQUEST,
 } from "@/core/constants.ts";
 
-(function () {
+(() => {
   // Prevent duplicate injection
   if (`__${APP_NAME.toLowerCase()}_fido2_injected` in window) return;
   Object.defineProperty(window, `__${APP_NAME.toLowerCase()}_fido2_injected`, {
@@ -89,7 +89,8 @@ import {
   // Listen to postMessage from content script
   window.addEventListener("message", (event) => {
     if (
-      event.source !== window || !event.data ||
+      event.source !== window ||
+      !event.data ||
       event.data.source !== `${APP_NAME.toLowerCase()}-content-script` ||
       event.data.token !== token
     ) {
@@ -120,9 +121,8 @@ import {
       const requestId = crypto.randomUUID();
       pendingRequests.set(requestId, { resolve, reject });
 
-      const targetOrigin = window.location.origin !== "null"
-        ? window.location.origin
-        : "*";
+      const targetOrigin =
+        window.location.origin !== "null" ? window.location.origin : "*";
 
       window.postMessage(
         {
@@ -138,10 +138,10 @@ import {
   }
 
   // Override create (Registration)
-  navigator.credentials.create = async function (
+  navigator.credentials.create = async (
     options?: CredentialCreationOptions,
-  ): Promise<Credential | null> {
-    if (!options || !options.publicKey) {
+  ): Promise<Credential | null> => {
+    if (!options?.publicKey) {
       return originalCredentials.create(options);
     }
 
@@ -222,10 +222,10 @@ import {
   };
 
   // Override get (Assertion)
-  navigator.credentials.get = async function (
+  navigator.credentials.get = async (
     options?: CredentialRequestOptions,
-  ): Promise<Credential | null> {
-    if (!options || !options.publicKey) {
+  ): Promise<Credential | null> => {
+    if (!options?.publicKey) {
       return originalCredentials.get(options);
     }
 

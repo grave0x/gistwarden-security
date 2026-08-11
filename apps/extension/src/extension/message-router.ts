@@ -1,14 +1,20 @@
-import { z } from "zod";
-import { getAssetUrl } from "@/core/runtime.ts";
-import { isRecord } from "@gistwarden/repository";
 import {
   onExtensionMessage,
   type RouteContract,
 } from "@gistwarden/orchestrator";
-import type { MessageCommand, MessageContext } from "@/extension/message-command.ts";
+import { isRecord } from "@gistwarden/repository";
+import type { z } from "zod";
+import { getAssetUrl } from "@/core/runtime.ts";
+import type {
+  MessageCommand,
+  MessageContext,
+} from "@/extension/message-command.ts";
 import { createCommand } from "@/extension/message-command.ts";
 
-export type { MessageCommand, MessageContext } from "@/extension/message-command.ts";
+export type {
+  MessageCommand,
+  MessageContext,
+} from "@/extension/message-command.ts";
 export { createCommand } from "@/extension/message-command.ts";
 
 export class MessageRouter {

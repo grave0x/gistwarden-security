@@ -1,15 +1,10 @@
-import { type Component } from "solid-js";
-import { type IconProps } from "@/icons/svg/types.ts";
+import type { Component } from "solid-js";
+import type { IconProps } from "@/icons/svg/types.ts";
 
 export const AppIcon: Component<IconProps> = (props) => {
   const size = () => props.size || props.width || 16;
   return (
-    <svg
-      width={size()}
-      height={size()}
-      viewBox="0 0 512 512"
-      {...props}
-    >
+    <svg width={size()} height={size()} viewBox="0 0 512 512" {...props}>
       {/* Nền hình vuông bo góc màu xanh tối (Dark Slate Blue) */}
       <rect x="0" y="0" width="512" height="512" rx="100" fill="#0c1527" />
 
@@ -23,10 +18,8 @@ export const AppIcon: Component<IconProps> = (props) => {
       >
         {/* Đường viền Khiên ngoài */}
         <path d="M 256,96 L 394,142 C 394,270 324,370 256,432 C 188,370 118,270 118,142 Z" />
-
         {/* Đường viền Khiên trong */}
         <path d="M 256,142 L 350,175 C 350,265 300,340 256,388 C 212,340 162,265 162,175 Z" />
-
         {/* Các đường nối tạo hiệu ứng vát cạnh 3D (Bevel lines) */}
         <path d="M 256,96 L 256,142" /> {/* Đỉnh giữa */}
         <path d="M 394,142 L 350,175" /> {/* Góc trên bên phải */}

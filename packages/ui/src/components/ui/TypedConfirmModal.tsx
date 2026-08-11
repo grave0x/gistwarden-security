@@ -1,6 +1,6 @@
+import { t } from "@gistwarden/domain";
 import { type Component, createSignal, Show } from "solid-js";
 import { Portal } from "solid-js/web";
-import { t } from "@gistwarden/domain";
 import Button from "./Button.tsx";
 import Input from "./Input.tsx";
 import SafeHtml from "./SafeHtml.tsx";
@@ -17,9 +17,7 @@ export interface TypedConfirmModalProps {
   readonly onConfirm: () => Promise<void>;
 }
 
-export const TypedConfirmModal: Component<TypedConfirmModalProps> = (
-  props,
-) => {
+export const TypedConfirmModal: Component<TypedConfirmModalProps> = (props) => {
   const [confirmText, setConfirmText] = createSignal("");
 
   const handleClose = () => {

@@ -1,10 +1,10 @@
-import { createEffect, createSignal, Show } from "solid-js";
-import { type Folder, type FolderId } from "@gistwarden/domain";
-import { t } from "@/core/i18n.ts";
+import type { Folder, FolderId } from "@gistwarden/domain";
 import { confirm } from "@gistwarden/ui";
-import Input from "@/components/ui/Input.tsx";
-import Button from "@/components/ui/Button.tsx";
+import { createEffect, createSignal, Show } from "solid-js";
 import BaseSlideModal from "@/components/ui/BaseSlideModal.tsx";
+import Button from "@/components/ui/Button.tsx";
+import Input from "@/components/ui/Input.tsx";
+import { t } from "@/core/i18n.ts";
 import { TrashIcon } from "@/icons/svg/index.ts";
 
 export interface FolderModalProps {
@@ -14,7 +14,6 @@ export interface FolderModalProps {
   onSave: (name: string) => Promise<boolean>;
   onDelete?: (folderId: FolderId) => Promise<boolean>;
 }
-
 
 export default function FolderModal(props: FolderModalProps) {
   const [name, setName] = createSignal("");

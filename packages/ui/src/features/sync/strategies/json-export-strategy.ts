@@ -36,16 +36,18 @@ export const jsonExportStrategy = {
             username: item.login.username || "",
             password: item.login.password || "",
             totp: item.login.totp || "",
-            uris: item.login.uris?.map((u) => ({
-              uri: u.uri,
-              match: null,
-            })) || [],
+            uris:
+              item.login.uris?.map((u) => ({
+                uri: u.uri,
+                match: null,
+              })) || [],
             fido2Credentials: item.login.fido2Credentials || [],
             passwordRevisionDate: item.login.passwordRevisionDate || null,
-            passwordHistory: item.login.passwordHistory?.map((ph) => ({
-              lastUsedDate: ph.lastUsedDate || null,
-              password: ph.password || "",
-            })) || [],
+            passwordHistory:
+              item.login.passwordHistory?.map((ph) => ({
+                lastUsedDate: ph.lastUsedDate || null,
+                password: ph.password || "",
+              })) || [],
           },
         };
       } else if (item.type === VaultItemType.Card) {
@@ -118,9 +120,9 @@ export const jsonExportStrategy = {
     };
 
     const fileContent = JSON.stringify(exportPayload, null, 2);
-    const fileName = `${APP_NAME.toLowerCase()}_export_${
-      new Date().toISOString().slice(0, 10)
-    }.json`;
+    const fileName = `${APP_NAME.toLowerCase()}_export_${new Date()
+      .toISOString()
+      .slice(0, 10)}.json`;
 
     return {
       fileName,

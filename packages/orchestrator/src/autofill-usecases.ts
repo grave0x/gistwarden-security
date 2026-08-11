@@ -1,4 +1,3 @@
-import { z } from "zod";
 import {
   type CheckAutofillSuggestionResponse,
   filterMatchingDomainItems,
@@ -18,32 +17,37 @@ import {
   removeLocalItem,
   setLocalItem,
 } from "@gistwarden/repository";
-import { pendingNotificationManager } from "./pending-notification-manager.ts";
+import { z } from "zod";
 import { sendMessageToTab } from "./messaging.ts";
-import { getDecryptedVaultItems } from "./vault-repository-usecase.ts";
+import { pendingNotificationManager } from "./pending-notification-manager.ts";
 import { batchSavePayloads } from "./vault-mutation-usecases.ts";
+import { getDecryptedVaultItems } from "./vault-repository-usecase.ts";
 
-const SubmittedCredentialsSchema = z.object({
-  domain: z.string(),
-  url: z.string(),
-  username: z.string(),
-  password: z.string(),
-}).readonly();
+const SubmittedCredentialsSchema = z
+  .object({
+    domain: z.string(),
+    url: z.string(),
+    username: z.string(),
+    password: z.string(),
+  })
+  .readonly();
 
 export function isDomainExcluded(
   domainOrUrl: string,
   excludedList?: readonly string[],
 ): boolean {
   if (!domainOrUrl) return false;
-  const list = excludedList && excludedList.length > 0
-    ? excludedList
-    : DEFAULT_EXCLUDED_DOMAINS;
+  const list =
+    excludedList && excludedList.length > 0
+      ? excludedList
+      : DEFAULT_EXCLUDED_DOMAINS;
   const normalized = domainOrUrl.toLowerCase().trim();
   return list.some((ex) => {
-    const cleanEx = ex.toLowerCase().trim().replace(/^https?:\/\//, "").replace(
-      /\/.*$/,
-      "",
-    );
+    const cleanEx = ex
+      .toLowerCase()
+      .trim()
+      .replace(/^https?:\/\//, "")
+      .replace(/\/.*$/, "");
     if (!cleanEx) return false;
     return normalized.includes(cleanEx) || cleanEx.includes(normalized);
   });
@@ -124,9 +128,8 @@ export async function processSubmittedCredentialsUseCase(
   });
 
   setTimeout(async () => {
-    const currentPending = await pendingNotificationManager.getTabNotification(
-      tabId,
-    );
+    const currentPending =
+      await pendingNotificationManager.getTabNotification(tabId);
     if (currentPending && currentPending.payload === notificationPayload) {
       sendMessageToTab(tabId, {
         type: MSG_SHOW_NOTIFICATION_BAR,
@@ -138,17 +141,14 @@ export async function processSubmittedCredentialsUseCase(
 
 let isProcessingPendingQueue = false;
 
-export async function processPendingUnapprovedCredentialsUseCase(): Promise<
-  void
-> {
+export async function processPendingUnapprovedCredentialsUseCase(): Promise<void> {
   if (isProcessingPendingQueue) return;
   isProcessingPendingQueue = true;
 
-  const pendingRes = await getLocalItem(
-    STORAGE_KEY_UNAPPROVED_PENDING_LOGINS,
-  );
+  const pendingRes = await getLocalItem(STORAGE_KEY_UNAPPROVED_PENDING_LOGINS);
   if (
-    pendingRes.isErr() || !Array.isArray(pendingRes.value) ||
+    pendingRes.isErr() ||
+    !Array.isArray(pendingRes.value) ||
     pendingRes.value.length === 0
   ) {
     isProcessingPendingQueue = false;
@@ -248,15 +248,13 @@ export async function checkAutofillSuggestionUseCase(
     VaultItemType.Login,
   );
 
-  const matchingAccounts = matches
-    .filter(isLoginItem)
-    .map((m) => ({
-      itemId: m.id,
-      name: m.name,
-      username: m.login.username || "",
-      password: m.login.password || "",
-      totp: m.login.totp || "",
-    }));
+  const matchingAccounts = matches.filter(isLoginItem).map((m) => ({
+    itemId: m.id,
+    name: m.name,
+    username: m.login.username || "",
+    password: m.login.password || "",
+    totp: m.login.totp || "",
+  }));
 
   const bestMatch = matchingAccounts[0];
   if (matchingAccounts.length === 0 || !bestMatch) {

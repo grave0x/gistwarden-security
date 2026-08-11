@@ -1,5 +1,5 @@
-import { type Component } from "solid-js";
-import { type IconProps } from "@/icons/svg/types.ts";
+import type { Component } from "solid-js";
+import type { IconProps } from "@/icons/svg/types.ts";
 
 export const GithubIcon: Component<IconProps> = (props) => {
   const size = () => props.size || props.width || 16;

@@ -1,21 +1,23 @@
 import {
   createBaseVaultItem,
+  type Folder,
   getVaultItemFallbackName,
   logger,
-  type Folder,
   type VaultItem,
   VaultItemType,
   VaultListSchema,
 } from "@gistwarden/domain";
+import { err, ok, type Result } from "neverthrow";
 import { APP_NAME } from "@/core/constants.ts";
 import { parseCSV } from "@/core/csv-parser.ts";
-import { err, ok, Result } from "neverthrow";
-import type { TranslationKey } from "@/core/i18n.ts";
 import { safeParseUrl } from "@/core/domain-utils.ts";
+import type { TranslationKey } from "@/core/i18n.ts";
 import type { ImportResult, ImportStrategy } from "../import-export-types.ts";
 
 function extractDomain(urlStr: string): string {
-  return safeParseUrl(urlStr).map((u) => u.hostname).unwrapOr(urlStr);
+  return safeParseUrl(urlStr)
+    .map((u) => u.hostname)
+    .unwrapOr(urlStr);
 }
 
 export const browserCsvImportStrategy = {
@@ -28,7 +30,9 @@ export const browserCsvImportStrategy = {
     existingItems: VaultItem[],
     existingFolders: Folder[] = [],
   ): Result<ImportResult, TranslationKey> {
-    logger.vault.info(`[${APP_NAME} CSV Import] Bắt đầu đọc file CSV trình duyệt...`);
+    logger.vault.info(
+      `[${APP_NAME} CSV Import] Bắt đầu đọc file CSV trình duyệt...`,
+    );
     const rows = parseCSV(csvString);
     if (rows.length < 2) {
       return err("vault_import_csv_error_fail");
@@ -40,7 +44,7 @@ export const browserCsvImportStrategy = {
     }
 
     const headers = firstRow.map((h) =>
-      h.trim().toLowerCase().replace(/['"]/g, "")
+      h.trim().toLowerCase().replace(/['"]/g, ""),
     );
     const urlIdx = headers.indexOf("url");
     const usernameIdx = headers.indexOf("username");
@@ -60,13 +64,16 @@ export const browserCsvImportStrategy = {
 
     for (let r = 1; r < rows.length; r++) {
       const row = rows[r];
-      if (!row || row.length === 0 || (row.length === 1 && row[0] === "")) continue;
+      if (!row || row.length === 0 || (row.length === 1 && row[0] === ""))
+        continue;
 
-      const urlVal = (urlIdx !== -1 && row[urlIdx]) ? row[urlIdx]! : "";
-      const usernameVal = (usernameIdx !== -1 && row[usernameIdx]) ? row[usernameIdx]! : "";
-      const passwordVal = (passwordIdx !== -1 && row[passwordIdx]) ? row[passwordIdx]! : "";
-      let nameVal = (nameIdx !== -1 && row[nameIdx]) ? row[nameIdx]! : "";
-      const noteVal = (noteIdx !== -1 && row[noteIdx]) ? row[noteIdx]! : "";
+      const urlVal = urlIdx !== -1 && row[urlIdx] ? row[urlIdx]! : "";
+      const usernameVal =
+        usernameIdx !== -1 && row[usernameIdx] ? row[usernameIdx]! : "";
+      const passwordVal =
+        passwordIdx !== -1 && row[passwordIdx] ? row[passwordIdx]! : "";
+      let nameVal = nameIdx !== -1 && row[nameIdx] ? row[nameIdx]! : "";
+      const noteVal = noteIdx !== -1 && row[noteIdx] ? row[noteIdx]! : "";
 
       if (!urlVal && !usernameVal && !passwordVal) {
         continue;

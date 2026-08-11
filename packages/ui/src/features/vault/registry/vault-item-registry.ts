@@ -1,11 +1,11 @@
 import { VaultItemType } from "@gistwarden/domain";
-import type { VaultItemStrategy } from "./vault-item-types.ts";
-import { loginStrategy } from "./strategies/login-strategy.tsx";
+import { t } from "@/core/i18n.ts";
 import { cardStrategy } from "./strategies/card-strategy.tsx";
 import { identityStrategy } from "./strategies/identity-strategy.tsx";
+import { loginStrategy } from "./strategies/login-strategy.tsx";
 import { noteStrategy } from "./strategies/note-strategy.tsx";
 import { sshKeyStrategy } from "./strategies/ssh-key-strategy.tsx";
-import { t } from "@/core/i18n.ts";
+import type { VaultItemStrategy } from "./vault-item-types.ts";
 
 export const vaultItemRegistry = {
   [VaultItemType.Login]: loginStrategy,

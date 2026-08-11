@@ -1,14 +1,9 @@
 import {
-  assert,
-  assertEquals,
-  assertNotEquals,
-  test,
-} from "./assert.ts";
-import {
   arrayBufferToBase64,
   decryptData,
   deriveKey,
   encryptData,
+  Fido2CredentialSchema,
   generateSalt,
   parseSshKey,
   parseTotpSecret,
@@ -18,7 +13,10 @@ import {
   getSessionKey,
   setDerivedKey,
 } from "@gistwarden/orchestrator";
-import { clearUnlockedSessionState } from "@gistwarden/repository";
+import {
+  clearUnlockedSessionState,
+  ImportItemSchema,
+} from "@gistwarden/repository";
 import {
   AAGUID,
   base64UrlToBuffer,
@@ -29,8 +27,7 @@ import {
   getRawCredentialId,
   p1363ToDer,
 } from "../packages/ui/src/features/passkey/passkey-crypto.ts";
-import { Fido2CredentialSchema } from "@gistwarden/domain";
-import { ImportItemSchema } from "@gistwarden/repository";
+import { assert, assertEquals, assertNotEquals, test } from "./assert.ts";
 
 test("Crypto - Key derivation, Encryption and Decryption", async () => {
   const password = "SuperSecretPassword123";
@@ -218,22 +215,8 @@ test("Passkey Crypto - getRawCredentialId format parsing", () => {
   // Test UUID format (e.g. "bc7cdc36-1657-44a4-aa04-e4cecf774343")
   const uuid = "bc7cdc36-1657-44a4-aa04-e4cecf774343";
   const expectedBytes = new Uint8Array([
-    0xbc,
-    0x7c,
-    0xdc,
-    0x36,
-    0x16,
-    0x57,
-    0x44,
-    0xa4,
-    0xaa,
-    0x04,
-    0xe4,
-    0xce,
-    0xcf,
-    0x77,
-    0x43,
-    0x43,
+    0xbc, 0x7c, 0xdc, 0x36, 0x16, 0x57, 0x44, 0xa4, 0xaa, 0x04, 0xe4, 0xce,
+    0xcf, 0x77, 0x43, 0x43,
   ]);
   const parsedUuidBytesRes = getRawCredentialId(uuid);
   assertEquals(parsedUuidBytesRes.isOk(), true);
@@ -360,8 +343,7 @@ test("Crypto - parseSshKey for OpenSSH keys", async () => {
   ]);
 
   const base64Content = arrayBufferToBase64(fullBytes.buffer);
-  const validEd25519Key =
-    `-----BEGIN OPENSSH PRIVATE KEY-----\n${base64Content}\n-----END OPENSSH PRIVATE KEY-----`;
+  const validEd25519Key = `-----BEGIN OPENSSH PRIVATE KEY-----\n${base64Content}\n-----END OPENSSH PRIVATE KEY-----`;
 
   const validRes = await parseSshKey(validEd25519Key);
   assertEquals(validRes.isOk(), true);
@@ -427,80 +409,19 @@ VJo4zyr0vAWCc9LlxDAAAABm5vbmFtZQECAwQ=
   // 5. Legacy PEM RSA Private Key test
   const ver = new Uint8Array([0x02, 0x01, 0x00]);
   const modBytes = new Uint8Array([
-    0x02,
-    0x41,
-    0x00,
-    0xbd,
-    0x11,
-    0xf1,
-    0xb4,
-    0xf4,
-    0xd1,
-    0x02,
-    0xfd,
-    0x64,
-    0xb0,
-    0x26,
-    0x23,
-    0x11,
-    0x9e,
-    0xc6,
-    0xca,
-    0xba,
-    0xf0,
-    0x51,
-    0x3e,
-    0x05,
-    0x21,
-    0x0f,
-    0x11,
-    0x6a,
-    0x3c,
-    0x9c,
-    0x29,
-    0x12,
-    0xa1,
-    0x28,
-    0xcf,
-    0xf1,
-    0x7b,
-    0xa1,
-    0xe0,
-    0xde,
-    0x50,
-    0x24,
-    0x5c,
-    0x05,
-    0xa4,
-    0xa8,
-    0x2c,
-    0xa7,
-    0x6a,
-    0x5a,
-    0xbd,
-    0x92,
-    0x08,
-    0xac,
-    0x41,
-    0xd3,
-    0xf0,
-    0x43,
-    0x10,
-    0x5d,
-    0x90,
-    0x6f,
-    0x06,
-    0x47,
-    0x48,
-    0xd0,
-    0xff,
+    0x02, 0x41, 0x00, 0xbd, 0x11, 0xf1, 0xb4, 0xf4, 0xd1, 0x02, 0xfd, 0x64,
+    0xb0, 0x26, 0x23, 0x11, 0x9e, 0xc6, 0xca, 0xba, 0xf0, 0x51, 0x3e, 0x05,
+    0x21, 0x0f, 0x11, 0x6a, 0x3c, 0x9c, 0x29, 0x12, 0xa1, 0x28, 0xcf, 0xf1,
+    0x7b, 0xa1, 0xe0, 0xde, 0x50, 0x24, 0x5c, 0x05, 0xa4, 0xa8, 0x2c, 0xa7,
+    0x6a, 0x5a, 0xbd, 0x92, 0x08, 0xac, 0x41, 0xd3, 0xf0, 0x43, 0x10, 0x5d,
+    0x90, 0x6f, 0x06, 0x47, 0x48, 0xd0, 0xff,
   ]);
   const expBytes = new Uint8Array([0x02, 0x03, 0x01, 0x00, 0x01]);
   const body = new Uint8Array([...ver, ...modBytes, ...expBytes]);
   const der = new Uint8Array([0x30, body.length, ...body]);
-  const legacyRsaPem = `-----BEGIN RSA PRIVATE KEY-----\n${
-    arrayBufferToBase64(der.slice().buffer)
-  }\n-----END RSA PRIVATE KEY-----`;
+  const legacyRsaPem = `-----BEGIN RSA PRIVATE KEY-----\n${arrayBufferToBase64(
+    der.slice().buffer,
+  )}\n-----END RSA PRIVATE KEY-----`;
 
   const legacyRes = await parseSshKey(legacyRsaPem);
   assertEquals(legacyRes.isOk(), true);

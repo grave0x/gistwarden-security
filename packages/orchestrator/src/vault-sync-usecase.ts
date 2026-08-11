@@ -2,8 +2,8 @@ import {
   decryptData,
   encryptData,
   type Folder,
-  safeJsonParse,
   SESSION_KEY_ENCRYPTED_VAULT,
+  safeJsonParse,
   type TranslationKey,
   type TrashVaultItem,
   type VaultItem,
@@ -13,17 +13,16 @@ import {
 } from "@gistwarden/domain";
 import {
   EncryptedPayloadSchema,
-  getActiveVaultMode,
   setSessionItem,
   updateAccountSettings,
   type VaultMode,
 } from "@gistwarden/repository";
-import { err, ok, Result } from "neverthrow";
+import { err, ok, type Result } from "neverthrow";
+import { sendBackgroundMessage } from "./messaging.ts";
 import {
   downloadFromGistRoute,
   uploadToGistRoute,
 } from "./messaging-contracts.ts";
-import { sendBackgroundMessage } from "./messaging.ts";
 import { mergeVaultPayload } from "./vault-merge-usecase.ts";
 
 export async function fetchAndMergeRemoteVaultUseCase(
@@ -139,10 +138,7 @@ export async function syncVaultToGist(
     trash: finalPayloadToSave.trash,
   };
 
-  const encryptRes = await encryptData(
-    JSON.stringify(payloadObject),
-    key,
-  );
+  const encryptRes = await encryptData(JSON.stringify(payloadObject), key);
   if (encryptRes.isErr()) {
     return err("storage_error");
   }

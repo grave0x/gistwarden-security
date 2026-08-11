@@ -1,6 +1,6 @@
-import { safeFetch } from "./fetch-utils.ts";
-import { err, ok, Result } from "neverthrow";
 import type { TranslationKey } from "@gistwarden/domain";
+import { err, ok, type Result } from "neverthrow";
+import { safeFetch } from "./fetch-utils.ts";
 
 export async function fetchPwnedPasswordsRange(
   prefix: string,
@@ -57,9 +57,13 @@ export async function fetchXposedOrNotBreach(
 
     const data: unknown = await res.json();
     if (
-      data && typeof data === "object" && "status" in data &&
-      data.status === "success" && "breaches" in data &&
-      Array.isArray(data.breaches) && data.breaches.length > 0
+      data &&
+      typeof data === "object" &&
+      "status" in data &&
+      data.status === "success" &&
+      "breaches" in data &&
+      Array.isArray(data.breaches) &&
+      data.breaches.length > 0
     ) {
       const rawList = Array.isArray(data.breaches[0])
         ? data.breaches[0]

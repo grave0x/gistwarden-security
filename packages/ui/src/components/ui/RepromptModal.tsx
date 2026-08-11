@@ -1,11 +1,11 @@
+import { verifyMasterPassword } from "@gistwarden/orchestrator";
+import { resolveReprompt } from "@gistwarden/ui";
 import { createEffect, createSignal, Show } from "solid-js";
+import BaseSlideModal from "@/components/ui/BaseSlideModal.tsx";
+import Button from "@/components/ui/Button.tsx";
+import Input from "@/components/ui/Input.tsx";
 import { t } from "@/core/i18n.ts";
 import { settingsStore, uiStore } from "@/core/store.ts";
-import { resolveReprompt } from "@gistwarden/ui";
-import { verifyMasterPassword } from "@gistwarden/orchestrator";
-import Input from "@/components/ui/Input.tsx";
-import Button from "@/components/ui/Button.tsx";
-import BaseSlideModal from "@/components/ui/BaseSlideModal.tsx";
 
 export default function RepromptModal() {
   const [password, setPassword] = createSignal("");

@@ -1,4 +1,4 @@
-import CopyableField from "@/components/ui/CopyableField.tsx";
+import type { LoginVaultItem } from "@gistwarden/domain";
 import {
   type Component,
   createSignal,
@@ -7,10 +7,10 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import type { LoginVaultItem } from "@gistwarden/domain";
+import CopyableField from "@/components/ui/CopyableField.tsx";
 import { t } from "@/core/i18n.ts";
-import { generateTotpSafe } from "@/core/totp-utils.ts";
 import { settingsStore } from "@/core/store.ts";
+import { generateTotpSafe } from "@/core/totp-utils.ts";
 import {
   CopyIcon,
   ExternalLinkIcon,
@@ -55,7 +55,7 @@ export const LoginDetailFields: Component<LoginDetailFieldsProps> = (props) => {
 
     if (generateRes.isOk()) {
       const rawCode = generateRes.value;
-      const formatted = rawCode.slice(0, 3) + " " + rawCode.slice(3);
+      const formatted = `${rawCode.slice(0, 3)} ${rawCode.slice(3)}`;
       setTotpCode(formatted);
     } else {
       setTotpCode(t("detail_totp_error"));
@@ -78,9 +78,7 @@ export const LoginDetailFields: Component<LoginDetailFieldsProps> = (props) => {
   return (
     <>
       {/* Card 1: Login Credentials */}
-      <div class="detail-section-title mt-0">
-        {t("detail_section_login")}
-      </div>
+      <div class="detail-section-title mt-0">{t("detail_section_login")}</div>
       <div class="card mb-16">
         {/* Username Field */}
         <CopyableField
@@ -97,7 +95,7 @@ export const LoginDetailFields: Component<LoginDetailFieldsProps> = (props) => {
             <div class="field-label">{t("edit_label_password")}</div>
             <div class="field-value password-font text-break">
               {showPassword()
-                ? (props.item.login.password || "")
+                ? props.item.login.password || ""
                 : "••••••••••••"}
             </div>
           </div>
@@ -123,7 +121,8 @@ export const LoginDetailFields: Component<LoginDetailFieldsProps> = (props) => {
                   props.onCopy(
                     props.item.login.password || "",
                     t("edit_label_password"),
-                  )}
+                  )
+                }
                 title={t("detail_copy_password")}
               >
                 <CopyIcon />
@@ -135,9 +134,7 @@ export const LoginDetailFields: Component<LoginDetailFieldsProps> = (props) => {
 
       {/* Card 2: Security & OTP */}
       <Show when={totpCode() || getFidoCredentials().length > 0}>
-        <div class="detail-section-title">
-          {t("detail_section_security")}
-        </div>
+        <div class="detail-section-title">{t("detail_section_security")}</div>
         <div class="card mb-16">
           {/* Rolling TOTP Display */}
           <Show when={totpCode()}>
@@ -147,7 +144,8 @@ export const LoginDetailFields: Component<LoginDetailFieldsProps> = (props) => {
                 props.onCopy(
                   totpCode().replace(/\s/g, ""),
                   t("detail_totp_label"),
-                )}
+                )
+              }
               title={t("detail_copy_totp")}
             >
               <div class="totp-content">
@@ -181,9 +179,7 @@ export const LoginDetailFields: Component<LoginDetailFieldsProps> = (props) => {
                       {t("detail_passkey_webauthn")}
                     </div>
                     <div class="field-value text-break">
-                      <strong>
-                        {cred.userName || t("detail_no_value")}
-                      </strong>
+                      <strong>{cred.userName || t("detail_no_value")}</strong>
                     </div>
                   </div>
                 </div>
@@ -194,9 +190,7 @@ export const LoginDetailFields: Component<LoginDetailFieldsProps> = (props) => {
       </Show>
 
       {/* Card 3: Auto-fill Options */}
-      <div class="detail-section-title">
-        {t("detail_section_autofill")}
-      </div>
+      <div class="detail-section-title">{t("detail_section_autofill")}</div>
       <div class="card mb-16">
         <Show
           when={props.item.login.uris && props.item.login.uris.length > 0}
@@ -218,9 +212,7 @@ export const LoginDetailFields: Component<LoginDetailFieldsProps> = (props) => {
                       ? t("edit_label_website")
                       : `${t("edit_label_website")} ${idx() + 1}`}
                   </div>
-                  <div class="field-value">
-                    {u.uri}
-                  </div>
+                  <div class="field-value">{u.uri}</div>
                 </div>
                 <div class="field-actions">
                   <button
@@ -229,7 +221,7 @@ export const LoginDetailFields: Component<LoginDetailFieldsProps> = (props) => {
                     onClick={() => {
                       let target = u.uri;
                       if (!/^https?:\/\//i.test(target)) {
-                        target = "https://" + target;
+                        target = `https://${target}`;
                       }
                       window.open(target, "_blank");
                     }}

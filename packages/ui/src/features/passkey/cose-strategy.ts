@@ -5,7 +5,10 @@ export interface CoseAlgorithmStrategy {
   readonly name: string;
   readonly keyType: string;
   readonly curveName?: string;
-  readonly webCryptoAlg: RsaHashedImportParams | EcKeyImportParams | AlgorithmIdentifier;
+  readonly webCryptoAlg:
+    | RsaHashedImportParams
+    | EcKeyImportParams
+    | AlgorithmIdentifier;
   encodePublicKey(x: Uint8Array, y: Uint8Array): Uint8Array;
 }
 

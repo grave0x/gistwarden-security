@@ -1,9 +1,9 @@
-import { createEffect, type Component, Show } from "solid-js";
-import { View } from "@/core/types.ts";
 import type { VaultItem, VaultItemId } from "@gistwarden/domain";
-import { MoreVerticalIcon } from "@/icons/svg/index.ts";
-import { openItem } from "@/core/navigation.ts";
+import { type Component, createEffect, Show } from "solid-js";
 import { t } from "@/core/i18n.ts";
+import { openItem } from "@/core/navigation.ts";
+import { View } from "@/core/types.ts";
+import { MoreVerticalIcon } from "@/icons/svg/index.ts";
 
 interface VaultItemOptionsMenuProps {
   item: VaultItem;

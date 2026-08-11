@@ -96,12 +96,10 @@ export function mergeVaultPayload(
   const localTrash = localPayload.trash || [];
   const remoteTrash = remotePayload.trash || [];
 
-  const mergedFolders = localPayload.folders !== undefined
-    ? localPayload.folders
-    : mergeFolders(
-      localPayload.folders || [],
-      remotePayload.folders || [],
-    );
+  const mergedFolders =
+    localPayload.folders !== undefined
+      ? localPayload.folders
+      : mergeFolders(localPayload.folders || [], remotePayload.folders || []);
 
   const trashMap = new Map<string, TrashVaultItem>();
   for (const tItem of [...localTrash, ...remoteTrash]) {

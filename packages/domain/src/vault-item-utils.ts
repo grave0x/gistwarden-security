@@ -1,3 +1,5 @@
+import { t } from "./i18n.ts";
+import { assertNever } from "./types.ts";
 import {
   asFolderId,
   asVaultItemId,
@@ -10,15 +12,13 @@ import {
   VaultItemSchema,
 } from "./vault-schemas.ts";
 import { CustomFieldType, VaultItemType } from "./vault-types.ts";
-import { t } from "./i18n.ts";
-import { assertNever } from "./types.ts";
 
 export function mapCustomFields(
-  fields?:
-    | Array<
-      { name?: string | null; value?: string | null; type?: number | null }
-    >
-    | null,
+  fields?: Array<{
+    name?: string | null;
+    value?: string | null;
+    type?: number | null;
+  }> | null,
 ): VaultField[] {
   if (!fields || !Array.isArray(fields)) return [];
   return fields.map((f) => {
@@ -38,11 +38,11 @@ export interface CreateBaseVaultItemInput {
   notes?: string | null;
   favorite?: boolean | null;
   reprompt?: number | null;
-  fields?:
-    | Array<
-      { name?: string | null; value?: string | null; type?: number | null }
-    >
-    | null;
+  fields?: Array<{
+    name?: string | null;
+    value?: string | null;
+    type?: number | null;
+  }> | null;
   creationDate?: string | null;
   revisionDate?: string | null;
   fallbackName?: string;
@@ -68,11 +68,13 @@ export function createBaseVaultItem(
 }
 
 function isVaultItemType(val: number): val is VaultItemType {
-  return val === VaultItemType.Login ||
+  return (
+    val === VaultItemType.Login ||
     val === VaultItemType.Card ||
     val === VaultItemType.Identity ||
     val === VaultItemType.SecureNote ||
-    val === VaultItemType.SshKey;
+    val === VaultItemType.SshKey
+  );
 }
 
 export function getVaultItemFallbackName(
@@ -167,9 +169,8 @@ export function mergeVaultItem(
   patch: Partial<VaultItem>,
 ): VaultItem {
   const now = new Date().toISOString();
-  const targetType = patch.type !== undefined
-    ? Number(patch.type)
-    : Number(existing.type);
+  const targetType =
+    patch.type !== undefined ? Number(patch.type) : Number(existing.type);
 
   const baseItem: Record<string, unknown> = {
     id: existing.id,
@@ -178,9 +179,12 @@ export function mergeVaultItem(
     name: patch.name !== undefined ? patch.name : existing.name,
     notes: patch.notes !== undefined ? patch.notes : existing.notes,
     favorite: patch.favorite !== undefined ? patch.favorite : existing.favorite,
-    reprompt: patch.reprompt !== undefined
-      ? patch.reprompt
-      : (existing.reprompt !== undefined ? existing.reprompt : 0),
+    reprompt:
+      patch.reprompt !== undefined
+        ? patch.reprompt
+        : existing.reprompt !== undefined
+          ? existing.reprompt
+          : 0,
     fields: patch.fields !== undefined ? patch.fields : existing.fields,
     creationDate: existing.creationDate,
     revisionDate: now,
@@ -190,7 +194,9 @@ export function mergeVaultItem(
     const payloadKey = VAULT_ITEM_TYPE_KEY_MAP[targetType];
     const patchPayload = getSubPayload(patch, payloadKey);
     const existingPayload = getSubPayload(existing, payloadKey);
-    baseItem[payloadKey] = patchPayload ?? existingPayload ??
+    baseItem[payloadKey] =
+      patchPayload ??
+      existingPayload ??
       DEFAULT_VAULT_ITEM_PAYLOADS[targetType];
   }
 
@@ -201,13 +207,10 @@ export function mergeVaultItem(
   return existing;
 }
 
-export function createDefaultVaultItem(
-  patch: Partial<VaultItem>,
-): VaultItem {
+export function createDefaultVaultItem(patch: Partial<VaultItem>): VaultItem {
   const now = new Date().toISOString();
-  const targetType = patch.type !== undefined
-    ? Number(patch.type)
-    : VaultItemType.Login;
+  const targetType =
+    patch.type !== undefined ? Number(patch.type) : VaultItemType.Login;
 
   const baseItem: Record<string, unknown> = {
     id: patch.id || crypto.randomUUID(),
@@ -225,8 +228,8 @@ export function createDefaultVaultItem(
   if (isVaultItemType(targetType)) {
     const payloadKey = VAULT_ITEM_TYPE_KEY_MAP[targetType];
     const patchPayload = getSubPayload(patch, payloadKey);
-    baseItem[payloadKey] = patchPayload ??
-      DEFAULT_VAULT_ITEM_PAYLOADS[targetType];
+    baseItem[payloadKey] =
+      patchPayload ?? DEFAULT_VAULT_ITEM_PAYLOADS[targetType];
   }
 
   const parsed = VaultItemSchema.safeParse(baseItem);

@@ -1,10 +1,10 @@
-import type { MessageRouter } from "@/extension/message-router.ts";
 import {
   checkDataBreachRoute,
   checkEmailBreachUseCase,
   checkHIBPRoute,
   checkPasswordHIBPUseCase,
 } from "@gistwarden/orchestrator";
+import type { MessageRouter } from "@/extension/message-router.ts";
 
 export function registerReportRoutes(router: MessageRouter): void {
   router

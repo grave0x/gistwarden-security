@@ -1,14 +1,14 @@
 import { DEFAULT_EXCLUDED_DOMAINS } from "@gistwarden/repository";
 import { type Component, createSignal, For, Show } from "solid-js";
-import { setSettingsStore, settingsStore } from "@/core/store.ts";
-import { View } from "@/core/types.ts";
+import Button from "@/components/ui/Button.tsx";
+import Checkbox from "@/components/ui/Checkbox.tsx";
+import DetailHeader from "@/components/ui/DetailHeader.tsx";
+import Input from "@/components/ui/Input.tsx";
+import { t } from "@/core/i18n.ts";
 import { navigate } from "@/core/navigation.ts";
 import { updateExtensionSettings } from "@/core/storage.ts";
-import { t } from "@/core/i18n.ts";
-import DetailHeader from "@/components/ui/DetailHeader.tsx";
-import Checkbox from "@/components/ui/Checkbox.tsx";
-import Input from "@/components/ui/Input.tsx";
-import Button from "@/components/ui/Button.tsx";
+import { setSettingsStore, settingsStore } from "@/core/store.ts";
+import { View } from "@/core/types.ts";
 import { PlusIcon, TrashIcon } from "@/icons/svg/index.ts";
 
 export const AutofillOptions: Component = () => {
@@ -76,10 +76,7 @@ export const AutofillOptions: Component = () => {
   return (
     <div class="app-container">
       <div class="app-body pb-24">
-        <DetailHeader
-          title={t("autofill_options_title")}
-          onBack={handleBack}
-        />
+        <DetailHeader title={t("autofill_options_title")} onBack={handleBack} />
 
         <div class="detail-section-title mt-0">
           {t("autofill_options_header")}

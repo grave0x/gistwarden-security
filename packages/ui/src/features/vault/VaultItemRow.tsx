@@ -1,14 +1,18 @@
+import {
+  type VaultItem,
+  type VaultItemId,
+  VaultItemType,
+} from "@gistwarden/domain";
 import { type Component, Show } from "solid-js";
-import { View } from "@/core/types.ts";
-import { type VaultItem, type VaultItemId, VaultItemType } from "@gistwarden/domain";
-import { ExternalLinkIcon } from "@/icons/svg/index.ts";
+import { Checkbox } from "@/components/ui/Checkbox.tsx";
+import { t } from "@/core/i18n.ts";
 import { openItem } from "@/core/navigation.ts";
 import { openTab } from "@/core/tabs.ts";
-import { t } from "@/core/i18n.ts";
-import { Checkbox } from "@/components/ui/Checkbox.tsx";
+import { View } from "@/core/types.ts";
 import { VaultItemCopyMenu } from "@/features/vault/components/VaultItemCopyMenu.tsx";
 import { VaultItemOptionsMenu } from "@/features/vault/components/VaultItemOptionsMenu.tsx";
 import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
+import { ExternalLinkIcon } from "@/icons/svg/index.ts";
 
 interface VaultItemRowProps {
   item: VaultItem;
@@ -32,16 +36,11 @@ interface VaultItemRowProps {
   onContextMenuRow?: (itemId: VaultItemId, e: MouseEvent) => void;
 }
 
-
-
 export const VaultItemRow: Component<VaultItemRowProps> = (props) => {
   const strategy = () => getVaultItemStrategy(props.item.type);
 
   const getUri = (): string | null => {
-    if (
-      props.item.type === VaultItemType.Login &&
-      props.item.login.uris
-    ) {
+    if (props.item.type === VaultItemType.Login && props.item.login.uris) {
       const firstUri = props.item.login.uris[0];
       if (firstUri?.uri) {
         return firstUri.uri;
@@ -86,15 +85,11 @@ export const VaultItemRow: Component<VaultItemRowProps> = (props) => {
         </div>
       </Show>
       {/* Icon Container */}
-      <div class="item-icon-container">
-        {strategy().renderIcon(props.item)}
-      </div>
+      <div class="item-icon-container">{strategy().renderIcon(props.item)}</div>
 
       {/* Info Container */}
       <div class="item-info">
-        <div class="item-name d-flex align-center gap-6">
-          {props.item.name}
-        </div>
+        <div class="item-name d-flex align-center gap-6">{props.item.name}</div>
 
         <Show when={strategy().getSubtitle(props.item)}>
           {(subtitle) => <div class="item-sub">{subtitle()}</div>}
@@ -105,8 +100,10 @@ export const VaultItemRow: Component<VaultItemRowProps> = (props) => {
       <Show when={!props.isSelectMode}>
         <div class="item-actions pos-relative">
           <Show
-            when={props.isSuggested &&
-              Number(props.item.type) === VaultItemType.Login}
+            when={
+              props.isSuggested &&
+              Number(props.item.type) === VaultItemType.Login
+            }
           >
             <button
               type="button"

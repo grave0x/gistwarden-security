@@ -1,5 +1,5 @@
 import { logger, type TranslationKey } from "@gistwarden/domain";
-import { err, ok, Result } from "neverthrow";
+import { err, ok, type Result } from "neverthrow";
 
 export function hasWebLocalStorage(): boolean {
   return typeof window !== "undefined" && Boolean(window.localStorage);

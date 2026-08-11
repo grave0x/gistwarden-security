@@ -680,7 +680,8 @@ export default {
   guide_start_local_card4_title: "4. Độc lập theo từng Thiết bị",
   guide_start_local_card4_desc:
     "Mỗi thiết bị dùng Local Vault sẽ có một két sắt và cấu hình riêng biệt. Thay đổi ở Máy A sẽ không tự đồng bộ sang Máy B.",
-  guide_start_local_card5_title: "5. Rủi ro Lệch Bộ đếm (Counter) khi Dùng Passkey Đa thiết bị",
+  guide_start_local_card5_title:
+    "5. Rủi ro Lệch Bộ đếm (Counter) khi Dùng Passkey Đa thiết bị",
   guide_start_local_card5_desc:
     "Mỗi Passkey có một 'Bộ đếm số lần sử dụng' (Signature Counter) được máy chủ ghi nhớ. Khi dùng Passkey trên nhiều thiết bị đồng bộ không kịp thời, bộ đếm trên một máy có thể bị lùi số/lệch nhịp so với máy chủ. Khi đó máy chủ sẽ nghi ngờ bị hack/sao chép giả mạo và CHẶN đăng nhập Passkey ngay lập tức. Khuyên dùng: Hãy đăng ký Passkey riêng cho từng thiết bị.",
 
@@ -711,226 +712,334 @@ export default {
   guide_item_appearance_lang: "Giao diện & Ngôn ngữ",
   guide_item_faq_troubleshooting: "Hỏi đáp & Khắc phục sự cố",
 
-  guide_app_lead: "Tùy chỉnh giao diện Sáng/Tối (Light/Dark Mode) và Ngôn ngữ ứng dụng.",
+  guide_app_lead:
+    "Tùy chỉnh giao diện Sáng/Tối (Light/Dark Mode) và Ngôn ngữ ứng dụng.",
   guide_app_theme_title: "Chủ đề Giao diện (Theme)",
-  guide_app_theme_desc: "Chuyển đổi linh hoạt giữa giao diện Tối (Dark) và Sáng (Light) với bảng màu Bitwarden hài hòa.",
+  guide_app_theme_desc:
+    "Chuyển đổi linh hoạt giữa giao diện Tối (Dark) và Sáng (Light) với bảng màu Bitwarden hài hòa.",
   guide_app_lang_title: "Đa ngôn ngữ (English / Tiếng Việt)",
-  guide_app_lang_desc: "Hỗ trợ 100% giao diện và nội dung hướng dẫn bằng Tiếng Việt và Tiếng Anh.",
+  guide_app_lang_desc:
+    "Hỗ trợ 100% giao diện và nội dung hướng dẫn bằng Tiếng Việt và Tiếng Anh.",
 
-  guide_report_lead: "Kiểm tra tình trạng sức khỏe két sắt và quét lỗ hổng mật khẩu rò rỉ (HIBP).",
+  guide_report_lead:
+    "Kiểm tra tình trạng sức khỏe két sắt và quét lỗ hổng mật khẩu rò rỉ (HIBP).",
   guide_report_step1_title: "Báo cáo Mật khẩu Bị rò rỉ (Exposed Passwords)",
-  guide_report_step1_desc: "Quét toàn bộ mật khẩu trong két sắt bằng công nghệ HIBP k-Anonymity (SHA-1 5 ký tự đầu). Mật khẩu của bạn hoàn toàn không bị lộ ra ngoài internet nhưng vẫn phát hiện chính xác nếu mật khẩu đã xuất hiện trong các vụ rò rỉ dữ liệu lớn trên thế giới.",
+  guide_report_step1_desc:
+    "Quét toàn bộ mật khẩu trong két sắt bằng công nghệ HIBP k-Anonymity (SHA-1 5 ký tự đầu). Mật khẩu của bạn hoàn toàn không bị lộ ra ngoài internet nhưng vẫn phát hiện chính xác nếu mật khẩu đã xuất hiện trong các vụ rò rỉ dữ liệu lớn trên thế giới.",
   guide_report_step2_title: "Báo cáo Mật khẩu Dùng trùng (Reused Passwords)",
-  guide_report_step2_desc: "Phát hiện các tài khoản đang dùng chung một mật khẩu trên nhiều website khác nhau. Việc dùng trùng mật khẩu tạo nên rủi ro hiệu ứng dây chuyền khi 1 dịch vụ bị hack.",
+  guide_report_step2_desc:
+    "Phát hiện các tài khoản đang dùng chung một mật khẩu trên nhiều website khác nhau. Việc dùng trùng mật khẩu tạo nên rủi ro hiệu ứng dây chuyền khi 1 dịch vụ bị hack.",
   guide_report_step3_title: "Báo cáo Mật khẩu Yếu (Weak Passwords)",
-  guide_report_step3_desc: "Đánh giá độ mạnh mật khẩu dựa trên độ dài, tính đa dạng ký tự (chữ hoa, chữ thường, số, ký tự đặc biệt) và phát hiện các chuỗi mật khẩu dễ đoán.",
-  guide_report_step4_title: "Báo cáo Trang web Không An toàn (Unsecured HTTP Sites)",
-  guide_report_step4_desc: "Cảnh báo các địa chỉ website lưu trong két sắt vẫn sử dụng giao thức http:// chưa mã hóa thay vì https:// bảo mật.",
+  guide_report_step3_desc:
+    "Đánh giá độ mạnh mật khẩu dựa trên độ dài, tính đa dạng ký tự (chữ hoa, chữ thường, số, ký tự đặc biệt) và phát hiện các chuỗi mật khẩu dễ đoán.",
+  guide_report_step4_title:
+    "Báo cáo Trang web Không An toàn (Unsecured HTTP Sites)",
+  guide_report_step4_desc:
+    "Cảnh báo các địa chỉ website lưu trong két sắt vẫn sử dụng giao thức http:// chưa mã hóa thay vì https:// bảo mật.",
   guide_report_step5_title: "Báo cáo Chưa bật Mã 2FA (Inactive 2FA Accounts)",
-  guide_report_step5_desc: "Liệt kê các dịch vụ quan trọng (bancassurance, email, mạng xã hội) chưa được cấu hình mã xác thực 2 yếu tố TOTP để bạn nhanh chóng bổ sung bảo vệ.",
+  guide_report_step5_desc:
+    "Liệt kê các dịch vụ quan trọng (bancassurance, email, mạng xã hội) chưa được cấu hình mã xác thực 2 yếu tố TOTP để bạn nhanh chóng bổ sung bảo vệ.",
 
   // Vault Management Guides
-  guide_vm_logins_lead: "Quản lý tài khoản đăng nhập web, địa chỉ URIs, chế độ khớp tên miền và bảo mật từng mục.",
-  guide_vm_logins_card1_title: "Chi tiết các Chế độ khớp Tên miền (Domain Match Modes)",
-  guide_vm_logins_card1_item1: "Base Domain (Tên miền gốc - Mặc định): Khớp tất cả các trang con (Subdomain). Ví dụ: Lưu 'https://github.com' sẽ gợi ý điền trên cả 'gist.github.com', 'education.github.com' và 'login.github.com'. Thích hợp cho 90% các dịch vụ web thông thường.",
-  guide_vm_logins_card1_item2: "Host / Exact Host (Hostname chính xác): Chỉ khớp đúng tên miền máy chủ chính xác. Ví dụ: Lưu 'https://mail.google.com' chỉ gợi ý khi vào đúng 'mail.google.com', KHÔNG gợi ý khi vào 'drive.google.com' hay 'calendar.google.com'.",
-  guide_vm_logins_card1_item3: "Exact / Full URL (Khớp toàn bộ URL): Khớp chính xác từng ký tự bao gồm cả Cổng (Port) và Đường dẫn (Path). Ví dụ: Lưu 'https://192.168.1.1:8080/admin/login' chỉ gợi ý đúng trang login admin này, KHÔNG gợi ý nếu vào '/user/login'. Thích hợp cho Router, Server NAS hay trang Admin nội bộ.",
-  guide_vm_logins_card1_item4: "RegEx Pattern (Biểu thức chính quy): Khớp theo mẫu RegEx linh hoạt. Ví dụ: Lưu mẫu '^https:\\/\\/(dev|staging)\\.company\\.com' sẽ khớp và gợi ý trên cả 'dev.company.com' và 'staging.company.com', nhưng tự động bỏ qua 'prod.company.com'. Thích hợp cho Lập trình viên & SysAdmin.",
-  guide_vm_logins_card1_item5: "Never (Không bao giờ gợi ý): Tuyệt đối KHÔNG hiển thị gợi ý tự động điền tài khoản này trên bất kỳ trang web nào (chống bị mã độc trên web rình rập điền tự động). Thích hợp cho các tài khoản cực kỳ nhạy cảm chỉ muốn copy thủ công khi cần.",
+  guide_vm_logins_lead:
+    "Quản lý tài khoản đăng nhập web, địa chỉ URIs, chế độ khớp tên miền và bảo mật từng mục.",
+  guide_vm_logins_card1_title:
+    "Chi tiết các Chế độ khớp Tên miền (Domain Match Modes)",
+  guide_vm_logins_card1_item1:
+    "Base Domain (Tên miền gốc - Mặc định): Khớp tất cả các trang con (Subdomain). Ví dụ: Lưu 'https://github.com' sẽ gợi ý điền trên cả 'gist.github.com', 'education.github.com' và 'login.github.com'. Thích hợp cho 90% các dịch vụ web thông thường.",
+  guide_vm_logins_card1_item2:
+    "Host / Exact Host (Hostname chính xác): Chỉ khớp đúng tên miền máy chủ chính xác. Ví dụ: Lưu 'https://mail.google.com' chỉ gợi ý khi vào đúng 'mail.google.com', KHÔNG gợi ý khi vào 'drive.google.com' hay 'calendar.google.com'.",
+  guide_vm_logins_card1_item3:
+    "Exact / Full URL (Khớp toàn bộ URL): Khớp chính xác từng ký tự bao gồm cả Cổng (Port) và Đường dẫn (Path). Ví dụ: Lưu 'https://192.168.1.1:8080/admin/login' chỉ gợi ý đúng trang login admin này, KHÔNG gợi ý nếu vào '/user/login'. Thích hợp cho Router, Server NAS hay trang Admin nội bộ.",
+  guide_vm_logins_card1_item4:
+    "RegEx Pattern (Biểu thức chính quy): Khớp theo mẫu RegEx linh hoạt. Ví dụ: Lưu mẫu '^https:\\/\\/(dev|staging)\\.company\\.com' sẽ khớp và gợi ý trên cả 'dev.company.com' và 'staging.company.com', nhưng tự động bỏ qua 'prod.company.com'. Thích hợp cho Lập trình viên & SysAdmin.",
+  guide_vm_logins_card1_item5:
+    "Never (Không bao giờ gợi ý): Tuyệt đối KHÔNG hiển thị gợi ý tự động điền tài khoản này trên bất kỳ trang web nào (chống bị mã độc trên web rình rập điền tự động). Thích hợp cho các tài khoản cực kỳ nhạy cảm chỉ muốn copy thủ công khi cần.",
   guide_vm_logins_card2_title: "Lưu Nhiều Địa Chỉ URIs",
-  guide_vm_logins_card2_desc: "Mỗi tài khoản đăng nhập cho phép thêm nhiều địa chỉ URI khác nhau với các chế độ khớp riêng biệt cho từng URI.",
-  guide_vm_logins_card3_title: "Yêu cầu Mật khẩu chính (Mật khẩu chính Re-prompt)",
-  guide_vm_logins_card3_desc: "Bật tùy chọn này cho các tài khoản tài chính hoặc ứng dụng nhạy cảm. Mỗi khi mở xem, chỉnh sửa hoặc sao chép mật khẩu, hệ thống sẽ buộc bạn gõ lại Mật khẩu chính để xác minh danh tính.",
-  guide_vm_logins_card4_title: "Lịch sử Mật khẩu Tài khoản (Item Password History)",
-  guide_vm_logins_card4_desc: "Mỗi khi bạn thay đổi mật khẩu của một tài khoản, {APP_NAME} sẽ tự động lưu bản ghi mật khẩu cũ vào lịch sử riêng của mục đó. Bạn có thể mở xem chi tiết tài khoản ➔ chọn 'Lịch sử mật khẩu' để tra cứu hoặc khôi phục lại mật khẩu cũ bất cứ lúc nào.",
+  guide_vm_logins_card2_desc:
+    "Mỗi tài khoản đăng nhập cho phép thêm nhiều địa chỉ URI khác nhau với các chế độ khớp riêng biệt cho từng URI.",
+  guide_vm_logins_card3_title:
+    "Yêu cầu Mật khẩu chính (Mật khẩu chính Re-prompt)",
+  guide_vm_logins_card3_desc:
+    "Bật tùy chọn này cho các tài khoản tài chính hoặc ứng dụng nhạy cảm. Mỗi khi mở xem, chỉnh sửa hoặc sao chép mật khẩu, hệ thống sẽ buộc bạn gõ lại Mật khẩu chính để xác minh danh tính.",
+  guide_vm_logins_card4_title:
+    "Lịch sử Mật khẩu Tài khoản (Item Password History)",
+  guide_vm_logins_card4_desc:
+    "Mỗi khi bạn thay đổi mật khẩu của một tài khoản, {APP_NAME} sẽ tự động lưu bản ghi mật khẩu cũ vào lịch sử riêng của mục đó. Bạn có thể mở xem chi tiết tài khoản ➔ chọn 'Lịch sử mật khẩu' để tra cứu hoặc khôi phục lại mật khẩu cũ bất cứ lúc nào.",
 
-  guide_vm_notes_lead: "Lưu trữ an toàn các văn bản bí mật, mã khôi phục tài khoản, số sê-ri phần mềm hoặc thông tin cá nhân quan trọng.",
+  guide_vm_notes_lead:
+    "Lưu trữ an toàn các văn bản bí mật, mã khôi phục tài khoản, số sê-ri phần mềm hoặc thông tin cá nhân quan trọng.",
   guide_vm_notes_card_title: "Bảo mật nội dung ghi chú",
-  guide_vm_notes_card_desc: "Tất cả văn bản trong Ghi chú bảo mật được mã hóa trực tiếp trên thiết bị trước khi đồng bộ. Bạn cũng có thể bật tùy chọn Yêu cầu nhập lại Mật khẩu chính khi mở xem nội dung này.",
+  guide_vm_notes_card_desc:
+    "Tất cả văn bản trong Ghi chú bảo mật được mã hóa trực tiếp trên thiết bị trước khi đồng bộ. Bạn cũng có thể bật tùy chọn Yêu cầu nhập lại Mật khẩu chính khi mở xem nội dung này.",
 
-  guide_vm_cards_lead: "Lưu giữ thông tin thẻ thanh toán (Credit Card) và danh tính cá nhân để tự động điền form đăng ký, thanh toán nhanh chóng.",
+  guide_vm_cards_lead:
+    "Lưu giữ thông tin thẻ thanh toán (Credit Card) và danh tính cá nhân để tự động điền form đăng ký, thanh toán nhanh chóng.",
   guide_vm_cards_card1_title: "Thẻ Thanh Toán (Credit Cards)",
-  guide_vm_cards_card1_desc: "Lưu số thẻ, mã CVV, ngày hết hạn và chủ thẻ. Dữ liệu CVV luôn được bảo vệ bằng lớp mã hóa an toàn.",
+  guide_vm_cards_card1_desc:
+    "Lưu số thẻ, mã CVV, ngày hết hạn và chủ thẻ. Dữ liệu CVV luôn được bảo vệ bằng lớp mã hóa an toàn.",
   guide_vm_cards_card2_title: "Danh Tính Cá Nhân (Identities)",
-  guide_vm_cards_card2_desc: "Lưu họ tên, số điện thoại, địa chỉ, số CMND/CCCD/Passport để tự động điền các biểu mẫu mua hàng hoặc đăng ký dịch vụ trực tuyến.",
+  guide_vm_cards_card2_desc:
+    "Lưu họ tên, số điện thoại, địa chỉ, số CMND/CCCD/Passport để tự động điền các biểu mẫu mua hàng hoặc đăng ký dịch vụ trực tuyến.",
 
-  guide_vm_ssh_lead: "Quản lý các cặp khóa SSH Public/Private Key dùng để truy cập máy chủ từ xa an toàn.",
+  guide_vm_ssh_lead:
+    "Quản lý các cặp khóa SSH Public/Private Key dùng để truy cập máy chủ từ xa an toàn.",
   guide_vm_ssh_card_title: "Quản lý SSH Key chuyên nghiệp",
-  guide_vm_ssh_card_desc: "Lưu trữ khóa riêng tư (Private Key) dạng OpenSSH/PEM cùng với Fingerprint và Mật khẩu bảo vệ của khóa.",
+  guide_vm_ssh_card_desc:
+    "Lưu trữ khóa riêng tư (Private Key) dạng OpenSSH/PEM cùng với Fingerprint và Mật khẩu bảo vệ của khóa.",
 
-  guide_vm_fields_lead: "Mở rộng trường dữ liệu cho mục két sắt với các kiểu dữ liệu phong phú.",
+  guide_vm_fields_lead:
+    "Mở rộng trường dữ liệu cho mục két sắt với các kiểu dữ liệu phong phú.",
   guide_vm_fields_card_title: "Các kiểu trường tùy chỉnh (Custom Fields)",
   guide_vm_fields_item1: "Text: Trường văn bản thông thường.",
   guide_vm_fields_item2: "Hidden: Văn bản ẩn (mã PIN, đáp án câu hỏi bảo mật).",
   guide_vm_fields_item3: "Boolean: Công tắc Bật/Tắt (True/False).",
   guide_vm_fields_item4: "Linked: Liên kết tự động lấy dữ liệu từ trường khác.",
 
-  guide_vm_folders_lead: "Tự do phân loại dữ liệu theo Thư mục và quản lý an toàn các mục bị xóa trong Thùng rác.",
+  guide_vm_folders_lead:
+    "Tự do phân loại dữ liệu theo Thư mục và quản lý an toàn các mục bị xóa trong Thùng rác.",
   guide_vm_folders_sec1_title: "1. Tạo & Quản lý Thư mục (Folders)",
   guide_vm_folders_step1_title: "Tạo thư mục mới",
-  guide_vm_folders_step1_desc: "Mở {APP_NAME} → chọn {settings_header} → {settings_vault_options_label} → {folder_management_title}. Nhập tên thư mục mới và nhấn Lưu.",
+  guide_vm_folders_step1_desc:
+    "Mở {APP_NAME} → chọn {settings_header} → {settings_vault_options_label} → {folder_management_title}. Nhập tên thư mục mới và nhấn Lưu.",
   guide_vm_folders_step2_title: "Gán mục vào Thư mục",
-  guide_vm_folders_step2_desc: "Khi Thêm hoặc Chỉnh sửa một mục trong Két sắt, chọn thư mục mong muốn tại trường 'Thư mục'. Hoặc tại danh sách Két sắt, chọn các mục và bấm 'Di chuyển vào thư mục'.",
+  guide_vm_folders_step2_desc:
+    "Khi Thêm hoặc Chỉnh sửa một mục trong Két sắt, chọn thư mục mong muốn tại trường 'Thư mục'. Hoặc tại danh sách Két sắt, chọn các mục và bấm 'Di chuyển vào thư mục'.",
   guide_vm_folders_step3_title: "Chỉnh sửa hoặc Xóa thư mục",
-  guide_vm_folders_step3_desc: "Trong danh sách Thư mục, bấm biểu tượng Chỉnh sửa để đổi tên hoặc biểu tượng Thùng rác để xóa thư mục (Lưu ý: Xóa thư mục không làm mất các tài khoản bên trong).",
+  guide_vm_folders_step3_desc:
+    "Trong danh sách Thư mục, bấm biểu tượng Chỉnh sửa để đổi tên hoặc biểu tượng Thùng rác để xóa thư mục (Lưu ý: Xóa thư mục không làm mất các tài khoản bên trong).",
   guide_vm_trash_sec2_title: "2. Quản lý Thùng Rác & Khôi Phục (Trash)",
   guide_vm_trash_step1_title: "Chuyển mục vào Thùng rác",
-  guide_vm_trash_step1_desc: "Khi bấm Xóa một mục trong Két sắt, mục đó sẽ được chuyển an toàn vào Thùng rác để phòng trường hợp xóa nhầm.",
+  guide_vm_trash_step1_desc:
+    "Khi bấm Xóa một mục trong Két sắt, mục đó sẽ được chuyển an toàn vào Thùng rác để phòng trường hợp xóa nhầm.",
   guide_vm_trash_step2_title: "Truy cập Thùng rác & Khôi phục",
-  guide_vm_trash_step2_desc: "Mở {APP_NAME} → chọn {settings_header} → {settings_vault_options_label} → {trash_title}. Nhấn nút 'Khôi phục' bên cạnh mục cần lấy lại về Két sắt.",
+  guide_vm_trash_step2_desc:
+    "Mở {APP_NAME} → chọn {settings_header} → {settings_vault_options_label} → {trash_title}. Nhấn nút 'Khôi phục' bên cạnh mục cần lấy lại về Két sắt.",
   guide_vm_trash_step3_title: "Xóa vĩnh viễn (Purge)",
-  guide_vm_trash_step3_desc: "Bấm 'Xóa vĩnh viễn' từng mục hoặc 'Xóa sạch thùng rác' để xóa hoàn toàn khỏi thiết bị và GitHub Gist. Lưu ý: Dữ liệu sau khi xóa vĩnh viễn không thể khôi phục.",
+  guide_vm_trash_step3_desc:
+    "Bấm 'Xóa vĩnh viễn' từng mục hoặc 'Xóa sạch thùng rác' để xóa hoàn toàn khỏi thiết bị và GitHub Gist. Lưu ý: Dữ liệu sau khi xóa vĩnh viễn không thể khôi phục.",
 
   // Getting Started Guides
-  guide_start_ov_lead: "{APP_NAME} là giải pháp két mật khẩu cá nhân mã hóa Zero-Knowledge, tự động đồng bộ hóa đám mây riêng tư thông qua GitHub Gist.",
+  guide_start_ov_lead:
+    "{APP_NAME} là giải pháp két mật khẩu cá nhân mã hóa Zero-Knowledge, tự động đồng bộ hóa đám mây riêng tư thông qua GitHub Gist.",
   guide_start_ov_card1_title: "Mã Hóa Bảo Mật Tuyệt Đối (Zero-Knowledge)",
-  guide_start_ov_card1_desc: "Toàn bộ dữ liệu mật khẩu của bạn đều được mã hóa trực tiếp trên thiết bị của bạn trước khi truyền đi hoặc lưu trữ. Tuyệt đối không ai (kể cả nhà phát triển hay nhà cung cấp dịch vụ lưu trữ) có thể đọc được dữ liệu nếu không có Mật khẩu chính của bạn.",
+  guide_start_ov_card1_desc:
+    "Toàn bộ dữ liệu mật khẩu của bạn đều được mã hóa trực tiếp trên thiết bị của bạn trước khi truyền đi hoặc lưu trữ. Tuyệt đối không ai (kể cả nhà phát triển hay nhà cung cấp dịch vụ lưu trữ) có thể đọc được dữ liệu nếu không có Mật khẩu chính của bạn.",
   guide_start_ov_card2_title: "Đồng Bộ Đám Mây Cá Nhân Riêng Tư",
-  guide_start_ov_card2_desc: "Thay vì gửi dữ liệu về máy chủ trung gian của bên thứ 3, {APP_NAME} trực tiếp đồng bộ dữ liệu vào một tệp bí mật (Private Gist) trên tài khoản GitHub cá nhân của chính bạn.",
+  guide_start_ov_card2_desc:
+    "Thay vì gửi dữ liệu về máy chủ trung gian của bên thứ 3, {APP_NAME} trực tiếp đồng bộ dữ liệu vào một tệp bí mật (Private Gist) trên tài khoản GitHub cá nhân của chính bạn.",
   guide_start_ov_card3_title: "Đăng Nhập Không Mật Khẩu (Passkeys)",
-  guide_start_ov_card3_desc: "Hỗ trợ lưu trữ và đăng nhập nhanh chóng bằng Passkey (FIDO2 / WebAuthn) với vân tay, khuôn mặt hoặc mã PIN thiết bị, loại bỏ hoàn toàn rủi ro lộ mật khẩu.",
+  guide_start_ov_card3_desc:
+    "Hỗ trợ lưu trữ và đăng nhập nhanh chóng bằng Passkey (FIDO2 / WebAuthn) với vân tay, khuôn mặt hoặc mã PIN thiết bị, loại bỏ hoàn toàn rủi ro lộ mật khẩu.",
 
-  guide_start_mp_lead: "Mật khẩu chính (Mật khẩu chính) là chìa khóa duy nhất dùng để giải mã và bảo vệ toàn bộ dữ liệu két sắt của bạn.",
+  guide_start_mp_lead:
+    "Mật khẩu chính (Mật khẩu chính) là chìa khóa duy nhất dùng để giải mã và bảo vệ toàn bộ dữ liệu két sắt của bạn.",
   guide_start_mp_step1_title: "1. Vai trò của Mật khẩu chính",
-  guide_start_mp_step1_desc: "Mật khẩu chính vừa đóng vai trò mở khóa két sắt, vừa dùng làm chìa khóa gốc để mã hóa toàn bộ mật khẩu, ghi chú và tài khoản. Hãy tạo Mật khẩu chính đủ dài, dễ nhớ với bạn nhưng khó đoán với người khác.",
+  guide_start_mp_step1_desc:
+    "Mật khẩu chính vừa đóng vai trò mở khóa két sắt, vừa dùng làm chìa khóa gốc để mã hóa toàn bộ mật khẩu, ghi chú và tài khoản. Hãy tạo Mật khẩu chính đủ dài, dễ nhớ với bạn nhưng khó đoán với người khác.",
   guide_start_mp_step2_title: "2. Nguyên tắc Không lưu trữ Mật khẩu chính",
-  guide_start_mp_step2_desc: "{APP_NAME} tuân thủ nguyên tắc Zero-Knowledge: ứng dụng tuyệt đối không bao giờ lưu trữ hay gửi Mật khẩu chính lên bất kỳ máy chủ nào. Nếu bạn quên Mật khẩu chính, dữ liệu sẽ không thể khôi phục.",
+  guide_start_mp_step2_desc:
+    "{APP_NAME} tuân thủ nguyên tắc Zero-Knowledge: ứng dụng tuyệt đối không bao giờ lưu trữ hay gửi Mật khẩu chính lên bất kỳ máy chủ nào. Nếu bạn quên Mật khẩu chính, dữ liệu sẽ không thể khôi phục.",
   guide_start_mp_step3_title: "3. Cách thay đổi Mật khẩu chính",
-  guide_start_mp_step3_desc: "Bạn có thể đổi Mật khẩu chính bất cứ lúc nào bằng cách mở ứng dụng → chọn {settings_header} → {settings_account_security} → {settings_change_mp}. Khi đổi, hệ thống sẽ tự động giải mã và mã hóa lại toàn bộ két sắt bằng chìa khóa mới.",
+  guide_start_mp_step3_desc:
+    "Bạn có thể đổi Mật khẩu chính bất cứ lúc nào bằng cách mở ứng dụng → chọn {settings_header} → {settings_account_security} → {settings_change_mp}. Khi đổi, hệ thống sẽ tự động giải mã và mã hóa lại toàn bộ két sắt bằng chìa khóa mới.",
 
-  guide_start_lock_lead: "Tự động bảo vệ dữ liệu két mật khẩu khi bạn không thao tác hoặc khi khởi động lại trình duyệt.",
+  guide_start_lock_lead:
+    "Tự động bảo vệ dữ liệu két mật khẩu khi bạn không thao tác hoặc khi khởi động lại trình duyệt.",
   guide_start_lock_step1_title: "1. Mở Cài đặt An toàn tài khoản",
-  guide_start_lock_step1_desc: "Mở ứng dụng {APP_NAME} → truy cập mục {settings_header} → {settings_account_security}.",
+  guide_start_lock_step1_desc:
+    "Mở ứng dụng {APP_NAME} → truy cập mục {settings_header} → {settings_account_security}.",
   guide_start_lock_step2_title: "2. Tùy chỉnh Thời gian chờ (Vault Timeout)",
-  guide_start_lock_step2_desc: "Lựa chọn thời gian tự động xử lý khi không có thao tác: Khi khởi động lại trình duyệt (On Restart), 1 phút, 5 phút, 15 phút, 30 phút, 1 giờ, hoặc 4 giờ.",
-  guide_start_lock_step3_title: "3. Lựa chọn Hành động khi hết thời gian (Timeout Action)",
-  guide_start_lock_step3_lock: "Khóa két (Lock): Xóa chìa khóa giải mã khỏi bộ nhớ RAM. Yêu cầu nhập Mật khẩu chính hoặc Mã PIN để mở lại.",
-  guide_start_lock_step3_logout: "Đăng xuất (Log out): Xóa toàn bộ trạng thái phiên và yêu cầu đăng nhập lại từ đầu.",
-  guide_start_lock_step4_title: "4. Mã PIN mở khóa nhanh & Yêu cầu Mật khẩu chính",
-  guide_start_lock_step4_desc: "Kích hoạt tùy chọn Mở khóa bằng Mã PIN (Unlock with PIN) để mở két mượt mà. Đánh dấu chọn Yêu cầu Mật khẩu chính khi khởi động lại trình duyệt để đảm bảo an toàn tuyệt đối khi tắt mở trình duyệt.",
+  guide_start_lock_step2_desc:
+    "Lựa chọn thời gian tự động xử lý khi không có thao tác: Khi khởi động lại trình duyệt (On Restart), 1 phút, 5 phút, 15 phút, 30 phút, 1 giờ, hoặc 4 giờ.",
+  guide_start_lock_step3_title:
+    "3. Lựa chọn Hành động khi hết thời gian (Timeout Action)",
+  guide_start_lock_step3_lock:
+    "Khóa két (Lock): Xóa chìa khóa giải mã khỏi bộ nhớ RAM. Yêu cầu nhập Mật khẩu chính hoặc Mã PIN để mở lại.",
+  guide_start_lock_step3_logout:
+    "Đăng xuất (Log out): Xóa toàn bộ trạng thái phiên và yêu cầu đăng nhập lại từ đầu.",
+  guide_start_lock_step4_title:
+    "4. Mã PIN mở khóa nhanh & Yêu cầu Mật khẩu chính",
+  guide_start_lock_step4_desc:
+    "Kích hoạt tùy chọn Mở khóa bằng Mã PIN (Unlock with PIN) để mở két mượt mà. Đánh dấu chọn Yêu cầu Mật khẩu chính khi khởi động lại trình duyệt để đảm bảo an toàn tuyệt đối khi tắt mở trình duyệt.",
 
   guide_start_pin_title: "Cấu hình & Sử dụng Mã PIN Mở Khóa Nhanh",
-  guide_start_pin_lead: "Mã PIN giúp bạn mở khóa két nhanh chóng bằng một chuỗi số ngắn mà không cần nhập lại Mật khẩu chính dài phức tạp mỗi lần sử dụng.",
+  guide_start_pin_lead:
+    "Mã PIN giúp bạn mở khóa két nhanh chóng bằng một chuỗi số ngắn mà không cần nhập lại Mật khẩu chính dài phức tạp mỗi lần sử dụng.",
   guide_start_pin_step1_title: "1. Bật tùy chọn Mở khóa bằng Mã PIN",
-  guide_start_pin_step1_desc: "Mở ứng dụng {APP_NAME} ➔ chọn {settings_header} ➔ {settings_account_security}. Tích chọn vào ô 'Mở khóa bằng mã PIN' (Unlock with PIN).",
+  guide_start_pin_step1_desc:
+    "Mở ứng dụng {APP_NAME} ➔ chọn {settings_header} ➔ {settings_account_security}. Tích chọn vào ô 'Mở khóa bằng mã PIN' (Unlock with PIN).",
   guide_start_pin_step2_title: "2. Thiết lập Mã PIN mới (Tối thiểu 4 chữ số)",
-  guide_start_pin_step2_desc: "Cửa sổ Thiết lập mã PIN sẽ xuất hiện. Hãy nhập mã PIN dễ nhớ với bạn (tối thiểu 4 ký tự/chữ số) và bấm 'Xác nhận' để lưu cấu hình.",
+  guide_start_pin_step2_desc:
+    "Cửa sổ Thiết lập mã PIN sẽ xuất hiện. Hãy nhập mã PIN dễ nhớ với bạn (tối thiểu 4 ký tự/chữ số) và bấm 'Xác nhận' để lưu cấu hình.",
   guide_start_pin_step3_title: "3. Mở khóa nhanh bằng PIN khi két bị khóa",
-  guide_start_pin_step3_desc: "Khi két mật khẩu bị khóa theo thời gian chờ, bạn chỉ cần gõ Mã PIN và nhấn 'Mở khóa'. Chìa khóa mã hóa sẽ tự động mở mà không cần gõ lại Mật khẩu chính.",
+  guide_start_pin_step3_desc:
+    "Khi két mật khẩu bị khóa theo thời gian chờ, bạn chỉ cần gõ Mã PIN và nhấn 'Mở khóa'. Chìa khóa mã hóa sẽ tự động mở mà không cần gõ lại Mật khẩu chính.",
   guide_start_pin_note_title: "Lưu ý bảo mật quan trọng về Mã PIN:",
-  guide_start_pin_note_desc: "Mã PIN chỉ được lưu an toàn trong bộ nhớ thiết bị. Nếu bạn nhập sai Mã PIN 3 lần liên tiếp, hệ thống sẽ tự động hủy Mã PIN và đăng xuất để bảo vệ an toàn. Đồng thời, khi bạn Đăng xuất tài khoản lưu trữ, Mã PIN cũng sẽ tự động được xóa bỏ.",
+  guide_start_pin_note_desc:
+    "Mã PIN chỉ được lưu an toàn trong bộ nhớ thiết bị. Nếu bạn nhập sai Mã PIN 3 lần liên tiếp, hệ thống sẽ tự động hủy Mã PIN và đăng xuất để bảo vệ an toàn. Đồng thời, khi bạn Đăng xuất tài khoản lưu trữ, Mã PIN cũng sẽ tự động được xóa bỏ.",
 
   // Passkey & TOTP Authenticator Guides
-  guide_passkey_concept_lead: "Passkey (chuẩn FIDO2 / WebAuthn) là giải pháp đăng nhập không dùng mật khẩu bảo mật nhất hiện nay, chống lừa đảo (Anti-Phishing) tuyệt đối.",
+  guide_passkey_concept_lead:
+    "Passkey (chuẩn FIDO2 / WebAuthn) là giải pháp đăng nhập không dùng mật khẩu bảo mật nhất hiện nay, chống lừa đảo (Anti-Phishing) tuyệt đối.",
   guide_passkey_concept_card1_title: "Chống Phishing Tuyệt Đối",
-  guide_passkey_concept_card1_desc: "Passkey gắn liền với tên miền chính xác của trang web. Dù bạn vô tình truy cập một trang web lừa đảo giả mạo, Passkey sẽ không bao giờ phản hồi.",
+  guide_passkey_concept_card1_desc:
+    "Passkey gắn liền với tên miền chính xác của trang web. Dù bạn vô tình truy cập một trang web lừa đảo giả mạo, Passkey sẽ không bao giờ phản hồi.",
   guide_passkey_concept_card2_title: "Công Nghệ Cặp Khóa Bảo Mật Bất Đối Xứng",
-  guide_passkey_concept_card2_desc: "Mỗi Passkey bao gồm khóa công khai gửi lên trang web và khóa riêng tư được bảo vệ mã hóa an toàn trong két sắt {APP_NAME} của bạn.",
+  guide_passkey_concept_card2_desc:
+    "Mỗi Passkey bao gồm khóa công khai gửi lên trang web và khóa riêng tư được bảo vệ mã hóa an toàn trong két sắt {APP_NAME} của bạn.",
 
-  guide_passkey_gmig_lead: "Chuyển đổi dữ liệu mã 2FA từ ứng dụng Google Authenticator sang {APP_NAME}.",
+  guide_passkey_gmig_lead:
+    "Chuyển đổi dữ liệu mã 2FA từ ứng dụng Google Authenticator sang {APP_NAME}.",
   guide_passkey_gmig_step1_title: "1. Mở ứng dụng Google Authenticator",
-  guide_passkey_gmig_step1_desc: "Mở Google Authenticator trên điện thoại của bạn.",
+  guide_passkey_gmig_step1_desc:
+    "Mở Google Authenticator trên điện thoại của bạn.",
   guide_passkey_gmig_step2_title: "2. Mở Menu Chuyển tài khoản",
-  guide_passkey_gmig_step2_desc: "Nhấn vào nút Menu góc trên và chọn Chuyển tài khoản (Transfer codes).",
+  guide_passkey_gmig_step2_desc:
+    "Nhấn vào nút Menu góc trên và chọn Chuyển tài khoản (Transfer codes).",
   guide_passkey_gmig_step3_title: "3. Chọn Xuất tài khoản",
   guide_passkey_gmig_step3_desc: "Chọn Xuất tài khoản (Export codes).",
   guide_passkey_gmig_step4_title: "4. Chọn các mã 2FA muốn xuất",
-  guide_passkey_gmig_step4_desc: "Tích chọn các mã 2FA bạn muốn chuyển sang {APP_NAME}.",
+  guide_passkey_gmig_step4_desc:
+    "Tích chọn các mã 2FA bạn muốn chuyển sang {APP_NAME}.",
   guide_passkey_gmig_step5_title: "5. Quét mã QR sang {APP_NAME}",
-  guide_passkey_gmig_step5_desc: "Mã QR xuất tài khoản sẽ hiển thị. Mở {APP_NAME} → {settings_header} → {settings_vault_options_label} → {settings_tools_google_auth} để quét hoặc tải ảnh mã QR này lên.",
+  guide_passkey_gmig_step5_desc:
+    "Mã QR xuất tài khoản sẽ hiển thị. Mở {APP_NAME} → {settings_header} → {settings_vault_options_label} → {settings_tools_google_auth} để quét hoặc tải ảnh mã QR này lên.",
 
   // Autofill & Password Generator Guides
-  guide_auto_lead: "Tự động nhận diện biểu mẫu và điền Tên đăng nhập / Mật khẩu trên các trang web.",
+  guide_auto_lead:
+    "Tự động nhận diện biểu mẫu và điền Tên đăng nhập / Mật khẩu trên các trang web.",
   guide_auto_card1_title: "Biểu tượng Gistwarden trên ô nhập liệu",
-  guide_auto_card1_desc: "Khi bấm vào ô đăng nhập trên bất kỳ trang web nào, biểu tượng {APP_NAME} sẽ xuất hiện cho phép bạn chọn tài khoản và tự động điền ngay lập tức.",
+  guide_auto_card1_desc:
+    "Khi bấm vào ô đăng nhập trên bất kỳ trang web nào, biểu tượng {APP_NAME} sẽ xuất hiện cho phép bạn chọn tài khoản và tự động điền ngay lập tức.",
   guide_auto_card2_title: "Tự động gửi biểu mẫu (Auto-Submit)",
-  guide_auto_card2_desc: "Bạn có thể bật tùy chọn Tự động gửi biểu mẫu sau khi điền tại mục {settings_header} → {settings_autofill_options_label} để đăng nhập nhanh 1-click.",
+  guide_auto_card2_desc:
+    "Bạn có thể bật tùy chọn Tự động gửi biểu mẫu sau khi điền tại mục {settings_header} → {settings_autofill_options_label} để đăng nhập nhanh 1-click.",
 
-  guide_pwdgen_lead: "Tạo mật khẩu ngẫu nhiên hoặc cụm từ mật khẩu an toàn cao, chống lại mọi đòn tấn công dò tìm.",
+  guide_pwdgen_lead:
+    "Tạo mật khẩu ngẫu nhiên hoặc cụm từ mật khẩu an toàn cao, chống lại mọi đòn tấn công dò tìm.",
   guide_pwdgen_step1_title: "1. Vị trí Công cụ Tạo Mật khẩu",
-  guide_pwdgen_step1_desc: "Mở ứng dụng {APP_NAME} → chuyển tới tab {nav_generator} trên thanh điều hướng (hoặc nhấn biểu tượng Tạo mật khẩu khi đang thêm/sửa tài khoản).",
+  guide_pwdgen_step1_desc:
+    "Mở ứng dụng {APP_NAME} → chuyển tới tab {nav_generator} trên thanh điều hướng (hoặc nhấn biểu tượng Tạo mật khẩu khi đang thêm/sửa tài khoản).",
   guide_pwdgen_step2_title: "2. Chế độ Mật khẩu Ngẫu nhiên (Random Password)",
-  guide_pwdgen_step2_length: "Tùy chỉnh độ dài: Kéo chọn độ dài mật khẩu từ 5 đến 128 ký tự (khuyên dùng từ 16 ký tự trở lên).",
-  guide_pwdgen_step2_charset: "Tập ký tự: Tùy chọn bật/tắt Chữ hoa (A-Z), Chữ thường (a-z), Chữ số (0-9) và Ký tự đặc biệt (!@#$%^...).",
-  guide_pwdgen_step2_ambiguous: "Tránh ký tự dễ nhầm (Avoid Ambiguous): Bật tùy chọn này để loại bỏ các ký tự khó phân biệt khi đọc hoặc gõ tay như I, l, 1, O, 0.",
+  guide_pwdgen_step2_length:
+    "Tùy chỉnh độ dài: Kéo chọn độ dài mật khẩu từ 5 đến 128 ký tự (khuyên dùng từ 16 ký tự trở lên).",
+  guide_pwdgen_step2_charset:
+    "Tập ký tự: Tùy chọn bật/tắt Chữ hoa (A-Z), Chữ thường (a-z), Chữ số (0-9) và Ký tự đặc biệt (!@#$%^...).",
+  guide_pwdgen_step2_ambiguous:
+    "Tránh ký tự dễ nhầm (Avoid Ambiguous): Bật tùy chọn này để loại bỏ các ký tự khó phân biệt khi đọc hoặc gõ tay như I, l, 1, O, 0.",
   guide_pwdgen_step3_title: "3. Chế độ Cụm Từ Mật Khẩu (Passphrase)",
-  guide_pwdgen_step3_desc: "Tạo mật khẩu bằng cách ghép nhiều từ vựng tiếng Anh lại với nhau. Giúp bạn tạo mật khẩu có độ dài lớn nhưng cực kỳ dễ ghi nhớ trong đầu. Cho phép chọn số lượng từ (từ 3 đến 20 từ), ký tự nối (dấu -), viết hoa chữ cái đầu và chèn chữ số.",
+  guide_pwdgen_step3_desc:
+    "Tạo mật khẩu bằng cách ghép nhiều từ vựng tiếng Anh lại với nhau. Giúp bạn tạo mật khẩu có độ dài lớn nhưng cực kỳ dễ ghi nhớ trong đầu. Cho phép chọn số lượng từ (từ 3 đến 20 từ), ký tự nối (dấu -), viết hoa chữ cái đầu và chèn chữ số.",
   guide_pwdgen_step4_title: "4. Thanh đánh giá Độ mạnh Mật khẩu",
-  guide_pwdgen_step4_desc: "Thanh màu sắc bên dưới sẽ đánh giá trực quan độ an toàn của mật khẩu theo các mức: Yếu, Trung bình, Mạnh hoặc Cực mạnh để bạn yên tâm sử dụng.",
+  guide_pwdgen_step4_desc:
+    "Thanh màu sắc bên dưới sẽ đánh giá trực quan độ an toàn của mật khẩu theo các mức: Yếu, Trung bình, Mạnh hoặc Cực mạnh để bạn yên tâm sử dụng.",
 
   guide_hist_lead: "Lịch sử các mật khẩu đã được tạo gần đây.",
   guide_hist_card_title: "Tra cứu mật khẩu đã tạo",
-  guide_hist_card_desc: "Tất cả mật khẩu ngẫu nhiên được tạo bằng bộ Generator sẽ được lưu vào lịch sử ngắn hạn để bạn khôi phục lại trong trường hợp quên chưa lưu vào két.",
+  guide_hist_card_desc:
+    "Tất cả mật khẩu ngẫu nhiên được tạo bằng bộ Generator sẽ được lưu vào lịch sử ngắn hạn để bạn khôi phục lại trong trường hợp quên chưa lưu vào két.",
 
   // Sync & Import/Export Data Guides
-  guide_sync_lead: "Đồng bộ dữ liệu hai chiều riêng tư giữa thiết bị và GitHub Gist cá nhân.",
+  guide_sync_lead:
+    "Đồng bộ dữ liệu hai chiều riêng tư giữa thiết bị và GitHub Gist cá nhân.",
   guide_sync_card1_title: "Tự động Hợp nhất Dữ liệu Mới nhất",
-  guide_sync_card1_desc: "Khi đồng bộ trên nhiều thiết bị khác nhau, {APP_NAME} tự động so sánh thời gian chỉnh sửa để hợp nhất dữ liệu mới nhất của từng tài khoản mà không gây mất mát thông tin.",
+  guide_sync_card1_desc:
+    "Khi đồng bộ trên nhiều thiết bị khác nhau, {APP_NAME} tự động so sánh thời gian chỉnh sửa để hợp nhất dữ liệu mới nhất của từng tài khoản mà không gây mất mát thông tin.",
   guide_sync_card2_title: "Lưu trữ Đám mây Cá nhân Bí mật",
-  guide_sync_card2_desc: "Dữ liệu két sắt được lưu trữ trên tệp GitHub Gist cá nhân của bạn dưới dạng mã hóa hoàn toàn. Nếu mở xem trên GitHub, người khác chỉ thấy chuỗi ký tự mã hóa vô nghĩa.",
+  guide_sync_card2_desc:
+    "Dữ liệu két sắt được lưu trữ trên tệp GitHub Gist cá nhân của bạn dưới dạng mã hóa hoàn toàn. Nếu mở xem trên GitHub, người khác chỉ thấy chuỗi ký tự mã hóa vô nghĩa.",
 
-  guide_imp_csv_lead: "Nhập danh sách mật khẩu từ tệp CSV của các Trình duyệt Web và Bitwarden vào {APP_NAME}.",
-  guide_imp_csv_step1_title: "1. Nhập tệp CSV từ Trình duyệt Web (Chrome, Firefox, Edge, Brave, Safari)",
-  guide_imp_csv_step1_desc: "Xuất tệp CSV từ phần Cài đặt mật khẩu của trình duyệt web bạn đang dùng. {APP_NAME} sẽ tự động nhận diện và nạp toàn bộ danh sách tài khoản đăng nhập vào két sắt.",
+  guide_imp_csv_lead:
+    "Nhập danh sách mật khẩu từ tệp CSV của các Trình duyệt Web và Bitwarden vào {APP_NAME}.",
+  guide_imp_csv_step1_title:
+    "1. Nhập tệp CSV từ Trình duyệt Web (Chrome, Firefox, Edge, Brave, Safari)",
+  guide_imp_csv_step1_desc:
+    "Xuất tệp CSV từ phần Cài đặt mật khẩu của trình duyệt web bạn đang dùng. {APP_NAME} sẽ tự động nhận diện và nạp toàn bộ danh sách tài khoản đăng nhập vào két sắt.",
   guide_imp_csv_step2_title: "2. Nhập tệp CSV từ Bitwarden",
-  guide_imp_csv_step2_desc: "Xuất tệp CSV từ Bitwarden để chuyển sang {APP_NAME}. Ứng dụng sẽ nạp toàn bộ mật khẩu, ghi chú và tự động tái tạo lại các Thư mục tương ứng.",
+  guide_imp_csv_step2_desc:
+    "Xuất tệp CSV từ Bitwarden để chuyển sang {APP_NAME}. Ứng dụng sẽ nạp toàn bộ mật khẩu, ghi chú và tự động tái tạo lại các Thư mục tương ứng.",
   guide_imp_csv_step3_title: "3. Các bước thao tác trong ứng dụng",
-  guide_imp_csv_step3_desc: "Mở {APP_NAME} → chọn {settings_header} → {settings_vault_options_label} → {vault_options_import}. Chọn chuẩn tệp (Browser CSV hoặc Bitwarden CSV), chọn tệp từ máy tính và nhấn Xác nhận nhập.",
+  guide_imp_csv_step3_desc:
+    "Mở {APP_NAME} → chọn {settings_header} → {settings_vault_options_label} → {vault_options_import}. Chọn chuẩn tệp (Browser CSV hoặc Bitwarden CSV), chọn tệp từ máy tính và nhấn Xác nhận nhập.",
 
-  guide_imp_json_lead: "Khôi phục 100% trọn vẹn cấu trúc dữ liệu két mật khẩu từ tệp Sao lưu định dạng JSON.",
+  guide_imp_json_lead:
+    "Khôi phục 100% trọn vẹn cấu trúc dữ liệu két mật khẩu từ tệp Sao lưu định dạng JSON.",
   guide_imp_json_step1_title: "1. Vị trí chức năng Nhập dữ liệu",
-  guide_imp_json_step1_desc: "Mở ứng dụng {APP_NAME} → chọn menu {settings_header} → {settings_vault_options_label} → {vault_options_import}.",
+  guide_imp_json_step1_desc:
+    "Mở ứng dụng {APP_NAME} → chọn menu {settings_header} → {settings_vault_options_label} → {vault_options_import}.",
   guide_imp_json_step2_title: "2. Chọn định dạng tệp JSON",
-  guide_imp_json_step2_desc: "Tại danh sách chọn định dạng tệp, chọn Gistwarden / Bitwarden JSON (.json).",
+  guide_imp_json_step2_desc:
+    "Tại danh sách chọn định dạng tệp, chọn Gistwarden / Bitwarden JSON (.json).",
   guide_imp_json_step3_title: "3. Tải tệp JSON & Xem trước kết quả",
-  guide_imp_json_step3_desc: "Nhấn nút chọn tệp JSON từ máy tính. {APP_NAME} sẽ hiển thị bảng Xem trước kết quả (Preview) số lượng tài khoản chuẩn bị nạp vào két.",
+  guide_imp_json_step3_desc:
+    "Nhấn nút chọn tệp JSON từ máy tính. {APP_NAME} sẽ hiển thị bảng Xem trước kết quả (Preview) số lượng tài khoản chuẩn bị nạp vào két.",
   guide_imp_json_step4_title: "4. Khôi phục đầy đủ cả 5 nhóm dữ liệu & Thư mục",
-  guide_imp_json_step4_desc: "Tệp JSON giúp khôi phục trọn vẹn 100% cả 5 nhóm dữ liệu: Mật khẩu, Ghi chú bảo mật, Thẻ thanh toán, Danh tính, Khóa SSH cùng Thư mục, Trường tùy chỉnh và mã 2FA.",
+  guide_imp_json_step4_desc:
+    "Tệp JSON giúp khôi phục trọn vẹn 100% cả 5 nhóm dữ liệu: Mật khẩu, Ghi chú bảo mật, Thẻ thanh toán, Danh tính, Khóa SSH cùng Thư mục, Trường tùy chỉnh và mã 2FA.",
   guide_imp_json_step5_title: "5. Tự động Hợp nhất Dữ liệu & Thư mục",
-  guide_imp_json_step5_desc: "Hệ thống tự động gộp các Thư mục trùng tên, loại bỏ bản ghi trùng lặp và giữ lại dữ liệu mới nhất.",
+  guide_imp_json_step5_desc:
+    "Hệ thống tự động gộp các Thư mục trùng tên, loại bỏ bản ghi trùng lặp và giữ lại dữ liệu mới nhất.",
 
-  guide_exp_csv_lead: "Xuất danh sách mật khẩu ra tệp định dạng CSV để dễ dàng xem hoặc chuyển đổi ứng dụng.",
+  guide_exp_csv_lead:
+    "Xuất danh sách mật khẩu ra tệp định dạng CSV để dễ dàng xem hoặc chuyển đổi ứng dụng.",
   guide_exp_csv_step1_title: "1. Truy cập tính năng Xuất dữ liệu",
-  guide_exp_csv_step1_desc: "Mở ứng dụng {APP_NAME} → chọn menu {settings_header} → {settings_vault_options_label} → {vault_options_export}.",
+  guide_exp_csv_step1_desc:
+    "Mở ứng dụng {APP_NAME} → chọn menu {settings_header} → {settings_vault_options_label} → {vault_options_export}.",
   guide_exp_csv_step2_title: "2. Nhập Mật khẩu chính để xác minh bảo mật",
-  guide_exp_csv_step2_desc: "Để bảo vệ an toàn, ứng dụng yêu cầu bạn nhập lại Mật khẩu chính (Mật khẩu chính) để xác nhận quyền truy cập trước khi tạo tệp CSV.",
+  guide_exp_csv_step2_desc:
+    "Để bảo vệ an toàn, ứng dụng yêu cầu bạn nhập lại Mật khẩu chính (Mật khẩu chính) để xác nhận quyền truy cập trước khi tạo tệp CSV.",
   guide_exp_csv_step3_title: "3. Lựa chọn định dạng tệp CSV",
-  guide_exp_csv_step3_browser: "Browser CSV: Xuất dạng định dạng cơ bản để nạp trực tiếp vào Google Chrome, Firefox, Edge, Safari, Brave.",
-  guide_exp_csv_step3_bitwarden: "Bitwarden CSV: Xuất đầy đủ thông tin tài khoản và cấu trúc Thư mục.",
+  guide_exp_csv_step3_browser:
+    "Browser CSV: Xuất dạng định dạng cơ bản để nạp trực tiếp vào Google Chrome, Firefox, Edge, Safari, Brave.",
+  guide_exp_csv_step3_bitwarden:
+    "Bitwarden CSV: Xuất đầy đủ thông tin tài khoản và cấu trúc Thư mục.",
   guide_exp_csv_step4_title: "4. Cảnh báo bảo mật tệp CSV chữ rõ (Plaintext)",
-  guide_exp_csv_step4_desc: "Tệp CSV chứa mật khẩu chưa mã hóa (chỉ bao gồm các mục Mật khẩu & Ghi chú, không chứa Passkey hay Khóa SSH). Hãy bảo quản tệp cẩn thận hoặc xóa sau khi di chuyển xong.",
+  guide_exp_csv_step4_desc:
+    "Tệp CSV chứa mật khẩu chưa mã hóa (chỉ bao gồm các mục Mật khẩu & Ghi chú, không chứa Passkey hay Khóa SSH). Hãy bảo quản tệp cẩn thận hoặc xóa sau khi di chuyển xong.",
 
-  guide_exp_json_lead: "Tạo bản sao lưu toàn bộ két mật khẩu dưới dạng tệp JSON.",
+  guide_exp_json_lead:
+    "Tạo bản sao lưu toàn bộ két mật khẩu dưới dạng tệp JSON.",
   guide_exp_json_step1_title: "1. Sao lưu 100% cấu trúc Vault",
-  guide_exp_json_step1_desc: "Tệp JSON sao lưu toàn bộ 5 nhóm phần tử (Mật khẩu, Ghi chú, Thẻ, Danh tính, Khóa SSH), Thư mục, Yêu thích và Trường tùy chỉnh.",
+  guide_exp_json_step1_desc:
+    "Tệp JSON sao lưu toàn bộ 5 nhóm phần tử (Mật khẩu, Ghi chú, Thẻ, Danh tính, Khóa SSH), Thư mục, Yêu thích và Trường tùy chỉnh.",
   guide_exp_json_step2_title: "2. Tùy chọn Xuất Mã hóa hoặc Không Mã hóa",
-  guide_exp_json_step2_desc: "Nên chọn Xuất mã hóa (Encrypted JSON) để tệp sao lưu được bảo vệ bằng Mật khẩu chính của bạn. Người khác không thể mở nếu không có Mật khẩu chính.",
+  guide_exp_json_step2_desc:
+    "Nên chọn Xuất mã hóa (Encrypted JSON) để tệp sao lưu được bảo vệ bằng Mật khẩu chính của bạn. Người khác không thể mở nếu không có Mật khẩu chính.",
   guide_exp_json_step3_title: "3. Các bước xuất tệp sao lưu JSON",
-  guide_exp_json_step3_desc: "Mở {APP_NAME} → chọn {settings_header} → {settings_vault_options_label} → {vault_options_export} → nhập Mật khẩu chính → chọn định dạng JSON và nhấn Tải tệp Sao lưu JSON.",
+  guide_exp_json_step3_desc:
+    "Mở {APP_NAME} → chọn {settings_header} → {settings_vault_options_label} → {vault_options_export} → nhập Mật khẩu chính → chọn định dạng JSON và nhấn Tải tệp Sao lưu JSON.",
 
   // Extension Downloads Guide
   guide_item_download_extension: "Tải Extension",
-  guide_dl_ext_lead: "Cài đặt Extension {APP_NAME} trên trình duyệt để trải nghiệm tính năng Tự động điền, Passkey FIDO2 và Tự động khóa két bảo mật.",
+  guide_dl_ext_lead:
+    "Cài đặt Extension {APP_NAME} trên trình duyệt để trải nghiệm tính năng Tự động điền, Passkey FIDO2 và Tự động khóa két bảo mật.",
   guide_dl_ext_firefox_title: "Trình duyệt Firefox (Firefox Add-on)",
-  guide_dl_ext_firefox_desc: "Tải và cài đặt Extension {APP_NAME} chính thức trên Mozilla Firefox Add-ons Store.",
+  guide_dl_ext_firefox_desc:
+    "Tải và cài đặt Extension {APP_NAME} chính thức trên Mozilla Firefox Add-ons Store.",
   guide_dl_ext_edge_title: "Trình duyệt Microsoft Edge (Edge Add-on)",
-  guide_dl_ext_edge_desc: "Tải và cài đặt Extension {APP_NAME} chính thức trên Microsoft Edge Add-ons Store.",
+  guide_dl_ext_edge_desc:
+    "Tải và cài đặt Extension {APP_NAME} chính thức trên Microsoft Edge Add-ons Store.",
   guide_dl_ext_btn: "Cài đặt Extension",
 
   // Web Version Guide
   guide_item_web_version: "Phiên bản Web",
-  guide_web_ver_lead: "Truy cập két mật khẩu {APP_NAME} trực tiếp trên trình duyệt web mà không cần cài đặt Extension.",
+  guide_web_ver_lead:
+    "Truy cập két mật khẩu {APP_NAME} trực tiếp trên trình duyệt web mà không cần cài đặt Extension.",
   guide_web_ver_btn: "Truy cập Gistwarden Web",
   guide_web_ver_advantages_title: "Truy cập linh hoạt mọi nơi",
-  guide_web_ver_advantages_desc: "Thích hợp khi bạn sử dụng máy tính công cộng, thiết bị lạ hoặc môi trường trình duyệt không cho phép cài đặt Extension.",
+  guide_web_ver_advantages_desc:
+    "Thích hợp khi bạn sử dụng máy tính công cộng, thiết bị lạ hoặc môi trường trình duyệt không cho phép cài đặt Extension.",
   guide_web_ver_limits_title: "Các tính năng bị giới hạn trên phiên bản Web",
   guide_web_ver_limit_autofill_title: "Không có Tự động điền (Autofill)",
-  guide_web_ver_limit_autofill_desc: "Phiên bản Web không thể tự động điền tài khoản và mật khẩu vào biểu mẫu đăng nhập trên các trang web khác.",
+  guide_web_ver_limit_autofill_desc:
+    "Phiên bản Web không thể tự động điền tài khoản và mật khẩu vào biểu mẫu đăng nhập trên các trang web khác.",
   guide_web_ver_limit_passkey_title: "Hạn chế Passkey / FIDO2",
-  guide_web_ver_limit_passkey_desc: "Không thể đóng vai trò làm trình quản lý Passkey cho trình duyệt để xác thực đăng nhập trên các trang web bên ngoài.",
+  guide_web_ver_limit_passkey_desc:
+    "Không thể đóng vai trò làm trình quản lý Passkey cho trình duyệt để xác thực đăng nhập trên các trang web bên ngoài.",
   guide_web_ver_limit_capture_title: "Không tự động bắt đăng nhập mới",
-  guide_web_ver_limit_capture_desc: "Không thể tự động phát hiện và gợi ý lưu mật khẩu khi bạn đăng nhập trên các trang web.",
-
+  guide_web_ver_limit_capture_desc:
+    "Không thể tự động phát hiện và gợi ý lưu mật khẩu khi bạn đăng nhập trên các trang web.",
 
   // Guide Gist Token Steps
   guide_token_desc:
@@ -991,8 +1100,7 @@ export default {
   guide_faq_q2_title: "Tôi quên Mật khẩu chính thì phải làm sao?",
   guide_faq_q2_desc:
     "Không có cách nào khôi phục Mật khẩu chính. Nếu quên, bạn buộc phải đặt lại extension để bắt đầu lại từ đầu. Hãy ghi nhớ hoặc ghi Mật khẩu chính ra giấy cất ở nơi an toàn.",
-  guide_faq_q3_title:
-    "Tôi có thể đồng bộ mật khẩu trên nhiều máy tính không?",
+  guide_faq_q3_title: "Tôi có thể đồng bộ mật khẩu trên nhiều máy tính không?",
   guide_faq_q3_desc:
     "Có. Chỉ cần cài đặt {APP_NAME} lên máy tính khác, đăng nhập cùng tài khoản GitHub (hoặc cấu hình cùng mã Token) và điền ĐÚNG Mật khẩu chính đã dùng ở máy cũ. Dữ liệu sẽ tự động tải về và giải mã mượt mà.",
   guide_faq_q4_title:
@@ -1044,16 +1152,20 @@ export default {
   select_search_placeholder: "Tìm kiếm...",
   select_no_results: "Không tìm thấy kết quả",
   settings_tools_google_auth: "Công cụ Giải mã Google Authenticator",
-  settings_tools_google_auth_sub: "Giải mã QR offline export, hiển thị otpauth:// và ghép vào Vault",
+  settings_tools_google_auth_sub:
+    "Giải mã QR offline export, hiển thị otpauth:// và ghép vào Vault",
   google_tool_paste_label: "Dán chuỗi offline export hoặc tải file ảnh QR:",
   google_tool_btn_parse: "Giải mã & Phân tích",
   google_tool_btn_upload_qr: "Tải file ảnh QR Code",
-  import_google_migration_invalid: "Mã QR hoặc dữ liệu Google Authenticator không hợp lệ",
-  google_migration_subtitle: "Phát hiện {count} tài khoản 2FA. Vui lòng chọn thao tác lưu:",
+  import_google_migration_invalid:
+    "Mã QR hoặc dữ liệu Google Authenticator không hợp lệ",
+  google_migration_subtitle:
+    "Phát hiện {count} tài khoản 2FA. Vui lòng chọn thao tác lưu:",
   google_migration_raw_uri: "Raw URI",
   google_migration_action_link: "Ghép vào tài khoản Vault sẵn có",
   google_migration_action_create: "Tạo tài khoản Vault mới",
   google_migration_action_skip: "Bỏ qua không import",
   google_migration_save_batch: "Lưu hàng loạt ({count})",
-  google_migration_save_success: "Đã import và cập nhật thành công {count} tài khoản 2FA",
+  google_migration_save_success:
+    "Đã import và cập nhật thành công {count} tài khoản 2FA",
 };

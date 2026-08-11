@@ -1,16 +1,21 @@
-import { type Folder, FolderSchema, VaultItemType, asFido2CredentialId, asRpId, logger } from "@gistwarden/domain";
-import { type ImportItem, ImportItemSchema } from "@gistwarden/repository";
 import {
+  asFido2CredentialId,
+  asRpId,
   createBaseVaultItem,
+  type Folder,
+  FolderSchema,
   getVaultItemFallbackName,
+  logger,
   type VaultItem,
+  VaultItemType,
   VaultListSchema,
 } from "@gistwarden/domain";
+import { mergeFolders } from "@gistwarden/orchestrator";
+import { type ImportItem, ImportItemSchema } from "@gistwarden/repository";
+import { err, ok, type Result } from "neverthrow";
 import { APP_NAME } from "@/core/constants.ts";
-import { err, ok, Result } from "neverthrow";
 import type { TranslationKey } from "@/core/i18n.ts";
 import { safeJsonParse } from "@/core/json-utils.ts";
-import { mergeFolders } from "@gistwarden/orchestrator";
 import type { ImportResult, ImportStrategy } from "../import-export-types.ts";
 
 export const jsonImportStrategy = {
@@ -35,9 +40,10 @@ export const jsonImportStrategy = {
     const itemsToImport: ImportItem[] = [];
     const importedFolders: Folder[] = [];
 
-    const rawFolders = parsed !== null && typeof parsed === "object"
-      ? Reflect.get(parsed, "folders")
-      : null;
+    const rawFolders =
+      parsed !== null && typeof parsed === "object"
+        ? Reflect.get(parsed, "folders")
+        : null;
 
     if (Array.isArray(rawFolders)) {
       for (const rawFolder of rawFolders) {
@@ -49,9 +55,10 @@ export const jsonImportStrategy = {
     }
 
     let rawItems: unknown[] = [];
-    const parsedItems = parsed !== null && typeof parsed === "object"
-      ? Reflect.get(parsed, "items")
-      : null;
+    const parsedItems =
+      parsed !== null && typeof parsed === "object"
+        ? Reflect.get(parsed, "items")
+        : null;
 
     if (Array.isArray(parsed)) {
       rawItems = parsed;
@@ -162,25 +169,26 @@ export const jsonImportStrategy = {
             totp: loginData?.totp || "",
             uris: loginData?.uris
               ? loginData.uris.map((u) => ({
-                uri: u.uri || "",
-                match: u.match || null,
-              }))
+                  uri: u.uri || "",
+                  match: u.match || null,
+                }))
               : [],
-            fido2Credentials: rawFido?.map((c) => ({
-              credentialId: asFido2CredentialId(c.credentialId || ""),
-              keyType: c.keyType || "",
+            fido2Credentials:
+              rawFido?.map((c) => ({
+                credentialId: asFido2CredentialId(c.credentialId || ""),
+                keyType: c.keyType || "",
 
-              keyAlgorithm: c.keyAlgorithm || "",
-              keyCurve: c.keyCurve || "",
-              keyValue: c.keyValue || "",
-              counter: c.counter ?? 0,
-              rpId: asRpId(c.rpId || ""),
-              userHandle: c.userHandle || "",
-              userName: c.userName || "",
-              userDisplayName: c.userDisplayName || "",
-              creationDate: c.creationDate || now,
-              discoverable: c.discoverable,
-            })) || [],
+                keyAlgorithm: c.keyAlgorithm || "",
+                keyCurve: c.keyCurve || "",
+                keyValue: c.keyValue || "",
+                counter: c.counter ?? 0,
+                rpId: asRpId(c.rpId || ""),
+                userHandle: c.userHandle || "",
+                userName: c.userName || "",
+                userDisplayName: c.userDisplayName || "",
+                creationDate: c.creationDate || now,
+                discoverable: c.discoverable,
+              })) || [],
           },
         };
       }
@@ -189,7 +197,11 @@ export const jsonImportStrategy = {
     const existingMap = new Map<string, VaultItem>();
     for (const item of existingItems) {
       if (item.type === VaultItemType.Login) {
-        if (item.login?.uris && item.login.uris.length > 0 && item.login.uris[0]) {
+        if (
+          item.login?.uris &&
+          item.login.uris.length > 0 &&
+          item.login.uris[0]
+        ) {
           const mainUri = item.login.uris[0].uri;
           const key = `${mainUri}|${item.login.username}`;
           existingMap.set(key, item);

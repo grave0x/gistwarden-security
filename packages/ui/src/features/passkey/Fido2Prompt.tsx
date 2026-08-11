@@ -1,4 +1,12 @@
 import {
+  asRpId,
+  type LoginVaultItem,
+  type RpId,
+  safeParseUrl,
+} from "@gistwarden/domain";
+import { getPendingFido2RequestRoute } from "@gistwarden/orchestrator";
+import { setGlobalLoading } from "@gistwarden/ui";
+import {
   type Component,
   createEffect,
   createSignal,
@@ -9,16 +17,15 @@ import {
   Show,
   Switch,
 } from "solid-js";
-import { accountStore, settingsStore } from "@/core/store.ts";
-
-import { logout, unlock } from "@/features/auth/auth-service.ts";
-import { unlockWithPin } from "@/features/auth/pin-service.ts";
-import { setGlobalLoading } from "@gistwarden/ui";
+import Button from "@/components/ui/Button.tsx";
+import Input from "@/components/ui/Input.tsx";
+import SafeHtml from "@/components/ui/SafeHtml.tsx";
 import { APP_NAME, MSG_FIDO2_HEARTBEAT } from "@/core/constants.ts";
-import { getPendingFido2RequestRoute } from "@gistwarden/orchestrator";
+import { formatDateTime, t } from "@/core/i18n.ts";
 import { notifyBackground, sendBackgroundMessage } from "@/core/messaging.ts";
-import { asRpId, type LoginVaultItem, type RpId, safeParseUrl } from "@gistwarden/domain";
-
+import { accountStore, settingsStore } from "@/core/store.ts";
+import { unlock } from "@/features/auth/auth-service.ts";
+import { unlockWithPin } from "@/features/auth/pin-service.ts";
 import {
   assertFido2Passkey,
   type Fido2Request,
@@ -28,9 +35,7 @@ import {
   registerFido2Passkey,
   rejectFido2Request,
 } from "@/features/passkey/fido2-service.ts";
-import Button from "@/components/ui/Button.tsx";
-import Input from "@/components/ui/Input.tsx";
-import SafeHtml from "@/components/ui/SafeHtml.tsx";
+import PasskeySelectRow from "@/features/passkey/PasskeySelectRow.tsx";
 import {
   GlobeIcon,
   InfoIcon,
@@ -38,8 +43,6 @@ import {
   QuestionIcon,
   ShieldIcon,
 } from "@/icons/svg/index.ts";
-import { formatDateTime, t } from "@/core/i18n.ts";
-import PasskeySelectRow from "@/features/passkey/PasskeySelectRow.tsx";
 
 export const Fido2Prompt: Component = () => {
   const [masterPassword, setMasterPassword] = createSignal("");
@@ -77,9 +80,8 @@ export const Fido2Prompt: Component = () => {
   const [selectedAccountIndex, setSelectedAccountIndex] = createSignal<
     number | null
   >(null);
-  const [selectedPasskeyOption, setSelectedPasskeyOption] = createSignal<
-    string
-  >("add");
+  const [selectedPasskeyOption, setSelectedPasskeyOption] =
+    createSignal<string>("add");
 
   const initPasskeyOptions = (item: LoginVaultItem) => {
     const creds = item.login.fido2Credentials || [];
@@ -136,10 +138,7 @@ export const Fido2Prompt: Component = () => {
     });
   });
 
-  const findMatchingAccounts = (
-    rpId: RpId,
-    origin: string,
-  ) => {
+  const findMatchingAccounts = (rpId: RpId, origin: string) => {
     const matches = findMatchingFido2Accounts(
       accountStore.vaultItems,
       rpId,
@@ -157,9 +156,7 @@ export const Fido2Prompt: Component = () => {
   };
 
   const loadPendingRequest = async () => {
-    const sendResult = await sendBackgroundMessage(
-      getPendingFido2RequestRoute,
-    );
+    const sendResult = await sendBackgroundMessage(getPendingFido2RequestRoute);
     if (sendResult.isErr() || !sendResult.value.success) {
       setError(t("fido2_error_load_failed"));
       return;
@@ -167,7 +164,7 @@ export const Fido2Prompt: Component = () => {
 
     const res = sendResult.value;
 
-    if (res && res.type && res.options && res.origin) {
+    if (res?.type && res.options && res.origin) {
       setPendingReq({
         success: res.success,
         type: res.type,
@@ -289,7 +286,7 @@ export const Fido2Prompt: Component = () => {
       <div class="fido2-body">
         <Switch>
           {/* 1. Chưa đăng nhập / Chưa cấu hình GitHub */}
-          <Match when={!accountStore.githubConfigured}>
+          <Match when={!accountStore.vaultConfigured}>
             <div class="prompt-content">
               <div class="prompt-icon-wrapper">
                 <div class="fido2-large-icon bg-danger">
@@ -298,9 +295,7 @@ export const Fido2Prompt: Component = () => {
               </div>
 
               <h2 class="prompt-title">{t("fido2_not_logged_in_title")}</h2>
-              <p class="prompt-subtitle">
-                {t("fido2_not_logged_in_subtitle")}
-              </p>
+              <p class="prompt-subtitle">{t("fido2_not_logged_in_subtitle")}</p>
 
               <div class="prompt-footer single-btn">
                 <Button variant="secondary" block onClick={handleReject}>
@@ -320,9 +315,7 @@ export const Fido2Prompt: Component = () => {
               </div>
 
               <h2 class="prompt-title">{t("fido2_vault_locked_title")}</h2>
-              <p class="prompt-subtitle">
-                {t("fido2_vault_locked_subtitle")}
-              </p>
+              <p class="prompt-subtitle">{t("fido2_vault_locked_subtitle")}</p>
 
               <Show when={error()}>
                 <div class="alert alert-danger alert-prompt-compact">
@@ -370,10 +363,7 @@ export const Fido2Prompt: Component = () => {
                       >
                         {t("btn_cancel")}
                       </Button>
-                      <Button
-                        type="submit"
-                        variant="primary"
-                      >
+                      <Button type="submit" variant="primary">
                         {t("login_btn_unlock")}
                       </Button>
                     </div>
@@ -388,10 +378,11 @@ export const Fido2Prompt: Component = () => {
                     <div class="form-group text-left">
                       <Input
                         type="password"
-                        placeholder={t("login_placeholder_mp") + "..."}
+                        placeholder={`${t("login_placeholder_mp")}...`}
                         value={masterPassword()}
                         onInput={(e) =>
-                          setMasterPassword(e.currentTarget.value)}
+                          setMasterPassword(e.currentTarget.value)
+                        }
                         autofocus
                         required
                       />
@@ -420,10 +411,7 @@ export const Fido2Prompt: Component = () => {
                       >
                         {t("btn_cancel")}
                       </Button>
-                      <Button
-                        type="submit"
-                        variant="primary"
-                      >
+                      <Button type="submit" variant="primary">
                         {t("login_btn_unlock")}
                       </Button>
                     </div>
@@ -435,7 +423,7 @@ export const Fido2Prompt: Component = () => {
         </Switch>
 
         {/* 3. Đã mở khóa két sắt */}
-        <Show when={accountStore.githubConfigured && !accountStore.isLocked}>
+        <Show when={accountStore.vaultConfigured && !accountStore.isLocked}>
           <div class="prompt-content">
             <Show when={error()}>
               <div class="alert alert-danger mb-16">{error()}</div>
@@ -461,8 +449,10 @@ export const Fido2Prompt: Component = () => {
                     <SafeHtml
                       class="prompt-subtitle"
                       html={t("fido2_register_subtitle_new", {
-                        rp: pendingReq()?.options.rp?.name ||
-                          pendingReq()?.options.rp?.id || "",
+                        rp:
+                          pendingReq()?.options.rp?.name ||
+                          pendingReq()?.options.rp?.id ||
+                          "",
                         user: pendingReq()?.options.user?.name || "",
                       })}
                     />
@@ -530,40 +520,38 @@ export const Fido2Prompt: Component = () => {
                                   {(cred, cIdx) => (
                                     <PasskeySelectRow
                                       icon={<ShieldIcon />}
-                                      title={t(
-                                        "fido2_register_passkey_info",
-                                        {
-                                          index: cIdx() + 1,
-                                          date: cred.creationDate
-                                            ? formatDateTime(
-                                              cred.creationDate,
-                                            )
-                                            : "N/A",
-                                        },
-                                      )}
-                                      subtitle={`ID: ${
-                                        cred.credentialId.substring(0, 16)
-                                      }...`}
-                                      active={selectedPasskeyOption() ===
-                                        cred.credentialId}
+                                      title={t("fido2_register_passkey_info", {
+                                        index: cIdx() + 1,
+                                        date: cred.creationDate
+                                          ? formatDateTime(cred.creationDate)
+                                          : "N/A",
+                                      })}
+                                      subtitle={`ID: ${cred.credentialId.substring(
+                                        0,
+                                        16,
+                                      )}...`}
+                                      active={
+                                        selectedPasskeyOption() ===
+                                        cred.credentialId
+                                      }
                                       subItem={true}
                                       onClick={() =>
                                         setSelectedPasskeyOption(
                                           cred.credentialId,
-                                        )}
+                                        )
+                                      }
                                     />
                                   )}
                                 </For>
                                 <PasskeySelectRow
                                   icon={<QuestionIcon />}
                                   title={t("fido2_register_option_add")}
-                                  subtitle={t(
-                                    "fido2_register_option_add_sub",
-                                  )}
+                                  subtitle={t("fido2_register_option_add_sub")}
                                   active={selectedPasskeyOption() === "add"}
                                   subItem={true}
                                   onClick={() =>
-                                    setSelectedPasskeyOption("add")}
+                                    setSelectedPasskeyOption("add")
+                                  }
                                 />
                               </>
                             }
@@ -577,13 +565,14 @@ export const Fido2Prompt: Component = () => {
                                   ? formatDateTime(firstCred.creationDate)
                                   : "N/A",
                               })}
-                              active={selectedPasskeyOption() ===
-                                firstCred.credentialId}
+                              active={
+                                selectedPasskeyOption() ===
+                                firstCred.credentialId
+                              }
                               subItem={true}
                               onClick={() =>
-                                setSelectedPasskeyOption(
-                                  firstCred.credentialId,
-                                )}
+                                setSelectedPasskeyOption(firstCred.credentialId)
+                              }
                             />
 
                             <PasskeySelectRow
@@ -602,16 +591,10 @@ export const Fido2Prompt: Component = () => {
                 </Show>
 
                 <div class="prompt-footer">
-                  <Button
-                    variant="secondary"
-                    onClick={handleReject}
-                  >
+                  <Button variant="secondary" onClick={handleReject}>
                     {t("btn_cancel")}
                   </Button>
-                  <Button
-                    variant="primary"
-                    onClick={handleConfirmRegister}
-                  >
+                  <Button variant="primary" onClick={handleConfirmRegister}>
                     {t("fido2_btn_save")}
                   </Button>
                 </div>
@@ -654,16 +637,10 @@ export const Fido2Prompt: Component = () => {
                       </div>
 
                       <div class="prompt-footer">
-                        <Button
-                          variant="secondary"
-                          onClick={handleReject}
-                        >
+                        <Button variant="secondary" onClick={handleReject}>
                           {t("btn_cancel")}
                         </Button>
-                        <Button
-                          variant="primary"
-                          onClick={handleConfirmAssert}
-                        >
+                        <Button variant="primary" onClick={handleConfirmAssert}>
                           {t("fido2_assert_btn_confirm")}
                         </Button>
                       </div>

@@ -1,5 +1,7 @@
-import { type Component } from "solid-js";
-import { View } from "@/core/types.ts";
+import type { Component } from "solid-js";
+import DetailHeader from "@/components/ui/DetailHeader.tsx";
+import { APP_NAME, FIREFOX_ADDON_SLUG } from "@/core/constants.ts";
+import { t } from "@/core/i18n.ts";
 import { navigate } from "@/core/navigation.ts";
 import {
   getAppVersion,
@@ -7,15 +9,13 @@ import {
   isEdge,
   isFirefox,
 } from "@/core/runtime.ts";
-import { t } from "@/core/i18n.ts";
-import DetailHeader from "@/components/ui/DetailHeader.tsx";
+import { View } from "@/core/types.ts";
 import {
   ChevronRightIcon,
   GithubIcon,
   HeartOutlineIcon,
   QuestionIcon,
 } from "@/icons/svg/index.ts";
-import { APP_NAME, FIREFOX_ADDON_SLUG } from "@/core/constants.ts";
 
 export const About: Component = () => {
   const handleBack = () => {
@@ -57,10 +57,7 @@ export const About: Component = () => {
     <div class="app-container">
       <div class="app-body">
         {/* Header */}
-        <DetailHeader
-          title={t("settings_about_label")}
-          onBack={handleBack}
-        />
+        <DetailHeader title={t("settings_about_label")} onBack={handleBack} />
 
         {/* App Info Panel */}
         <div class="text-center py-24 mb-16">
@@ -80,36 +77,26 @@ export const About: Component = () => {
               window.open(
                 "https://github.com/uongsuadaubung/gistwarden",
                 "_blank",
-              )}
+              )
+            }
           >
             <div class="setting-row-left">
               <GithubIcon />
               <div>
-                <div class="setting-label">
-                  {t("settings_homepage")}
-                </div>
-                <div class="setting-sub">
-                  {t("settings_homepage_sub")}
-                </div>
+                <div class="setting-label">{t("settings_homepage")}</div>
+                <div class="setting-sub">{t("settings_homepage_sub")}</div>
               </div>
             </div>
             <ChevronRightIcon />
           </div>
 
           {/* Rate & Review */}
-          <div
-            class="setting-row"
-            onClick={handleRateClick}
-          >
+          <div class="setting-row" onClick={handleRateClick}>
             <div class="setting-row-left">
               <HeartOutlineIcon />
               <div>
-                <div class="setting-label">
-                  {t("settings_rate_label")}
-                </div>
-                <div class="setting-sub">
-                  {t("settings_rate_sub")}
-                </div>
+                <div class="setting-label">{t("settings_rate_label")}</div>
+                <div class="setting-sub">{t("settings_rate_sub")}</div>
               </div>
             </div>
             <ChevronRightIcon />

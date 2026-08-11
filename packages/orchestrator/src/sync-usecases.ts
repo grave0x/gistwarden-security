@@ -1,3 +1,4 @@
+import { asGistId, SESSION_KEY_PENDING_SYNC_TOKEN } from "@gistwarden/domain";
 import {
   getSyncProvider,
   launchGithubOauthFlow,
@@ -9,17 +10,16 @@ import {
   type DownloadGistResponse,
   getAccountSettings,
   getExtensionSettings,
-  getGithubToken,
-  setSessionItem,
+  getSyncToken,
   type StartGithubOauthMsg,
   type StartGithubOauthResponse,
   type SyncActionResponse,
-  updateAccountSettings,
+  setSessionItem,
   type UploadToGistMsg,
+  updateAccountSettings,
   type ValidateTokenMsg,
   type ValidateTokenResponse,
 } from "@gistwarden/repository";
-import { asGistId, SESSION_KEY_PENDING_GITHUB_TOKEN } from "@gistwarden/domain";
 import { checkVaultConfiguredUseCase } from "./vault-auth-usecases.ts";
 
 export async function uploadVaultUseCase(
@@ -28,26 +28,27 @@ export async function uploadVaultUseCase(
   const vaultMode = payload.mode;
   const provider = getSyncProvider(vaultMode);
 
-  if (!await checkVaultConfiguredUseCase(vaultMode)) {
+  if (!(await checkVaultConfiguredUseCase(vaultMode))) {
     return { success: false, error: "github_error_missing_token" };
   }
 
-  const token = await getGithubToken(vaultMode);
-
+  const token = await getSyncToken(vaultMode);
   const settingsRes = await getAccountSettings(vaultMode);
-  const githubConfig = settingsRes.isOk() ? settingsRes.value.githubConfig : undefined;
+  const syncConfig = settingsRes.isOk()
+    ? settingsRes.value.syncConfig
+    : undefined;
   const res = await provider.upload(payload.content || "", {
     token: token || undefined,
-    gistId: githubConfig?.gistId,
-    username: githubConfig?.username,
+    gistId: syncConfig?.gistId,
+    username: syncConfig?.username,
   });
 
   if (res.isOk()) {
     const gistId = res.value.gistId;
-    if (gistId && githubConfig && gistId !== githubConfig.gistId) {
+    if (gistId && syncConfig && gistId !== syncConfig.gistId) {
       await updateAccountSettings(
         {
-          githubConfig: { ...githubConfig, gistId },
+          syncConfig: { ...syncConfig, gistId },
           lastSync: Date.now(),
         },
         vaultMode,
@@ -67,7 +68,7 @@ export async function deleteVaultUseCase(
   const vaultMode = extRes.isOk() ? extRes.value.vaultMode : "github_gist";
   const provider = getSyncProvider(vaultMode);
 
-  const token = await getGithubToken(vaultMode);
+  const token = await getSyncToken(vaultMode);
   const gistId = payload.content ? asGistId(payload.content) : undefined;
   const res = await provider.delete(gistId, {
     token: token || undefined,
@@ -84,23 +85,23 @@ export async function downloadVaultUseCase(
   const vaultMode = payload.mode;
   const provider = getSyncProvider(vaultMode);
 
-  const token = await getGithubToken(vaultMode);
+  const token = await getSyncToken(vaultMode);
   const settingsRes = await getAccountSettings(vaultMode);
   const settings = settingsRes.isOk() ? settingsRes.value : null;
-  const githubConfig = settings?.githubConfig;
+  const syncConfig = settings?.syncConfig;
 
   const res = await provider.download({
     token: token || undefined,
-    gistId: githubConfig?.gistId,
-    username: githubConfig?.username,
+    gistId: syncConfig?.gistId,
+    username: syncConfig?.username,
   });
 
   if (res.isOk()) {
     const gistId = res.value.gistId;
-    if (gistId && githubConfig && gistId !== githubConfig.gistId) {
+    if (gistId && syncConfig && gistId !== syncConfig.gistId) {
       await updateAccountSettings(
         {
-          githubConfig: { ...githubConfig, gistId },
+          syncConfig: { ...syncConfig, gistId },
           lastSync: Date.now(),
         },
         vaultMode,
@@ -136,10 +137,7 @@ export async function startGithubOauthUseCase(
   const clientId = payload.content || "";
   const oauthRes = await launchGithubOauthFlow(clientId);
   if (oauthRes.isOk()) {
-    await setSessionItem(
-      SESSION_KEY_PENDING_GITHUB_TOKEN,
-      oauthRes.value,
-    );
+    await setSessionItem(SESSION_KEY_PENDING_SYNC_TOKEN, oauthRes.value);
     return { success: true, token: oauthRes.value };
   }
   return { success: false, error: oauthRes.error };

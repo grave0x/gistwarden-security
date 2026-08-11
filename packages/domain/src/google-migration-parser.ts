@@ -1,28 +1,32 @@
-import { z } from "zod";
-import { err, ok, Result } from "neverthrow";
+import { err, ok, type Result } from "neverthrow";
 import * as OTPAuth from "otpauth";
+import { z } from "zod";
 import type { TranslationKey } from "./i18n.ts";
 
-export const GoogleOtpAccountSchema = z.object({
-  id: z.string(),
-  name: z.string(),
-  issuer: z.string(),
-  secretBase32: z.string(),
-  algorithm: z.enum(["SHA1", "SHA256", "SHA512", "MD5"]),
-  digits: z.number(),
-  type: z.enum(["TOTP", "HOTP"]),
-  counter: z.number(),
-  otpauthUrl: z.string(),
-}).readonly();
+export const GoogleOtpAccountSchema = z
+  .object({
+    id: z.string(),
+    name: z.string(),
+    issuer: z.string(),
+    secretBase32: z.string(),
+    algorithm: z.enum(["SHA1", "SHA256", "SHA512", "MD5"]),
+    digits: z.number(),
+    type: z.enum(["TOTP", "HOTP"]),
+    counter: z.number(),
+    otpauthUrl: z.string(),
+  })
+  .readonly();
 export type GoogleOtpAccount = z.infer<typeof GoogleOtpAccountSchema>;
 
-export const GoogleMigrationPayloadSchema = z.object({
-  accounts: z.array(GoogleOtpAccountSchema),
-  version: z.number(),
-  batchSize: z.number(),
-  batchIndex: z.number(),
-  batchId: z.number(),
-}).readonly();
+export const GoogleMigrationPayloadSchema = z
+  .object({
+    accounts: z.array(GoogleOtpAccountSchema),
+    version: z.number(),
+    batchSize: z.number(),
+    batchIndex: z.number(),
+    batchId: z.number(),
+  })
+  .readonly();
 export type GoogleMigrationPayload = z.infer<
   typeof GoogleMigrationPayloadSchema
 >;
@@ -59,7 +63,6 @@ function mapAlgorithm(val: number): "SHA1" | "SHA256" | "SHA512" | "MD5" {
       return "SHA512";
     case 4:
       return "MD5";
-    case 1:
     default:
       return "SHA1";
   }
@@ -69,7 +72,6 @@ function mapDigits(val: number): number {
   switch (val) {
     case 2:
       return 8;
-    case 1:
     default:
       return 6;
   }
@@ -79,7 +81,6 @@ function mapType(val: number): "TOTP" | "HOTP" {
   switch (val) {
     case 1:
       return "HOTP";
-    case 2:
     default:
       return "TOTP";
   }

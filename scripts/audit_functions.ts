@@ -49,7 +49,7 @@ function auditCodebase(): FileAudit[] {
         const funcMatch = trimmed.match(
           /^(export\s+)?(async\s+)?function\s+([A-Za-z0-9_$]+)/,
         );
-        if (funcMatch && funcMatch[3]) {
+        if (funcMatch?.[3]) {
           functions.push({
             name: funcMatch[3],
             kind: "function",
@@ -63,7 +63,7 @@ function auditCodebase(): FileAudit[] {
         const arrowMatch = trimmed.match(
           /^(export\s+)?const\s+([A-Za-z0-9_$]+)\s*=\s*(\([^)]*\)|[A-Za-z0-9_$]+)\s*=>/,
         );
-        if (arrowMatch && arrowMatch[2]) {
+        if (arrowMatch?.[2]) {
           functions.push({
             name: arrowMatch[2],
             kind: "arrow",
@@ -77,7 +77,7 @@ function auditCodebase(): FileAudit[] {
         const classMatch = trimmed.match(
           /^(export\s+)?(abstract\s+)?class\s+([A-Za-z0-9_$]+)/,
         );
-        if (classMatch && classMatch[3]) {
+        if (classMatch?.[3]) {
           functions.push({
             name: classMatch[3],
             kind: "class",

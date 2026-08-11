@@ -1,12 +1,11 @@
-import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
-import { t } from "@/core/i18n.ts";
-import { MSG_SAVE_CREDENTIAL_ACTION } from "@/core/constants.ts";
-
-import { notifyBackground } from "@/core/messaging.ts";
-import {
-  type AutofillMatchingAccount,
-  type NotificationPayload,
+import type {
+  AutofillMatchingAccount,
+  NotificationPayload,
 } from "@gistwarden/domain";
+import { createSignal, For, onCleanup, onMount, Show } from "solid-js";
+import { MSG_SAVE_CREDENTIAL_ACTION } from "@/core/constants.ts";
+import { t } from "@/core/i18n.ts";
+import { notifyBackground } from "@/core/messaging.ts";
 
 interface NotificationToastProps {
   payload: NotificationPayload;
@@ -208,11 +207,13 @@ export function NotificationToast(props: NotificationToastProps) {
       </div>
       <div class="body-content">
         <Show
-          when={props.payload.actionType === "autofill" &&
-              props.payload.accounts &&
-              props.payload.accounts.length > 1
-            ? props.payload.accounts
-            : null}
+          when={
+            props.payload.actionType === "autofill" &&
+            props.payload.accounts &&
+            props.payload.accounts.length > 1
+              ? props.payload.accounts
+              : null
+          }
           fallback={
             <>
               <span>{actionPromptPrefix()}</span>
@@ -262,9 +263,13 @@ export function NotificationToast(props: NotificationToastProps) {
         )}
       </div>
       <Show
-        when={!(props.payload.actionType === "autofill" &&
-          props.payload.accounts &&
-          props.payload.accounts.length > 1)}
+        when={
+          !(
+            props.payload.actionType === "autofill" &&
+            props.payload.accounts &&
+            props.payload.accounts.length > 1
+          )
+        }
       >
         <div class="actions">
           <button

@@ -1,15 +1,21 @@
+import { requestReprompt, setGlobalLoading, showToast } from "@gistwarden/ui";
 import { type Component, createSignal, Show } from "solid-js";
+import DetailHeader from "@/components/ui/DetailHeader.tsx";
+import TypedConfirmModal from "@/components/ui/TypedConfirmModal.tsx";
+import {
+  SESSION_KEY_LAST_VIEW,
+  STORE_KEY_SYNC_ERROR,
+  STORE_KEY_SYNCING,
+} from "@/core/constants.ts";
+import { t } from "@/core/i18n.ts";
+import { navigate } from "@/core/navigation.ts";
+import { handlePopout, isPopout } from "@/core/popout-utils.ts";
+import { isExtension, isFirefox } from "@/core/runtime.ts";
+import { setSessionItem } from "@/core/storage.ts";
 import { accountStore, setUiStore } from "@/core/store.ts";
 import { View } from "@/core/types.ts";
-import { navigate } from "@/core/navigation.ts";
 import { syncVault } from "@/features/sync/sync-service.ts";
 import { clearVault } from "@/features/vault/vault-service.ts";
-import {
-  confirm,
-  requestReprompt,
-  setGlobalLoading,
-  showToast,
-} from "@gistwarden/ui";
 import {
   ChevronRightIcon,
   DownloadIcon,
@@ -19,17 +25,6 @@ import {
   TrashIcon,
   UploadIcon,
 } from "@/icons/svg/index.ts";
-import { t } from "@/core/i18n.ts";
-import DetailHeader from "@/components/ui/DetailHeader.tsx";
-import TypedConfirmModal from "@/components/ui/TypedConfirmModal.tsx";
-import { handlePopout, isPopout } from "@/core/popout-utils.ts";
-import { isExtension, isFirefox } from "@/core/runtime.ts";
-import { setSessionItem } from "@/core/storage.ts";
-import {
-  SESSION_KEY_LAST_VIEW,
-  STORE_KEY_SYNC_ERROR,
-  STORE_KEY_SYNCING,
-} from "@/core/constants.ts";
 
 export const VaultOptions: Component = () => {
   const [error, setError] = createSignal("");
@@ -71,10 +66,7 @@ export const VaultOptions: Component = () => {
     const res = await clearVault();
     setGlobalLoading(false);
     if (res.isOk()) {
-      showToast(
-        t("settings_clear_vault_success"),
-        "success",
-      );
+      showToast(t("settings_clear_vault_success"), "success");
     } else {
       setError(t(res.error));
     }
@@ -107,7 +99,8 @@ export const VaultOptions: Component = () => {
                   {t("vault_options_sync_manual")}
                 </div>
                 <div class="setting-sub">
-                  {t("settings_last_sync")}: {accountStore.lastSync
+                  {t("settings_last_sync")}:{" "}
+                  {accountStore.lastSync
                     ? new Date(accountStore.lastSync).toLocaleTimeString()
                     : t("settings_sync_never")}
                 </div>
@@ -135,9 +128,7 @@ export const VaultOptions: Component = () => {
               <UploadIcon />
               <div>
                 <div class="setting-label">{t("vault_options_import")}</div>
-                <div class="setting-sub">
-                  {t("vault_options_import_sub")}
-                </div>
+                <div class="setting-sub">{t("vault_options_import_sub")}</div>
               </div>
             </div>
             <ChevronRightIcon />
@@ -181,9 +172,7 @@ export const VaultOptions: Component = () => {
               <DownloadIcon />
               <div>
                 <div class="setting-label">{t("vault_options_export")}</div>
-                <div class="setting-sub">
-                  {t("vault_options_export_sub")}
-                </div>
+                <div class="setting-sub">{t("vault_options_export_sub")}</div>
               </div>
             </div>
             <ChevronRightIcon />
@@ -196,39 +185,29 @@ export const VaultOptions: Component = () => {
         </div>
         <div class="card card-list">
           {/* Folders */}
-          <div
-            class="setting-row"
-            onClick={() => navigate(View.Folders)}
-          >
+          <div class="setting-row" onClick={() => navigate(View.Folders)}>
             <div class="setting-row-left">
               <FolderIcon />
               <div>
                 <div class="setting-label">
-                  {t("folder_management_title")}{" "}
-                  ({(accountStore.folders || []).length})
+                  {t("folder_management_title")} (
+                  {(accountStore.folders || []).length})
                 </div>
-                <div class="setting-sub">
-                  {t("vault_options_folders_sub")}
-                </div>
+                <div class="setting-sub">{t("vault_options_folders_sub")}</div>
               </div>
             </div>
             <ChevronRightIcon />
           </div>
 
           {/* Trash */}
-          <div
-            class="setting-row"
-            onClick={() => navigate(View.Trash)}
-          >
+          <div class="setting-row" onClick={() => navigate(View.Trash)}>
             <div class="setting-row-left">
               <TrashIcon />
               <div>
                 <div class="setting-label">
                   {t("trash_title")} ({(accountStore.trashItems || []).length})
                 </div>
-                <div class="setting-sub">
-                  {t("vault_options_trash_sub")}
-                </div>
+                <div class="setting-sub">{t("vault_options_trash_sub")}</div>
               </div>
             </div>
             <ChevronRightIcon />
@@ -236,9 +215,7 @@ export const VaultOptions: Component = () => {
         </div>
 
         {/* Group 3: Danger Zone */}
-        <div class="setting-group-title">
-          {t("vault_options_group_danger")}
-        </div>
+        <div class="setting-group-title">{t("vault_options_group_danger")}</div>
         <div class="card card-list">
           {/* Clear Vault */}
           <div class="setting-row" onClick={handleClearVault}>
@@ -248,9 +225,7 @@ export const VaultOptions: Component = () => {
                 <div class="setting-label text-error">
                   {t("settings_clear_vault")}
                 </div>
-                <div class="setting-sub">
-                  {t("settings_clear_vault_sub")}
-                </div>
+                <div class="setting-sub">{t("settings_clear_vault_sub")}</div>
               </div>
             </div>
           </div>

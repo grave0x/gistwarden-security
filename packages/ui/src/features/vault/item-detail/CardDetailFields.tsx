@@ -1,5 +1,5 @@
-import { type Component, createSignal, Show } from "solid-js";
 import type { CardVaultItem } from "@gistwarden/domain";
+import { type Component, createSignal, Show } from "solid-js";
 import { t } from "@/core/i18n.ts";
 import { CopyIcon, EyeIcon, EyeOffIcon } from "@/icons/svg/index.ts";
 
@@ -13,9 +13,9 @@ export const CardDetailFields: Component<CardDetailFieldsProps> = (props) => {
   const [showCardCode, setShowCardCode] = createSignal(false);
 
   const isExpired = () => {
-    const year = parseInt(props.item.card.expYear || "");
-    const month = parseInt(props.item.card.expMonth || "");
-    if (isNaN(year) || isNaN(month)) return false;
+    const year = parseInt(props.item.card.expYear || "", 10);
+    const month = parseInt(props.item.card.expMonth || "", 10);
+    if (Number.isNaN(year) || Number.isNaN(month)) return false;
     const now = new Date();
     const currentYear = now.getFullYear();
     const currentMonth = now.getMonth() + 1;
@@ -74,7 +74,8 @@ export const CardDetailFields: Component<CardDetailFieldsProps> = (props) => {
                 props.onCopy(
                   props.item.card.cardholderName || "",
                   t("detail_card_cardholder"),
-                )}
+                )
+              }
               title={t("btn_copy")}
             >
               <CopyIcon />
@@ -88,7 +89,7 @@ export const CardDetailFields: Component<CardDetailFieldsProps> = (props) => {
             <div class="field-label">{t("detail_card_number")}</div>
             <div class="field-value password-font text-break">
               {showCardNumber()
-                ? (props.item.card.number || "")
+                ? props.item.card.number || ""
                 : (props.item.card.number || "").replace(/./g, "•")}
             </div>
           </div>
@@ -114,7 +115,8 @@ export const CardDetailFields: Component<CardDetailFieldsProps> = (props) => {
                   props.onCopy(
                     props.item.card.number || "",
                     t("detail_card_number"),
-                  )}
+                  )
+                }
                 title={t("btn_copy")}
               >
                 <CopyIcon />
@@ -129,9 +131,10 @@ export const CardDetailFields: Component<CardDetailFieldsProps> = (props) => {
             <div class="field-label">{t("detail_card_expiration")}</div>
             <div class="field-value text-break">
               {props.item.card.expMonth && props.item.card.expYear
-                ? `${
-                  props.item.card.expMonth.padStart(2, "0")
-                } / ${props.item.card.expYear}`
+                ? `${props.item.card.expMonth.padStart(
+                    2,
+                    "0",
+                  )} / ${props.item.card.expYear}`
                 : t("detail_no_value")}
             </div>
           </div>
@@ -143,7 +146,7 @@ export const CardDetailFields: Component<CardDetailFieldsProps> = (props) => {
             <div class="field-label">{t("detail_card_security_code")}</div>
             <div class="field-value password-font text-break">
               {showCardCode()
-                ? (props.item.card.code || "")
+                ? props.item.card.code || ""
                 : (props.item.card.code || "").replace(/./g, "•")}
             </div>
           </div>
@@ -169,7 +172,8 @@ export const CardDetailFields: Component<CardDetailFieldsProps> = (props) => {
                   props.onCopy(
                     props.item.card.code || "",
                     t("detail_card_security_code"),
-                  )}
+                  )
+                }
                 title={t("btn_copy")}
               >
                 <CopyIcon />

@@ -1,3 +1,5 @@
+import { VaultItemType } from "@gistwarden/domain";
+import { confirm, setGlobalLoading } from "@gistwarden/ui";
 import {
   type Component,
   createSignal,
@@ -6,15 +8,21 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import { accountStore, setUiStore, settingsStore, uiStore } from "@/core/store.ts";
 import { STORE_KEY_SYNC_ERROR, STORE_KEY_SYNCING } from "@/core/constants.ts";
-import { VaultItemType } from "@gistwarden/domain";
-import { lock, logout } from "@/features/auth/auth-service.ts";
-import { syncVault } from "@/features/sync/sync-service.ts";
-import { confirm, setGlobalLoading } from "@gistwarden/ui";
+import { t } from "@/core/i18n.ts";
 import { handlePopout, isPopout } from "@/core/popout-utils.ts";
 import { isExtension } from "@/core/runtime.ts";
-import { t } from "@/core/i18n.ts";
+import {
+  accountStore,
+  settingsStore,
+  setUiStore,
+  uiStore,
+} from "@/core/store.ts";
+import { lock, logout } from "@/features/auth/auth-service.ts";
+import { syncVault } from "@/features/sync/sync-service.ts";
+import { createDefaultVaultItem } from "@/features/vault/item-edit/vault-edit-helper.ts";
+import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
+import { getVaultItemTypeLabel } from "@/features/vault/vault-utils.ts";
 import {
   FolderIcon,
   LockIcon,
@@ -23,9 +31,6 @@ import {
   PopoutIcon,
   SyncIcon,
 } from "@/icons/svg/index.ts";
-import { getVaultItemTypeLabel } from "@/features/vault/vault-utils.ts";
-import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
-import { createDefaultVaultItem } from "@/features/vault/item-edit/vault-edit-helper.ts";
 
 interface HeaderProps {
   title: string;
@@ -58,7 +63,7 @@ export const Header: Component<HeaderProps> = (props) => {
   });
 
   const initials = () => {
-    const login = accountStore.githubConfig.username;
+    const login = accountStore.syncConfig.username;
     if (!login) return "ME";
     if (login.length >= 2) {
       return login.slice(0, 2).toUpperCase();
@@ -198,12 +203,11 @@ export const Header: Component<HeaderProps> = (props) => {
           </button>
         </Show>
 
-
         {/* Profile Avatar Button */}
         <div class="profile-menu-container">
           <div
             class={`profile-avatar-btn ${
-              accountStore.githubConfig.avatarUrl && !imgFailed()
+              accountStore.syncConfig.avatarUrl && !imgFailed()
                 ? "has-image"
                 : ""
             }`}
@@ -211,14 +215,24 @@ export const Header: Component<HeaderProps> = (props) => {
               e.stopPropagation();
               setShowProfileMenu(!showProfileMenu());
             }}
-            title={settingsStore.vaultMode === "local_storage" ? "Local Vault" : (accountStore.githubConfig.username || "Profile")}
+            title={
+              settingsStore.vaultMode === "local_storage"
+                ? "Local Vault"
+                : accountStore.syncConfig.username || "Profile"
+            }
           >
             <Show
-              when={settingsStore.vaultMode !== "local_storage" && accountStore.githubConfig.avatarUrl && !imgFailed()}
-              fallback={settingsStore.vaultMode === "local_storage" ? "LV" : initials()}
+              when={
+                settingsStore.vaultMode !== "local_storage" &&
+                accountStore.syncConfig.avatarUrl &&
+                !imgFailed()
+              }
+              fallback={
+                settingsStore.vaultMode === "local_storage" ? "LV" : initials()
+              }
             >
               <img
-                src={accountStore.githubConfig.avatarUrl}
+                src={accountStore.syncConfig.avatarUrl}
                 alt="Avatar"
                 class="profile-avatar-img"
                 onError={() => setImgFailed(true)}
@@ -227,14 +241,19 @@ export const Header: Component<HeaderProps> = (props) => {
           </div>
           <Show when={showProfileMenu()}>
             <div class="profile-dropdown" onClick={(e) => e.stopPropagation()}>
-              <Show when={settingsStore.vaultMode !== "local_storage" && accountStore.githubConfig.username}>
+              <Show
+                when={
+                  settingsStore.vaultMode !== "local_storage" &&
+                  accountStore.syncConfig.username
+                }
+              >
                 <div class="profile-info">
                   <span
                     class="profile-username cursor-pointer"
                     onClick={handleOpenGistClick}
                     title={t("settings_open_gist_title")}
                   >
-                    @{accountStore.githubConfig.username}
+                    @{accountStore.syncConfig.username}
                   </span>
                 </div>
                 <div class="dropdown-divider" />

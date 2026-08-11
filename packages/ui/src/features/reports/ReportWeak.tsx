@@ -1,4 +1,3 @@
-import { type Component, createMemo } from "solid-js";
 import {
   evaluatePasswordStrength,
   isLoginItem,
@@ -6,12 +5,13 @@ import {
   type TranslationKey,
   View,
 } from "@gistwarden/domain";
-import { accountStore } from "@/core/store.ts";
-import { navigate, selectItem } from "@/core/navigation.ts";
+import { type Component, createMemo } from "solid-js";
 import { t } from "@/core/i18n.ts";
+import { navigate, selectItem } from "@/core/navigation.ts";
+import { accountStore } from "@/core/store.ts";
 import { GaugeIcon } from "@/icons/svg/index.ts";
-import { formatVaultItemUsername } from "./reports-service.ts";
 import { ReportLayout } from "./components/ReportLayout.tsx";
+import { formatVaultItemUsername } from "./reports-service.ts";
 
 interface WeakResult {
   item: LoginVaultItem;
@@ -77,10 +77,12 @@ export const ReportWeak: Component = () => {
               {formatVaultItemUsername(res.item)}
             </div>
             <div class={`badge ${res.badgeClass} mt-1`}>
-              {t(res.scoreLabelKey)} ({t("report_score_label").replace(
+              {t(res.scoreLabelKey)} (
+              {t("report_score_label").replace(
                 "{score}",
                 (res.score + 1).toString(),
-              )})
+              )}
+              )
             </div>
           </div>
           <button

@@ -1,3 +1,20 @@
+import type { VaultItem } from "@gistwarden/domain";
+import {
+  asFolderId,
+  asVaultItemId,
+  type Folder,
+  type FolderId,
+  filterMatchingDomainItems,
+  filterVaultItemsByQuery,
+  type VaultItemId,
+  VaultItemType,
+} from "@gistwarden/domain";
+import {
+  confirm,
+  copyToClipboardWithMessage,
+  setGlobalLoading,
+  showToast,
+} from "@gistwarden/ui";
 import {
   type Component,
   createSignal,
@@ -6,8 +23,32 @@ import {
   onMount,
   Show,
 } from "solid-js";
+import { z } from "zod";
+import FolderModal from "@/components/ui/FolderModal.tsx";
+import { Header } from "@/components/ui/Header.tsx";
+import { Input } from "@/components/ui/Input.tsx";
+import {
+  MSG_AUTOFILL_CREDENTIALS,
+  SESSION_KEY_SELECTED_FILTER_TYPE,
+  SESSION_KEY_SHOW_FILTER_PANEL,
+  SESSION_KEY_VAULT_SEARCH_QUERY,
+} from "@/core/constants.ts";
+import { safeParseUrl } from "@/core/domain-utils.ts";
+import { t } from "@/core/i18n.ts";
+import { openItem, selectItem } from "@/core/navigation.ts";
+import {
+  createSessionSignal,
+  createSessionStorageSignal,
+} from "@/core/session-signal.ts";
 import { accountStore, settingsStore, uiStore } from "@/core/store.ts";
-import { navigate, openItem, selectItem } from "@/core/navigation.ts";
+import { getCurrentTab, sendMessageToTab } from "@/core/tabs.ts";
+import { generateTotpSafe } from "@/core/totp-utils.ts";
+import { View } from "@/core/types.ts";
+import MoveToFolderModal from "@/features/vault/components/MoveToFolderModal.tsx";
+import { VaultBatchActionBar } from "@/features/vault/components/VaultBatchActionBar.tsx";
+import { VaultFilterPanel } from "@/features/vault/components/VaultFilterPanel.tsx";
+import { createDefaultVaultItem } from "@/features/vault/item-edit/vault-edit-helper.ts";
+import { VaultItemRow } from "@/features/vault/VaultItemRow.tsx";
 import {
   addFolder,
   deleteVaultItems,
@@ -15,59 +56,19 @@ import {
   renameFolder,
   saveItem,
 } from "@/features/vault/vault-service.ts";
-import {
-  confirm,
-  copyToClipboardWithMessage,
-  setGlobalLoading,
-  showToast,
-} from "@gistwarden/ui";
-import { Header } from "@/components/ui/Header.tsx";
-import FolderModal from "@/components/ui/FolderModal.tsx";
-import MoveToFolderModal from "@/features/vault/components/MoveToFolderModal.tsx";
-import { asFolderId, asVaultItemId, type Folder, type FolderId, type VaultItemId, VaultItemType } from "@gistwarden/domain";
-
-
-
-
-import { createDefaultVaultItem } from "@/features/vault/item-edit/vault-edit-helper.ts";
-import { VaultBatchActionBar } from "@/features/vault/components/VaultBatchActionBar.tsx";
-import { getCurrentTab, sendMessageToTab } from "@/core/tabs.ts";
-
-import {
-  MSG_AUTOFILL_CREDENTIALS,
-  SESSION_KEY_SELECTED_FILTER_TYPE,
-  SESSION_KEY_SHOW_FILTER_PANEL,
-  SESSION_KEY_VAULT_SEARCH_QUERY,
-} from "@/core/constants.ts";
-import { View } from "@/core/types.ts";
-import type { VaultItem } from "@gistwarden/domain";
-import { generateTotpSafe } from "@/core/totp-utils.ts";
-import { z } from "zod";
+import { deleteVaultItemWithConfirm } from "@/features/vault/vault-utils.ts";
 import {
   CloseIcon,
   FilterIcon,
   ListCheckIcon,
   SearchIcon,
 } from "@/icons/svg/index.ts";
-import { Input } from "@/components/ui/Input.tsx";
-import { VaultItemRow } from "@/features/vault/VaultItemRow.tsx";
-import { t } from "@/core/i18n.ts";
-import { safeParseUrl } from "@/core/domain-utils.ts";
-import { deleteVaultItemWithConfirm } from "@/features/vault/vault-utils.ts";
-import {
-  createSessionSignal,
-  createSessionStorageSignal,
-} from "@/core/session-signal.ts";
-import { VaultFilterPanel } from "@/features/vault/components/VaultFilterPanel.tsx";
-import {
-  filterMatchingDomainItems,
-  filterVaultItemsByQuery,
-} from "@gistwarden/domain";
 
-const AutofillResponseSchema = z.object({
-  success: z.boolean(),
-}).readonly();
-
+const AutofillResponseSchema = z
+  .object({
+    success: z.boolean(),
+  })
+  .readonly();
 
 const VaultItemTypeSchema = z.nativeEnum(VaultItemType);
 
@@ -81,12 +82,10 @@ export const Vault: Component = () => {
     VaultItemId | ""
   >("");
 
-  const [contextMenuPos, setContextMenuPos] = createSignal<
-    {
-      x: number;
-      y: number;
-    } | null
-  >(null);
+  const [contextMenuPos, setContextMenuPos] = createSignal<{
+    x: number;
+    y: number;
+  } | null>(null);
   const [currentTabDomain, setCurrentTabDomain] = createSignal("");
 
   const [showFilterPanel, setShowFilterPanel] = createSessionSignal(
@@ -96,22 +95,16 @@ export const Vault: Component = () => {
 
   const [selectedFilterType, selectFilterType] = createSessionStorageSignal<
     VaultItemType | "all"
-  >(
-    SESSION_KEY_SELECTED_FILTER_TYPE,
-    "all",
-    String,
-    (raw) => {
-      if (raw === "all") return "all";
-      const num = parseInt(raw, 10);
-      const parsed = VaultItemTypeSchema.safeParse(num);
-      return parsed.success ? parsed.data : "all";
-    },
-  );
+  >(SESSION_KEY_SELECTED_FILTER_TYPE, "all", String, (raw) => {
+    if (raw === "all") return "all";
+    const num = parseInt(raw, 10);
+    const parsed = VaultItemTypeSchema.safeParse(num);
+    return parsed.success ? parsed.data : "all";
+  });
 
   const [selectedFolderId, setSelectedFolderId] = createSignal<
     FolderId | "no_folder"
   >("no_folder");
-
 
   const [showFolderModal, setShowFolderModal] = createSignal(false);
   const [editingFolder, setEditingFolder] = createSignal<Folder | null>(null);
@@ -221,7 +214,6 @@ export const Vault: Component = () => {
   const handleMoveSelectedToFolder = async (
     targetFolderId: FolderId | null,
   ): Promise<boolean> => {
-
     const selected = Array.from(selectedItemIds());
     if (selected.length === 0) return false;
 
@@ -353,9 +345,8 @@ export const Vault: Component = () => {
 
   const handleCopyTotpDirect = async (item: VaultItem, e: MouseEvent) => {
     e.stopPropagation();
-    const rawSecret = item.type === VaultItemType.Login
-      ? (item.login.totp || "")
-      : "";
+    const rawSecret =
+      item.type === VaultItemType.Login ? item.login.totp || "" : "";
     if (!rawSecret.trim()) return;
 
     const generateTotpResult = generateTotpSafe(
@@ -419,7 +410,6 @@ export const Vault: Component = () => {
     setActiveOptionsMenuId("");
   };
 
-
   const handleFavoriteItem = async (item: VaultItem, e: MouseEvent) => {
     e.stopPropagation();
     const updated = {
@@ -449,7 +439,6 @@ export const Vault: Component = () => {
 
     await openItem(clonedItem, View.ItemEdit);
   };
-
 
   const handleDeleteItem = async (item: VaultItem, e: MouseEvent) => {
     e.stopPropagation();
@@ -591,9 +580,7 @@ export const Vault: Component = () => {
               <div class="vault-section-title m-0">
                 {t("vault_suggested_items")}
               </div>
-              <span class="section-badge">
-                {matchingItems().length}
-              </span>
+              <span class="section-badge">{matchingItems().length}</span>
             </div>
             <For each={matchingItems()}>
               {(item) => (
@@ -614,9 +601,9 @@ export const Vault: Component = () => {
                   isSelected={selectedItemIds().has(item.id)}
                   onToggleSelect={toggleSelectItem}
                   onSelectFromMenu={handleSelectFromMenu}
-                  contextMenuPos={activeOptionsMenuId() === item.id
-                    ? contextMenuPos()
-                    : null}
+                  contextMenuPos={
+                    activeOptionsMenuId() === item.id ? contextMenuPos() : null
+                  }
                   onContextMenuRow={handleContextMenuRow}
                 />
               )}
@@ -630,9 +617,7 @@ export const Vault: Component = () => {
               <div class="vault-section-title m-0">
                 {t("vault_section_cards")}
               </div>
-              <span class="section-badge">
-                {cardItems().length}
-              </span>
+              <span class="section-badge">{cardItems().length}</span>
             </div>
             <For each={cardItems()}>
               {(item) => (
@@ -651,9 +636,9 @@ export const Vault: Component = () => {
                   isSelected={selectedItemIds().has(item.id)}
                   onToggleSelect={toggleSelectItem}
                   onSelectFromMenu={handleSelectFromMenu}
-                  contextMenuPos={activeOptionsMenuId() === item.id
-                    ? contextMenuPos()
-                    : null}
+                  contextMenuPos={
+                    activeOptionsMenuId() === item.id ? contextMenuPos() : null
+                  }
                   onContextMenuRow={handleContextMenuRow}
                 />
               )}
@@ -667,9 +652,7 @@ export const Vault: Component = () => {
               <div class="vault-section-title m-0">
                 {t("vault_section_identities")}
               </div>
-              <span class="section-badge">
-                {identityItems().length}
-              </span>
+              <span class="section-badge">{identityItems().length}</span>
             </div>
             <For each={identityItems()}>
               {(item) => (
@@ -688,9 +671,9 @@ export const Vault: Component = () => {
                   isSelected={selectedItemIds().has(item.id)}
                   onToggleSelect={toggleSelectItem}
                   onSelectFromMenu={handleSelectFromMenu}
-                  contextMenuPos={activeOptionsMenuId() === item.id
-                    ? contextMenuPos()
-                    : null}
+                  contextMenuPos={
+                    activeOptionsMenuId() === item.id ? contextMenuPos() : null
+                  }
                   onContextMenuRow={handleContextMenuRow}
                 />
               )}
@@ -704,9 +687,7 @@ export const Vault: Component = () => {
               <div class="vault-section-title m-0">
                 {t("vault_menu_favorites")}
               </div>
-              <span class="section-badge">
-                {favoriteItems().length}
-              </span>
+              <span class="section-badge">{favoriteItems().length}</span>
             </div>
             <For each={favoriteItems()}>
               {(item) => (
@@ -725,9 +706,9 @@ export const Vault: Component = () => {
                   isSelected={selectedItemIds().has(item.id)}
                   onToggleSelect={toggleSelectItem}
                   onSelectFromMenu={handleSelectFromMenu}
-                  contextMenuPos={activeOptionsMenuId() === item.id
-                    ? contextMenuPos()
-                    : null}
+                  contextMenuPos={
+                    activeOptionsMenuId() === item.id ? contextMenuPos() : null
+                  }
                   onContextMenuRow={handleContextMenuRow}
                 />
               )}
@@ -737,9 +718,12 @@ export const Vault: Component = () => {
 
           {/* 5. Regular items section (All Items) */}
           <Show
-            when={regularItems().length > 0 ||
-              (favoriteItems().length === 0 && cardItems().length === 0 &&
-                identityItems().length === 0)}
+            when={
+              regularItems().length > 0 ||
+              (favoriteItems().length === 0 &&
+                cardItems().length === 0 &&
+                identityItems().length === 0)
+            }
           >
             <div class="section-header">
               <div class="vault-section-title m-0">
@@ -747,9 +731,7 @@ export const Vault: Component = () => {
                   {t("vault_search_results")}
                 </Show>
               </div>
-              <span class="section-badge">
-                {regularItems().length}
-              </span>
+              <span class="section-badge">{regularItems().length}</span>
             </div>
 
             <For
@@ -778,9 +760,9 @@ export const Vault: Component = () => {
                   isSelected={selectedItemIds().has(item.id)}
                   onToggleSelect={toggleSelectItem}
                   onSelectFromMenu={handleSelectFromMenu}
-                  contextMenuPos={activeOptionsMenuId() === item.id
-                    ? contextMenuPos()
-                    : null}
+                  contextMenuPos={
+                    activeOptionsMenuId() === item.id ? contextMenuPos() : null
+                  }
                   onContextMenuRow={handleContextMenuRow}
                 />
               )}

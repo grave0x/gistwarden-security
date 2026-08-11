@@ -12,9 +12,7 @@ export interface GlobalPendingNotification {
   domain: string;
 }
 
-function isPendingTabNotification(
-  val: unknown,
-): val is PendingTabNotification {
+function isPendingTabNotification(val: unknown): val is PendingTabNotification {
   return isRecord(val) && "payload" in val && typeof val.timestamp === "number";
 }
 
@@ -103,16 +101,12 @@ export class PendingNotificationManager {
     await this.persistGlobalNotification();
   }
 
-  public async getGlobalNotification(): Promise<
-    GlobalPendingNotification | null
-  > {
+  public async getGlobalNotification(): Promise<GlobalPendingNotification | null> {
     await this.loadGlobalNotification();
     return this.lastGlobalPendingNotification;
   }
 
-  public async consumeGlobalNotification(): Promise<
-    GlobalPendingNotification | null
-  > {
+  public async consumeGlobalNotification(): Promise<GlobalPendingNotification | null> {
     const notif = await this.getGlobalNotification();
     await this.setGlobalNotification(null);
     return notif;
@@ -139,21 +133,6 @@ export class PendingNotificationManager {
     }
   }
 
-  private async checkAndFlushFido2Result(): Promise<void> {
-    if (this.hasSessionStorage()) {
-      const res = await chrome.storage.session.get(STORAGE_KEY_FIDO2_RESULT);
-      if (res && STORAGE_KEY_FIDO2_RESULT in res && this.pendingFido2Callback) {
-        const storedResult = res[STORAGE_KEY_FIDO2_RESULT];
-        await chrome.storage.session.remove(STORAGE_KEY_FIDO2_RESULT);
-        if (this.pendingFido2Callback) {
-          const cb = this.pendingFido2Callback;
-          this.pendingFido2Callback = null;
-          cb(storedResult);
-        }
-      }
-    }
-  }
-
   private async persistTabNotifications(): Promise<void> {
     if (this.hasSessionStorage()) {
       const obj = Object.fromEntries(this.pendingTabNotifications.entries());
@@ -168,7 +147,7 @@ export class PendingNotificationManager {
         const entries = Object.entries(res[STORAGE_KEY_TAB_NOTIFS]);
         for (const [key, val] of entries) {
           const tabId = parseInt(key, 10);
-          if (!isNaN(tabId) && isPendingTabNotification(val)) {
+          if (!Number.isNaN(tabId) && isPendingTabNotification(val)) {
             this.pendingTabNotifications.set(tabId, val);
           }
         }

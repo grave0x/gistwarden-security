@@ -1,7 +1,7 @@
 import { type Component, createSignal } from "solid-js";
-import { t } from "@/core/i18n.ts";
-import Input from "@/components/ui/Input.tsx";
 import Button from "@/components/ui/Button.tsx";
+import Input from "@/components/ui/Input.tsx";
+import { t } from "@/core/i18n.ts";
 
 export interface PinUnlockFormProps {
   error: string;
@@ -36,12 +36,7 @@ export const PinUnlockForm: Component<PinUnlockFormProps> = (props) => {
         </div>
       </div>
 
-      <Button
-        type="submit"
-        variant="primary"
-        block
-        class="mb-12"
-      >
+      <Button type="submit" variant="primary" block class="mb-12">
         {t("login_btn_unlock")}
       </Button>
 

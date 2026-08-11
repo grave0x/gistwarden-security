@@ -1,6 +1,6 @@
+import type { NotificationPayload } from "@gistwarden/domain";
 import { render } from "solid-js/web";
 import { NotificationToast } from "@/features/notification/NotificationToast.tsx";
-import type { NotificationPayload } from "@gistwarden/domain";
 import { attachNotificationStyles } from "@/features/notification/notification-toast.styles.ts";
 
 export class NotificationBarManager {
@@ -29,7 +29,7 @@ export class NotificationBarManager {
       this.disposeSolid();
       this.disposeSolid = null;
     }
-    if (this.notificationHost && this.notificationHost.parentNode) {
+    if (this.notificationHost?.parentNode) {
       this.notificationHost.parentNode.removeChild(this.notificationHost);
       this.notificationHost = null;
     }
@@ -40,8 +40,7 @@ export class NotificationBarManager {
     if (this.isPageUnloading) return;
 
     if (
-      this.notificationHost &&
-      this.notificationHost.parentNode &&
+      this.notificationHost?.parentNode &&
       this.currentShowingPayload &&
       this.currentShowingPayload.actionType === payload.actionType &&
       this.currentShowingPayload.domain === payload.domain &&

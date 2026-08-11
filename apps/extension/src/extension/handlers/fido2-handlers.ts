@@ -1,12 +1,3 @@
-import { z } from "zod";
-import type { MessageRouter } from "@/extension/message-router.ts";
-import {
-  fido2CredentialCreationRoute,
-  fido2CredentialGetRoute,
-  getPendingFido2RequestRoute,
-  rejectFido2RequestRoute,
-  resolveFido2RequestRoute,
-} from "@gistwarden/orchestrator";
 import {
   type Fido2ActionResponse,
   type Fido2PromptResponse,
@@ -16,18 +7,29 @@ import {
   type ResolveFido2RequestMsg,
 } from "@gistwarden/domain";
 import {
+  fido2CredentialCreationRoute,
+  fido2CredentialGetRoute,
+  getPendingFido2RequestRoute,
+  pendingNotificationManager,
+  rejectFido2RequestRoute,
+  resolveFido2RequestRoute,
+} from "@gistwarden/orchestrator";
+import { z } from "zod";
+import {
   FIDO2_PROMPT_HEIGHT,
   POPUP_WIDTH,
   SESSION_KEY_PENDING_FIDO2_REQUEST,
 } from "@/core/constants.ts";
+import { getAssetUrl } from "@/core/runtime.ts";
 import {
   getSessionItem,
   removeSessionItem,
   setSessionItem,
 } from "@/core/storage.ts";
-import { pendingNotificationManager } from "@gistwarden/orchestrator";
-import { getAssetUrl } from "@/core/runtime.ts";
-import type { MessageContext } from "@/extension/message-router.ts";
+import type {
+  MessageContext,
+  MessageRouter,
+} from "@/extension/message-router.ts";
 
 const PendingFido2RequestSchema = z.object({
   type: z.enum(["create", "get"]),
@@ -35,7 +37,6 @@ const PendingFido2RequestSchema = z.object({
   origin: z.string(),
   senderTabId: z.number(),
 });
-
 
 async function handleFido2CredentialRequestInternal(
   reqType: "create" | "get",
@@ -51,8 +52,8 @@ async function handleFido2CredentialRequestInternal(
   const requestData = {
     type: reqType,
     options: data,
-    origin: context.sender.origin ||
-      new URL(context.sender.tab.url || "").origin,
+    origin:
+      context.sender.origin || new URL(context.sender.tab.url || "").origin,
     senderTabId: context.sender.tab.id,
   };
 

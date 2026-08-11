@@ -1,7 +1,7 @@
-import qrcodeParser from "qrcode-parser";
-import { err, ok, Result } from "neverthrow";
-import type { TranslationKey } from "./i18n.ts";
+import { err, ok, type Result } from "neverthrow";
 import * as OTPAuth from "otpauth";
+import qrcodeParser from "qrcode-parser";
+import type { TranslationKey } from "./i18n.ts";
 import { logger } from "./logger.ts";
 
 /**
@@ -12,7 +12,7 @@ export function parseTotpSecret(rawSecret: string): string {
   const trimmed = rawSecret.trim();
   try {
     const parsedUri = OTPAuth.URI.parse(trimmed);
-    if (parsedUri && parsedUri.secret) {
+    if (parsedUri?.secret) {
       return parsedUri.secret.base32.replace(/\s+/g, "").toUpperCase();
     }
   } catch (e) {

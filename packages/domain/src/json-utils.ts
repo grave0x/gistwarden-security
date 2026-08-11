@@ -1,5 +1,5 @@
-import { err, ok, Result } from "neverthrow";
-import { type TranslationKey } from "./i18n.ts";
+import { err, ok, type Result } from "neverthrow";
+import type { TranslationKey } from "./i18n.ts";
 import { logger } from "./logger.ts";
 
 export function safeJsonParse(

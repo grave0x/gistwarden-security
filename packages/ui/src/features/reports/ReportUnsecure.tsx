@@ -1,9 +1,9 @@
-import { type Component, createMemo } from "solid-js";
 import { type LoginVaultItem, View } from "@gistwarden/domain";
-import { accountStore } from "@/core/store.ts";
-import { navigate, selectItem } from "@/core/navigation.ts";
-import { t } from "@/core/i18n.ts";
 import { setGlobalLoading } from "@gistwarden/ui";
+import { type Component, createMemo } from "solid-js";
+import { t } from "@/core/i18n.ts";
+import { navigate, selectItem } from "@/core/navigation.ts";
+import { accountStore } from "@/core/store.ts";
 import { ReportLayout } from "./components/ReportLayout.tsx";
 import {
   getUnsecureLoginItems,
@@ -12,7 +12,7 @@ import {
 
 export const ReportUnsecure: Component = () => {
   const unsecureItems = createMemo<LoginVaultItem[]>(() =>
-    getUnsecureLoginItems(accountStore.vaultItems)
+    getUnsecureLoginItems(accountStore.vaultItems),
   );
 
   const handleUpgradeHttps = async (item: LoginVaultItem) => {

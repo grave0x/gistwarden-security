@@ -1,6 +1,6 @@
+import { SESSION_KEY_DERIVED_KEY } from "@/core/constants.ts";
 import { setLanguage, t } from "@/core/i18n.ts";
 import { getExtensionSettings, getSessionItem } from "@/core/storage.ts";
-import { SESSION_KEY_DERIVED_KEY } from "@/core/constants.ts";
 
 let lastBadgeUnlockedState: boolean | null = null;
 

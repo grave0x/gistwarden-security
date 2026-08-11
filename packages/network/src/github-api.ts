@@ -1,4 +1,3 @@
-import { z } from "zod";
 import {
   APP_NAME,
   asGistId,
@@ -10,7 +9,8 @@ import {
   safeParseUrl,
   type TranslationKey,
 } from "@gistwarden/domain";
-import { err, ok, Result } from "neverthrow";
+import { err, ok, type Result } from "neverthrow";
+import { z } from "zod";
 import { fetchText } from "./fetch-utils.ts";
 import type { SyncOptions, SyncResult } from "./sync-provider-types.ts";
 
@@ -19,25 +19,30 @@ const GITHUB_API_BASE = "https://api.github.com";
 const GIST_DESCRIPTION = `${APP_NAME.toLowerCase()}_vault`;
 const GIST_FILE_NAME = `${APP_NAME.toLowerCase()}.json`;
 
-const GithubUserSchema = z.object({
-  login: z.string(),
-  avatar_url: z.string(),
-}).readonly();
+const GithubUserSchema = z
+  .object({
+    login: z.string(),
+    avatar_url: z.string(),
+  })
+  .readonly();
 
-const GistFileSchema = z.object({
-  content: z.string().optional(),
-  raw_url: z.string(),
-}).readonly();
+const GistFileSchema = z
+  .object({
+    content: z.string().optional(),
+    raw_url: z.string(),
+  })
+  .readonly();
 
-const GistSchema = z.object({
-  id: z.string(),
-  description: z.string().nullable(),
-  updated_at: z.string(),
-  files: z.record(z.string(), GistFileSchema),
-}).readonly();
+const GistSchema = z
+  .object({
+    id: z.string(),
+    description: z.string().nullable(),
+    updated_at: z.string(),
+    files: z.record(z.string(), GistFileSchema),
+  })
+  .readonly();
 
 const GistArraySchema = z.array(GistSchema).readonly();
-
 
 export type GistType = z.infer<typeof GistSchema>;
 
@@ -52,8 +57,8 @@ async function githubRequest(
     ...options,
     cache: "no-store",
     headers: {
-      "Authorization": `token ${authToken}`,
-      "Accept": "application/vnd.github.v3+json",
+      Authorization: `token ${authToken}`,
+      Accept: "application/vnd.github.v3+json",
       ...(options.headers || {}),
     },
   });
@@ -76,8 +81,8 @@ export async function validateToken(
   const fetchRes = await fetchText(`${GITHUB_API_BASE}/user`, {
     cache: "no-store",
     headers: {
-      "Authorization": `token ${token}`,
-      "Accept": "application/vnd.github.v3+json",
+      Authorization: `token ${token}`,
+      Accept: "application/vnd.github.v3+json",
     },
   });
 
@@ -231,7 +236,7 @@ export async function getGist(
   if (file.raw_url) {
     const headers: Record<string, string> = {};
     if (token) {
-      headers["Authorization"] = `token ${token}`;
+      headers.Authorization = `token ${token}`;
     }
     const rawRes = await fetchText(file.raw_url, {
       cache: "no-store",
@@ -265,7 +270,7 @@ export async function downloadFromGistPublic(
 
   const headers: Record<string, string> = {};
   if (token) {
-    headers["Authorization"] = `token ${token}`;
+    headers.Authorization = `token ${token}`;
   }
 
   const rawRes = await fetchText(rawCdnUrl, {
@@ -346,16 +351,11 @@ export function launchGithubOauthFlow(
   clientId: string,
 ): Promise<Result<GitHubAccessToken, TranslationKey>> {
   return new Promise((resolve) => {
-    if (
-      isExtension() &&
-      chrome.identity &&
-      chrome.identity.launchWebAuthFlow
-    ) {
+    if (isExtension() && chrome.identity?.launchWebAuthFlow) {
       const redirectUri = chrome.identity.getRedirectURL();
-      const authUrl =
-        `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=gist&state=${
-          encodeURIComponent(redirectUri)
-        }`;
+      const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=gist&state=${encodeURIComponent(
+        redirectUri,
+      )}`;
 
       chrome.identity.launchWebAuthFlow(
         {
@@ -385,10 +385,9 @@ export function launchGithubOauthFlow(
       );
     } else if (typeof window !== "undefined") {
       const webRedirectUri = window.location.origin + window.location.pathname;
-      const authUrl =
-        `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=gist&state=${
-          encodeURIComponent(webRedirectUri)
-        }`;
+      const authUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&scope=gist&state=${encodeURIComponent(
+        webRedirectUri,
+      )}`;
       window.location.href = authUrl;
     } else {
       resolve(err("login_error_oauth_fail"));

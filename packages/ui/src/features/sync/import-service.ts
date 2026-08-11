@@ -1,8 +1,8 @@
-import { accountStore } from "@/core/store.ts";
-import { APP_NAME } from "@/core/constants.ts";
-import { type TranslationKey } from "@/core/i18n.ts";
 import { logger } from "@gistwarden/domain";
-import { err, ok, Result } from "neverthrow";
+import { err, ok, type Result } from "neverthrow";
+import { APP_NAME } from "@/core/constants.ts";
+import type { TranslationKey } from "@/core/i18n.ts";
+import { accountStore } from "@/core/store.ts";
 import { persistAndReconcileVault } from "@/features/vault/vault-service.ts";
 import { getImportStrategy } from "./import-export-registry.ts";
 

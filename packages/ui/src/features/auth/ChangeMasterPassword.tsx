@@ -1,13 +1,13 @@
-import { type Component, createSignal, Show } from "solid-js";
-import { View } from "@/core/types.ts";
-import { navigate } from "@/core/navigation.ts";
-import { changeMasterPassword } from "@/features/auth/master-password-service.ts";
 import { setGlobalLoading, showToast } from "@gistwarden/ui";
-import { t } from "@/core/i18n.ts";
-import Input from "@/components/ui/Input.tsx";
+import { type Component, createSignal, Show } from "solid-js";
 import Button from "@/components/ui/Button.tsx";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
+import Input from "@/components/ui/Input.tsx";
 import PasswordStrengthMeter from "@/components/ui/PasswordStrengthMeter.tsx";
+import { t } from "@/core/i18n.ts";
+import { navigate } from "@/core/navigation.ts";
+import { View } from "@/core/types.ts";
+import { changeMasterPassword } from "@/features/auth/master-password-service.ts";
 
 export const ChangeMasterPassword: Component = () => {
   const [error, setError] = createSignal("");
@@ -32,17 +32,11 @@ export const ChangeMasterPassword: Component = () => {
 
     setGlobalLoading(true);
     setError("");
-    const result = await changeMasterPassword(
-      currentPassword(),
-      newPassword(),
-    );
+    const result = await changeMasterPassword(currentPassword(), newPassword());
     setGlobalLoading(false);
 
     if (result.isOk()) {
-      showToast(
-        t("settings_mp_success"),
-        "success",
-      );
+      showToast(t("settings_mp_success"), "success");
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
@@ -65,20 +59,15 @@ export const ChangeMasterPassword: Component = () => {
           <div class="alert alert-danger mb-16">{error()}</div>
         </Show>
 
-        <form
-          onSubmit={handleChangePassword}
-          class="card p-16 m-0"
-        >
+        <form onSubmit={handleChangePassword} class="card p-16 m-0">
           <div class="form-group mb-12">
-            <label for="current-pass">
-              {t("settings_change_mp_current")}
-            </label>
+            <label for="current-pass">{t("settings_change_mp_current")}</label>
             <Input
               id="current-pass"
               type="password"
               value={currentPassword()}
               onInput={(e) => setCurrentPassword(e.currentTarget.value)}
-              placeholder={t("settings_change_mp_current") + "..."}
+              placeholder={`${t("settings_change_mp_current")}...`}
               required
             />
           </div>
@@ -90,31 +79,26 @@ export const ChangeMasterPassword: Component = () => {
               type="password"
               value={newPassword()}
               onInput={(e) => setNewPassword(e.currentTarget.value)}
-              placeholder={t("settings_change_mp_new") + "..."}
+              placeholder={`${t("settings_change_mp_new")}...`}
               required
             />
             <PasswordStrengthMeter password={newPassword()} />
           </div>
 
           <div class="form-group mb-20">
-            <label for="confirm-pass">
-              {t("settings_change_mp_confirm")}
-            </label>
+            <label for="confirm-pass">{t("settings_change_mp_confirm")}</label>
             <Input
               id="confirm-pass"
               type="password"
               value={confirmPassword()}
               onInput={(e) => setConfirmPassword(e.currentTarget.value)}
-              placeholder={t("settings_change_mp_confirm") + "..."}
+              placeholder={`${t("settings_change_mp_confirm")}...`}
               required
             />
           </div>
 
           <div>
-            <Button
-              type="submit"
-              variant="primary"
-            >
+            <Button type="submit" variant="primary">
               {t("btn_save")}
             </Button>
           </div>

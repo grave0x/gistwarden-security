@@ -1,8 +1,8 @@
 import { type Component, createSignal, Show } from "solid-js";
-import { t } from "@/core/i18n.ts";
 import Button from "@/components/ui/Button.tsx";
 import Input from "@/components/ui/Input.tsx";
 import PasswordStrengthMeter from "@/components/ui/PasswordStrengthMeter.tsx";
+import { t } from "@/core/i18n.ts";
 
 export interface MasterPasswordCreateProps {
   onCreate: (password: string) => void;
@@ -59,11 +59,7 @@ export const MasterPasswordCreate: Component<MasterPasswordCreateProps> = (
         />
       </div>
 
-      <Button
-        type="submit"
-        variant="primary"
-        block
-      >
+      <Button type="submit" variant="primary" block>
         {t("login_btn_create_master_password")}
       </Button>
     </form>

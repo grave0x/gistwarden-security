@@ -1,14 +1,14 @@
-import { setUiStore } from "@/core/store.ts";
+import type { VaultItem } from "@gistwarden/domain";
 import {
   SESSION_KEY_LAST_SELECTED_ITEM_ID,
   SESSION_KEY_LAST_VIEW,
   STORE_KEY_SELECTED_ITEM,
   View,
 } from "@gistwarden/domain";
-import type { VaultItem } from "@gistwarden/domain";
-import { requestReprompt } from "./ui-service.ts";
 import { removeSessionItem, setSessionItem } from "@gistwarden/repository";
 import { getPathView, getViewPath } from "@/core/router.ts";
+import { setUiStore } from "@/core/store.ts";
+import { requestReprompt } from "./ui-service.ts";
 
 type NavigatorFn = (to: string, options?: { replace?: boolean }) => void;
 

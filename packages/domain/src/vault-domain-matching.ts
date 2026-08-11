@@ -1,6 +1,6 @@
 import { getBaseDomain, getHostname } from "./domain-utils.ts";
 import { UriMatchMode, type VaultItem } from "./vault-schemas.ts";
-import { isLoginItem, VaultItemType } from "./vault-types.ts";
+import { isLoginItem, type VaultItemType } from "./vault-types.ts";
 
 export function isSingleUriMatch(
   storedUri: string,
@@ -10,9 +10,8 @@ export function isSingleUriMatch(
 ): boolean {
   if (!storedUri || !currentDomainOrUrl) return false;
 
-  const effectiveMode = itemMatchMode ??
-    overrideDefaultMode ??
-    UriMatchMode.Domain;
+  const effectiveMode =
+    itemMatchMode ?? overrideDefaultMode ?? UriMatchMode.Domain;
 
   if (effectiveMode === UriMatchMode.Never) {
     return false;
@@ -61,7 +60,7 @@ export function isMatchingDomain(
   if (!uris || uris.length === 0) return false;
 
   return uris.some((u: { uri: string; match?: UriMatchMode | null }) =>
-    isSingleUriMatch(u.uri, domainOrUrl, u.match, overrideDefaultMode)
+    isSingleUriMatch(u.uri, domainOrUrl, u.match, overrideDefaultMode),
   );
 }
 
@@ -86,7 +85,7 @@ export function sortVaultItemsByName(items: VaultItem[]): VaultItem[] {
     a.name.localeCompare(b.name, undefined, {
       sensitivity: "base",
       numeric: true,
-    })
+    }),
   );
 }
 
@@ -102,13 +101,13 @@ export function filterMatchingDomainItems(
     list = list.filter((item) => item.type === filterType);
   }
   const filtered = list.filter((item) =>
-    isMatchingDomain(item, domain, overrideDefaultMode)
+    isMatchingDomain(item, domain, overrideDefaultMode),
   );
 
   const exactMatchIds = new Set(
-    filtered.filter((item) => isExactDomainMatch(item, domain)).map((
-      item,
-    ) => item.id),
+    filtered
+      .filter((item) => isExactDomainMatch(item, domain))
+      .map((item) => item.id),
   );
 
   return [...filtered].sort((a, b) => {
@@ -124,8 +123,8 @@ export function filterMatchingDomainItems(
     });
     if (nameCmp !== 0) return nameCmp;
 
-    const uA = isLoginItem(a) ? (a.login.username || "") : "";
-    const uB = isLoginItem(b) ? (b.login.username || "") : "";
+    const uA = isLoginItem(a) ? a.login.username || "" : "";
+    const uB = isLoginItem(b) ? b.login.username || "" : "";
     return uA.localeCompare(uB, undefined, {
       sensitivity: "base",
       numeric: true,
@@ -152,7 +151,7 @@ export function filterVaultItemsByQuery(
       );
       const uriMatch = Boolean(
         item.login.uris?.some((u: { uri: string }) =>
-          u.uri.toLowerCase().includes(q)
+          u.uri.toLowerCase().includes(q),
         ),
       );
       return nameMatch || usernameMatch || uriMatch;

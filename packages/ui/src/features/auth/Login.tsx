@@ -1,3 +1,15 @@
+import { asGitHubAccessToken } from "@gistwarden/domain";
+import { getSyncProvider } from "@gistwarden/network";
+import {
+  checkVaultConfiguredUseCase,
+  startGithubOauthRoute,
+} from "@gistwarden/orchestrator";
+import type { VaultMode } from "@gistwarden/repository";
+import {
+  DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
+  DEFAULT_SYNC_CONFIG,
+} from "@gistwarden/repository";
+import { confirm, setGlobalLoading, updateLanguage } from "@gistwarden/ui";
 import {
   type Component,
   createEffect,
@@ -6,46 +18,44 @@ import {
   onMount,
   Show,
   Switch,
-  untrack,
 } from "solid-js";
-import { accountStore, setAccountStore, setSettingsStore, settingsStore, uiStore } from "@/core/store.ts";
-import { setupGithub } from "@/features/sync/github-auth.ts";
+import { z } from "zod";
+import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
+import TypedConfirmModal from "@/components/ui/TypedConfirmModal.tsx";
+import {
+  APP_NAME,
+  OAUTH_CLIENT_ID,
+  SESSION_KEY_PENDING_SYNC_TOKEN,
+} from "@/core/constants.ts";
+import { type TranslationKey, t } from "@/core/i18n.ts";
 import { sendBackgroundMessage } from "@/core/messaging.ts";
-
+import {
+  getAccountSettings,
+  getSessionItem,
+  getSyncToken,
+  resetAccountSettings,
+  updateAccountSettings,
+  updateExtensionSettings,
+} from "@/core/storage.ts";
+import type { LoginViewMode } from "@/core/storage-schemas.ts";
+import {
+  accountStore,
+  setAccountStore,
+  setSettingsStore,
+  settingsStore,
+} from "@/core/store.ts";
 import {
   createNewVault,
   logout,
   unlock,
 } from "@/features/auth/auth-service.ts";
-
-import { unlockWithPin } from "@/features/auth/pin-service.ts";
-import { confirm, setGlobalLoading, updateLanguage } from "@gistwarden/ui";
-import PinUnlockForm from "@/features/auth/PinUnlockForm.tsx";
 import { GithubSetupForm } from "@/features/auth/components/GithubSetupForm.tsx";
-import { MasterPasswordForm } from "@/features/auth/components/MasterPasswordForm.tsx";
 import { MasterPasswordCreate } from "@/features/auth/components/MasterPasswordCreate.tsx";
-import TypedConfirmModal from "@/components/ui/TypedConfirmModal.tsx";
-import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
+import { MasterPasswordForm } from "@/features/auth/components/MasterPasswordForm.tsx";
+import PinUnlockForm from "@/features/auth/PinUnlockForm.tsx";
+import { unlockWithPin } from "@/features/auth/pin-service.ts";
+import { setupGithub } from "@/features/sync/github-auth.ts";
 import { AppIcon, ShieldAlertIcon, SyncIcon } from "@/icons/svg/index.ts";
-import { t, type TranslationKey } from "@/core/i18n.ts";
-import { getAccountSettings, getGithubToken, getSessionItem, resetAccountSettings, updateAccountSettings, updateExtensionSettings } from "@/core/storage.ts";
-import { DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG } from "@gistwarden/repository";
-import { z } from "zod";
-import {
-  checkVaultConfiguredUseCase,
-  downloadFromGistRoute,
-  startGithubOauthRoute,
-} from "@gistwarden/orchestrator";
-import {
-  APP_NAME,
-  OAUTH_CLIENT_ID,
-  SESSION_KEY_PENDING_GITHUB_TOKEN,
-} from "@/core/constants.ts";
-import { type LoginViewMode } from "@/core/storage-schemas.ts";
-import { type VaultMode } from "@gistwarden/repository";
-import { getSyncProvider } from "@gistwarden/network";
-import { asGitHubAccessToken, safeJsonParse } from "@gistwarden/domain";
-import { GistPayloadSchema } from "@gistwarden/repository";
 
 export const Login: Component = () => {
   const [error, setError] = createSignal("");
@@ -63,105 +73,65 @@ export const Login: Component = () => {
     const acc = accRes.isOk() ? accRes.value : null;
 
     if (acc) {
+      const currentSyncConfig = acc.syncConfig;
       setAccountStore("masterPasswordConfig", acc.masterPasswordConfig);
       setAccountStore("pinConfig", acc.pinConfig);
-      setAccountStore("githubConfig", acc.githubConfig);
-      setAccountStore("gistId", acc.githubConfig.gistId || "");
+      setAccountStore("syncConfig", currentSyncConfig);
+      setAccountStore("gistId", currentSyncConfig.gistId || "");
       const isConfigured = await checkVaultConfiguredUseCase(mode, acc);
-      setAccountStore("githubConfigured", isConfigured);
+      setAccountStore("vaultConfigured", isConfigured);
     }
 
     const provider = getSyncProvider(mode);
-    const retrievedToken = await getGithubToken(mode);
-    const activeToken = retrievedToken ||
-      (accountStore.githubToken
-        ? asGitHubAccessToken(accountStore.githubToken)
+    const retrievedToken = await getSyncToken(mode);
+    const activeToken =
+      retrievedToken ||
+      (accountStore.syncToken
+        ? asGitHubAccessToken(accountStore.syncToken)
         : undefined);
 
-    if (acc?.masterPasswordConfig.salt) {
-      if (mode === "github_gist" && acc.githubConfig.gistId) {
-        const downloadRes = await provider.download({
-          token: activeToken,
-          gistId: acc.githubConfig.gistId,
-        });
-        if (downloadRes.isOk() && downloadRes.value.content) {
-          const payloadJsonRes = safeJsonParse(downloadRes.value.content);
-          if (payloadJsonRes.isOk()) {
-            const parsed = GistPayloadSchema.safeParse(payloadJsonRes.value);
-            if (
-              parsed.success && parsed.data.salt &&
-              parsed.data.salt !== acc.masterPasswordConfig.salt
-            ) {
-              const updatedMpConfig = {
-                ...acc.masterPasswordConfig,
-                salt: parsed.data.salt,
-              };
-              await updateAccountSettings(
-                { masterPasswordConfig: updatedMpConfig },
-                mode,
-              );
-              setAccountStore("masterPasswordConfig", updatedMpConfig);
-            }
-          }
-        }
-      }
-      return "exists";
-    }
-
-    if (!activeToken) {
-      return "exists";
-    }
-
-    const downloadRes = await provider.download({
+    const activeSyncConfig = acc?.syncConfig;
+    const statusResult = await provider.checkVaultStatus({
       token: activeToken,
-      gistId: acc?.githubConfig.gistId || undefined,
+      gistId: activeSyncConfig?.gistId || undefined,
+      hasStoredSalt: Boolean(acc?.masterPasswordConfig.salt),
     });
 
-    if (downloadRes.isOk() && downloadRes.value.content) {
-      const content = downloadRes.value.content;
-      const foundGistId = downloadRes.value.gistId;
-      const payloadJsonRes = safeJsonParse(content);
-      if (payloadJsonRes.isOk()) {
-        const parsed = GistPayloadSchema.safeParse(payloadJsonRes.value);
-        if (parsed.success && parsed.data.salt) {
-          const updatedMpConfig = {
-            ...accountStore.masterPasswordConfig,
-            salt: parsed.data.salt,
-          };
-          const updatedGithubConfig = {
-            ...accountStore.githubConfig,
-            ...(foundGistId ? { gistId: foundGistId } : {}),
-          };
-          await updateAccountSettings(
-            {
-              masterPasswordConfig: updatedMpConfig,
-              githubConfig: updatedGithubConfig,
-            },
-            mode,
-          );
-          setAccountStore("masterPasswordConfig", updatedMpConfig);
-          setAccountStore("githubConfig", updatedGithubConfig);
-          if (foundGistId) {
-            setAccountStore("gistId", foundGistId);
-          }
-          return "exists";
-        }
+    if (
+      statusResult.salt &&
+      statusResult.salt !== acc?.masterPasswordConfig.salt
+    ) {
+      const updatedMpConfig = {
+        ...(acc?.masterPasswordConfig ||
+          DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG),
+        salt: statusResult.salt,
+      };
+      const baseSyncConfig = activeSyncConfig || DEFAULT_SYNC_CONFIG;
+      const updatedSyncConfig = {
+        ...baseSyncConfig,
+        ...(statusResult.gistId ? { gistId: statusResult.gistId } : {}),
+      };
+      await updateAccountSettings(
+        {
+          masterPasswordConfig: updatedMpConfig,
+          syncConfig: updatedSyncConfig,
+        },
+        mode,
+      );
+      setAccountStore("masterPasswordConfig", updatedMpConfig);
+      setAccountStore("syncConfig", updatedSyncConfig);
+      if (statusResult.gistId) {
+        setAccountStore("gistId", statusResult.gistId);
       }
     }
 
-    if (
-      downloadRes.isErr() && downloadRes.error === "github_error_gist_not_found"
-    ) {
-      return "new";
-    }
-
-    return "exists";
+    return statusResult.status;
   };
 
   onMount(async () => {
     let tokenToSetup: string | null = null;
 
-    const rawTokenRes = await getSessionItem(SESSION_KEY_PENDING_GITHUB_TOKEN);
+    const rawTokenRes = await getSessionItem(SESSION_KEY_PENDING_SYNC_TOKEN);
     const rawToken = rawTokenRes.isOk() ? rawTokenRes.value : null;
     const parsed = z.string().safeParse(rawToken);
     if (parsed.success && parsed.data) {
@@ -173,7 +143,9 @@ export const Login: Component = () => {
       const tokenFromUrl = urlParams.get("token");
       if (tokenFromUrl) {
         tokenToSetup = tokenFromUrl;
-        const cleanUrl = window.location.origin + window.location.pathname +
+        const cleanUrl =
+          window.location.origin +
+          window.location.pathname +
           window.location.hash;
         window.history.replaceState({}, document.title, cleanUrl);
       }
@@ -188,7 +160,9 @@ export const Login: Component = () => {
       }
     }
 
-    const initialStatus = await checkVaultStatusForMode(settingsStore.vaultMode);
+    const initialStatus = await checkVaultStatusForMode(
+      settingsStore.vaultMode,
+    );
     setGistStatus(initialStatus);
   });
 
@@ -251,10 +225,9 @@ export const Login: Component = () => {
       setGlobalLoading(false);
     };
 
-    const sendResult = await sendBackgroundMessage(
-      startGithubOauthRoute,
-      { content: OAUTH_CLIENT_ID },
-    );
+    const sendResult = await sendBackgroundMessage(startGithubOauthRoute, {
+      content: OAUTH_CLIENT_ID,
+    });
     if (sendResult.isErr()) {
       handleOauthError(sendResult.error);
       return;
@@ -335,7 +308,10 @@ export const Login: Component = () => {
   const handleConfirmResetLocalVault = async () => {
     setShowResetLocalModal(false);
     await resetAccountSettings("local_storage");
-    setAccountStore("masterPasswordConfig", DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG);
+    setAccountStore(
+      "masterPasswordConfig",
+      DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
+    );
     setGistStatus("new");
   };
 
@@ -345,8 +321,9 @@ export const Login: Component = () => {
       <div class="login-lang-selector">
         <button
           type="button"
-          class={`lang-toggle-btn ${settingsStore.language === "en" ? "active" : ""
-            }`}
+          class={`lang-toggle-btn ${
+            settingsStore.language === "en" ? "active" : ""
+          }`}
           onClick={() => updateLanguage("en")}
         >
           EN
@@ -354,8 +331,9 @@ export const Login: Component = () => {
         <span class="lang-divider">|</span>
         <button
           type="button"
-          class={`lang-toggle-btn ${settingsStore.language === "vi" ? "active" : ""
-            }`}
+          class={`lang-toggle-btn ${
+            settingsStore.language === "vi" ? "active" : ""
+          }`}
           onClick={() => updateLanguage("vi")}
         >
           VI
@@ -367,7 +345,10 @@ export const Login: Component = () => {
         <h2 class="login-brand-title">{APP_NAME}</h2>
         <p class="login-subtitle">
           <Show
-            when={settingsStore.vaultMode === "local_storage" || accountStore.githubConfigured}
+            when={
+              settingsStore.vaultMode === "local_storage" ||
+              accountStore.vaultConfigured
+            }
             fallback={t("login_title_setup")}
           >
             {t("login_title_locked")}
@@ -401,7 +382,9 @@ export const Login: Component = () => {
             <span>{t("login_local_vault_must_read")}</span>
           </div>
           <div class="must-read-link-group">
-            <span class="must-read-label">{t("login_local_vault_must_read_btn")}</span>
+            <span class="must-read-label">
+              {t("login_local_vault_must_read_btn")}
+            </span>
             <GuideHelpButton route="getting-started/local-vault" size={15} />
           </div>
         </div>
@@ -418,7 +401,10 @@ export const Login: Component = () => {
       </Show>
 
       <Show
-        when={settingsStore.vaultMode === "local_storage" || accountStore.githubConfigured}
+        when={
+          settingsStore.vaultMode === "local_storage" ||
+          accountStore.vaultConfigured
+        }
         fallback={
           <GithubSetupForm
             onSaveToken={handleSaveToken}
@@ -439,9 +425,7 @@ export const Login: Component = () => {
                 </div>
               </Match>
               <Match when={gistStatus() === "new"}>
-                <MasterPasswordCreate
-                  onCreate={handleCreateMasterPassword}
-                />
+                <MasterPasswordCreate onCreate={handleCreateMasterPassword} />
               </Match>
               <Match when={gistStatus() === "exists"}>
                 <MasterPasswordForm

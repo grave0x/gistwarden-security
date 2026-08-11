@@ -1,5 +1,5 @@
-import { err, ok, Result } from "neverthrow";
 import { logger, type TranslationKey } from "@gistwarden/domain";
+import { err, ok, type Result } from "neverthrow";
 
 /**
  * Custom safe fetch helper of Gistwarden network architecture.

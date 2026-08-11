@@ -6,20 +6,20 @@ import {
   isExtension,
   logger,
   SESSION_KEY_DERIVED_KEY,
-  SESSION_KEY_PENDING_GITHUB_TOKEN,
+  SESSION_KEY_PENDING_SYNC_TOKEN,
   SESSION_KEY_SESSION_INITIALIZED,
   SESSION_KEY_SESSION_UNLOCKED,
   SESSION_KEYS_ON_LOCK,
-  sessionManager,
   STORAGE_KEY_ACCOUNT_SETTINGS,
   STORAGE_KEY_EXTENSION_SETTINGS,
   STORAGE_KEY_LOCAL_ACCOUNT_SETTINGS,
   STORAGE_KEY_LOCAL_PASSWORD_HISTORY,
   STORAGE_KEY_LOCAL_VAULT_PAYLOAD,
   STORAGE_KEY_PASSWORD_HISTORY,
+  sessionManager,
   type TranslationKey,
 } from "@gistwarden/domain";
-import { err, ok, Result } from "neverthrow";
+import { err, ok, type Result } from "neverthrow";
 import {
   type AccountSettings,
   AccountSettingsSchema,
@@ -47,18 +47,30 @@ export function isRecord(value: unknown): value is Record<string, unknown> {
 }
 
 export function hasLocalStorage(): boolean {
-  return isExtension() && typeof chrome !== "undefined" && !!chrome.storage &&
-    !!chrome.storage.local;
+  return (
+    isExtension() &&
+    typeof chrome !== "undefined" &&
+    !!chrome.storage &&
+    !!chrome.storage.local
+  );
 }
 
 export function hasSessionStorage(): boolean {
-  return isExtension() && typeof chrome !== "undefined" && !!chrome.storage &&
-    !!chrome.storage.session;
+  return (
+    isExtension() &&
+    typeof chrome !== "undefined" &&
+    !!chrome.storage &&
+    !!chrome.storage.session
+  );
 }
 
 export function hasStorageOnChanged(): boolean {
-  return isExtension() && typeof chrome !== "undefined" && !!chrome.storage &&
-    !!chrome.storage.onChanged;
+  return (
+    isExtension() &&
+    typeof chrome !== "undefined" &&
+    !!chrome.storage &&
+    !!chrome.storage.onChanged
+  );
 }
 
 // ----------------------------------------------------
@@ -262,8 +274,6 @@ export async function removeSessionItem(
   return err("storage_error");
 }
 
-
-
 export async function clearUnlockedSessionState(): Promise<
   Result<void, TranslationKey>
 > {
@@ -271,14 +281,14 @@ export async function clearUnlockedSessionState(): Promise<
   return await removeSessionItem([...SESSION_KEYS_ON_LOCK]);
 }
 
-export async function getGithubToken(
+export async function getSyncToken(
   mode: VaultMode,
 ): Promise<GitHubAccessToken | null> {
   const accRes = await getAccountSettings(mode);
   if (accRes.isOk()) {
     const acc = accRes.value;
-    const githubConfig = acc.githubConfig;
-    if (githubConfig.githubTokenEncrypted && githubConfig.githubTokenIv) {
+    const syncConfig = acc.syncConfig;
+    if (syncConfig.syncTokenEncrypted && syncConfig.syncTokenIv) {
       let key = sessionManager.getKey();
       if (!key) {
         const base64Res = await getSessionItem(SESSION_KEY_DERIVED_KEY);
@@ -306,8 +316,8 @@ export async function getGithubToken(
       }
       if (key) {
         const decryptRes = await decryptData(
-          githubConfig.githubTokenEncrypted,
-          githubConfig.githubTokenIv,
+          syncConfig.syncTokenEncrypted,
+          syncConfig.syncTokenIv,
           key,
         );
         if (decryptRes.isOk()) {
@@ -318,9 +328,10 @@ export async function getGithubToken(
   }
 
   // Fallback: If Master Password is not yet created/unlocked, retrieve pending token from session storage
-  const pendingRes = await getSessionItem(SESSION_KEY_PENDING_GITHUB_TOKEN);
+  const pendingRes = await getSessionItem(SESSION_KEY_PENDING_SYNC_TOKEN);
   if (
-    pendingRes.isOk() && typeof pendingRes.value === "string" &&
+    pendingRes.isOk() &&
+    typeof pendingRes.value === "string" &&
     pendingRes.value
   ) {
     return asGitHubAccessToken(pendingRes.value);
@@ -349,7 +360,9 @@ export async function setSessionUnlocked(unlocked: boolean): Promise<void> {
   }
 }
 
-export async function clearLocalStorage(): Promise<Result<void, TranslationKey>> {
+export async function clearLocalStorage(): Promise<
+  Result<void, TranslationKey>
+> {
   if (hasLocalStorage()) {
     try {
       await chrome.storage.local.clear();
@@ -513,4 +526,3 @@ export async function removeLocalVaultPayload(): Promise<
 > {
   return await removeLocalItem(STORAGE_KEY_LOCAL_VAULT_PAYLOAD);
 }
-

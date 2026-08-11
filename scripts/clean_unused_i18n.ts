@@ -1,7 +1,7 @@
-import fs from "fs";
-import path from "path";
-import { parse } from "@babel/parser";
+import fs from "node:fs";
+import path from "node:path";
 import generate from "@babel/generator";
+import { parse } from "@babel/parser";
 import traverse from "@babel/traverse";
 import * as t from "@babel/types";
 
@@ -16,11 +16,20 @@ function getAllSourceFiles(dir: string, fileList: string[] = []): string[] {
     const filePath = path.join(dir, file);
     const stat = fs.statSync(filePath);
     if (stat.isDirectory()) {
-      if (file !== "node_modules" && file !== "dist" && file !== ".git" && file !== "build") {
+      if (
+        file !== "node_modules" &&
+        file !== "dist" &&
+        file !== ".git" &&
+        file !== "build"
+      ) {
         getAllSourceFiles(filePath, fileList);
       }
     } else if (filePath.endsWith(".ts") || filePath.endsWith(".tsx")) {
-      if (!filePath.endsWith("i18n.ts") && !filePath.endsWith("vi.ts") && !filePath.endsWith("en.ts")) {
+      if (
+        !filePath.endsWith("i18n.ts") &&
+        !filePath.endsWith("vi.ts") &&
+        !filePath.endsWith("en.ts")
+      ) {
         fileList.push(filePath);
       }
     }
@@ -55,7 +64,9 @@ function cleanFileAST(filePath: string, unusedKeysSet: Set<string>) {
 
   const output = generate(ast, { retainLines: false }, code);
   fs.writeFileSync(filePath, output.code, "utf-8");
-  console.log(`  Removed ${removedCount} properties from ${path.basename(filePath)}.`);
+  console.log(
+    `  Removed ${removedCount} properties from ${path.basename(filePath)}.`,
+  );
 }
 
 function runCleaner() {
@@ -64,7 +75,10 @@ function runCleaner() {
   // First fix orphaned lines in vi.ts & en.ts before parsing if any exist
   for (const fileP of [viLocalePath, enLocalePath]) {
     const content = fs.readFileSync(fileP, "utf-8");
-    const fixedContent = content.replace(/github_error_rate_limit:\s*\n\s*"[^"]*",?\s*\n\s*"Warning:[^"]*",?/g, 'github_error_rate_limit:\n    "GitHub API rate limit exceeded. Please try again in a few minutes.",');
+    const fixedContent = content.replace(
+      /github_error_rate_limit:\s*\n\s*"[^"]*",?\s*\n\s*"Warning:[^"]*",?/g,
+      'github_error_rate_limit:\n    "GitHub API rate limit exceeded. Please try again in a few minutes.",',
+    );
     fs.writeFileSync(fileP, fixedContent, "utf-8");
   }
 
@@ -105,7 +119,9 @@ function runCleaner() {
   cleanFileAST(viLocalePath, unusedSet);
   cleanFileAST(enLocalePath, unusedSet);
 
-  console.log(`✅ Successfully cleaned unused i18n keys from i18n.ts, vi.ts, and en.ts!`);
+  console.log(
+    `✅ Successfully cleaned unused i18n keys from i18n.ts, vi.ts, and en.ts!`,
+  );
 }
 
 runCleaner();

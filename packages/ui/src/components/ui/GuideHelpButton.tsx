@@ -1,7 +1,7 @@
 import type { Component } from "solid-js";
-import { openTab } from "@/core/tabs.ts";
-import { getAssetUrl, isExtension } from "@/core/runtime.ts";
 import { t } from "@/core/i18n.ts";
+import { getAssetUrl, isExtension } from "@/core/runtime.ts";
+import { openTab } from "@/core/tabs.ts";
 import { QuestionIcon } from "@/icons/svg/index.ts";
 
 export interface GuideHelpButtonProps {

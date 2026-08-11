@@ -67,9 +67,9 @@ Bun.serve({
           }
 
           return Response.redirect(
-            `${url.origin}/index.html?msg=%C4%90%C4%83ng+nh%E1%BA%ADp+th%C3%A0nh+c%C3%B4ng!+Ch%C3%A0o+m%E1%BB%ABng+${
-              encodeURIComponent(username)
-            }`,
+            `${url.origin}/index.html?msg=%C4%90%C4%83ng+nh%E1%BA%ADp+th%C3%A0nh+c%C3%B4ng!+Ch%C3%A0o+m%E1%BB%ABng+${encodeURIComponent(
+              username,
+            )}`,
             303,
           );
         }

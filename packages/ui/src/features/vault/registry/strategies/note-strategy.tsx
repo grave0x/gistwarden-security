@@ -1,14 +1,14 @@
-import { type Component, Show } from "solid-js";
 import {
   isSecureNoteItem,
   type SecureNoteVaultItem,
   type VaultItem,
   VaultItemType,
 } from "@gistwarden/domain";
+import { type Component, Show } from "solid-js";
 import { t } from "@/core/i18n.ts";
-import { NoteIcon } from "@/icons/svg/index.ts";
 import NoteDetailFields from "@/features/vault/item-detail/NoteDetailFields.tsx";
 import NoteEditFields from "@/features/vault/item-edit/NoteEditFields.tsx";
+import { NoteIcon } from "@/icons/svg/index.ts";
 import type {
   CopyMenuProps,
   DetailComponentProps,

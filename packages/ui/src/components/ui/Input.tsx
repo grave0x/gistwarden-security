@@ -71,11 +71,7 @@ export const Input: Component<InputProps> = (props) => {
     </div>
   );
 
-  const [local, others] = splitProps(props, [
-    "class",
-    "rightActions",
-    "ref",
-  ]);
+  const [local, others] = splitProps(props, ["class", "rightActions", "ref"]);
 
   const checkCapsLock = (e: KeyboardEvent) => {
     if (typeof e.getModifierState === "function") {
@@ -118,10 +114,7 @@ export const Input: Component<InputProps> = (props) => {
         title={t("login_master_password")}
         tabindex="-1"
       >
-        <Show
-          fallback={<EyeIcon class="icon-inline" />}
-          when={showPassword()}
-        >
+        <Show fallback={<EyeIcon class="icon-inline" />} when={showPassword()}>
           <EyeOffIcon class="icon-inline" />
         </Show>
       </button>
@@ -155,8 +148,10 @@ export const Input: Component<InputProps> = (props) => {
     const base = hasActions() ? "input-field" : "input-control";
     const custom = local.class || "";
     const filtered = hasActions()
-      ? custom.split(" ").filter((c) => !c.startsWith("pr-") && c !== "w-100")
-        .join(" ")
+      ? custom
+          .split(" ")
+          .filter((c) => !c.startsWith("pr-") && c !== "w-100")
+          .join(" ")
       : custom;
     return `${base} ${filtered}`.trim();
   };
@@ -164,9 +159,12 @@ export const Input: Component<InputProps> = (props) => {
   const wrapperClass = () => {
     const base = "input-container";
     const custom = local.class || "";
-    const layoutClasses = custom.split(" ").filter((c) =>
-      c === "w-100" || c.startsWith("mb-") || c.startsWith("mt-")
-    ).join(" ");
+    const layoutClasses = custom
+      .split(" ")
+      .filter(
+        (c) => c === "w-100" || c.startsWith("mb-") || c.startsWith("mt-"),
+      )
+      .join(" ");
     return `${base} ${layoutClasses}`.trim();
   };
 
@@ -203,9 +201,7 @@ export const Input: Component<InputProps> = (props) => {
             }
           }}
         />
-        <div class="input-actions">
-          {effectiveRightActions()}
-        </div>
+        <div class="input-actions">{effectiveRightActions()}</div>
       </div>
     );
   }

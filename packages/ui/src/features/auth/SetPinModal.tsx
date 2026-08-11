@@ -1,9 +1,9 @@
 import { createEffect, createSignal, Show } from "solid-js";
-import { t } from "@/core/i18n.ts";
-import Input from "@/components/ui/Input.tsx";
+import BaseSlideModal from "@/components/ui/BaseSlideModal.tsx";
 import Button from "@/components/ui/Button.tsx";
 import Checkbox from "@/components/ui/Checkbox.tsx";
-import BaseSlideModal from "@/components/ui/BaseSlideModal.tsx";
+import Input from "@/components/ui/Input.tsx";
+import { t } from "@/core/i18n.ts";
 
 interface SetPinModalProps {
   isOpen: boolean;

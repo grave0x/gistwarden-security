@@ -38,7 +38,7 @@ export const Button: Component<ButtonProps> = (props) => {
       {...others}
     >
       {local.loading
-        ? (local.loadingText || t("dialog_loading"))
+        ? local.loadingText || t("dialog_loading")
         : local.children}
     </button>
   );

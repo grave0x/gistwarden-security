@@ -1,7 +1,7 @@
-import { type Component } from "solid-js";
-import { t } from "@/core/i18n.ts";
-import Input from "@/components/ui/Input.tsx";
+import type { Component } from "solid-js";
 import FormField from "@/components/ui/FormField.tsx";
+import Input from "@/components/ui/Input.tsx";
+import { t } from "@/core/i18n.ts";
 import type { ItemEditFormState } from "@/features/vault/item-edit/vault-edit-helper.ts";
 
 interface IdentityEditFieldsProps {
@@ -32,7 +32,8 @@ export const IdentityEditFields: Component<IdentityEditFieldsProps> = (
               id="id-title"
               value={props.formState.identityTitle}
               onInput={(e) =>
-                props.updateForm("identityTitle", e.currentTarget.value)}
+                props.updateForm("identityTitle", e.currentTarget.value)
+              }
               placeholder="e.g. Mr., Ms."
             />
           </FormField>
@@ -45,7 +46,8 @@ export const IdentityEditFields: Component<IdentityEditFieldsProps> = (
               id="id-firstname"
               value={props.formState.firstName}
               onInput={(e) =>
-                props.updateForm("firstName", e.currentTarget.value)}
+                props.updateForm("firstName", e.currentTarget.value)
+              }
             />
           </FormField>
         </div>
@@ -60,7 +62,8 @@ export const IdentityEditFields: Component<IdentityEditFieldsProps> = (
               id="id-middlename"
               value={props.formState.middleName}
               onInput={(e) =>
-                props.updateForm("middleName", e.currentTarget.value)}
+                props.updateForm("middleName", e.currentTarget.value)
+              }
             />
           </FormField>
           <FormField
@@ -72,7 +75,8 @@ export const IdentityEditFields: Component<IdentityEditFieldsProps> = (
               id="id-lastname"
               value={props.formState.lastName}
               onInput={(e) =>
-                props.updateForm("lastName", e.currentTarget.value)}
+                props.updateForm("lastName", e.currentTarget.value)
+              }
             />
           </FormField>
         </div>
@@ -87,7 +91,8 @@ export const IdentityEditFields: Component<IdentityEditFieldsProps> = (
               id="id-username"
               value={props.formState.identityUsername}
               onInput={(e) =>
-                props.updateForm("identityUsername", e.currentTarget.value)}
+                props.updateForm("identityUsername", e.currentTarget.value)
+              }
             />
           </FormField>
           <FormField
@@ -99,17 +104,14 @@ export const IdentityEditFields: Component<IdentityEditFieldsProps> = (
               id="id-company"
               value={props.formState.company}
               onInput={(e) =>
-                props.updateForm("company", e.currentTarget.value)}
+                props.updateForm("company", e.currentTarget.value)
+              }
             />
           </FormField>
         </div>
 
         <div class="grid-2">
-          <FormField
-            id="id-ssn"
-            label={t("detail_identity_ssn")}
-            class="mb-0"
-          >
+          <FormField id="id-ssn" label={t("detail_identity_ssn")} class="mb-0">
             <Input
               id="id-ssn"
               type="password"
@@ -127,7 +129,8 @@ export const IdentityEditFields: Component<IdentityEditFieldsProps> = (
               type="password"
               value={props.formState.passportNumber}
               onInput={(e) =>
-                props.updateForm("passportNumber", e.currentTarget.value)}
+                props.updateForm("passportNumber", e.currentTarget.value)
+              }
             />
           </FormField>
         </div>
@@ -137,7 +140,8 @@ export const IdentityEditFields: Component<IdentityEditFieldsProps> = (
             id="id-license"
             value={props.formState.licenseNumber}
             onInput={(e) =>
-              props.updateForm("licenseNumber", e.currentTarget.value)}
+              props.updateForm("licenseNumber", e.currentTarget.value)
+            }
           />
         </FormField>
       </div>
@@ -176,9 +180,7 @@ export const IdentityEditFields: Component<IdentityEditFieldsProps> = (
       </div>
 
       {/* 3. Address Details */}
-      <div class="detail-section-title">
-        {t("detail_identity_address")}
-      </div>
+      <div class="detail-section-title">{t("detail_identity_address")}</div>
       <div class="card p-16 mb-0 d-flex flex-column gap-12">
         <FormField
           id="id-address1"
@@ -249,7 +251,8 @@ export const IdentityEditFields: Component<IdentityEditFieldsProps> = (
               id="id-postal"
               value={props.formState.postalCode}
               onInput={(e) =>
-                props.updateForm("postalCode", e.currentTarget.value)}
+                props.updateForm("postalCode", e.currentTarget.value)
+              }
             />
           </FormField>
           <FormField
@@ -261,7 +264,8 @@ export const IdentityEditFields: Component<IdentityEditFieldsProps> = (
               id="id-country"
               value={props.formState.country}
               onInput={(e) =>
-                props.updateForm("country", e.currentTarget.value)}
+                props.updateForm("country", e.currentTarget.value)
+              }
             />
           </FormField>
         </div>

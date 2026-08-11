@@ -21,9 +21,7 @@ export const Checkbox: Component<CheckboxProps> = (props) => {
   };
 
   return (
-    <div
-      class={`checkbox-container ${props.class || ""}`}
-    >
+    <div class={`checkbox-container ${props.class || ""}`}>
       <div class="checkbox-row">
         <input
           id={props.id}
@@ -41,14 +39,10 @@ export const Checkbox: Component<CheckboxProps> = (props) => {
             {props.label}
           </label>
         </Show>
-        <Show when={props.suffix}>
-          {props.suffix}
-        </Show>
+        <Show when={props.suffix}>{props.suffix}</Show>
       </div>
       <Show when={props.description}>
-        <div class="checkbox-description">
-          {props.description}
-        </div>
+        <div class="checkbox-description">{props.description}</div>
       </Show>
     </div>
   );

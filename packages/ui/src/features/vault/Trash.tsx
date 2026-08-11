@@ -1,23 +1,23 @@
-import { type Component, createSignal, For, Show } from "solid-js";
-import { accountStore } from "@/core/store.ts";
-import { View } from "@/core/types.ts";
-import { navigate } from "@/core/navigation.ts";
-import {
-  purgeAllTrash,
-  purgeTrashItem,
-  restoreVaultItem,
-} from "@/features/vault/vault-service.ts";
+import type { TrashVaultItem, VaultItemId } from "@gistwarden/domain";
 import {
   confirm,
   requestReprompt,
   setGlobalLoading,
   showToast,
 } from "@gistwarden/ui";
-import { RefreshIcon, TrashIcon } from "@/icons/svg/index.ts";
-import { t } from "@/core/i18n.ts";
+import { type Component, createSignal, For, Show } from "solid-js";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
-import type { TrashVaultItem, VaultItemId } from "@gistwarden/domain";
+import { t } from "@/core/i18n.ts";
+import { navigate } from "@/core/navigation.ts";
+import { accountStore } from "@/core/store.ts";
+import { View } from "@/core/types.ts";
 import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
+import {
+  purgeAllTrash,
+  purgeTrashItem,
+  restoreVaultItem,
+} from "@/features/vault/vault-service.ts";
+import { RefreshIcon, TrashIcon } from "@/icons/svg/index.ts";
 
 export const Trash: Component = () => {
   const [error, setError] = createSignal("");
@@ -40,7 +40,6 @@ export const Trash: Component = () => {
   };
 
   const handlePurge = async (id: VaultItemId) => {
-
     if (
       !(await confirm(
         t("trash_purge"),
@@ -102,10 +101,7 @@ export const Trash: Component = () => {
     <div class="app-container">
       <div class="app-body">
         {/* Header */}
-        <DetailHeader
-          title={t("trash_title")}
-          onBack={handleBack}
-        />
+        <DetailHeader title={t("trash_title")} onBack={handleBack} />
 
         <Show when={error()}>
           <div class="alert alert-danger mb-14">{error()}</div>
@@ -119,9 +115,7 @@ export const Trash: Component = () => {
                 <TrashIcon />
               </div>
               <div class="empty-title">{t("trash_empty")}</div>
-              <div class="empty-sub">
-                {t("vault_options_trash_sub")}
-              </div>
+              <div class="empty-sub">{t("vault_options_trash_sub")}</div>
             </div>
           }
         >
@@ -150,7 +144,9 @@ export const Trash: Component = () => {
               {(entry: TrashVaultItem) => (
                 <div class="trash-item-row">
                   <div class="trash-item-icon">
-                    {getVaultItemStrategy(entry.item.type).renderIcon(entry.item)}
+                    {getVaultItemStrategy(entry.item.type).renderIcon(
+                      entry.item,
+                    )}
                   </div>
 
                   <div class="trash-item-meta">

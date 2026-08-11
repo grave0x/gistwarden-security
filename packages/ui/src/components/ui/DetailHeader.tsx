@@ -1,8 +1,8 @@
 import { type Component, type JSX, Show } from "solid-js";
-import { ArrowLeftIcon, PopoutIcon } from "@/icons/svg/index.ts";
+import { t } from "@/core/i18n.ts";
 import { handlePopout, isPopout } from "@/core/popout-utils.ts";
 import { isExtension } from "@/core/runtime.ts";
-import { t } from "@/core/i18n.ts";
+import { ArrowLeftIcon, PopoutIcon } from "@/icons/svg/index.ts";
 
 interface DetailHeaderProps {
   title: string;

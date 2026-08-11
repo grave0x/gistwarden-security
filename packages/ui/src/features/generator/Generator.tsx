@@ -1,21 +1,21 @@
+import { copyToClipboardWithMessage } from "@gistwarden/ui";
 import { type Component, createSignal, Index, onMount, Show } from "solid-js";
-import { t } from "@/core/i18n.ts";
-import { Header } from "@/components/ui/Header.tsx";
-import Input from "@/components/ui/Input.tsx";
 import Checkbox from "@/components/ui/Checkbox.tsx";
 import FormField from "@/components/ui/FormField.tsx";
-import { CopyIcon, RefreshIcon } from "@/icons/svg/index.ts";
+import { Header } from "@/components/ui/Header.tsx";
+import Input from "@/components/ui/Input.tsx";
+import PasswordStrengthMeter from "@/components/ui/PasswordStrengthMeter.tsx";
+import { extractDomainFromTabUrl } from "@/core/domain-utils.ts";
 import {
   generatePassphrase,
   generatePassword,
 } from "@/core/generator-utils.ts";
+import { t } from "@/core/i18n.ts";
 import { navigate } from "@/core/navigation.ts";
-import { View } from "@/core/types.ts";
-import { getCurrentTab } from "@/core/tabs.ts";
 import { addPasswordHistoryItem } from "@/core/storage.ts";
-import { extractDomainFromTabUrl } from "@/core/domain-utils.ts";
-import { copyToClipboardWithMessage } from "@gistwarden/ui";
-import PasswordStrengthMeter from "@/components/ui/PasswordStrengthMeter.tsx";
+import { getCurrentTab } from "@/core/tabs.ts";
+import { View } from "@/core/types.ts";
+import { CopyIcon, RefreshIcon } from "@/icons/svg/index.ts";
 
 export const Generator: Component = () => {
   const [activeTab, setActiveTab] = createSignal<"password" | "passphrase">(
@@ -60,7 +60,7 @@ export const Generator: Component = () => {
 
   const handleGeneratePassword = () => {
     const finalLen = Number(length());
-    if (isNaN(finalLen) || finalLen < 9 || finalLen > 128) return;
+    if (Number.isNaN(finalLen) || finalLen < 9 || finalLen > 128) return;
 
     const res = generatePassword({
       length: finalLen,
@@ -82,7 +82,7 @@ export const Generator: Component = () => {
 
   const handleGeneratePassphrase = () => {
     const finalWords = Number(numWords());
-    if (isNaN(finalWords) || finalWords < 3 || finalWords > 20) return;
+    if (Number.isNaN(finalWords) || finalWords < 3 || finalWords > 20) return;
 
     const res = generatePassphrase({
       numWords: finalWords,
@@ -101,7 +101,8 @@ export const Generator: Component = () => {
   const handleCopy = async () => {
     const pwd = password();
     if (
-      !pwd || pwd === t("gen_error_charset_empty") ||
+      !pwd ||
+      pwd === t("gen_error_charset_empty") ||
       pwd === t("gen_error_min_exceeds_length")
     ) {
       return;
@@ -124,7 +125,7 @@ export const Generator: Component = () => {
       return;
     }
     const num = typeof val === "string" ? parseInt(val, 10) : val;
-    if (!isNaN(num)) {
+    if (!Number.isNaN(num)) {
       setLength(num);
       if (num >= 9 && num <= 128) generate();
     }
@@ -157,7 +158,7 @@ export const Generator: Component = () => {
       return;
     }
     const num = typeof val === "string" ? parseInt(val, 10) : val;
-    if (!isNaN(num)) {
+    if (!Number.isNaN(num)) {
       setNumWords(num);
       if (num >= 3 && num <= 20) generate();
     }
@@ -190,7 +191,7 @@ export const Generator: Component = () => {
             charClass = "pwd-special";
           } else if (/[0-9]/.test(c)) {
             charClass = "pwd-digit";
-          } else if (!isPass && /[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/.test(c)) {
+          } else if (!isPass && /[!@#$%^&*()_+\-=[\]{}|;:,.<>?]/.test(c)) {
             charClass = "pwd-special";
           }
 
@@ -267,10 +268,7 @@ export const Generator: Component = () => {
 
           <div class="card mb-16 overflow-visible">
             {/* Length input */}
-            <FormField
-              id="gen-length"
-              label={t("gen_label_length")}
-            >
+            <FormField id="gen-length" label={t("gen_label_length")}>
               <Input
                 id="gen-length"
                 type="number"
@@ -280,7 +278,7 @@ export const Generator: Component = () => {
                 onInput={(e) => handleLengthChange(e.currentTarget.value)}
                 onBlur={() => {
                   let num = Number(length());
-                  if (isNaN(num) || num < 9) num = 9;
+                  if (Number.isNaN(num) || num < 9) num = 9;
                   if (num > 128) num = 128;
                   setLength(num);
                   generate();
@@ -292,9 +290,7 @@ export const Generator: Component = () => {
 
           <div class="card mb-16 overflow-visible">
             {/* Include checkboxes */}
-            <div class="options-group-title">
-              {t("gen_include_title")}
-            </div>
+            <div class="options-group-title">{t("gen_include_title")}</div>
             <div class="checkbox-grid">
               <Checkbox
                 id="opt-uppercase"
@@ -346,25 +342,21 @@ export const Generator: Component = () => {
 
             {/* Minimum numbers and special */}
             <div class="grid-2">
-              <FormField
-                id="gen-min-numbers"
-                label={t("gen_min_numbers")}
-              >
+              <FormField id="gen-min-numbers" label={t("gen_min_numbers")}>
                 <Input
                   id="gen-min-numbers"
                   type="number"
                   min="0"
                   max="9"
                   value={minNumbers()}
-                  onInput={(e) => handleMinNumbersChange(
-                    parseInt(e.currentTarget.value) || 0,
-                  )}
+                  onInput={(e) =>
+                    handleMinNumbersChange(
+                      parseInt(e.currentTarget.value, 10) || 0,
+                    )
+                  }
                 />
               </FormField>
-              <FormField
-                id="gen-min-specials"
-                label={t("gen_min_specials")}
-              >
+              <FormField id="gen-min-specials" label={t("gen_min_specials")}>
                 <Input
                   id="gen-min-specials"
                   type="number"
@@ -373,8 +365,9 @@ export const Generator: Component = () => {
                   value={minSpecials()}
                   onInput={(e) =>
                     handleMinSpecialsChange(
-                      parseInt(e.currentTarget.value) || 0,
-                    )}
+                      parseInt(e.currentTarget.value, 10) || 0,
+                    )
+                  }
                 />
               </FormField>
             </div>
@@ -428,10 +421,7 @@ export const Generator: Component = () => {
 
           <div class="card mb-16 overflow-visible">
             {/* Number of words input */}
-            <FormField
-              id="gen-num-words"
-              label={t("gen_label_num_words")}
-            >
+            <FormField id="gen-num-words" label={t("gen_label_num_words")}>
               <Input
                 id="gen-num-words"
                 type="number"
@@ -441,15 +431,13 @@ export const Generator: Component = () => {
                 onInput={(e) => handleNumWordsChange(e.currentTarget.value)}
                 onBlur={() => {
                   let num = Number(numWords());
-                  if (isNaN(num) || num < 3) num = 3;
+                  if (Number.isNaN(num) || num < 3) num = 3;
                   if (num > 20) num = 20;
                   setNumWords(num);
                   generate();
                 }}
               />
-              <div class="options-hint">
-                {t("gen_passphrase_hint")}
-              </div>
+              <div class="options-hint">{t("gen_passphrase_hint")}</div>
             </FormField>
           </div>
 
@@ -465,7 +453,8 @@ export const Generator: Component = () => {
                 type="text"
                 value={wordSeparator()}
                 onInput={(e) =>
-                  handleWordSeparatorChange(e.currentTarget.value)}
+                  handleWordSeparatorChange(e.currentTarget.value)
+                }
               />
             </FormField>
 

@@ -1,8 +1,13 @@
+import { type Fido2CredentialId, UriMatchMode } from "@gistwarden/domain";
+import { confirm } from "@gistwarden/ui";
 import { type Component, createSignal, For, Index, Show } from "solid-js";
-import { t } from "@/core/i18n.ts";
+import FormField from "@/components/ui/FormField.tsx";
+import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
+import InlinePasswordGenerator from "@/components/ui/InlinePasswordGenerator.tsx";
 import Input from "@/components/ui/Input.tsx";
 import Select from "@/components/ui/Select.tsx";
-import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
+import { t } from "@/core/i18n.ts";
+import type { ItemEditFormState } from "@/features/vault/item-edit/vault-edit-helper.ts";
 import {
   DragIcon,
   MinusCircleIcon,
@@ -10,12 +15,6 @@ import {
   QrIcon,
   SettingsIcon,
 } from "@/icons/svg/index.ts";
-import FormField from "@/components/ui/FormField.tsx";
-import type { ItemEditFormState } from "@/features/vault/item-edit/vault-edit-helper.ts";
-import { type Fido2CredentialId, UriMatchMode } from "@gistwarden/domain";
-import { confirm } from "@gistwarden/ui";
-
-import InlinePasswordGenerator from "@/components/ui/InlinePasswordGenerator.tsx";
 
 interface LoginEditFieldsProps {
   formState: ItemEditFormState;
@@ -48,7 +47,7 @@ export const LoginEditFields: Component<LoginEditFieldsProps> = (props) => {
   const handleUpdateWebsiteUri = (index: number, value: string) => {
     const currentUris = props.formState.uris || [];
     const newUris = currentUris.map((u, i) =>
-      i === index ? { ...u, uri: value } : u
+      i === index ? { ...u, uri: value } : u,
     );
     props.updateForm("uris", newUris);
   };
@@ -66,21 +65,19 @@ export const LoginEditFields: Component<LoginEditFieldsProps> = (props) => {
       else if (num === UriMatchMode.Never) newMode = UriMatchMode.Never;
     }
 
-    if (
-      newMode === UriMatchMode.StartsWith ||
-      newMode === UriMatchMode.Regex
-    ) {
-      const modeName = newMode === UriMatchMode.StartsWith
-        ? t("match_mode_starts_with")
-        : t("match_mode_regex");
+    if (newMode === UriMatchMode.StartsWith || newMode === UriMatchMode.Regex) {
+      const modeName =
+        newMode === UriMatchMode.StartsWith
+          ? t("match_mode_starts_with")
+          : t("match_mode_regex");
       const title = t("match_warning_modal_title");
-      const linkHtml =
-        `<a href="https://bitwarden.com/help/uri-match-detection/" target="_blank" rel="noopener noreferrer">${
-          t("match_warning_learn_more")
-        }</a>`;
-      const msg = `${
-        t("match_warning_modal_msg").replace("{mode}", modeName)
-      }<br/><br/>${linkHtml}`;
+      const linkHtml = `<a href="https://bitwarden.com/help/uri-match-detection/" target="_blank" rel="noopener noreferrer">${t(
+        "match_warning_learn_more",
+      )}</a>`;
+      const msg = `${t("match_warning_modal_msg").replace(
+        "{mode}",
+        modeName,
+      )}<br/><br/>${linkHtml}`;
 
       const approved = await confirm(title, msg, "warning");
       if (!approved) {
@@ -90,7 +87,7 @@ export const LoginEditFields: Component<LoginEditFieldsProps> = (props) => {
 
     const currentUris = props.formState.uris || [];
     const newUris = currentUris.map((u, i) =>
-      i === index ? { ...u, match: newMode } : u
+      i === index ? { ...u, match: newMode } : u,
     );
     props.updateForm("uris", newUris);
   };
@@ -153,7 +150,8 @@ export const LoginEditFields: Component<LoginEditFieldsProps> = (props) => {
               class="password-font"
               value={props.formState.password}
               onInput={(e) =>
-                props.updateForm("password", e.currentTarget.value)}
+                props.updateForm("password", e.currentTarget.value)
+              }
               placeholder={t("edit_placeholder_password")}
               rightActions={
                 <InlinePasswordGenerator
@@ -167,9 +165,7 @@ export const LoginEditFields: Component<LoginEditFieldsProps> = (props) => {
 
       {/* FIDO2/Passkey credentials (Read-only display of existing credentials with delete option) */}
       <Show when={(props.formState.fidoCredentials || []).length > 0}>
-        <div class="detail-section-title">
-          {t("detail_passkey_webauthn")}
-        </div>
+        <div class="detail-section-title">{t("detail_passkey_webauthn")}</div>
         <div class="card mb-16 fido2-credentials-list">
           <For each={props.formState.fidoCredentials || []}>
             {(cred) => (
@@ -205,7 +201,8 @@ export const LoginEditFields: Component<LoginEditFieldsProps> = (props) => {
               class="password-font"
               value={props.formState.totpSecret}
               onInput={(e) =>
-                props.updateForm("totpSecret", e.currentTarget.value)}
+                props.updateForm("totpSecret", e.currentTarget.value)
+              }
               placeholder={t("edit_placeholder_totp")}
               rightActions={
                 <button
@@ -216,9 +213,9 @@ export const LoginEditFields: Component<LoginEditFieldsProps> = (props) => {
                   disabled={props.scanning}
                 >
                   <QrIcon
-                    class={props.scanning
-                      ? "spinning icon-inline"
-                      : "icon-inline"}
+                    class={
+                      props.scanning ? "spinning icon-inline" : "icon-inline"
+                    }
                   />
                 </button>
               }
@@ -228,17 +225,17 @@ export const LoginEditFields: Component<LoginEditFieldsProps> = (props) => {
       </div>
 
       {/* Website Section */}
-      <div class="detail-section-title">
-        {t("detail_section_autofill")}
-      </div>
+      <div class="detail-section-title">{t("detail_section_autofill")}</div>
       <div class="card mb-16 autofill-card overflow-visible">
         <Index each={props.formState.uris || []}>
           {(u, idx) => (
             <FormField
               id={`item-uri-${idx}`}
-              label={idx === 0
-                ? t("edit_label_website")
-                : `${t("edit_label_website")} ${idx + 1}`}
+              label={
+                idx === 0
+                  ? t("edit_label_website")
+                  : `${t("edit_label_website")} ${idx + 1}`
+              }
             >
               <div
                 class="website-input-row mb-8"
@@ -253,7 +250,8 @@ export const LoginEditFields: Component<LoginEditFieldsProps> = (props) => {
                     type="text"
                     value={u().uri}
                     onInput={(e) =>
-                      handleUpdateWebsiteUri(idx, e.currentTarget.value)}
+                      handleUpdateWebsiteUri(idx, e.currentTarget.value)
+                    }
                     placeholder="https://example.com"
                     rightActions={
                       <div class="d-flex align-items-center gap-4">
@@ -300,7 +298,8 @@ export const LoginEditFields: Component<LoginEditFieldsProps> = (props) => {
                     id={`item-uri-match-${idx}`}
                     value={u().match ?? ""}
                     onChange={(e) =>
-                      handleMatchModeChange(idx, e.currentTarget.value)}
+                      handleMatchModeChange(idx, e.currentTarget.value)
+                    }
                     options={[
                       { value: "", label: getDefaultMatchLabel() },
                       {
@@ -334,8 +333,10 @@ export const LoginEditFields: Component<LoginEditFieldsProps> = (props) => {
                   <div class="match-detection-desc">
                     {t("match_detection_desc")}
                     <Show
-                      when={u().match === UriMatchMode.StartsWith ||
-                        u().match === UriMatchMode.Regex}
+                      when={
+                        u().match === UriMatchMode.StartsWith ||
+                        u().match === UriMatchMode.Regex
+                      }
                     >
                       <span class="text-warning-bold">
                         {t("match_warning_inline").replace(

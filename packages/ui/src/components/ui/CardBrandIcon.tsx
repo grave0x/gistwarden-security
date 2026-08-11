@@ -15,8 +15,9 @@ export const CardBrandIcon: Component<CardBrandIconProps> = (props) => {
           when={normalized() === "mastercard"}
           fallback={
             <Show
-              when={normalized() === "american express" ||
-                normalized() === "amex"}
+              when={
+                normalized() === "american express" || normalized() === "amex"
+              }
               fallback={
                 <div class="card-brand-fallback">
                   <svg

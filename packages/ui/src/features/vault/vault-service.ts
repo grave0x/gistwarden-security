@@ -1,3 +1,11 @@
+import type {
+  Folder,
+  FolderId,
+  TrashVaultItem,
+  VaultItem,
+  VaultItemId,
+  VaultPayload,
+} from "@gistwarden/domain";
 import {
   addFolderUseCase,
   clearVaultUseCase,
@@ -12,25 +20,14 @@ import {
   restoreVaultItemUseCase,
   saveItemUseCase,
 } from "@gistwarden/orchestrator";
-
+import { err, ok, type Result } from "neverthrow";
+import type { TranslationKey } from "@/core/i18n.ts";
 import {
   accountStore,
   applyVaultPayloadToStore,
   setAccountStore,
   settingsStore,
 } from "@/core/store.ts";
-import {
-  type Folder,
-  type FolderId,
-  type TrashVaultItem,
-  type VaultItem,
-  type VaultItemId,
-  type VaultPayload,
-} from "@gistwarden/domain";
-
-
-import { err, ok, Result } from "neverthrow";
-import type { TranslationKey } from "@/core/i18n.ts";
 
 import { handleGlobalApiError } from "@/core/ui-service.ts";
 
@@ -79,7 +76,12 @@ export async function addFolder(
   name: string,
 ): Promise<Result<Folder, TranslationKey>> {
   const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
-  const res = await addFolderUseCase(payload, salt, settingsStore.vaultMode, name);
+  const res = await addFolderUseCase(
+    payload,
+    salt,
+    settingsStore.vaultMode,
+    name,
+  );
   if (res.isErr()) {
     handleGlobalApiError(res.error);
     return err(res.error);
@@ -93,7 +95,13 @@ export async function renameFolder(
   newName: string,
 ): Promise<Result<void, TranslationKey>> {
   const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
-  const res = await renameFolderUseCase(payload, salt, settingsStore.vaultMode, id, newName);
+  const res = await renameFolderUseCase(
+    payload,
+    salt,
+    settingsStore.vaultMode,
+    id,
+    newName,
+  );
   if (res.isErr()) {
     handleGlobalApiError(res.error);
     return err(res.error);
@@ -106,7 +114,12 @@ export async function deleteFolder(
   id: FolderId,
 ): Promise<Result<void, TranslationKey>> {
   const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
-  const res = await deleteFolderUseCase(payload, salt, settingsStore.vaultMode, id);
+  const res = await deleteFolderUseCase(
+    payload,
+    salt,
+    settingsStore.vaultMode,
+    id,
+  );
   if (res.isErr()) {
     handleGlobalApiError(res.error);
     return err(res.error);
@@ -119,7 +132,12 @@ export async function saveItem(
   item: Partial<VaultItem>,
 ): Promise<Result<void, TranslationKey>> {
   const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
-  const res = await saveItemUseCase(payload, salt, settingsStore.vaultMode, item);
+  const res = await saveItemUseCase(
+    payload,
+    salt,
+    settingsStore.vaultMode,
+    item,
+  );
   if (res.isErr()) {
     handleGlobalApiError(res.error);
     return err(res.error);
@@ -138,7 +156,12 @@ export async function deleteVaultItems(
   ids: VaultItemId[],
 ): Promise<Result<void, TranslationKey>> {
   const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
-  const res = await deleteVaultItemsUseCase(payload, salt, settingsStore.vaultMode, ids);
+  const res = await deleteVaultItemsUseCase(
+    payload,
+    salt,
+    settingsStore.vaultMode,
+    ids,
+  );
   if (res.isErr()) {
     handleGlobalApiError(res.error);
     return err(res.error);
@@ -152,7 +175,13 @@ export async function moveVaultItemsToFolder(
   folderId: FolderId | null,
 ): Promise<Result<void, TranslationKey>> {
   const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
-  const res = await moveVaultItemsToFolderUseCase(payload, salt, settingsStore.vaultMode, ids, folderId);
+  const res = await moveVaultItemsToFolderUseCase(
+    payload,
+    salt,
+    settingsStore.vaultMode,
+    ids,
+    folderId,
+  );
   if (res.isErr()) {
     handleGlobalApiError(res.error);
     return err(res.error);
@@ -165,7 +194,12 @@ export async function restoreVaultItem(
   id: VaultItemId,
 ): Promise<Result<void, TranslationKey>> {
   const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
-  const res = await restoreVaultItemUseCase(payload, salt, settingsStore.vaultMode, id);
+  const res = await restoreVaultItemUseCase(
+    payload,
+    salt,
+    settingsStore.vaultMode,
+    id,
+  );
   if (res.isErr()) {
     handleGlobalApiError(res.error);
     return err(res.error);
@@ -178,7 +212,12 @@ export async function purgeTrashItem(
   id: VaultItemId,
 ): Promise<Result<void, TranslationKey>> {
   const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
-  const res = await purgeTrashItemUseCase(payload, salt, settingsStore.vaultMode, id);
+  const res = await purgeTrashItemUseCase(
+    payload,
+    salt,
+    settingsStore.vaultMode,
+    id,
+  );
   if (res.isErr()) {
     handleGlobalApiError(res.error);
     return err(res.error);
@@ -189,7 +228,11 @@ export async function purgeTrashItem(
 
 export async function purgeAllTrash(): Promise<Result<void, TranslationKey>> {
   const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
-  const res = await purgeAllTrashUseCase(payload, salt, settingsStore.vaultMode);
+  const res = await purgeAllTrashUseCase(
+    payload,
+    salt,
+    settingsStore.vaultMode,
+  );
   if (res.isErr()) {
     handleGlobalApiError(res.error);
     return err(res.error);

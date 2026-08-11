@@ -1,8 +1,7 @@
-import { z } from "zod";
 import { createSignal } from "solid-js";
+import { z } from "zod";
 import en from "./locales/en.ts";
 import vi from "./locales/vi.ts";
-import { APP_NAME } from "./constants.ts";
 import { SupportLanguage } from "./types.ts";
 
 const LangSchema = z.object({
@@ -957,14 +956,12 @@ const dictionaries: Record<SupportLanguage, unknown> = {
 };
 
 const [translations, setTranslations] = createSignal<Partial<Lang>>({});
-const [currentLanguageCode, setCurrentLanguageCode] = createSignal<
-  SupportLanguage
->(SupportLanguage.En);
+const [currentLanguageCode, setCurrentLanguageCode] =
+  createSignal<SupportLanguage>(SupportLanguage.En);
 
 export function setLanguage(code: SupportLanguage | "en" | "vi"): void {
-  const enumCode = code === SupportLanguage.Vi
-    ? SupportLanguage.Vi
-    : SupportLanguage.En;
+  const enumCode =
+    code === SupportLanguage.Vi ? SupportLanguage.Vi : SupportLanguage.En;
   const raw = dictionaries[enumCode];
   setTranslations(LangSchema.parse(raw));
   setCurrentLanguageCode(enumCode);
@@ -980,7 +977,7 @@ export function initI18n(language?: SupportLanguage | "en" | "vi"): void {
 setLanguage(SupportLanguage.En);
 
 function isLangKey(key: string, dict: Partial<Lang>): key is keyof Lang {
-  return Object.prototype.hasOwnProperty.call(dict, key);
+  return Object.hasOwn(dict, key);
 }
 
 export function t(
@@ -1013,11 +1010,10 @@ export function t(
  */
 export function formatDateTime(dateInput: Date | number | string): string {
   const d = new Date(dateInput);
-  if (isNaN(d.getTime())) return "";
+  if (Number.isNaN(d.getTime())) return "";
 
-  const locale = currentLanguageCode() === SupportLanguage.Vi
-    ? "vi-VN"
-    : "en-US";
+  const locale =
+    currentLanguageCode() === SupportLanguage.Vi ? "vi-VN" : "en-US";
   return d.toLocaleString(locale, {
     year: "numeric",
     month: "2-digit",

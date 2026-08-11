@@ -1,10 +1,10 @@
 import { type Component, createEffect, Match, Switch } from "solid-js";
-import { GettingStartedSection } from "@/features/guide/components/sections/GettingStartedSection.tsx";
-import { VaultManagementSection } from "@/features/guide/components/sections/VaultManagementSection.tsx";
-import { PasskeyAuthSection } from "@/features/guide/components/sections/PasskeyAuthSection.tsx";
 import { AutofillToolsSection } from "@/features/guide/components/sections/AutofillToolsSection.tsx";
-import { SyncDataSection } from "@/features/guide/components/sections/SyncDataSection.tsx";
+import { GettingStartedSection } from "@/features/guide/components/sections/GettingStartedSection.tsx";
+import { PasskeyAuthSection } from "@/features/guide/components/sections/PasskeyAuthSection.tsx";
 import { ReportsSettingsSection } from "@/features/guide/components/sections/ReportsSettingsSection.tsx";
+import { SyncDataSection } from "@/features/guide/components/sections/SyncDataSection.tsx";
+import { VaultManagementSection } from "@/features/guide/components/sections/VaultManagementSection.tsx";
 
 export interface GuideContentRendererProps {
   readonly route: string;

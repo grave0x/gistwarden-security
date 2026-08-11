@@ -1,6 +1,5 @@
 import { type Component, Show } from "solid-js";
 import { t } from "@/core/i18n.ts";
-import { APP_NAME } from "@/core/constants.ts";
 import {
   GaugeIcon,
   GithubIcon,
@@ -31,9 +30,7 @@ export const ReportsSettingsSection: Component<GuideSectionProps> = (props) => {
               <ReportsIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_security_reports")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_report_lead")}
-            </p>
+            <p class="hero-lead">{t("guide_report_lead")}</p>
           </div>
 
           <div class="step-guide-container">
@@ -43,9 +40,7 @@ export const ReportsSettingsSection: Component<GuideSectionProps> = (props) => {
               </span>
               <div class="step-content">
                 <h4>{t("guide_report_step1_title")}</h4>
-                <p>
-                  {t("guide_report_step1_desc")}
-                </p>
+                <p>{t("guide_report_step1_desc")}</p>
               </div>
             </div>
 
@@ -55,9 +50,7 @@ export const ReportsSettingsSection: Component<GuideSectionProps> = (props) => {
               </span>
               <div class="step-content">
                 <h4>{t("guide_report_step2_title")}</h4>
-                <p>
-                  {t("guide_report_step2_desc")}
-                </p>
+                <p>{t("guide_report_step2_desc")}</p>
               </div>
             </div>
 
@@ -67,9 +60,7 @@ export const ReportsSettingsSection: Component<GuideSectionProps> = (props) => {
               </span>
               <div class="step-content">
                 <h4>{t("guide_report_step3_title")}</h4>
-                <p>
-                  {t("guide_report_step3_desc")}
-                </p>
+                <p>{t("guide_report_step3_desc")}</p>
               </div>
             </div>
 
@@ -79,9 +70,7 @@ export const ReportsSettingsSection: Component<GuideSectionProps> = (props) => {
               </span>
               <div class="step-content">
                 <h4>{t("guide_report_step4_title")}</h4>
-                <p>
-                  {t("guide_report_step4_desc")}
-                </p>
+                <p>{t("guide_report_step4_desc")}</p>
               </div>
             </div>
 
@@ -91,9 +80,7 @@ export const ReportsSettingsSection: Component<GuideSectionProps> = (props) => {
               </span>
               <div class="step-content">
                 <h4>{t("guide_report_step5_title")}</h4>
-                <p>
-                  {t("guide_report_step5_desc")}
-                </p>
+                <p>{t("guide_report_step5_desc")}</p>
               </div>
             </div>
           </div>
@@ -107,23 +94,17 @@ export const ReportsSettingsSection: Component<GuideSectionProps> = (props) => {
               <PaletteIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_appearance_lang")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_app_lead")}
-            </p>
+            <p class="hero-lead">{t("guide_app_lead")}</p>
           </div>
 
           <div class="article-cards-grid">
             <div class="guide-card">
               <h3>{t("guide_app_theme_title")}</h3>
-              <p>
-                {t("guide_app_theme_desc")}
-              </p>
+              <p>{t("guide_app_theme_desc")}</p>
             </div>
             <div class="guide-card">
               <h3>{t("guide_app_lang_title")}</h3>
-              <p>
-                {t("guide_app_lang_desc")}
-              </p>
+              <p>{t("guide_app_lang_desc")}</p>
             </div>
           </div>
         </div>
@@ -136,9 +117,7 @@ export const ReportsSettingsSection: Component<GuideSectionProps> = (props) => {
               <QuestionIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_faq_troubleshooting")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_faq_subtitle")}
-            </p>
+            <p class="hero-lead">{t("guide_faq_subtitle")}</p>
           </div>
 
           <div class="faq-container">

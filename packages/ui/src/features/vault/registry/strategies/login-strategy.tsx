@@ -1,17 +1,17 @@
-import { type Component, Show } from "solid-js";
 import {
   isLoginItem,
   type LoginVaultItem,
   type VaultItem,
   VaultItemType,
 } from "@gistwarden/domain";
+import { type Component, Show } from "solid-js";
+import Favicon from "@/components/ui/Favicon.tsx";
 import { getDomainFromItem } from "@/core/domain-utils.ts";
 import { t } from "@/core/i18n.ts";
-import Favicon from "@/components/ui/Favicon.tsx";
-import { GlobeIcon } from "@/icons/svg/index.ts";
 import LoginDetailFields from "@/features/vault/item-detail/LoginDetailFields.tsx";
 import LoginEditFields from "@/features/vault/item-edit/LoginEditFields.tsx";
 import type { ItemEditFormState } from "@/features/vault/item-edit/vault-edit-helper.ts";
+import { GlobeIcon } from "@/icons/svg/index.ts";
 import type {
   CopyMenuProps,
   DetailComponentProps,
@@ -88,9 +88,10 @@ export const loginStrategy: VaultItemStrategy = {
       const login = item.login;
       state.username = login.username ?? "";
       state.password = login.password ?? "";
-      state.uris = login.uris && login.uris.length > 0
-        ? login.uris.map((u) => ({ uri: u.uri, match: u.match ?? null }))
-        : [{ uri: "", match: null }];
+      state.uris =
+        login.uris && login.uris.length > 0
+          ? login.uris.map((u) => ({ uri: u.uri, match: u.match ?? null }))
+          : [{ uri: "", match: null }];
       state.totpSecret = login.totp ?? "";
       state.fidoCredentials = login.fido2Credentials ?? [];
     }
@@ -99,9 +100,8 @@ export const loginStrategy: VaultItemStrategy = {
     validatedForm: ItemEditFormState,
     selectedItem?: VaultItem | null,
   ) => {
-    const originalLogin = selectedItem && isLoginItem(selectedItem)
-      ? selectedItem.login
-      : null;
+    const originalLogin =
+      selectedItem && isLoginItem(selectedItem) ? selectedItem.login : null;
 
     let revDate = originalLogin?.passwordRevisionDate ?? null;
     let history = originalLogin?.passwordHistory ?? [];

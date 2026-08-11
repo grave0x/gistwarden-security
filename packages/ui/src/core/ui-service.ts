@@ -1,17 +1,6 @@
-import { setSettingsStore, setUiStore, uiStore } from "@/core/store.ts";
-import { setLanguage, t } from "@/core/i18n.ts";
-import { err, ok, Result } from "neverthrow";
-import { z } from "zod";
-import {
-  type ConfirmType,
-  setLocalItem,
-  type ToastType,
-  updateExtensionSettings,
-} from "@gistwarden/repository";
 import {
   LOCAL_STORAGE_KEY_THEME,
   OAUTH_WORKER_URL,
-  safeJsonParse,
   STORE_KEY_CONFIRM_MODAL,
   STORE_KEY_GLOBAL_LOADING,
   STORE_KEY_GLOBAL_LOADING_TEXT,
@@ -19,10 +8,21 @@ import {
   STORE_KEY_TOAST_MESSAGE,
   STORE_KEY_TOAST_TYPE,
   SupportLanguage,
+  safeJsonParse,
   type TranslationKey,
 } from "@gistwarden/domain";
 import { fetchText } from "@gistwarden/network";
+import {
+  type ConfirmType,
+  setLocalItem,
+  type ToastType,
+  updateExtensionSettings,
+} from "@gistwarden/repository";
+import { err, ok, type Result } from "neverthrow";
+import { z } from "zod";
 import { writeClipboardText } from "@/core/clipboard-utils.ts";
+import { setLanguage, t } from "@/core/i18n.ts";
+import { setSettingsStore, setUiStore, uiStore } from "@/core/store.ts";
 
 import { logout } from "@/features/auth/auth-service.ts";
 
@@ -146,10 +146,11 @@ export async function updateTheme(newTheme: "dark" | "light") {
   await setLocalItem(LOCAL_STORAGE_KEY_THEME, newTheme);
 }
 
-const TimeServerResponseSchema = z.object({
-  unixtime: z.number(),
-}).readonly();
-
+const TimeServerResponseSchema = z
+  .object({
+    unixtime: z.number(),
+  })
+  .readonly();
 
 export async function syncTimeOffset(): Promise<Result<void, TranslationKey>> {
   const textRes = await fetchText(`${OAUTH_WORKER_URL}/time`);

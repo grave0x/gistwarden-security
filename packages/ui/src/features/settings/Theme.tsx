@@ -1,10 +1,10 @@
-import { type Component, Show } from "solid-js";
-import { settingsStore } from "@/core/store.ts";
-import { t } from "@/core/i18n.ts";
-import DetailHeader from "@/components/ui/DetailHeader.tsx";
-import { ThemeMode, View } from "@/core/types.ts";
-import { navigate } from "@/core/navigation.ts";
 import { updateTheme } from "@gistwarden/ui";
+import { type Component, Show } from "solid-js";
+import DetailHeader from "@/components/ui/DetailHeader.tsx";
+import { t } from "@/core/i18n.ts";
+import { navigate } from "@/core/navigation.ts";
+import { settingsStore } from "@/core/store.ts";
+import { ThemeMode, View } from "@/core/types.ts";
 import { MoonIcon, SunIcon } from "@/icons/svg/index.ts";
 
 export const Theme: Component = () => {

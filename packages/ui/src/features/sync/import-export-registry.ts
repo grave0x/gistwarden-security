@@ -1,11 +1,10 @@
 import type { ExportStrategy, ImportStrategy } from "./import-export-types.ts";
-import { jsonImportStrategy } from "./strategies/json-import-strategy.ts";
-import { bitwardenCsvImportStrategy } from "./strategies/bitwarden-csv-import-strategy.ts";
-import { browserCsvImportStrategy } from "./strategies/browser-csv-import-strategy.ts";
-
-import { jsonExportStrategy } from "./strategies/json-export-strategy.ts";
 import { bitwardenCsvExportStrategy } from "./strategies/bitwarden-csv-export-strategy.ts";
+import { bitwardenCsvImportStrategy } from "./strategies/bitwarden-csv-import-strategy.ts";
 import { browserCsvExportStrategy } from "./strategies/browser-csv-export-strategy.ts";
+import { browserCsvImportStrategy } from "./strategies/browser-csv-import-strategy.ts";
+import { jsonExportStrategy } from "./strategies/json-export-strategy.ts";
+import { jsonImportStrategy } from "./strategies/json-import-strategy.ts";
 
 export const importRegistry = {
   json: jsonImportStrategy,

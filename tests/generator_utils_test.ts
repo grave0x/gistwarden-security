@@ -1,13 +1,9 @@
 import {
-  assertEquals,
-  assertMatch,
-  test,
-} from "./assert.ts";
-import {
   generatePassphrase,
   generatePassword,
   getRandomBoundedInt,
 } from "@gistwarden/domain";
+import { assertEquals, assertMatch, test } from "./assert.ts";
 
 test("generator-utils: generatePassword respects length", () => {
   const pwd = generatePassword({
@@ -42,7 +38,7 @@ test("generator-utils: generatePassword ensures min constraints", () => {
     const numMatches = pwd.value.match(/[0-9]/g);
     assertEquals(numMatches !== null && numMatches.length >= 5, true);
 
-    const specMatches = pwd.value.match(/[!@#$%^&*()_+\-=\[\]{}|;:,.<>?]/g);
+    const specMatches = pwd.value.match(/[!@#$%^&*()_+\-=[\]{}|;:,.<>?]/g);
     assertEquals(specMatches !== null && specMatches.length >= 5, true);
   }
 });

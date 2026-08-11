@@ -7771,5 +7771,5 @@ export const ENGLISH_WORDLIST: string[] = [
   "zookeeper",
   "zoologist",
   "zoology",
-  "zoom"
+  "zoom",
 ];

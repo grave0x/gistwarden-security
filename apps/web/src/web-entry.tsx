@@ -1,21 +1,10 @@
-import { render } from "solid-js/web";
+import { View } from "@gistwarden/domain";
 import {
-  type Component,
-  createEffect,
-  For,
-  Match,
-  onMount,
-  Show,
-  Switch,
-} from "solid-js";
-import {
-  HashRouter,
-  MemoryRouter,
-  Route,
-  type RouteSectionProps,
-  useLocation,
-  useNavigate,
-} from "@solidjs/router";
+  initializeWebRoutes,
+  notifyBackground,
+  onExtensionMessage,
+} from "@gistwarden/orchestrator";
+import { isRecord } from "@gistwarden/repository";
 import {
   accountStore,
   getPathView,
@@ -27,13 +16,70 @@ import {
   resetAccountStore,
   resetUiStore,
   setActiveNavigator,
-  setUiStore,
   settingsStore,
+  setUiStore,
   uiStore,
 } from "@gistwarden/ui";
-import { View } from "@gistwarden/domain";
-import { initializeWebRoutes, notifyBackground, onExtensionMessage } from "@gistwarden/orchestrator";
-import { isRecord } from "@gistwarden/repository";
+import {
+  HashRouter,
+  MemoryRouter,
+  Route,
+  type RouteSectionProps,
+  useLocation,
+  useNavigate,
+} from "@solidjs/router";
+import {
+  type Component,
+  createEffect,
+  For,
+  Match,
+  onMount,
+  Show,
+  Switch,
+} from "solid-js";
+import { render } from "solid-js/web";
+import ConfirmModal from "@/components/ui/ConfirmModal.tsx";
+import RepromptModal from "@/components/ui/RepromptModal.tsx";
+import { RouteTransition } from "@/components/ui/RouteTransition.tsx";
+import {
+  MSG_USER_ACTIVITY,
+  MSG_VAULT_ITEMS_UPDATED,
+  MSG_VAULT_LOCKED,
+  MSG_VAULT_LOGGED_OUT,
+} from "@/core/constants.ts";
+import { t } from "@/core/i18n.ts";
+import AccountSecurity from "@/features/auth/AccountSecurity.tsx";
+import ChangeMasterPassword from "@/features/auth/ChangeMasterPassword.tsx";
+// Import Views from UI package
+import Login from "@/features/auth/Login.tsx";
+import Generator from "@/features/generator/Generator.tsx";
+import PasswordHistory from "@/features/generator/PasswordHistory.tsx";
+import Guide from "@/features/guide/Guide.tsx";
+import Fido2Prompt from "@/features/passkey/Fido2Prompt.tsx";
+import ReportDataBreach from "@/features/reports/ReportDataBreach.tsx";
+import ReportExposed from "@/features/reports/ReportExposed.tsx";
+import ReportInactive2FA from "@/features/reports/ReportInactive2FA.tsx";
+import ReportReused from "@/features/reports/ReportReused.tsx";
+import Reports from "@/features/reports/Reports.tsx";
+import ReportUnsecure from "@/features/reports/ReportUnsecure.tsx";
+import ReportWeak from "@/features/reports/ReportWeak.tsx";
+import About from "@/features/settings/About.tsx";
+import Appearance from "@/features/settings/Appearance.tsx";
+import AutofillOptions from "@/features/settings/AutofillOptions.tsx";
+import Language from "@/features/settings/Language.tsx";
+import Settings from "@/features/settings/Settings.tsx";
+import Theme from "@/features/settings/Theme.tsx";
+import Troubleshooting from "@/features/settings/Troubleshooting.tsx";
+import ExportAccounts from "@/features/sync/ExportAccounts.tsx";
+import GoogleMigrationPage from "@/features/sync/GoogleMigrationPage.tsx";
+import ImportAccounts from "@/features/sync/ImportAccounts.tsx";
+import Folders from "@/features/vault/Folders.tsx";
+import ItemDetail from "@/features/vault/ItemDetail.tsx";
+import ItemEdit from "@/features/vault/ItemEdit.tsx";
+import Trash from "@/features/vault/Trash.tsx";
+import Vault from "@/features/vault/Vault.tsx";
+import VaultOptions from "@/features/vault/VaultOptions.tsx";
+import Welcome from "@/features/welcome/Welcome.tsx";
 import {
   GeneratorIcon,
   ReportsIcon,
@@ -41,49 +87,6 @@ import {
   SyncIcon,
   VaultIcon,
 } from "@/icons/svg/index.ts";
-import {
-  MSG_USER_ACTIVITY,
-  MSG_VAULT_ITEMS_UPDATED,
-  MSG_VAULT_LOCKED,
-  MSG_VAULT_LOGGED_OUT,
-} from "@/core/constants.ts";
-import { RouteTransition } from "@/components/ui/RouteTransition.tsx";
-
-// Import Views from UI package
-import Login from "@/features/auth/Login.tsx";
-import Vault from "@/features/vault/Vault.tsx";
-import ItemDetail from "@/features/vault/ItemDetail.tsx";
-import ItemEdit from "@/features/vault/ItemEdit.tsx";
-import Generator from "@/features/generator/Generator.tsx";
-import Settings from "@/features/settings/Settings.tsx";
-import VaultOptions from "@/features/vault/VaultOptions.tsx";
-import ImportAccounts from "@/features/sync/ImportAccounts.tsx";
-import GoogleMigrationPage from "@/features/sync/GoogleMigrationPage.tsx";
-import ExportAccounts from "@/features/sync/ExportAccounts.tsx";
-import Fido2Prompt from "@/features/passkey/Fido2Prompt.tsx";
-import Language from "@/features/settings/Language.tsx";
-import Theme from "@/features/settings/Theme.tsx";
-import Appearance from "@/features/settings/Appearance.tsx";
-import About from "@/features/settings/About.tsx";
-import Troubleshooting from "@/features/settings/Troubleshooting.tsx";
-import Welcome from "@/features/welcome/Welcome.tsx";
-import AccountSecurity from "@/features/auth/AccountSecurity.tsx";
-import ChangeMasterPassword from "@/features/auth/ChangeMasterPassword.tsx";
-import AutofillOptions from "@/features/settings/AutofillOptions.tsx";
-import PasswordHistory from "@/features/generator/PasswordHistory.tsx";
-import Trash from "@/features/vault/Trash.tsx";
-import Folders from "@/features/vault/Folders.tsx";
-import Reports from "@/features/reports/Reports.tsx";
-import ReportExposed from "@/features/reports/ReportExposed.tsx";
-import ReportReused from "@/features/reports/ReportReused.tsx";
-import ReportWeak from "@/features/reports/ReportWeak.tsx";
-import ReportUnsecure from "@/features/reports/ReportUnsecure.tsx";
-import ReportInactive2FA from "@/features/reports/ReportInactive2FA.tsx";
-import ReportDataBreach from "@/features/reports/ReportDataBreach.tsx";
-import ConfirmModal from "@/components/ui/ConfirmModal.tsx";
-import RepromptModal from "@/components/ui/RepromptModal.tsx";
-import Guide from "@/features/guide/Guide.tsx";
-import { t } from "@/core/i18n.ts";
 
 // Khởi tạo Web In-Memory Transport Adapter
 initializeWebRoutes();
@@ -140,9 +143,7 @@ const MainLayout: Component<RouteSectionProps> = (props) => {
           <Match when={true}>
             <div class="app-container">
               <div class="flex-1 overflow-hidden pos-relative">
-                <RouteTransition>
-                  {props.children}
-                </RouteTransition>
+                <RouteTransition>{props.children}</RouteTransition>
               </div>
 
               {/* Bottom Nav Bar */}
@@ -185,7 +186,7 @@ const MainLayout: Component<RouteSectionProps> = (props) => {
                   <div
                     class={`nav-item ${
                       uiStore.view === View.Settings ||
-                        uiStore.view === View.VaultOptions
+                      uiStore.view === View.VaultOptions
                         ? "active"
                         : ""
                     }`}
@@ -261,7 +262,8 @@ const WebApp: Component = () => {
     window.addEventListener("keydown", resetTimeout);
   });
 
-  const isWebProtocol = typeof window !== "undefined" &&
+  const isWebProtocol =
+    typeof window !== "undefined" &&
     window.location.protocol.startsWith("http");
 
   const routesConfig: Array<{ view: View; component: Component }> = [

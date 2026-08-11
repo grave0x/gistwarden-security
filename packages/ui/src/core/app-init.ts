@@ -1,34 +1,19 @@
-import { z } from "zod";
-import { ok, type Result } from "neverthrow";
 import {
   APP_NAME,
   LOCAL_STORAGE_KEY_THEME,
   MSG_USER_ACTIVITY,
-  safeJsonParse,
   SESSION_KEY_ENCRYPTED_VAULT,
   SESSION_KEY_LAST_SELECTED_ITEM_ID,
   SESSION_KEY_LAST_VIEW,
-  SESSION_KEY_SESSION_INITIALIZED,
   STORE_KEY_IS_LOCKED,
   STORE_KEY_VIEW,
   SupportLanguage,
+  safeJsonParse,
+  setLanguage,
   type TranslationKey,
+  type VaultItem,
   View,
 } from "@gistwarden/domain";
-import {
-  getActiveVaultMode,
-  getGithubToken,
-  getLocalItem,
-  getSessionItem,
-  getSessionItems,
-  hasUnlockedInSession,
-  hasSessionStorage,
-  isRecord,
-  isSessionUnlocked,
-  resetAccountSettings,
-  setSessionItem,
-} from "@gistwarden/repository";
-import { getSyncProvider } from "@gistwarden/network";
 import {
   checkVaultConfiguredUseCase,
   downloadFromGistRoute,
@@ -36,7 +21,22 @@ import {
   notifyBackground,
   sendBackgroundMessage,
 } from "@gistwarden/orchestrator";
-import { setLanguage, type VaultItem } from "@gistwarden/domain";
+import {
+  GistPayloadSchema,
+  getActiveVaultMode,
+  getLocalItem,
+  getSessionItem,
+  getSessionItems,
+  getSyncToken,
+  hasUnlockedInSession,
+  isRecord,
+  isSessionUnlocked,
+  resetAccountSettings,
+  setSessionItem,
+} from "@gistwarden/repository";
+import { ok, type Result } from "neverthrow";
+import { z } from "zod";
+import { decryptGistVault, logout } from "../features/auth/auth-service.ts";
 import {
   accountStore,
   applyVaultPayloadToStore,
@@ -47,8 +47,6 @@ import {
   setUiStore,
   uiStore,
 } from "./store.ts";
-import { GistPayloadSchema } from "@gistwarden/repository";
-import { decryptGistVault, logout } from "../features/auth/auth-service.ts";
 
 async function handleBrowserRestartCleanup(
   vaultTimeoutAction: string,
@@ -110,7 +108,7 @@ async function resolveSavedViewAndItem(
   params: URLSearchParams,
 ): Promise<{ targetView: View; selectedItem?: VaultItem }> {
   let targetView = isFido2Prompt ? View.Fido2Prompt : View.Vault;
-  let selectedItem: VaultItem | undefined = undefined;
+  let selectedItem: VaultItem | undefined;
 
   const itemId = params.get("itemId");
   if (itemId && !isFido2Prompt) {
@@ -204,7 +202,7 @@ async function loadAndDecryptVault(
 }
 
 function applyInitialView(
-  githubConfigured: boolean,
+  vaultConfigured: boolean,
   welcomeAccepted: boolean,
   isFido2Prompt: boolean,
 ): void {
@@ -213,7 +211,7 @@ function applyInitialView(
     if (uiStore.view === View.Guide) {
       return;
     }
-    if (!githubConfigured && !welcomeAccepted) {
+    if (!vaultConfigured && !welcomeAccepted) {
       setUiStore(STORE_KEY_VIEW, View.Welcome);
     } else {
       setUiStore(STORE_KEY_VIEW, View.Login);
@@ -234,14 +232,14 @@ export async function init(): Promise<void> {
 
   setSettingsStore({ theme: currentTheme });
 
-  const decryptedToken = await getGithubToken(settingsStore.vaultMode);
-  const githubConfigured = await checkVaultConfiguredUseCase(
+  const decryptedToken = await getSyncToken(settingsStore.vaultMode);
+  const vaultConfigured = await checkVaultConfiguredUseCase(
     settingsStore.vaultMode,
   );
 
   setAccountStore({
-    githubToken: decryptedToken || undefined,
-    githubConfigured,
+    syncToken: decryptedToken || undefined,
+    vaultConfigured,
     sessionUnlocked: sessionUnlockedVal,
     hasUnlockedInSession: unlockedInSessionVal,
   });
@@ -257,14 +255,13 @@ export async function init(): Promise<void> {
     setUiStore(STORE_KEY_VIEW, View.Fido2Prompt);
   }
 
-  if (githubConfigured && key && accountStore.masterPasswordConfig.salt) {
+  if (vaultConfigured && key && accountStore.masterPasswordConfig.salt) {
     await loadAndDecryptVault(key, isFido2Prompt, params);
   } else {
     if (accountStore.gistId && accountStore.masterPasswordConfig.salt) {
-      const sendResult = await sendBackgroundMessage(
-        downloadFromGistRoute,
-        { mode: settingsStore.vaultMode },
-      );
+      const sendResult = await sendBackgroundMessage(downloadFromGistRoute, {
+        mode: settingsStore.vaultMode,
+      });
       if (
         sendResult.isOk() &&
         isRecord(sendResult.value) &&
@@ -281,7 +278,8 @@ export async function init(): Promise<void> {
           if (payloadResult.success) {
             const payload = payloadResult.data;
             if (
-              payload.salt && accountStore.masterPasswordConfig.salt &&
+              payload.salt &&
+              accountStore.masterPasswordConfig.salt &&
               payload.salt !== accountStore.masterPasswordConfig.salt
             ) {
               console.warn(
@@ -298,7 +296,7 @@ export async function init(): Promise<void> {
       }
     }
     applyInitialView(
-      githubConfigured,
+      vaultConfigured,
       settingsStore.welcomeAccepted,
       isFido2Prompt,
     );

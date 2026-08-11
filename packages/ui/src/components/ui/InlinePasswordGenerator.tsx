@@ -1,15 +1,21 @@
-import { type Component, createSignal, onCleanup, onMount, Show } from "solid-js";
-import { t } from "@/core/i18n.ts";
 import { generatePassphrase, generatePassword } from "@gistwarden/domain";
+import {
+  type Component,
+  createSignal,
+  onCleanup,
+  onMount,
+  Show,
+} from "solid-js";
+import { t } from "@/core/i18n.ts";
 import { GeneratorIcon, KeyIcon, ListIcon } from "@/icons/svg/index.ts";
 
 export interface InlinePasswordGeneratorProps {
   readonly onGenerate: (password: string) => void;
 }
 
-export const InlinePasswordGenerator: Component<InlinePasswordGeneratorProps> = (
-  props,
-) => {
+export const InlinePasswordGenerator: Component<
+  InlinePasswordGeneratorProps
+> = (props) => {
   const [isOpen, setIsOpen] = createSignal(false);
   let containerRef: HTMLDivElement | undefined;
 

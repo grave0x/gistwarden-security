@@ -1,14 +1,14 @@
-import fs from "fs";
-import path from "path";
+import fs from "node:fs";
+import path from "node:path";
 import {
+  type I18nText,
   LANG_MATRIX,
   readmeData,
   type SupportedLang,
-  type I18nText,
 } from "./readme_content";
 
 function getLang(textObj: I18nText, lang: SupportedLang): string {
-  return textObj[lang] ?? textObj["en"];
+  return textObj[lang] ?? textObj.en;
 }
 
 function generateMarkdown(lang: SupportedLang): string {
@@ -105,7 +105,9 @@ function generateMarkdown(lang: SupportedLang): string {
   });
   lines.push("");
   lines.push(`> [!WARNING]`);
-  lines.push(`> **${getLang(readmeData.tokenWarning.title, lang)}:** ${getLang(readmeData.tokenWarning.content, lang)}`);
+  lines.push(
+    `> **${getLang(readmeData.tokenWarning.title, lang)}:** ${getLang(readmeData.tokenWarning.content, lang)}`,
+  );
   lines.push("");
   lines.push("---");
   lines.push("");
@@ -126,7 +128,7 @@ function generateMarkdown(lang: SupportedLang): string {
     lines.push("");
   });
 
-  return lines.join("\n").trim() + "\n";
+  return `${lines.join("\n").trim()}\n`;
 }
 
 const rootDir = process.cwd();
@@ -137,5 +139,7 @@ for (const [langKey, meta] of Object.entries(LANG_MATRIX)) {
   const outputPath = path.resolve(rootDir, meta.fileName);
   const markdownContent = generateMarkdown(lang);
   fs.writeFileSync(outputPath, markdownContent, "utf-8");
-  console.log(`✓ Successfully generated ${meta.fileName} (${meta.label} ${meta.flag})`);
+  console.log(
+    `✓ Successfully generated ${meta.fileName} (${meta.label} ${meta.flag})`,
+  );
 }

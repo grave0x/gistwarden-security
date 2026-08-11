@@ -1,7 +1,14 @@
 import { z } from "zod";
-import { GoogleOtpAccountSchema, type GoogleOtpAccount } from "./google-migration-parser.ts";
+import {
+  type GoogleOtpAccount,
+  GoogleOtpAccountSchema,
+} from "./google-migration-parser.ts";
+import {
+  type LoginVaultItem,
+  type VaultItem,
+  VaultItemIdSchema,
+} from "./vault-schemas.ts";
 import { isLoginItem } from "./vault-types.ts";
-import { FolderIdSchema, type LoginVaultItem, type VaultItem, type VaultItemId, VaultItemIdSchema } from "./vault-schemas.ts";
 
 export const GoogleMigrationActionSchema = z.enum(["link", "create", "skip"]);
 export type GoogleMigrationAction = z.infer<typeof GoogleMigrationActionSchema>;
@@ -14,7 +21,6 @@ export const GoogleMigrationAccountMappingSchema = z.object({
 export type GoogleMigrationAccountMapping = z.infer<
   typeof GoogleMigrationAccountMappingSchema
 >;
-
 
 export function findMatchingVaultItem(
   account: GoogleOtpAccount,

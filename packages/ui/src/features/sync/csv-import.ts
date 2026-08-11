@@ -1,6 +1,6 @@
 import type { Folder, VaultItem } from "@gistwarden/domain";
-import { browserCsvImportStrategy } from "./strategies/browser-csv-import-strategy.ts";
 import { bitwardenCsvImportStrategy } from "./strategies/bitwarden-csv-import-strategy.ts";
+import { browserCsvImportStrategy } from "./strategies/browser-csv-import-strategy.ts";
 
 export function parseAndValidateBrowserCsv(
   csvString: string,

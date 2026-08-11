@@ -1,5 +1,9 @@
+import type {
+  Fido2CredentialId,
+  VaultItem,
+  VaultItemType,
+} from "@gistwarden/domain";
 import type { Component, JSX } from "solid-js";
-import type { Fido2CredentialId, VaultItem, VaultItemType } from "@gistwarden/domain";
 import type { ItemEditFormState } from "@/features/vault/item-edit/vault-edit-helper.ts";
 
 export interface DetailComponentProps {

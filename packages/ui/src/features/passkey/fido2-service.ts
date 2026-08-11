@@ -1,55 +1,75 @@
-import { z } from "zod";
-import { err, ok, Result } from "neverthrow";
-import type { TranslationKey } from "@/core/i18n.ts";
-import { VaultItemType } from "@gistwarden/domain";
-import { Fido2CredentialSchema, RpIdSchema, VaultItemIdSchema, type Fido2Credential, type LoginVaultItem, type RpId, type VaultItem, type VaultItemId } from "@gistwarden/domain";
-import { isMatchingDomain } from "@gistwarden/domain";
-
-import { saveItem } from "@/features/vault/vault-service.ts";
 import {
-  generatePasskeyAssertResponse,
-  generatePasskeyRegisterResponse,
-} from "@/features/passkey/passkey-crypto.ts";
-import { accountStore } from "@/core/store.ts";
+  type Fido2Credential,
+  Fido2CredentialSchema,
+  isMatchingDomain,
+  type LoginVaultItem,
+  type RpId,
+  RpIdSchema,
+  type VaultItem,
+  VaultItemIdSchema,
+  VaultItemType,
+} from "@gistwarden/domain";
 import {
   rejectFido2RequestRoute,
   resolveFido2RequestRoute,
 } from "@gistwarden/orchestrator";
-import { sendBackgroundMessage } from "@/core/messaging.ts";
+import { err, ok, type Result } from "neverthrow";
+import { z } from "zod";
 import { getBaseDomain } from "@/core/domain-utils.ts";
+import type { TranslationKey } from "@/core/i18n.ts";
+import { sendBackgroundMessage } from "@/core/messaging.ts";
+import { accountStore } from "@/core/store.ts";
+import {
+  generatePasskeyAssertResponse,
+  generatePasskeyRegisterResponse,
+} from "@/features/passkey/passkey-crypto.ts";
+import { saveItem } from "@/features/vault/vault-service.ts";
 
-export const Fido2RequestSchema = z.object({
-  success: z.boolean(),
-  type: z.enum(["create", "get"]),
-  origin: z.string(),
-  options: z.object({
-    rpId: RpIdSchema.optional(),
-    rp: z.object({
-      id: RpIdSchema.optional(),
-      name: z.string(),
-    }).optional(),
-    user: z.object({
-      id: z.string(),
-      name: z.string(),
-      displayName: z.string().optional(),
-    }).optional(),
-    challenge: z.string(),
-    userVerification: z.enum(["required", "preferred", "discouraged"]).optional(),
-    allowCredentials: z.array(z.object({
-      id: z.string(),
-      type: z.string(),
-    })).optional(),
-  }),
-}).readonly();
+export const Fido2RequestSchema = z
+  .object({
+    success: z.boolean(),
+    type: z.enum(["create", "get"]),
+    origin: z.string(),
+    options: z.object({
+      rpId: RpIdSchema.optional(),
+      rp: z
+        .object({
+          id: RpIdSchema.optional(),
+          name: z.string(),
+        })
+        .optional(),
+      user: z
+        .object({
+          id: z.string(),
+          name: z.string(),
+          displayName: z.string().optional(),
+        })
+        .optional(),
+      challenge: z.string(),
+      userVerification: z
+        .enum(["required", "preferred", "discouraged"])
+        .optional(),
+      allowCredentials: z
+        .array(
+          z.object({
+            id: z.string(),
+            type: z.string(),
+          }),
+        )
+        .optional(),
+    }),
+  })
+  .readonly();
 export type Fido2Request = z.infer<typeof Fido2RequestSchema>;
 
-export const MatchingPasskeySchema = z.object({
-  credential: Fido2CredentialSchema,
-  vaultItemName: z.string(),
-  vaultItemId: VaultItemIdSchema,
-}).readonly();
+export const MatchingPasskeySchema = z
+  .object({
+    credential: Fido2CredentialSchema,
+    vaultItemName: z.string(),
+    vaultItemId: VaultItemIdSchema,
+  })
+  .readonly();
 export type MatchingPasskey = z.infer<typeof MatchingPasskeySchema>;
-
 
 export function findMatchingFido2Accounts(
   vaultItems: VaultItem[],
@@ -61,8 +81,7 @@ export function findMatchingFido2Accounts(
   return vaultItems.filter((item): item is LoginVaultItem => {
     if (item.type !== VaultItemType.Login || !item.login) return false;
     return (
-      isMatchingDomain(item, rpIdNormalized) ||
-      isMatchingDomain(item, origin)
+      isMatchingDomain(item, rpIdNormalized) || isMatchingDomain(item, origin)
     );
   });
 }
@@ -81,7 +100,8 @@ export function findMatchingFido2Credentials(
       item.login.fido2Credentials.forEach((cred: Fido2Credential) => {
         const credRpId = cred.rpId?.trim().toLowerCase() || "";
         const credBase = getBaseDomain(cred.rpId || "");
-        const isMatch = credRpId === targetRpId ||
+        const isMatch =
+          credRpId === targetRpId ||
           (Boolean(credBase) && credBase === targetBase);
 
         if (isMatch) {
@@ -138,7 +158,7 @@ export async function registerFido2Passkey(
       updatedCredentials = [...existingCredentials, newCred];
     } else {
       updatedCredentials = existingCredentials.map((c) =>
-        c.credentialId === option ? newCred : c
+        c.credentialId === option ? newCred : c,
       );
       if (!existingCredentials.some((c) => c.credentialId === option)) {
         updatedCredentials.push(newCred);
@@ -198,11 +218,12 @@ export async function assertFido2Passkey(
     counter: nextCounter,
   };
 
-  const originalItem = accountStore.vaultItems.find((v) =>
-    v.id === selected.vaultItemId
+  const originalItem = accountStore.vaultItems.find(
+    (v) => v.id === selected.vaultItemId,
   );
   if (
-    !originalItem || originalItem.type !== VaultItemType.Login ||
+    !originalItem ||
+    originalItem.type !== VaultItemType.Login ||
     !originalItem.login
   ) {
     return err("fido2_error_assert_failed");
@@ -213,9 +234,10 @@ export async function assertFido2Passkey(
     type: VaultItemType.Login,
     login: {
       ...originalItem.login,
-      fido2Credentials: (originalItem.login.fido2Credentials || []).map((
-        c: Fido2Credential,
-      ) => c.credentialId === cred.credentialId ? updatedCred : c),
+      fido2Credentials: (originalItem.login.fido2Credentials || []).map(
+        (c: Fido2Credential) =>
+          c.credentialId === cred.credentialId ? updatedCred : c,
+      ),
     },
   };
 

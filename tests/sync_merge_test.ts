@@ -1,9 +1,3 @@
-import { assert, assertEquals, test } from "./assert.ts";
-import {
-  mergeVaultItems,
-  mergeVaultPayload,
-} from "../packages/orchestrator/mod.ts";
-
 import {
   asVaultItemId,
   type CardVaultItem,
@@ -15,6 +9,11 @@ import {
   type VaultItemId,
   VaultItemType,
 } from "@gistwarden/domain";
+import {
+  mergeVaultItems,
+  mergeVaultPayload,
+} from "../packages/orchestrator/mod.ts";
+import { assert, assertEquals, test } from "./assert.ts";
 
 const createMockLogin = (
   id: VaultItemId,
@@ -127,7 +126,6 @@ const createMockSshKey = (
 ): SshKeyVaultItem => ({
   id: asVaultItemId(id),
 
-
   type: VaultItemType.SshKey,
   name,
   notes: "Production SSH Key",
@@ -144,7 +142,6 @@ const createMockSshKey = (
   },
 });
 
-
 test("Vault Merge - Login item revision conflict resolution", () => {
   const localLogin = createMockLogin(
     asVaultItemId("login-1"),
@@ -158,7 +155,6 @@ test("Vault Merge - Login item revision conflict resolution", () => {
     "2026-07-24T10:00:00.000Z",
     "2026-07-24T11:00:00.000Z",
   );
-
 
   const merged = mergeVaultItems([localLogin], [remoteLogin], 1000);
   assertEquals(merged.length, 1);
@@ -283,7 +279,6 @@ test("Vault Merge - Mixed collection of all 5 Vault item types", () => {
     "2026-07-24T11:30:00.000Z",
   );
 
-
   const localItems: VaultItem[] = [
     localLogin,
     localNote,
@@ -337,7 +332,6 @@ test("Vault Merge - Trash array handles deleted items across devices", () => {
     "2026-07-24T10:00:00.000Z",
     "2026-07-24T10:00:00.000Z",
   );
-
 
   const localPayload = {
     items: [item1],

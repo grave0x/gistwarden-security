@@ -1,7 +1,7 @@
 import { unzlibSync, zlibSync } from "fflate";
 import { argon2id } from "hash-wasm";
-import { err, ok, Result } from "neverthrow";
-import { type TranslationKey } from "./i18n.ts";
+import { err, ok, type Result } from "neverthrow";
+import type { TranslationKey } from "./i18n.ts";
 import { logger } from "./logger.ts";
 export const ARGON2_ITERATIONS = 3;
 export const ARGON2_MEMORY = 65536; // 64MB
@@ -265,7 +265,7 @@ function encodeMpint(bytes: Uint8Array): Uint8Array {
   }
   const trimmed = bytes.subarray(start);
   const firstByte = trimmed[0] ?? 0;
-  const extraByte = (firstByte & 0x80) ? 1 : 0;
+  const extraByte = firstByte & 0x80 ? 1 : 0;
   const result = new Uint8Array(4 + extraByte + trimmed.length);
   const view = new DataView(result.buffer);
   view.setUint32(0, extraByte + trimmed.length, false);
@@ -309,11 +309,7 @@ function parseLegacyRsaPem(base64Str: string): Uint8Array | null {
   const mpintE = encodeMpint(publicExponent);
   const mpintN = encodeMpint(modulus);
 
-  return new Uint8Array([
-    ...keyTypeBytes,
-    ...mpintE,
-    ...mpintN,
-  ]);
+  return new Uint8Array([...keyTypeBytes, ...mpintE, ...mpintN]);
 }
 
 /**
@@ -360,10 +356,13 @@ class SshBufferReader {
 }
 
 export async function parseSshKey(privateKeyText: string): Promise<
-  Result<{
-    publicKey: string;
-    keyFingerprint: string;
-  }, TranslationKey>
+  Result<
+    {
+      publicKey: string;
+      keyFingerprint: string;
+    },
+    TranslationKey
+  >
 > {
   const trimmed = privateKeyText.trim();
 
@@ -399,8 +398,8 @@ export async function parseSshKey(privateKeyText: string): Promise<
   // 2. Check if Legacy RSA PEM format (-----BEGIN RSA PRIVATE KEY-----)
   if (trimmed.includes("-----BEGIN RSA PRIVATE KEY-----")) {
     const lines = trimmed.split("\n");
-    const base64Lines = lines.filter((line) =>
-      !line.trim().startsWith("-----")
+    const base64Lines = lines.filter(
+      (line) => !line.trim().startsWith("-----"),
     );
     const base64Str = base64Lines.join("").replace(/[^A-Za-z0-9+/=]/g, "");
     const pubKeyBlobBytes = parseLegacyRsaPem(base64Str);

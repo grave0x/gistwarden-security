@@ -1,6 +1,6 @@
-import Papa from "papaparse";
 import type { Folder, VaultItem } from "@gistwarden/domain";
 import { VaultItemType } from "@gistwarden/domain";
+import Papa from "papaparse";
 import { APP_NAME } from "@/core/constants.ts";
 import type { ExportResult, ExportStrategy } from "../import-export-types.ts";
 
@@ -41,10 +41,13 @@ export const bitwardenCsvExportStrategy = {
         const typeStr = item.type === VaultItemType.Login ? "login" : "note";
         const favoriteStr = item.favorite ? "1" : "0";
         const repromptStr = item.reprompt ? "1" : "0";
-        const folderName = (item.folderId && folderMap.get(item.folderId)) || "";
+        const folderName =
+          (item.folderId && folderMap.get(item.folderId)) || "";
 
         const fieldsStr = item.fields
-          ? item.fields.map((f) => `${f.name || ""}:${f.value || ""}`).join("\n")
+          ? item.fields
+              .map((f) => `${f.name || ""}:${f.value || ""}`)
+              .join("\n")
           : "";
 
         let uri = "";
@@ -77,9 +80,9 @@ export const bitwardenCsvExportStrategy = {
     }
 
     const fileContent = Papa.unparse(rows);
-    const fileName = `${APP_NAME.toLowerCase()}_bitwarden_export_${
-      new Date().toISOString().slice(0, 10)
-    }.csv`;
+    const fileName = `${APP_NAME.toLowerCase()}_bitwarden_export_${new Date()
+      .toISOString()
+      .slice(0, 10)}.csv`;
 
     return {
       fileName,

@@ -1,5 +1,3 @@
-import { type Component, mergeProps } from "solid-js";
-import type { IconProps } from "@/icons/svg/types.ts";
 import {
   ArrowLeft,
   ArrowUp,
@@ -42,7 +40,6 @@ import {
   Repeat,
   Search,
   Settings,
-  Shield,
   ShieldAlert,
   ShieldCheck,
   SquareCheck,
@@ -57,6 +54,8 @@ import {
   Wrench,
   X,
 } from "lucide-solid";
+import { type Component, mergeProps } from "solid-js";
+import type { IconProps } from "@/icons/svg/types.ts";
 
 function wrapLucide(
   LucideComp: Component<Record<string, unknown>>,

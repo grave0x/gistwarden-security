@@ -1,12 +1,12 @@
+import type { GeneratedPasswordHistoryItem } from "@gistwarden/repository";
+import { confirm, copyToClipboardWithMessage } from "@gistwarden/ui";
 import { type Component, createSignal, For, onMount, Show } from "solid-js";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
 import { formatDateTime, t } from "@/core/i18n.ts";
 import { navigate } from "@/core/navigation.ts";
-import { View } from "@/core/types.ts";
-import type { GeneratedPasswordHistoryItem } from "@gistwarden/repository";
 import { clearPasswordHistory, getPasswordHistory } from "@/core/storage.ts";
+import { View } from "@/core/types.ts";
 import { CopyIcon, TrashIcon } from "@/icons/svg/index.ts";
-import { confirm, copyToClipboardWithMessage } from "@gistwarden/ui";
 
 export const PasswordHistory: Component = () => {
   const [historyItems, setHistoryItems] = createSignal<
@@ -53,9 +53,7 @@ export const PasswordHistory: Component = () => {
         <Show
           when={historyItems().length > 0}
           fallback={
-            <div class="text-center py-12 text-muted">
-              {t("history_empty")}
-            </div>
+            <div class="text-center py-12 text-muted">{t("history_empty")}</div>
           }
         >
           <div class="flex-col gap-12 mb-16">
@@ -80,9 +78,11 @@ export const PasswordHistory: Component = () => {
                         copiedIndex() === index() ? "copied" : ""
                       }`}
                       onClick={() => handleCopyItem(item.password, index())}
-                      title={copiedIndex() === index()
-                        ? t("btn_copied")
-                        : t("btn_copy")}
+                      title={
+                        copiedIndex() === index()
+                          ? t("btn_copied")
+                          : t("btn_copy")
+                      }
                     >
                       <CopyIcon />
                     </button>

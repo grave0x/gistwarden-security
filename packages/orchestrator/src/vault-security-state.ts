@@ -1,5 +1,5 @@
-import { err, ok, Result } from "neverthrow";
 import type { TranslationKey } from "@gistwarden/domain";
+import { err, ok, type Result } from "neverthrow";
 import {
   persistSessionKey,
   restoreSessionKeyFromStorage,

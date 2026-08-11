@@ -1,5 +1,5 @@
-import { createSignal } from "solid-js";
 import { View } from "@gistwarden/domain";
+import { createSignal } from "solid-js";
 
 const pathToViewMap = new Map<string, View>([
   // Auth & Onboarding
@@ -101,9 +101,8 @@ export const pathDepths = {
 
 export type TransitionMode = "slide-forward" | "slide-backward" | "fade";
 
-const [transitionName, setTransitionName] = createSignal<TransitionMode>(
-  "fade",
-);
+const [transitionName, setTransitionName] =
+  createSignal<TransitionMode>("fade");
 
 export { setTransitionName, transitionName };
 

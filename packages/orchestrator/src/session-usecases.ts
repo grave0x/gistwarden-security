@@ -1,4 +1,11 @@
 import {
+  arrayBufferToBase64,
+  base64ToArrayBuffer,
+  MSG_USER_ACTIVITY,
+  SESSION_KEY_DERIVED_KEY,
+  sessionManager,
+} from "@gistwarden/domain";
+import {
   getSessionItem,
   removeSessionItem,
   setSessionItem,
@@ -6,18 +13,9 @@ import {
   type VaultTimeoutAction,
   type VaultTimeoutValue,
 } from "@gistwarden/repository";
-import {
-  arrayBufferToBase64,
-  base64ToArrayBuffer,
-  MSG_USER_ACTIVITY,
-  SESSION_KEY_DERIVED_KEY,
-  sessionManager,
-} from "@gistwarden/domain";
 import { notifyBackground } from "./messaging.ts";
 
-export async function persistSessionKey(
-  key: CryptoKey | null,
-): Promise<void> {
+export async function persistSessionKey(key: CryptoKey | null): Promise<void> {
   sessionManager.setKey(key);
   if (key) {
     const raw = await crypto.subtle.exportKey("raw", key);
@@ -28,9 +26,7 @@ export async function persistSessionKey(
   }
 }
 
-export async function restoreSessionKeyFromStorage(): Promise<
-  CryptoKey | null
-> {
+export async function restoreSessionKeyFromStorage(): Promise<CryptoKey | null> {
   const currentKey = sessionManager.getKey();
   if (currentKey) return currentKey;
 
@@ -51,10 +47,7 @@ export async function restoreSessionKeyFromStorage(): Promise<
       sessionManager.setKey(importedKey);
       return importedKey;
     } catch (e) {
-      console.error(
-        "[Crypto] Failed to import key from session storage:",
-        e,
-      );
+      console.error("[Crypto] Failed to import key from session storage:", e);
       return null;
     }
   }

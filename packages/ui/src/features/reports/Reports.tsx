@@ -1,8 +1,8 @@
-import { type Component } from "solid-js";
 import { View } from "@gistwarden/domain";
-import { navigate } from "@/core/navigation.ts";
-import { t } from "@/core/i18n.ts";
+import type { Component } from "solid-js";
 import { Header } from "@/components/ui/Header.tsx";
+import { t } from "@/core/i18n.ts";
+import { navigate } from "@/core/navigation.ts";
 import {
   DatabaseBreachIcon,
   GaugeIcon,
@@ -23,10 +23,7 @@ export const Reports: Component = () => {
 
         <div class="reports-grid mt-2">
           {/* 1. Exposed Passwords */}
-          <div
-            class="report-card"
-            onClick={() => navigate(View.ReportExposed)}
-          >
+          <div class="report-card" onClick={() => navigate(View.ReportExposed)}>
             <div class="report-card-icon">
               <ShieldAlertIcon />
             </div>
@@ -37,10 +34,7 @@ export const Reports: Component = () => {
           </div>
 
           {/* 2. Reused Passwords */}
-          <div
-            class="report-card"
-            onClick={() => navigate(View.ReportReused)}
-          >
+          <div class="report-card" onClick={() => navigate(View.ReportReused)}>
             <div class="report-card-icon">
               <RepeatKeyIcon />
             </div>
@@ -51,10 +45,7 @@ export const Reports: Component = () => {
           </div>
 
           {/* 3. Weak Passwords */}
-          <div
-            class="report-card"
-            onClick={() => navigate(View.ReportWeak)}
-          >
+          <div class="report-card" onClick={() => navigate(View.ReportWeak)}>
             <div class="report-card-icon">
               <GaugeIcon />
             </div>

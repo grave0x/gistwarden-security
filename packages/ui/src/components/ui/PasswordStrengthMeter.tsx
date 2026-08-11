@@ -1,5 +1,5 @@
-import { type Component, createMemo } from "solid-js";
 import { evaluatePasswordStrength } from "@gistwarden/domain";
+import { type Component, createMemo } from "solid-js";
 import { t } from "@/core/i18n.ts";
 
 interface PasswordStrengthMeterProps {
@@ -52,7 +52,11 @@ export const PasswordStrengthMeter: Component<PasswordStrengthMeterProps> = (
 ) => {
   const strength = createMemo<StrengthResult>(() => {
     const res = evaluatePasswordStrength(props.password);
-    const defaultStrength: StrengthResult = { score: 0, label: "pwd_strength_very_weak", className: "pwd-strength-very-weak" };
+    const defaultStrength: StrengthResult = {
+      score: 0,
+      label: "pwd_strength_very_weak",
+      className: "pwd-strength-very-weak",
+    };
     return STRENGTH_LOOKUP[res.score] ?? STRENGTH_LOOKUP[4] ?? defaultStrength;
   });
 

@@ -12,10 +12,9 @@ import {
   DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
   DEFAULT_PIN_CONFIG,
   getAccountSettings,
-  getActiveVaultMode,
-  getGithubToken,
-  type GithubConfig,
+  getSyncToken,
   type MasterPasswordSecurityConfig,
+  type SyncConfig,
   setSessionItem,
   updateAccountSettings,
   type VaultMode,
@@ -28,14 +27,14 @@ export interface ChangeMasterPasswordOptions {
   currentPass: string;
   newPass: string;
   vaultItems: VaultItem[];
-  currentGithubConfig: GithubConfig;
+  currentSyncConfig: SyncConfig;
   currentMpConfig: MasterPasswordSecurityConfig;
   vaultMode: VaultMode;
 }
 
 export interface ChangeMasterPasswordResult {
   newKey: CryptoKey;
-  updatedGithubConfig: GithubConfig;
+  updatedSyncConfig: SyncConfig;
   updatedMpConfig: MasterPasswordSecurityConfig;
 }
 
@@ -85,29 +84,29 @@ export async function changeMasterPasswordUseCase(
   await setSessionItem(SESSION_KEY_VERIFICATION_CIPHERTEXT, vCiphertext);
 
   const mode = options.vaultMode;
-  const githubToken = await getGithubToken(mode);
+  const syncToken = await getSyncToken(mode);
   const updatedMpConfig: MasterPasswordSecurityConfig = {
     ...options.currentMpConfig,
     salt: newSaltBase64,
   };
 
-  let updatedGithubConfig = options.currentGithubConfig;
-  if (githubToken) {
-    const encryptTokenResult = await encryptData(githubToken, newKey);
+  let updatedSyncConfig = options.currentSyncConfig;
+  if (syncToken) {
+    const encryptTokenResult = await encryptData(syncToken, newKey);
     if (encryptTokenResult.isErr()) {
       return err(encryptTokenResult.error);
     }
     const { iv, ciphertext } = encryptTokenResult.value;
-    updatedGithubConfig = {
-      ...options.currentGithubConfig,
-      githubTokenEncrypted: ciphertext,
-      githubTokenIv: iv,
+    updatedSyncConfig = {
+      ...options.currentSyncConfig,
+      syncTokenEncrypted: ciphertext,
+      syncTokenIv: iv,
     };
   }
 
   await updateAccountSettings(
     {
-      githubConfig: updatedGithubConfig,
+      syncConfig: updatedSyncConfig,
       masterPasswordConfig: updatedMpConfig,
       pinConfig: DEFAULT_PIN_CONFIG,
     },
@@ -116,7 +115,7 @@ export async function changeMasterPasswordUseCase(
 
   return ok({
     newKey,
-    updatedGithubConfig,
+    updatedSyncConfig,
     updatedMpConfig,
   });
 }
@@ -133,10 +132,7 @@ export async function validateSecurityConfigUseCase(
   let masterPasswordConfig = { ...acc.masterPasswordConfig };
   let updated = false;
 
-  if (
-    pinConfig.failedAttempts > 0 ||
-    pinConfig.failedMac
-  ) {
+  if (pinConfig.failedAttempts > 0 || pinConfig.failedMac) {
     const macRes = await computeHmac(
       String(pinConfig.failedAttempts),
       pinConfig.salt || secSalt,

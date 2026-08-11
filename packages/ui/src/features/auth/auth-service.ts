@@ -1,10 +1,65 @@
+import {
+  base64ToArrayBuffer,
+  computeHmac,
+  decryptData,
+  deriveKey,
+  encryptData,
+  type Folder,
+  generateSalt,
+  importAesGcmKey,
+  logger,
+  type TrashVaultItem,
+  type VaultItem,
+  VaultListSchema,
+  type VaultPayload,
+  VaultPayloadSchema,
+} from "@gistwarden/domain";
+import { getSyncProvider } from "@gistwarden/network";
+import {
+  checkVaultConfiguredUseCase,
+  clearDerivedKey,
+  createNewVaultUseCase,
+  downloadFromGistRoute,
+  getOrDeriveKey,
+  getSessionKey,
+  lockSessionUseCase,
+  logoutSessionUseCase,
+  setDerivedKey,
+  validateSecurityConfigUseCase,
+} from "@gistwarden/orchestrator";
+import {
+  DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
+  DEFAULT_PIN_CONFIG,
+  GistPayloadSchema,
+  getAccountSettings,
+  getSyncToken,
+} from "@gistwarden/repository";
+import { err, ok, type Result } from "neverthrow";
 import { reconcile } from "solid-js/store";
+import {
+  MSG_USER_ACTIVITY,
+  SESSION_KEY_ENCRYPTED_VAULT,
+  SESSION_KEY_PENDING_SYNC_TOKEN,
+  SESSION_KEY_VERIFICATION_CIPHERTEXT,
+  SESSION_KEY_VERIFICATION_IV,
+} from "@/core/constants.ts";
+import type { TranslationKey } from "@/core/i18n.ts";
+import { safeJsonParse } from "@/core/json-utils.ts";
+import { notifyBackground, sendBackgroundMessage } from "@/core/messaging.ts";
 import { navigate } from "@/core/navigation.ts";
 import { sessionManager } from "@/core/session-manager.ts";
 import {
   persistSessionKey,
   updateSessionTimeoutUseCase,
 } from "@/core/session-usecases.ts";
+import {
+  getSessionItem,
+  removeSessionItem,
+  setSessionItem,
+  setSessionUnlocked,
+  updateAccountSettings,
+  updateExtensionSettings,
+} from "@/core/storage.ts";
 import type {
   VaultTimeoutAction,
   VaultTimeoutValue,
@@ -20,77 +75,7 @@ import {
   setUiStore,
   uiStore,
 } from "@/core/store.ts";
-import {
-  DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
-  DEFAULT_PIN_CONFIG,
-  getAccountSettings,
-  getGithubToken,
-} from "@gistwarden/repository";
-import {
-  getSessionItem,
-  removeSessionItem,
-  resetAccountSettings,
-  setSessionItem,
-  setSessionUnlocked,
-  updateAccountSettings,
-  updateExtensionSettings,
-} from "@/core/storage.ts";
-import {
-  base64ToArrayBuffer,
-  computeHmac,
-  decryptData,
-  deriveKey,
-  encryptData,
-  generateSalt,
-  importAesGcmKey,
-  logger,
-} from "@gistwarden/domain";
-import { getSyncProvider } from "@gistwarden/network";
-import {
-  checkVaultConfiguredUseCase,
-  clearDerivedKey,
-  createNewVaultUseCase,
-  downloadFromGistRoute,
-  downloadFromLocalRoute,
-  getOrDeriveKey,
-  getSessionKey,
-  lockSessionUseCase,
-  logoutSessionUseCase,
-  setDerivedKey,
-  uploadToGistRoute,
-  uploadToLocalRoute,
-  validateSecurityConfigUseCase,
-} from "@gistwarden/orchestrator";
-import {
-  broadcastMessage,
-  notifyBackground,
-  sendBackgroundMessage,
-} from "@/core/messaging.ts";
 import { View } from "@/core/types.ts";
-import { clearAlarm } from "@/core/alarms.ts";
-import { GistPayloadSchema } from "@gistwarden/repository";
-import {
-  type Folder,
-  type TrashVaultItem,
-  type VaultItem,
-  VaultListSchema,
-  type VaultPayload,
-  VaultPayloadSchema,
-} from "@gistwarden/domain";
-import { type TranslationKey } from "@/core/i18n.ts";
-import { err, ok, Result } from "neverthrow";
-import { safeJsonParse } from "@/core/json-utils.ts";
-
-import {
-  ALARM_NAME_VAULT_TIMEOUT,
-  MSG_USER_ACTIVITY,
-  MSG_VAULT_LOGGED_OUT,
-  SESSION_KEY_ENCRYPTED_VAULT,
-  SESSION_KEY_PENDING_GITHUB_TOKEN,
-  SESSION_KEY_VERIFICATION_CIPHERTEXT,
-  SESSION_KEY_VERIFICATION_IV,
-  SESSION_KEYS_ON_LOCK,
-} from "@/core/constants.ts";
 
 export interface SetupUnlockedSessionOptions {
   targetView?: View;
@@ -121,10 +106,11 @@ async function setupUnlockedSession(
 
   await setSessionUnlocked(true);
 
-  const finalToken = await getGithubToken(settingsStore.vaultMode);
+  const finalToken = await getSyncToken(settingsStore.vaultMode);
   const targetView = options?.targetView;
   const selectedItem = options?.selectedItem;
-  const finalView = targetView ||
+  const finalView =
+    targetView ||
     (uiStore.view === View.Fido2Prompt ? View.Fido2Prompt : View.Vault);
 
   applyVaultPayloadToStore({
@@ -133,8 +119,8 @@ async function setupUnlockedSession(
     trash: vaultPayload.trash || [],
   });
   setAccountStore({
-    githubToken: finalToken || undefined,
-    githubConfigured: true,
+    syncToken: finalToken || undefined,
+    vaultConfigured: true,
     isLocked: false,
     sessionUnlocked: true,
     hasUnlockedInSession: true,
@@ -155,10 +141,9 @@ async function resolveGistContent(): Promise<
   if (typeof cachedVal === "string" && cachedVal) {
     content = cachedVal;
   } else {
-    const sendResult = await sendBackgroundMessage(
-      downloadFromGistRoute,
-      { mode: settingsStore.vaultMode },
-    );
+    const sendResult = await sendBackgroundMessage(downloadFromGistRoute, {
+      mode: settingsStore.vaultMode,
+    });
     if (sendResult.isErr()) {
       return err(sendResult.error);
     }
@@ -185,10 +170,12 @@ async function resolveGistContent(): Promise<
 export async function createNewVault(
   password: string,
 ): Promise<Result<void, TranslationKey>> {
+  const activeSyncToken = accountStore.syncToken;
+  const activeSyncConfig = accountStore.syncConfig;
   const res = await createNewVaultUseCase({
     password,
-    githubToken: accountStore.githubToken,
-    githubConfig: accountStore.githubConfig,
+    syncToken: activeSyncToken,
+    syncConfig: activeSyncConfig,
     masterPasswordConfig: accountStore.masterPasswordConfig,
     vaultMode: settingsStore.vaultMode,
   });
@@ -197,11 +184,11 @@ export async function createNewVault(
     return err(res.error);
   }
 
-  const { key, updatedGithubConfig, updatedMpConfig } = res.value;
+  const { key, updatedSyncConfig, updatedMpConfig } = res.value;
 
   setAccountStore("masterPasswordConfig", updatedMpConfig);
-  if (updatedGithubConfig) {
-    setAccountStore("githubConfig", updatedGithubConfig);
+  if (updatedSyncConfig) {
+    setAccountStore("syncConfig", updatedSyncConfig);
   }
 
   return await setupUnlockedSession(key, { folders: [], items: [], trash: [] });
@@ -225,7 +212,10 @@ export async function fetchEncryptedVaultContent(): Promise<
       await setSessionItem(SESSION_KEY_ENCRYPTED_VAULT, content);
       return ok(content);
     }
-    if (!sendResult.value.success && sendResult.value.error === "github_error_unauthorized") {
+    if (
+      !sendResult.value.success &&
+      sendResult.value.error === "github_error_unauthorized"
+    ) {
       return err("github_error_unauthorized");
     }
   } else if (sendResult.error === "github_error_unauthorized") {
@@ -261,7 +251,8 @@ export async function decryptGistVault(
   if (decryptRes.isErr()) {
     const errMsg = decryptRes.error;
     if (
-      errMsg.includes("OperationError") || errMsg === "login_error_wrong_mp"
+      errMsg.includes("OperationError") ||
+      errMsg === "login_error_wrong_mp"
     ) {
       return err("login_error_wrong_mp");
     }
@@ -292,10 +283,9 @@ export async function decryptGistVault(
 
   const params = new URLSearchParams(window.location.search);
   const itemId = params.get("itemId");
-  let targetView = uiStore.view === View.Fido2Prompt
-    ? View.Fido2Prompt
-    : View.Vault;
-  let selectedItem = undefined;
+  let targetView =
+    uiStore.view === View.Fido2Prompt ? View.Fido2Prompt : View.Vault;
+  let selectedItem;
 
   if (itemId && uiStore.view !== View.Fido2Prompt) {
     const foundItem = items.find((i: VaultItem) => i.id === itemId);
@@ -314,8 +304,8 @@ export async function verifyMasterPasswordSecurity(): Promise<
   const accSettingsRes = await getAccountSettings(settingsStore.vaultMode);
   if (accSettingsRes.isErr()) return err(accSettingsRes.error);
   const accSettings = accSettingsRes.value;
-  const config = accSettings.masterPasswordConfig ||
-    DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG;
+  const config =
+    accSettings.masterPasswordConfig || DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG;
   const secSalt = config.salt;
 
   if (secSalt) {
@@ -340,7 +330,7 @@ export async function recordMasterPasswordFailure(
   salt: string,
 ): Promise<void> {
   const nextAttempts = currentAttempts + 1;
-  const penaltySeconds = Math.pow(2, nextAttempts);
+  const penaltySeconds = 2 ** nextAttempts;
   const lockoutUntil = Date.now() + penaltySeconds * 1000;
   const secSalt = salt || generateSalt().toBase64();
   const macRes = await computeHmac(`${nextAttempts}:${lockoutUntil}`, secSalt);
@@ -381,7 +371,7 @@ export async function resetMasterPasswordSecurity(salt: string): Promise<void> {
 export async function unlock(
   password: string,
 ): Promise<Result<void, TranslationKey>> {
-  const provider = getSyncProvider(settingsStore.vaultMode);
+  const _provider = getSyncProvider(settingsStore.vaultMode);
 
   const secRes = await verifyMasterPasswordSecurity();
   if (secRes.isErr()) {
@@ -395,7 +385,7 @@ export async function unlock(
     return err(accSettingsRes.error);
   }
   const accSettings = accSettingsRes.value;
-  let githubConfig = accSettings.githubConfig;
+  let syncConfig = accSettings.syncConfig;
   let saltBase64 = accSettings.masterPasswordConfig.salt;
   clearDerivedKey();
 
@@ -455,56 +445,56 @@ export async function unlock(
   }
 
   // E. Giải mã / Kiểm tra Token GitHub (nếu có)
-  if (githubConfig.githubTokenEncrypted && githubConfig.githubTokenIv) {
+  if (syncConfig.syncTokenEncrypted && syncConfig.syncTokenIv) {
     const decryptTokenRes = await decryptData(
-      githubConfig.githubTokenEncrypted,
-      githubConfig.githubTokenIv,
+      syncConfig.syncTokenEncrypted,
+      syncConfig.syncTokenIv,
       key,
     );
     if (decryptTokenRes.isErr()) {
       logger.storage.warn(
-        "Failed to decrypt githubToken with current key, clearing invalid encrypted token config",
+        "Failed to decrypt syncToken with current key, clearing invalid encrypted token config",
       );
-      const clearedGithubConfig = {
-        ...githubConfig,
-        githubTokenEncrypted: "",
-        githubTokenIv: "",
+      const clearedSyncConfig = {
+        ...syncConfig,
+        syncTokenEncrypted: "",
+        syncTokenIv: "",
       };
       await updateAccountSettings(
-        { githubConfig: clearedGithubConfig },
+        { syncConfig: clearedSyncConfig },
         settingsStore.vaultMode,
       );
-      setAccountStore("githubConfig", clearedGithubConfig);
-      githubConfig = clearedGithubConfig;
+      setAccountStore("syncConfig", clearedSyncConfig);
+      syncConfig = clearedSyncConfig;
     }
   }
 
   // Check provider configuration
-  const isReady = await checkVaultConfiguredUseCase(
-    settingsStore.vaultMode,
-    { ...accSettings, githubConfig },
-  );
-  setAccountStore("githubConfigured", isReady);
+  const isReady = await checkVaultConfiguredUseCase(settingsStore.vaultMode, {
+    ...accSettings,
+    syncConfig,
+  });
+  setAccountStore("vaultConfigured", isReady);
 
   // F. Onboarding token mã hóa nếu đang có pending token
-  const activeToken = await getGithubToken(settingsStore.vaultMode);
+  const activeToken = await getSyncToken(settingsStore.vaultMode);
   if (
     activeToken &&
-    (!githubConfig.githubTokenEncrypted || !githubConfig.githubTokenIv)
+    (!syncConfig.syncTokenEncrypted || !syncConfig.syncTokenIv)
   ) {
     const encryptRes = await encryptData(activeToken, key);
     if (encryptRes.isOk()) {
-      const updatedGithubConfig = {
-        ...githubConfig,
-        githubTokenEncrypted: encryptRes.value.ciphertext,
-        githubTokenIv: encryptRes.value.iv,
+      const updatedSyncConfig = {
+        ...syncConfig,
+        syncTokenEncrypted: encryptRes.value.ciphertext,
+        syncTokenIv: encryptRes.value.iv,
       };
       await updateAccountSettings(
-        { githubConfig: updatedGithubConfig },
+        { syncConfig: updatedSyncConfig },
         settingsStore.vaultMode,
       );
-      setAccountStore("githubConfig", updatedGithubConfig);
-      await removeSessionItem(SESSION_KEY_PENDING_GITHUB_TOKEN);
+      setAccountStore("syncConfig", updatedSyncConfig);
+      await removeSessionItem(SESSION_KEY_PENDING_SYNC_TOKEN);
     }
   }
 
@@ -523,7 +513,7 @@ export async function unlock(
 export async function unlockVaultWithKey(
   key: CryptoKey,
 ): Promise<Result<void, TranslationKey>> {
-  const provider = getSyncProvider(settingsStore.vaultMode);
+  const _provider = getSyncProvider(settingsStore.vaultMode);
 
   await persistSessionKey(key);
 
@@ -563,7 +553,7 @@ export async function unlockVaultWithKey(
 export async function unlockVaultWithMasterPassword(
   password: string,
 ): Promise<Result<void, TranslationKey>> {
-  const provider = getSyncProvider(settingsStore.vaultMode);
+  const _provider = getSyncProvider(settingsStore.vaultMode);
 
   const secRes = await verifyMasterPasswordSecurity();
   if (secRes.isErr()) {
@@ -659,10 +649,7 @@ export async function unlockVaultWithPin(
   );
   const expectedMac = expectedMacRes.isOk() ? expectedMacRes.value : "";
 
-  if (
-    !currentConfig.failedMac ||
-    currentConfig.failedMac !== expectedMac
-  ) {
+  if (!currentConfig.failedMac || currentConfig.failedMac !== expectedMac) {
     await clearPinUnlockState();
     await lockVaultSession();
     return err("login_error_pin_tampered");
@@ -752,7 +739,7 @@ export async function lockVaultSession(): Promise<void> {
     folders: [],
     vaultItems: [],
     trashItems: [],
-    githubToken: "",
+    syncToken: "",
     isLocked: true,
     sessionUnlocked: false,
   });
@@ -785,9 +772,8 @@ export async function acceptWelcome() {
 
 export async function reloadVaultItems(): Promise<void> {
   const key = await getSessionKey();
-  if (
-    !key || !accountStore.masterPasswordConfig.salt || accountStore.isLocked
-  ) return;
+  if (!key || !accountStore.masterPasswordConfig.salt || accountStore.isLocked)
+    return;
 
   const contentRes = await fetchEncryptedVaultContent();
   if (contentRes.isErr() || !contentRes.value) return;

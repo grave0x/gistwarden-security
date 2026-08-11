@@ -1,6 +1,6 @@
-import { assertEquals, test } from "./assert.ts";
 import { Window } from "happy-dom";
 import { performAutofill } from "../apps/extension/src/extension/autofill-core.ts";
+import { assertEquals, test } from "./assert.ts";
 
 function setupDOM(html: string) {
   const window = new Window({ url: "https://example.com/login" });
@@ -35,12 +35,16 @@ test("Autofill - standard login form", () => {
   const passInput = doc.getElementById("pass");
 
   if (
-    userInput && "value" in userInput && typeof userInput.value === "string"
+    userInput &&
+    "value" in userInput &&
+    typeof userInput.value === "string"
   ) {
     assertEquals(userInput.value, "myuser");
   }
   if (
-    passInput && "value" in passInput && typeof passInput.value === "string"
+    passInput &&
+    "value" in passInput &&
+    typeof passInput.value === "string"
   ) {
     assertEquals(passInput.value, "mypass");
   }
@@ -61,12 +65,16 @@ test("Autofill - form without form tags (just inputs)", () => {
   const passInput = doc.getElementById("password");
 
   if (
-    userInput && "value" in userInput && typeof userInput.value === "string"
+    userInput &&
+    "value" in userInput &&
+    typeof userInput.value === "string"
   ) {
     assertEquals(userInput.value, "john_doe");
   }
   if (
-    passInput && "value" in passInput && typeof passInput.value === "string"
+    passInput &&
+    "value" in passInput &&
+    typeof passInput.value === "string"
   ) {
     assertEquals(passInput.value, "secret123");
   }
@@ -84,7 +92,9 @@ test("Autofill - only username fallback", () => {
 
   const userInput = doc.getElementById("user_id");
   if (
-    userInput && "value" in userInput && typeof userInput.value === "string"
+    userInput &&
+    "value" in userInput &&
+    typeof userInput.value === "string"
   ) {
     assertEquals(userInput.value, "only_user");
   }

@@ -1,8 +1,8 @@
 import { type Component, createSignal, For, Show } from "solid-js";
 import { t } from "@/core/i18n.ts";
 import { DatabaseBreachIcon, SyncIcon } from "@/icons/svg/index.ts";
-import { checkEmailBreachUseCase } from "./reports-service.ts";
 import { ReportLayout } from "./components/ReportLayout.tsx";
+import { checkEmailBreachUseCase } from "./reports-service.ts";
 
 export const ReportDataBreach: Component = () => {
   const [emailInput, setEmailInput] = createSignal("");

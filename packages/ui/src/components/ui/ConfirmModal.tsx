@@ -1,6 +1,6 @@
+import { t } from "@gistwarden/domain";
 import { type Component, Show } from "solid-js";
 import { Portal } from "solid-js/web";
-import { t } from "@gistwarden/domain";
 import { uiStore } from "../../core/store.ts";
 import { resolveConfirm } from "../../core/ui-service.ts";
 import Button from "./Button.tsx";
@@ -28,17 +28,14 @@ export const ConfirmModal: Component = () => {
             />
             <div class="confirm-modal-actions">
               <Button
-                variant={uiStore.confirmModal.type === "danger"
-                  ? "danger"
-                  : "primary"}
+                variant={
+                  uiStore.confirmModal.type === "danger" ? "danger" : "primary"
+                }
                 onClick={() => resolveConfirm(true)}
               >
                 {t("btn_confirm")}
               </Button>
-              <Button
-                variant="secondary"
-                onClick={() => resolveConfirm(false)}
-              >
+              <Button variant="secondary" onClick={() => resolveConfirm(false)}>
                 {t("btn_cancel")}
               </Button>
             </div>

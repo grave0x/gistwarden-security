@@ -1,11 +1,11 @@
-import { assertEquals, assert } from "./assert.ts";
+import type { LoginVaultItem } from "@gistwarden/domain";
 import {
   asVaultItemId,
   matchGoogleMigrationAccounts,
   parseGoogleMigrationUri,
   VaultItemType,
 } from "@gistwarden/domain";
-import type { LoginVaultItem } from "@gistwarden/domain";
+import { assert, assertEquals } from "./assert.ts";
 
 const test1 = () => {
   const uri1 =
@@ -18,7 +18,10 @@ const test1 = () => {
   assertEquals(payload1.accounts.length, 1);
   assert(payload1.accounts[0]);
   assertEquals(payload1.accounts[0].name, "INS0760");
-  assertEquals(payload1.accounts[0].secretBase32, "JFHFGMBXGYYFGN2RK5MVISBWIFFVIUKL");
+  assertEquals(
+    payload1.accounts[0].secretBase32,
+    "JFHFGMBXGYYFGN2RK5MVISBWIFFVIUKL",
+  );
   assertEquals(payload1.accounts[0].algorithm, "SHA1");
   assertEquals(payload1.accounts[0].digits, 6);
 };
@@ -40,7 +43,10 @@ const test2 = () => {
   assertEquals(payload2.accounts[0].secretBase32, "GDVTZVMDS56E32QCP572UABKEI");
 
   assertEquals(payload2.accounts[1].name, "INS0760");
-  assertEquals(payload2.accounts[1].secretBase32, "JFHFGMBXGYYFGN2RK5MVISBWIFFVIUKL");
+  assertEquals(
+    payload2.accounts[1].secretBase32,
+    "JFHFGMBXGYYFGN2RK5MVISBWIFFVIUKL",
+  );
 };
 
 const test3 = () => {

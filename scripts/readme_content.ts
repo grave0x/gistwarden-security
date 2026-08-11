@@ -57,32 +57,38 @@ export const readmeData = {
   badges: [
     {
       label: "SolidJS",
-      badgeUrl: "https://img.shields.io/badge/SolidJS-1.9-2c4f7c?style=for-the-badge&logo=solid&logoColor=white",
+      badgeUrl:
+        "https://img.shields.io/badge/SolidJS-1.9-2c4f7c?style=for-the-badge&logo=solid&logoColor=white",
       targetUrl: "https://solidjs.com",
     },
     {
       label: "TypeScript",
-      badgeUrl: "https://img.shields.io/badge/TypeScript-7.0-3178c6?style=for-the-badge&logo=typescript&logoColor=white",
+      badgeUrl:
+        "https://img.shields.io/badge/TypeScript-7.0-3178c6?style=for-the-badge&logo=typescript&logoColor=white",
       targetUrl: "https://www.typescriptlang.org",
     },
     {
       label: "Bun",
-      badgeUrl: "https://img.shields.io/badge/Bun-1.x-black?style=for-the-badge&logo=bun&logoColor=white",
+      badgeUrl:
+        "https://img.shields.io/badge/Bun-1.x-black?style=for-the-badge&logo=bun&logoColor=white",
       targetUrl: "https://bun.sh",
     },
     {
       label: "Esbuild",
-      badgeUrl: "https://img.shields.io/badge/Esbuild-0.28-ffcf00?style=for-the-badge&logo=esbuild&logoColor=black",
+      badgeUrl:
+        "https://img.shields.io/badge/Esbuild-0.28-ffcf00?style=for-the-badge&logo=esbuild&logoColor=black",
       targetUrl: "https://esbuild.github.io",
     },
     {
       label: "Manifest V3",
-      badgeUrl: "https://img.shields.io/badge/Manifest-V3-4285f4?style=for-the-badge&logo=google-chrome&logoColor=white",
+      badgeUrl:
+        "https://img.shields.io/badge/Manifest-V3-4285f4?style=for-the-badge&logo=google-chrome&logoColor=white",
       targetUrl: "https://developer.chrome.com/docs/extensions/mv3/intro/",
     },
     {
       label: "License: ISC",
-      badgeUrl: "https://img.shields.io/badge/License-ISC-blue?style=for-the-badge",
+      badgeUrl:
+        "https://img.shields.io/badge/License-ISC-blue?style=for-the-badge",
       targetUrl: "https://opensource.org/licenses/ISC",
     },
   ] as BadgeInfo[],

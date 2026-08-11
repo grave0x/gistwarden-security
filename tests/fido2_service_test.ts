@@ -1,9 +1,15 @@
-import { assert, assertEquals, test } from "./assert.ts";
+import {
+  asFido2CredentialId,
+  asRpId,
+  asVaultItemId,
+  type VaultItem,
+  VaultItemType,
+} from "@gistwarden/domain";
 import {
   findMatchingFido2Accounts,
   findMatchingFido2Credentials,
 } from "../packages/ui/src/features/passkey/fido2-service.ts";
-import { asFido2CredentialId, asRpId, asVaultItemId, type VaultItem, VaultItemType } from "@gistwarden/domain";
+import { assert, assertEquals, test } from "./assert.ts";
 
 const mockVaultItems: VaultItem[] = [
   {
@@ -72,7 +78,10 @@ test("fido2-service: findMatchingFido2Accounts ignores items without matching UR
 });
 
 test("fido2-service: findMatchingFido2Credentials matches rpId", () => {
-  const creds = findMatchingFido2Credentials(mockVaultItems, asRpId("github.com"));
+  const creds = findMatchingFido2Credentials(
+    mockVaultItems,
+    asRpId("github.com"),
+  );
   assertEquals(creds.length, 1);
   assert(creds[0]);
   assertEquals(creds[0].credential.credentialId, "cred1");

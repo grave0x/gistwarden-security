@@ -1,11 +1,11 @@
-import { type Component } from "solid-js";
-import { setSettingsStore, settingsStore } from "@/core/store.ts";
-import { View } from "@/core/types.ts";
+import type { Component } from "solid-js";
+import Checkbox from "@/components/ui/Checkbox.tsx";
+import DetailHeader from "@/components/ui/DetailHeader.tsx";
+import { t } from "@/core/i18n.ts";
 import { navigate } from "@/core/navigation.ts";
 import { updateExtensionSettings } from "@/core/storage.ts";
-import { t } from "@/core/i18n.ts";
-import DetailHeader from "@/components/ui/DetailHeader.tsx";
-import Checkbox from "@/components/ui/Checkbox.tsx";
+import { setSettingsStore, settingsStore } from "@/core/store.ts";
+import { View } from "@/core/types.ts";
 import { ChevronRightIcon, GlobeIcon, ThemeIcon } from "@/icons/svg/index.ts";
 
 export const Appearance: Component = () => {
@@ -29,16 +29,11 @@ export const Appearance: Component = () => {
 
         <div class="card card-list">
           {/* Language Settings */}
-          <div
-            class="setting-row"
-            onClick={() => navigate(View.Language)}
-          >
+          <div class="setting-row" onClick={() => navigate(View.Language)}>
             <div class="setting-row-left">
               <GlobeIcon />
               <div>
-                <div class="setting-label">
-                  {t("settings_label_language")}
-                </div>
+                <div class="setting-label">{t("settings_label_language")}</div>
                 <div class="setting-sub">
                   {settingsStore.language === "vi" ? "Tiếng Việt" : "English"}
                 </div>
@@ -48,21 +43,17 @@ export const Appearance: Component = () => {
           </div>
 
           {/* Theme Settings */}
-          <div
-            class="setting-row"
-            onClick={() => navigate(View.Theme)}
-          >
+          <div class="setting-row" onClick={() => navigate(View.Theme)}>
             <div class="setting-row-left">
               <ThemeIcon />
               <div>
-                <div class="setting-label">
-                  {t("settings_theme_label")}
-                </div>
+                <div class="setting-label">{t("settings_theme_label")}</div>
                 <div class="setting-sub">
                   {t("settings_theme_sub", {
-                    theme: settingsStore.theme === "dark"
-                      ? t("settings_theme_dark")
-                      : t("settings_theme_light"),
+                    theme:
+                      settingsStore.theme === "dark"
+                        ? t("settings_theme_dark")
+                        : t("settings_theme_light"),
                   })}
                 </div>
               </div>

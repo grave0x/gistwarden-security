@@ -1,5 +1,5 @@
-import { existsSync, readFileSync, writeFileSync } from "fs";
-import { join } from "path";
+import { existsSync, readFileSync, writeFileSync } from "node:fs";
+import { join } from "node:path";
 
 const manifestPath = join(
   import.meta.dirname || ".",
@@ -32,7 +32,7 @@ if (currentVersion.startsWith(datePrefix)) {
     newVersion = `${datePrefix}.1`;
   } else if (rest.startsWith(".")) {
     const rev = parseInt(rest.slice(1), 10);
-    if (!isNaN(rev)) {
+    if (!Number.isNaN(rev)) {
       newVersion = `${datePrefix}.${rev + 1}`;
     } else {
       newVersion = `${datePrefix}.1`;
@@ -41,11 +41,7 @@ if (currentVersion.startsWith(datePrefix)) {
 }
 
 manifest.version = newVersion;
-writeFileSync(
-  manifestPath,
-  JSON.stringify(manifest, null, 2) + "\n",
-  "utf8",
-);
+writeFileSync(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`, "utf8");
 console.log(`✓ Updated src/manifest.json version to ${newVersion}`);
 
 console.log(

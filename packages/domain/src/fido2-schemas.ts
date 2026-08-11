@@ -29,78 +29,108 @@ export function asRpId(rpId: string): RpId {
   return RpIdSchema.parse(rpId);
 }
 
-export const Fido2CredentialSchema = z.object({
-  credentialId: Fido2CredentialIdSchema,
-  keyType: z.string(),
+export const Fido2CredentialSchema = z
+  .object({
+    credentialId: Fido2CredentialIdSchema,
+    keyType: z.string(),
 
-  keyAlgorithm: z.string(),
-  keyCurve: z.string(),
-  keyValue: z.string(),
-  rpId: RpIdSchema,
-  userHandle: z.unknown().optional().transform((v) => {
-    if (!v) return undefined;
-    if (typeof v === "string") return v;
-    if (v instanceof Uint8Array || v instanceof ArrayBuffer) {
-      const bytes = new Uint8Array(v);
-      let binary = "";
-      for (let i = 0; i < bytes.byteLength; i++) {
-        const b = bytes[i];
-        if (b !== undefined) {
-          binary += String.fromCharCode(b);
+    keyAlgorithm: z.string(),
+    keyCurve: z.string(),
+    keyValue: z.string(),
+    rpId: RpIdSchema,
+    userHandle: z
+      .unknown()
+      .optional()
+      .transform((v) => {
+        if (!v) return undefined;
+        if (typeof v === "string") return v;
+        if (v instanceof Uint8Array || v instanceof ArrayBuffer) {
+          const bytes = new Uint8Array(v);
+          let binary = "";
+          for (let i = 0; i < bytes.byteLength; i++) {
+            const b = bytes[i];
+            if (b !== undefined) {
+              binary += String.fromCharCode(b);
+            }
+          }
+          return btoa(binary)
+            .replace(/\+/g, "-")
+            .replace(/\//g, "_")
+            .replace(/=/g, "");
         }
-      }
-      return btoa(binary).replace(/\+/g, "-").replace(/\//g, "_").replace(
-        /=/g,
-        "",
-      );
-    }
-    return String(v);
-  }).optional(),
-  userName: z.string().or(z.null()).optional().transform((v) => v || undefined)
-    .optional(),
-  counter: z.number().or(z.string()).transform((v) => {
-    if (typeof v === "string") {
-      const parsed = parseInt(v);
-      return isNaN(parsed) ? 0 : parsed;
-    }
-    return v;
-  }),
-  rpName: z.string().or(z.null()).optional(),
-  userDisplayName: z.string().or(z.null()).optional(),
-  discoverable: z.boolean().or(z.string()).transform((v) =>
-    typeof v === "string" ? v === "true" : v
-  ).optional(),
-  creationDate: z.string().or(z.date()).transform((v) =>
-    v instanceof Date ? v.toISOString() : v
-  ).optional(),
-}).readonly();
+        return String(v);
+      })
+      .optional(),
+    userName: z
+      .string()
+      .or(z.null())
+      .optional()
+      .transform((v) => v || undefined)
+      .optional(),
+    counter: z
+      .number()
+      .or(z.string())
+      .transform((v) => {
+        if (typeof v === "string") {
+          const parsed = parseInt(v, 10);
+          return Number.isNaN(parsed) ? 0 : parsed;
+        }
+        return v;
+      }),
+    rpName: z.string().or(z.null()).optional(),
+    userDisplayName: z.string().or(z.null()).optional(),
+    discoverable: z
+      .boolean()
+      .or(z.string())
+      .transform((v) => (typeof v === "string" ? v === "true" : v))
+      .optional(),
+    creationDate: z
+      .string()
+      .or(z.date())
+      .transform((v) => (v instanceof Date ? v.toISOString() : v))
+      .optional(),
+  })
+  .readonly();
 export type Fido2Credential = z.infer<typeof Fido2CredentialSchema>;
 
-export const GetPendingFido2RequestResponseSchema = z.object({
-  success: z.boolean(),
-  type: z.enum(["create", "get"]).optional(),
-  options: z.object({
-    rpId: RpIdSchema.optional(),
-    rp: z.object({
-      id: RpIdSchema.optional(),
-      name: z.string(),
-    }).optional(),
-    user: z.object({
-      id: z.string(),
-      name: z.string(),
-      displayName: z.string().optional(),
-    }).optional(),
-    challenge: z.string(),
-    userVerification: z.enum(["required", "preferred", "discouraged"])
+export const GetPendingFido2RequestResponseSchema = z
+  .object({
+    success: z.boolean(),
+    type: z.enum(["create", "get"]).optional(),
+    options: z
+      .object({
+        rpId: RpIdSchema.optional(),
+        rp: z
+          .object({
+            id: RpIdSchema.optional(),
+            name: z.string(),
+          })
+          .optional(),
+        user: z
+          .object({
+            id: z.string(),
+            name: z.string(),
+            displayName: z.string().optional(),
+          })
+          .optional(),
+        challenge: z.string(),
+        userVerification: z
+          .enum(["required", "preferred", "discouraged"])
+          .optional(),
+        allowCredentials: z
+          .array(
+            z.object({
+              id: z.string(),
+              type: z.string(),
+            }),
+          )
+          .optional(),
+      })
       .optional(),
-    allowCredentials: z.array(z.object({
-      id: z.string(),
-      type: z.string(),
-    })).optional(),
-  }).optional(),
-  origin: z.string().optional(),
-  error: z.string().optional(),
-}).readonly();
+    origin: z.string().optional(),
+    error: z.string().optional(),
+  })
+  .readonly();
 export type GetPendingFido2RequestResponse = z.infer<
   typeof GetPendingFido2RequestResponseSchema
 >;
@@ -144,47 +174,56 @@ export const Fido2PromptResponseSchema = z.discriminatedUnion("success", [
 ]);
 export type Fido2PromptResponse = z.infer<typeof Fido2PromptResponseSchema>;
 
-export const Fido2CredentialCreationRequestMsgSchema = z.object({
-  type: z.literal(MSG_FIDO2_CREDENTIAL_CREATION_REQUEST),
-  data: z.unknown().optional(),
-}).readonly();
+export const Fido2CredentialCreationRequestMsgSchema = z
+  .object({
+    type: z.literal(MSG_FIDO2_CREDENTIAL_CREATION_REQUEST),
+    data: z.unknown().optional(),
+  })
+  .readonly();
 export type Fido2CredentialCreationRequestMsg = z.infer<
   typeof Fido2CredentialCreationRequestMsgSchema
 >;
 
-export const Fido2CredentialGetRequestMsgSchema = z.object({
-  type: z.literal(MSG_FIDO2_CREDENTIAL_GET_REQUEST),
-  data: z.unknown().optional(),
-}).readonly();
+export const Fido2CredentialGetRequestMsgSchema = z
+  .object({
+    type: z.literal(MSG_FIDO2_CREDENTIAL_GET_REQUEST),
+    data: z.unknown().optional(),
+  })
+  .readonly();
 export type Fido2CredentialGetRequestMsg = z.infer<
   typeof Fido2CredentialGetRequestMsgSchema
 >;
 
-export const GetPendingFido2RequestMsgSchema = z.object({
-  type: z.literal(MSG_GET_PENDING_FIDO2_REQUEST),
-}).readonly();
+export const GetPendingFido2RequestMsgSchema = z
+  .object({
+    type: z.literal(MSG_GET_PENDING_FIDO2_REQUEST),
+  })
+  .readonly();
 export type GetPendingFido2RequestMsg = z.infer<
   typeof GetPendingFido2RequestMsgSchema
 >;
 
-export const ResolveFido2RequestMsgSchema = z.object({
-  type: z.literal(MSG_RESOLVE_FIDO2_REQUEST),
-  result: z.unknown().optional(),
-}).readonly();
+export const ResolveFido2RequestMsgSchema = z
+  .object({
+    type: z.literal(MSG_RESOLVE_FIDO2_REQUEST),
+    result: z.unknown().optional(),
+  })
+  .readonly();
 export type ResolveFido2RequestMsg = z.infer<
   typeof ResolveFido2RequestMsgSchema
 >;
 
-export const RejectFido2RequestMsgSchema = z.object({
-  type: z.literal(MSG_REJECT_FIDO2_REQUEST),
-  error: z.string().optional(),
-}).readonly();
-export type RejectFido2RequestMsg = z.infer<
-  typeof RejectFido2RequestMsgSchema
->;
+export const RejectFido2RequestMsgSchema = z
+  .object({
+    type: z.literal(MSG_REJECT_FIDO2_REQUEST),
+    error: z.string().optional(),
+  })
+  .readonly();
+export type RejectFido2RequestMsg = z.infer<typeof RejectFido2RequestMsgSchema>;
 
-export const Fido2HeartbeatMsgSchema = z.object({
-  type: z.literal(MSG_FIDO2_HEARTBEAT),
-}).readonly();
+export const Fido2HeartbeatMsgSchema = z
+  .object({
+    type: z.literal(MSG_FIDO2_HEARTBEAT),
+  })
+  .readonly();
 export type Fido2HeartbeatMsg = z.infer<typeof Fido2HeartbeatMsgSchema>;
-

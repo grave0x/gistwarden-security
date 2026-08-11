@@ -1,9 +1,9 @@
-import { type Component } from "solid-js";
-import { View } from "@/core/types.ts";
-import { navigate } from "@/core/navigation.ts";
 import { setGlobalLoading, showToast, syncTimeOffset } from "@gistwarden/ui";
-import { t } from "@/core/i18n.ts";
+import type { Component } from "solid-js";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
+import { t } from "@/core/i18n.ts";
+import { navigate } from "@/core/navigation.ts";
+import { View } from "@/core/types.ts";
 import { ChevronRightIcon, SyncIcon } from "@/icons/svg/index.ts";
 
 export const Troubleshooting: Component = () => {
@@ -25,17 +25,11 @@ export const Troubleshooting: Component = () => {
           <div
             class="setting-row"
             onClick={async () => {
-              setGlobalLoading(
-                true,
-                t("settings_sync_time_loading"),
-              );
+              setGlobalLoading(true, t("settings_sync_time_loading"));
               const res = await syncTimeOffset();
               setGlobalLoading(false);
               if (res.isOk()) {
-                showToast(
-                  t("settings_sync_time_success"),
-                  "success",
-                );
+                showToast(t("settings_sync_time_success"), "success");
               } else {
                 showToast(t("settings_sync_time_error"), "error");
               }
@@ -44,12 +38,8 @@ export const Troubleshooting: Component = () => {
             <div class="setting-row-left">
               <SyncIcon />
               <div>
-                <div class="setting-label">
-                  {t("settings_sync_time_label")}
-                </div>
-                <div class="setting-sub">
-                  {t("settings_sync_time_sub")}
-                </div>
+                <div class="setting-label">{t("settings_sync_time_label")}</div>
+                <div class="setting-sub">{t("settings_sync_time_sub")}</div>
               </div>
             </div>
             <ChevronRightIcon />

@@ -1,6 +1,6 @@
 import { type Component, Show } from "solid-js";
+import Button from "@/components/ui/Button.tsx";
 import { t } from "@/core/i18n.ts";
-import { APP_NAME } from "@/core/constants.ts";
 import { getAssetUrl } from "@/core/runtime.ts";
 import {
   AutofillIcon,
@@ -15,7 +15,6 @@ import {
   ShieldAlertIcon,
   SyncIcon,
 } from "@/icons/svg/index.ts";
-import Button from "@/components/ui/Button.tsx";
 
 export interface GuideSectionProps {
   readonly route: string;
@@ -33,29 +32,27 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
               <InfoIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_overview")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_start_ov_lead")}
-            </p>
+            <p class="hero-lead">{t("guide_start_ov_lead")}</p>
           </div>
 
           <div class="article-cards-grid">
             <div class="guide-card">
-              <h3><LockIcon size={18} /> {t("guide_start_ov_card1_title")}</h3>
-              <p>
-                {t("guide_start_ov_card1_desc")}
-              </p>
+              <h3>
+                <LockIcon size={18} /> {t("guide_start_ov_card1_title")}
+              </h3>
+              <p>{t("guide_start_ov_card1_desc")}</p>
             </div>
             <div class="guide-card">
-              <h3><SyncIcon size={18} /> {t("guide_start_ov_card2_title")}</h3>
-              <p>
-                {t("guide_start_ov_card2_desc")}
-              </p>
+              <h3>
+                <SyncIcon size={18} /> {t("guide_start_ov_card2_title")}
+              </h3>
+              <p>{t("guide_start_ov_card2_desc")}</p>
             </div>
             <div class="guide-card">
-              <h3><KeyIcon size={18} /> {t("guide_start_ov_card3_title")}</h3>
-              <p>
-                {t("guide_start_ov_card3_desc")}
-              </p>
+              <h3>
+                <KeyIcon size={18} /> {t("guide_start_ov_card3_title")}
+              </h3>
+              <p>{t("guide_start_ov_card3_desc")}</p>
             </div>
           </div>
         </div>
@@ -68,9 +65,7 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
               <DownloadIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_download_extension")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_dl_ext_lead")}
-            </p>
+            <p class="hero-lead">{t("guide_dl_ext_lead")}</p>
           </div>
 
           <div class="article-cards-grid">
@@ -86,7 +81,8 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
                     window.open(
                       "https://addons.mozilla.org/en-US/firefox/addon/gistwarden/",
                       "_blank",
-                    )}
+                    )
+                  }
                 >
                   <ExternalLinkIcon size={14} /> {t("guide_dl_ext_btn")}
                 </Button>
@@ -105,7 +101,8 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
                     window.open(
                       "https://microsoftedge.microsoft.com/addons/detail/gistwarden/gcbibgbakekbbeeibgaeciiikbdlfndl",
                       "_blank",
-                    )}
+                    )
+                  }
                 >
                   <ExternalLinkIcon size={14} /> {t("guide_dl_ext_btn")}
                 </Button>
@@ -122,9 +119,7 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
               <GlobeIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_web_version")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_web_ver_lead")}
-            </p>
+            <p class="hero-lead">{t("guide_web_ver_lead")}</p>
             <div class="mt-16">
               <Button
                 variant="primary"
@@ -132,7 +127,8 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
                   window.open(
                     "https://uongsuadaubung.github.io/gistwarden/",
                     "_blank",
-                  )}
+                  )
+                }
               >
                 <ExternalLinkIcon size={14} /> {t("guide_web_ver_btn")}
               </Button>
@@ -155,14 +151,16 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
           <div class="article-cards-grid">
             <div class="guide-card">
               <h3>
-                <AutofillIcon size={18} /> {t("guide_web_ver_limit_autofill_title")}
+                <AutofillIcon size={18} />{" "}
+                {t("guide_web_ver_limit_autofill_title")}
               </h3>
               <p>{t("guide_web_ver_limit_autofill_desc")}</p>
             </div>
 
             <div class="guide-card">
               <h3>
-                <Shield2FAIcon size={18} /> {t("guide_web_ver_limit_passkey_title")}
+                <Shield2FAIcon size={18} />{" "}
+                {t("guide_web_ver_limit_passkey_title")}
               </h3>
               <p>{t("guide_web_ver_limit_passkey_desc")}</p>
             </div>
@@ -184,9 +182,7 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
               <KeyIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_master_password")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_start_mp_lead")}
-            </p>
+            <p class="hero-lead">{t("guide_start_mp_lead")}</p>
           </div>
 
           <div class="step-guide-container">
@@ -194,27 +190,21 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
               <span class="step-number">1</span>
               <div class="step-content">
                 <h4>{t("guide_start_mp_step1_title")}</h4>
-                <p>
-                  {t("guide_start_mp_step1_desc")}
-                </p>
+                <p>{t("guide_start_mp_step1_desc")}</p>
               </div>
             </div>
             <div class="step-box">
               <span class="step-number">2</span>
               <div class="step-content">
                 <h4>{t("guide_start_mp_step2_title")}</h4>
-                <p>
-                  {t("guide_start_mp_step2_desc")}
-                </p>
+                <p>{t("guide_start_mp_step2_desc")}</p>
               </div>
             </div>
             <div class="step-box">
               <span class="step-number">3</span>
               <div class="step-content">
                 <h4>{t("guide_start_mp_step3_title")}</h4>
-                <p>
-                  {t("guide_start_mp_step3_desc")}
-                </p>
+                <p>{t("guide_start_mp_step3_desc")}</p>
               </div>
             </div>
           </div>
@@ -228,18 +218,14 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
               <GithubIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_github_gist")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_token_desc")}
-            </p>
+            <p class="hero-lead">{t("guide_token_desc")}</p>
           </div>
 
           <div class="warning-callout-box">
             <ShieldAlertIcon size={24} class="warning-icon" />
             <div class="warning-content">
               <h4>{t("guide_token_important_note")}</h4>
-              <p>
-                {t("guide_token_note_desc")}
-              </p>
+              <p>{t("guide_token_note_desc")}</p>
             </div>
           </div>
 
@@ -248,9 +234,7 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
               <span class="step-number">1</span>
               <div class="step-content">
                 <h4>{t("guide_token_step1_title")}</h4>
-                <p>
-                  {t("guide_token_step1_desc")}
-                </p>
+                <p>{t("guide_token_step1_desc")}</p>
                 <img
                   src={getAssetUrl("images/gist/1.select exprire time.png")}
                   alt="Select Expiration Time"
@@ -263,9 +247,7 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
               <span class="step-number">2</span>
               <div class="step-content">
                 <h4>{t("guide_token_step2_title")}</h4>
-                <p>
-                  {t("guide_token_step2_desc")}
-                </p>
+                <p>{t("guide_token_step2_desc")}</p>
                 <img
                   src={getAssetUrl("images/gist/2.make sure selected gist.png")}
                   alt="Select Gist Scope"
@@ -278,9 +260,7 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
               <span class="step-number">3</span>
               <div class="step-content">
                 <h4>{t("guide_token_step3_title")}</h4>
-                <p>
-                  {t("guide_token_step3_desc")}
-                </p>
+                <p>{t("guide_token_step3_desc")}</p>
                 <img
                   src={getAssetUrl("images/gist/3.create generate button.png")}
                   alt="Generate Token Button"
@@ -293,9 +273,7 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
               <span class="step-number">4</span>
               <div class="step-content">
                 <h4>{t("guide_token_step4_title")}</h4>
-                <p>
-                  {t("guide_token_step4_desc")}
-                </p>
+                <p>{t("guide_token_step4_desc")}</p>
                 <img
                   src={getAssetUrl("images/gist/4.copy and save token.png")}
                   alt="Copy and Save Token"
@@ -314,9 +292,7 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
               <LockIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_local_vault")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_start_local_lead")}
-            </p>
+            <p class="hero-lead">{t("guide_start_local_lead")}</p>
           </div>
 
           {/* Warning 1: General Local Storage Warning */}
@@ -339,19 +315,28 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
 
           <div class="article-cards-grid">
             <div class="guide-card">
-              <h3><LockIcon size={18} /> {t("guide_start_local_card1_title")}</h3>
+              <h3>
+                <LockIcon size={18} /> {t("guide_start_local_card1_title")}
+              </h3>
               <p>{t("guide_start_local_card1_desc")}</p>
             </div>
             <div class="guide-card">
-              <h3><ShieldAlertIcon size={18} /> {t("guide_start_local_card2_title")}</h3>
+              <h3>
+                <ShieldAlertIcon size={18} />{" "}
+                {t("guide_start_local_card2_title")}
+              </h3>
               <p>{t("guide_start_local_card2_desc")}</p>
             </div>
             <div class="guide-card">
-              <h3><DownloadIcon size={18} /> {t("guide_start_local_card3_title")}</h3>
+              <h3>
+                <DownloadIcon size={18} /> {t("guide_start_local_card3_title")}
+              </h3>
               <p>{t("guide_start_local_card3_desc")}</p>
             </div>
             <div class="guide-card">
-              <h3><SyncIcon size={18} /> {t("guide_start_local_card4_title")}</h3>
+              <h3>
+                <SyncIcon size={18} /> {t("guide_start_local_card4_title")}
+              </h3>
               <p>{t("guide_start_local_card4_desc")}</p>
             </div>
           </div>
@@ -365,9 +350,7 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
               <LockIcon size={32} class="hero-icon" />
               <h1>{t("guide_item_auto_lock")}</h1>
             </div>
-            <p class="hero-lead">
-              {t("guide_start_lock_lead")}
-            </p>
+            <p class="hero-lead">{t("guide_start_lock_lead")}</p>
           </div>
 
           <div class="step-guide-container">
@@ -375,9 +358,7 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
               <span class="step-number">1</span>
               <div class="step-content">
                 <h4>{t("guide_start_lock_step1_title")}</h4>
-                <p>
-                  {t("guide_start_lock_step1_desc")}
-                </p>
+                <p>{t("guide_start_lock_step1_desc")}</p>
               </div>
             </div>
 
@@ -385,9 +366,7 @@ export const GettingStartedSection: Component<GuideSectionProps> = (props) => {
               <span class="step-number">2</span>
               <div class="step-content">
                 <h4>{t("guide_start_lock_step2_title")}</h4>
-                <p>
-                  {t("guide_start_lock_step2_desc")}
-                </p>
+                <p>{t("guide_start_lock_step2_desc")}</p>
               </div>
             </div>
 

@@ -1,14 +1,10 @@
+import type { Folder, FolderId, VaultItemType } from "@gistwarden/domain";
 import { type Component, createSignal, For, Show } from "solid-js";
-import { type Folder, type FolderId, VaultItemType } from "@gistwarden/domain";
-import { getVaultItemTypeLabel } from "@/features/vault/vault-utils.ts";
 import { t } from "@/core/i18n.ts";
-import {
-  ChevronDownIcon,
-  FolderIcon,
-  ListIcon,
-} from "@/icons/svg/index.ts";
-import { getAllVaultItemStrategies } from "@/features/vault/registry/vault-item-registry.ts";
 import { createDefaultVaultItem } from "@/features/vault/item-edit/vault-edit-helper.ts";
+import { getAllVaultItemStrategies } from "@/features/vault/registry/vault-item-registry.ts";
+import { getVaultItemTypeLabel } from "@/features/vault/vault-utils.ts";
+import { ChevronDownIcon, FolderIcon, ListIcon } from "@/icons/svg/index.ts";
 
 export interface VaultFilterPanelProps {
   showFilterPanel: boolean;
@@ -18,7 +14,6 @@ export interface VaultFilterPanelProps {
   selectedFolderId: FolderId | "no_folder";
   onSelectFolderId: (folderId: FolderId | "no_folder") => void;
 }
-
 
 export const VaultFilterPanel: Component<VaultFilterPanelProps> = (props) => {
   const [showFolderDropdown, setShowFolderDropdown] = createSignal(false);
@@ -122,12 +117,16 @@ export const VaultFilterPanel: Component<VaultFilterPanelProps> = (props) => {
                 {(strategy) => (
                   <div
                     class={`dropdown-item ${
-                      props.selectedFilterType === strategy.type ? "selected" : ""
+                      props.selectedFilterType === strategy.type
+                        ? "selected"
+                        : ""
                     }`}
                     onClick={() => handleSelectType(strategy.type)}
                   >
                     <span class="item-icon">
-                      {strategy.renderIcon(createDefaultVaultItem(strategy.type))}
+                      {strategy.renderIcon(
+                        createDefaultVaultItem(strategy.type),
+                      )}
                     </span>
                     <span>{getVaultItemTypeLabel(strategy.type)}</span>
                   </div>

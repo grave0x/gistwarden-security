@@ -1,6 +1,6 @@
 import { type Component, Show } from "solid-js";
-import { CloseIcon, FolderIcon, TrashIcon } from "@/icons/svg/index.ts";
 import { t } from "@/core/i18n.ts";
+import { CloseIcon, FolderIcon, TrashIcon } from "@/icons/svg/index.ts";
 
 export interface VaultBatchActionBarProps {
   selectedCount: number;
@@ -39,7 +39,7 @@ export const VaultBatchActionBar: Component<VaultBatchActionBarProps> = (
           onClick={props.onSelectAll}
         >
           {props.selectedCount >= props.allVisibleCount &&
-              props.allVisibleCount > 0
+          props.allVisibleCount > 0
             ? t("vault_deselect_all")
             : t("vault_select_all")}
         </button>

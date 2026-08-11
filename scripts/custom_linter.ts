@@ -175,7 +175,8 @@ function lintFile(filePath: string): LintIssue[] {
   const normalizedPath = filePath.replace(/\\/g, "/");
   const content = readFileSync(filePath, "utf8");
   const lines = content.split("\n");
-  const { layer: fileLayer, name: fileLayerName } = getLayerNumberAndName(normalizedPath);
+  const { layer: fileLayer, name: fileLayerName } =
+    getLayerNumberAndName(normalizedPath);
 
   // Skip auto-generated WASM files
   if (normalizedPath.includes("/wasm/generated/")) {
@@ -192,7 +193,8 @@ function lintFile(filePath: string): LintIssue[] {
           line: lineNum,
           column: lineText.indexOf("@ts-ignore") + 1,
           ruleId: "no-ts-ignore",
-          message: "Do not use @ts-ignore. This is strictly forbidden by project rules.",
+          message:
+            "Do not use @ts-ignore. This is strictly forbidden by project rules.",
         });
       }
       if (lineText.includes("@ts-expect-error")) {
@@ -201,7 +203,8 @@ function lintFile(filePath: string): LintIssue[] {
           line: lineNum,
           column: lineText.indexOf("@ts-expect-error") + 1,
           ruleId: "no-ts-ignore",
-          message: "Do not use @ts-expect-error. This is strictly forbidden by project rules.",
+          message:
+            "Do not use @ts-expect-error. This is strictly forbidden by project rules.",
         });
       }
     });
@@ -286,12 +289,20 @@ function lintFile(filePath: string): LintIssue[] {
     const trimmed = lineText.trim();
 
     // Ignore comment lines
-    if (trimmed.startsWith("//") || trimmed.startsWith("/*") || trimmed.startsWith("*")) {
+    if (
+      trimmed.startsWith("//") ||
+      trimmed.startsWith("/*") ||
+      trimmed.startsWith("*")
+    ) {
       return;
     }
 
     // Strip inline comments & string literals for code inspection
-    if (lineText.includes("linter-disable") || lineText.includes("eslint-disable")) return;
+    if (
+      lineText.includes("linter-disable") ||
+      lineText.includes("eslint-disable")
+    )
+      return;
 
     const codeNoStrings = lineText
       .replace(/\/\/.*/, "")
@@ -303,7 +314,7 @@ function lintFile(filePath: string): LintIssue[] {
     const funcParamMatch = codeNoStrings.match(
       /(?:function\s+[A-Za-z0-9_$]*|const\s+[A-Za-z0-9_$]+\s*=\s*(?:async\s*)?)\(([^)]+)\)/,
     );
-    if (funcParamMatch && funcParamMatch[1]) {
+    if (funcParamMatch?.[1]) {
       const paramsList = funcParamMatch[1].split(",").map((p) => p.trim());
       if (paramsList.length > 4) {
         issues.push({
@@ -318,7 +329,9 @@ function lintFile(filePath: string): LintIssue[] {
 
     // Rule 4: no-as-assertion
     if (/\bas\b/.test(codeNoStrings)) {
-      const matches = Array.from(codeNoStrings.matchAll(/\bas\s+([A-Za-z0-9_$<{}[\]|&"'`]+)/g));
+      const matches = Array.from(
+        codeNoStrings.matchAll(/\bas\s+([A-Za-z0-9_$<{}[\]|&"'`]+)/g),
+      );
       for (const match of matches) {
         const typeTarget = (match[1] || "").trim();
         const fullMatch = match[0];
@@ -349,18 +362,6 @@ function lintFile(filePath: string): LintIssue[] {
       }
     }
 
-    // Rule 4: no-explicit-any
-    if (/(:\s*any\b|as\s+any\b|<any>)/.test(codeNoStrings)) {
-      const matchPos = codeNoStrings.search(/(:\s*any\b|as\s+any\b|<any>)/);
-      issues.push({
-        filePath,
-        line: lineNum,
-        column: matchPos + 1,
-        ruleId: "no-explicit-any",
-        message: "Do not use 'any' type. Use explicit types or 'unknown' with type guards.",
-      });
-    }
-
     // Rule 5: no-props-destructuring (SolidJS)
     if (/\bconst\s*\{[^}]*\}\s*=\s*props\b/.test(codeNoStrings)) {
       issues.push({
@@ -368,31 +369,41 @@ function lintFile(filePath: string): LintIssue[] {
         line: lineNum,
         column: lineText.indexOf("props") + 1,
         ruleId: "no-props-destructuring",
-        message: "Do not destructure 'props' in SolidJS as it breaks reactivity. Access properties directly (e.g., props.title) or use 'splitProps'.",
+        message:
+          "Do not destructure 'props' in SolidJS as it breaks reactivity. Access properties directly (e.g., props.title) or use 'splitProps'.",
       });
     }
 
     // Rule 6: no-inline-style in TSX
-    if (normalizedPath.endsWith(".tsx") && /\bstyle\s*=\s*\{\s*\{/.test(codeNoStrings)) {
+    if (
+      normalizedPath.endsWith(".tsx") &&
+      /\bstyle\s*=\s*\{\s*\{/.test(codeNoStrings)
+    ) {
       issues.push({
         filePath,
         line: lineNum,
         column: lineText.indexOf("style=") + 1,
         ruleId: "no-inline-style",
-        message: "Do not use inline 'style' object/string. Move styles to SCSS/CSS files instead.",
+        message:
+          "Do not use inline 'style' object/string. Move styles to SCSS/CSS files instead.",
       });
     }
 
     // Rule 7: no-throw in src/
     if (/\bthrow\s+/.test(codeNoStrings)) {
-      const isAssertNever = /assertNever/.test(lineText) || /function assertNever/.test(lineText);
-      if (!isAssertNever && (normalizedPath.includes("/src/") || normalizedPath.includes("\\src\\"))) {
+      const isAssertNever =
+        /assertNever/.test(lineText) || /function assertNever/.test(lineText);
+      if (
+        !isAssertNever &&
+        (normalizedPath.includes("/src/") || normalizedPath.includes("\\src\\"))
+      ) {
         issues.push({
           filePath,
           line: lineNum,
           column: lineText.indexOf("throw") + 1,
           ruleId: "no-throw",
-          message: "Do not use 'throw' inside 'src/' directory. Use Result from 'neverthrow' for flat error handling.",
+          message:
+            "Do not use 'throw' inside 'src/' directory. Use Result from 'neverthrow' for flat error handling.",
         });
       }
     }
@@ -400,7 +411,7 @@ function lintFile(filePath: string): LintIssue[] {
     // Rule 8 & 9: Import checking (use-alias-import & strict-layer-boundaries)
     if (trimmed.startsWith("import ")) {
       const importMatch = trimmed.match(/from\s+["']([^"']+)["']/);
-      if (importMatch && importMatch[1]) {
+      if (importMatch?.[1]) {
         const importPath = importMatch[1];
 
         // Rule 8: use-alias-import
@@ -419,7 +430,8 @@ function lintFile(filePath: string): LintIssue[] {
         }
 
         // Rule 9: strict-layer-boundaries
-        const { layer: targetLayer, name: targetLayerName } = getTargetLayerFromImport(importPath);
+        const { layer: targetLayer, name: targetLayerName } =
+          getTargetLayerFromImport(importPath);
         const isServiceWorker =
           normalizedPath.includes("/apps/extension/src/extension/") &&
           !normalizedPath.includes("autofill-content-script");
@@ -432,7 +444,11 @@ function lintFile(filePath: string): LintIssue[] {
             ruleId: "strict-layer-boundaries",
             message: `Layer Violation: Background Worker script must NOT import UI layer components/stores ('${importPath}').`,
           });
-        } else if (targetLayer > 0 && fileLayer > 0 && fileLayer < targetLayer) {
+        } else if (
+          targetLayer > 0 &&
+          fileLayer > 0 &&
+          fileLayer < targetLayer
+        ) {
           issues.push({
             filePath,
             line: lineNum,
@@ -447,7 +463,10 @@ function lintFile(filePath: string): LintIssue[] {
     // Layer-specific rules:
     // Domain pureness (L1) - JSX is only checked if in a .tsx file or explicit JSX tag with JSX props/closing
     if (fileLayer === 1) {
-      if (normalizedPath.endsWith(".tsx") && /<[A-Z][A-Za-z0-9]*/.test(codeNoStrings)) {
+      if (
+        normalizedPath.endsWith(".tsx") &&
+        /<[A-Z][A-Za-z0-9]*/.test(codeNoStrings)
+      ) {
         issues.push({
           filePath,
           line: lineNum,
@@ -462,7 +481,8 @@ function lintFile(filePath: string): LintIssue[] {
           line: lineNum,
           column: lineText.indexOf("fetch") + 1,
           ruleId: "domain-pureness",
-          message: "[Domain Rule] Direct 'fetch()' calls are strictly forbidden in Domain layer. Delegate HTTP requests to Network layer.",
+          message:
+            "[Domain Rule] Direct 'fetch()' calls are strictly forbidden in Domain layer. Delegate HTTP requests to Network layer.",
         });
       }
       if (/\b(localStorage|sessionStorage)\b/.test(codeNoStrings)) {
@@ -471,20 +491,25 @@ function lintFile(filePath: string): LintIssue[] {
           line: lineNum,
           column: 1,
           ruleId: "domain-pureness",
-          message: "[Domain Rule] Accessing Web Storage directly is forbidden in Domain layer. Delegate to Repository layer.",
+          message:
+            "[Domain Rule] Accessing Web Storage directly is forbidden in Domain layer. Delegate to Repository layer.",
         });
       }
     }
 
     // Repository boundary (L2)
     if (fileLayer === 2) {
-      if (normalizedPath.endsWith(".tsx") && /<[A-Z][A-Za-z0-9]*/.test(codeNoStrings)) {
+      if (
+        normalizedPath.endsWith(".tsx") &&
+        /<[A-Z][A-Za-z0-9]*/.test(codeNoStrings)
+      ) {
         issues.push({
           filePath,
           line: lineNum,
           column: 1,
           ruleId: "repository-boundary",
-          message: "[Repository Rule] Rendering JSX elements is strictly forbidden in Repository layer.",
+          message:
+            "[Repository Rule] Rendering JSX elements is strictly forbidden in Repository layer.",
         });
       }
       if (/\bfetch\s*\(/.test(codeNoStrings)) {
@@ -493,20 +518,25 @@ function lintFile(filePath: string): LintIssue[] {
           line: lineNum,
           column: lineText.indexOf("fetch") + 1,
           ruleId: "repository-boundary",
-          message: "[Repository Rule] Direct 'fetch()' calls are forbidden in Repository layer. Use Network layer ('packages/network') instead.",
+          message:
+            "[Repository Rule] Direct 'fetch()' calls are forbidden in Repository layer. Use Network layer ('packages/network') instead.",
         });
       }
     }
 
     // Network purity (L3)
     if (fileLayer === 3) {
-      if (normalizedPath.endsWith(".tsx") && /<[A-Z][A-Za-z0-9]*/.test(codeNoStrings)) {
+      if (
+        normalizedPath.endsWith(".tsx") &&
+        /<[A-Z][A-Za-z0-9]*/.test(codeNoStrings)
+      ) {
         issues.push({
           filePath,
           line: lineNum,
           column: 1,
           ruleId: "network-purity",
-          message: "[Network Rule] Rendering JSX elements is strictly forbidden in Network layer.",
+          message:
+            "[Network Rule] Rendering JSX elements is strictly forbidden in Network layer.",
         });
       }
       if (/\b(localStorage|sessionStorage)\b/.test(codeNoStrings)) {
@@ -515,20 +545,25 @@ function lintFile(filePath: string): LintIssue[] {
           line: lineNum,
           column: 1,
           ruleId: "network-purity",
-          message: "[Network Rule] Direct access to Web Storage is forbidden in Network layer. Return response payload to Orchestrator.",
+          message:
+            "[Network Rule] Direct access to Web Storage is forbidden in Network layer. Return response payload to Orchestrator.",
         });
       }
     }
 
     // Orchestrator boundary (L4)
     if (fileLayer === 4) {
-      if (normalizedPath.endsWith(".tsx") && /<[A-Z][A-Za-z0-9]*/.test(codeNoStrings)) {
+      if (
+        normalizedPath.endsWith(".tsx") &&
+        /<[A-Z][A-Za-z0-9]*/.test(codeNoStrings)
+      ) {
         issues.push({
           filePath,
           line: lineNum,
           column: 1,
           ruleId: "orchestrator-boundary",
-          message: "[Orchestrator Rule] Rendering JSX components is strictly forbidden in Orchestrator layer.",
+          message:
+            "[Orchestrator Rule] Rendering JSX components is strictly forbidden in Orchestrator layer.",
         });
       }
       if (/\b(localStorage|sessionStorage)\b/.test(codeNoStrings)) {
@@ -537,7 +572,8 @@ function lintFile(filePath: string): LintIssue[] {
           line: lineNum,
           column: 1,
           ruleId: "orchestrator-boundary",
-          message: "[Orchestrator Rule] Direct access to raw Web Storage is forbidden. Use Repository layer abstractions instead.",
+          message:
+            "[Orchestrator Rule] Direct access to raw Web Storage is forbidden. Use Repository layer abstractions instead.",
         });
       }
     }
@@ -550,7 +586,8 @@ function lintFile(filePath: string): LintIssue[] {
           line: lineNum,
           column: lineText.indexOf("chrome.storage") + 1,
           ruleId: "ui-boundary",
-          message: "[UI Rule] Direct access to 'chrome.storage' is forbidden in UI layer. Delegate data storage operations to Repository/Orchestrator layer.",
+          message:
+            "[UI Rule] Direct access to 'chrome.storage' is forbidden in UI layer. Delegate data storage operations to Repository/Orchestrator layer.",
         });
       }
     }

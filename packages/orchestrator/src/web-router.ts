@@ -1,3 +1,5 @@
+import type { SimpleSuccessResponse } from "@gistwarden/repository";
+import { registerInMemoryRoute } from "./messaging.ts";
 import {
   checkDataBreachRoute,
   checkHIBPRoute,
@@ -12,8 +14,10 @@ import {
   userActivityRoute,
   validateTokenRoute,
 } from "./messaging-contracts.ts";
-import { registerInMemoryRoute } from "./messaging.ts";
-import { checkEmailBreachUseCase, checkPasswordHIBPUseCase } from "./report-usecases.ts";
+import {
+  checkEmailBreachUseCase,
+  checkPasswordHIBPUseCase,
+} from "./report-usecases.ts";
 import {
   deleteVaultUseCase,
   downloadVaultUseCase,
@@ -21,7 +25,6 @@ import {
   uploadVaultUseCase,
   validateTokenUseCase,
 } from "./sync-usecases.ts";
-import type { SimpleSuccessResponse } from "@gistwarden/repository";
 
 export function initializeWebRoutes(): void {
   // Auth & Activity routes
@@ -29,9 +32,12 @@ export function initializeWebRoutes(): void {
     return { success: true };
   });
 
-  registerInMemoryRoute(userActivityRoute, async (): Promise<SimpleSuccessResponse> => {
-    return { success: true };
-  });
+  registerInMemoryRoute(
+    userActivityRoute,
+    async (): Promise<SimpleSuccessResponse> => {
+      return { success: true };
+    },
+  );
 
   // Report routes
   registerInMemoryRoute(checkHIBPRoute, async (payload) => {

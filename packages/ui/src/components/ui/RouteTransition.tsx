@@ -1,5 +1,5 @@
-import { type Component, createEffect, createSignal, type JSX } from "solid-js";
 import { useLocation } from "@solidjs/router";
+import { type Component, createEffect, createSignal, type JSX } from "solid-js";
 import { getPathDepth } from "@/core/router.ts";
 import { settingsStore } from "@/core/store.ts";
 

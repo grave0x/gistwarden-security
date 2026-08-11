@@ -6,8 +6,12 @@ import {
   SESSION_KEY_VERIFICATION_IV,
   type TranslationKey,
 } from "@gistwarden/domain";
-import { getAccountSettings, getSessionItem, type VaultMode } from "@gistwarden/repository";
-import { err, ok, Result } from "neverthrow";
+import {
+  getAccountSettings,
+  getSessionItem,
+  type VaultMode,
+} from "@gistwarden/repository";
+import { err, ok, type Result } from "neverthrow";
 import { vaultSecurityContext } from "./vault-security-state.ts";
 
 export {

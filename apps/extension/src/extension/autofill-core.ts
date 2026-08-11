@@ -66,9 +66,13 @@ function submitElementFoundAndClicked(container: ParentNode): boolean {
   for (let i = 0; i < candidateButtons.length; i++) {
     const btn = candidateButtons[i];
     if (!btn) continue;
-    const btnText =
-      (btn.innerText || btn.getAttribute("value") || btn.id || btn.className ||
-        "").toLowerCase();
+    const btnText = (
+      btn.innerText ||
+      btn.getAttribute("value") ||
+      btn.id ||
+      btn.className ||
+      ""
+    ).toLowerCase();
     if (isLoginKeywordMatch(btnText)) {
       btn.click();
       return true;
@@ -154,7 +158,9 @@ export function performAutofill(
           // Check basic input type
           const type = input.type.toLowerCase();
           if (
-            type !== "text" && type !== "email" && type !== "tel" &&
+            type !== "text" &&
+            type !== "email" &&
+            type !== "tel" &&
             input.hasAttribute("type")
           ) {
             continue;
@@ -177,7 +183,9 @@ export function performAutofill(
             if (input instanceof HTMLInputElement) {
               const type = input.type.toLowerCase();
               if (
-                type === "text" || type === "email" || type === "tel" ||
+                type === "text" ||
+                type === "email" ||
+                type === "tel" ||
                 !input.hasAttribute("type")
               ) {
                 usernameField = input;
@@ -210,8 +218,10 @@ export function performAutofill(
       const name = (input.name || "").toLowerCase();
       const id = (input.id || "").toLowerCase();
       if (
-        name.includes("username") || name.includes("login") ||
-        id.includes("username") || id.includes("login")
+        name.includes("username") ||
+        name.includes("login") ||
+        id.includes("username") ||
+        id.includes("login")
       ) {
         if (username) {
           setInputValue(input, username);
@@ -249,7 +259,7 @@ export function extractSubmittedCredentials(
   let chosenPasswordInput: HTMLInputElement | null = null;
   for (let i = 0; i < passwordInputs.length; i++) {
     const input = passwordInputs[i];
-    if (input && input.value && input.value.trim().length > 0) {
+    if (input?.value && input.value.trim().length > 0) {
       chosenPasswordInput = input;
       break;
     }
@@ -289,7 +299,9 @@ export function extractSubmittedCredentials(
         if (!input) continue;
         const type = input.type.toLowerCase();
         if (
-          type === "text" || type === "email" || type === "tel" ||
+          type === "text" ||
+          type === "email" ||
+          type === "tel" ||
           !input.hasAttribute("type")
         ) {
           if (input.value && input.value.trim().length > 0) {
@@ -330,37 +342,48 @@ export function setupFormSubmitMonitoring(
   };
 
   // Global submit event listener
-  document.addEventListener("submit", (evt: Event) => {
-    const targetForm = evt.target instanceof HTMLFormElement
-      ? evt.target
-      : null;
-    triggerSubmission(targetForm);
-  }, true);
+  document.addEventListener(
+    "submit",
+    (evt: Event) => {
+      const targetForm =
+        evt.target instanceof HTMLFormElement ? evt.target : null;
+      triggerSubmission(targetForm);
+    },
+    true,
+  );
 
   // Global click event listener for submit buttons
-  document.addEventListener("click", (evt: MouseEvent) => {
-    if (!evt.isTrusted) return;
-    const target = evt.target instanceof HTMLElement ? evt.target : null;
-    if (!target) return;
-    const btn = target.closest<HTMLElement>(
-      'button[type="submit"], input[type="submit"], button:not([type]), .btn-submit',
-    );
-    if (btn) {
-      const parentForm = btn.closest("form");
-      triggerSubmission(parentForm);
-    }
-  }, true);
-
-  // Global keyup event listener for Enter / Space on submit buttons or inputs
-  document.addEventListener("keyup", (evt: KeyboardEvent) => {
-    if (!evt.isTrusted) return;
-    if (evt.key === "Enter") {
+  document.addEventListener(
+    "click",
+    (evt: MouseEvent) => {
+      if (!evt.isTrusted) return;
       const target = evt.target instanceof HTMLElement ? evt.target : null;
       if (!target) return;
-      const parentForm = target.closest("form");
-      triggerSubmission(parentForm);
-    }
-  }, true);
+      const btn = target.closest<HTMLElement>(
+        'button[type="submit"], input[type="submit"], button:not([type]), .btn-submit',
+      );
+      if (btn) {
+        const parentForm = btn.closest("form");
+        triggerSubmission(parentForm);
+      }
+    },
+    true,
+  );
+
+  // Global keyup event listener for Enter / Space on submit buttons or inputs
+  document.addEventListener(
+    "keyup",
+    (evt: KeyboardEvent) => {
+      if (!evt.isTrusted) return;
+      if (evt.key === "Enter") {
+        const target = evt.target instanceof HTMLElement ? evt.target : null;
+        if (!target) return;
+        const parentForm = target.closest("form");
+        triggerSubmission(parentForm);
+      }
+    },
+    true,
+  );
 }
 
 export function isSearchOrFilterInput(input: HTMLInputElement): boolean {
@@ -389,7 +412,9 @@ export function isSearchOrFilterInput(input: HTMLInputElement): boolean {
     input.getAttribute("aria-label"),
     input.className,
     input.getAttribute("data-query-name"),
-  ].join(" ").toLowerCase();
+  ]
+    .join(" ")
+    .toLowerCase();
 
   return searchKeywords.some((kw) => attrText.includes(kw));
 }
@@ -400,7 +425,9 @@ export function isCandidateLoginInput(input: HTMLInputElement): boolean {
   if (type === "password") return true;
 
   if (
-    type !== "text" && type !== "email" && type !== "tel" &&
+    type !== "text" &&
+    type !== "email" &&
+    type !== "tel" &&
     input.hasAttribute("type")
   ) {
     return false;
@@ -420,11 +447,14 @@ export function isCandidateLoginInput(input: HTMLInputElement): boolean {
     document.querySelector('input[type="password"]') !== null;
 
   const nameOrId = (
-    input.name + " " + input.id + " " +
+    input.name +
+    " " +
+    input.id +
+    " " +
     (input.getAttribute("autocomplete") || "")
   ).toLowerCase();
   const isUsernameKeyword = ["username", "login", "email", "user"].some((kw) =>
-    nameOrId.includes(kw)
+    nameOrId.includes(kw),
   );
 
   return isUsernameKeyword || hasPasswordOnPage;

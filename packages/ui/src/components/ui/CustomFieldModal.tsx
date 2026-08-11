@@ -1,11 +1,11 @@
-import { createEffect, createSignal, Show } from "solid-js";
-import { t } from "@/core/i18n.ts";
-import Input from "@/components/ui/Input.tsx";
-import Button from "@/components/ui/Button.tsx";
-import Select from "@/components/ui/Select.tsx";
-import BaseSlideModal from "@/components/ui/BaseSlideModal.tsx";
-import { CustomFieldType } from "@gistwarden/domain";
 import type { VaultField } from "@gistwarden/domain";
+import { CustomFieldType } from "@gistwarden/domain";
+import { createEffect, createSignal, Show } from "solid-js";
+import BaseSlideModal from "@/components/ui/BaseSlideModal.tsx";
+import Button from "@/components/ui/Button.tsx";
+import Input from "@/components/ui/Input.tsx";
+import Select from "@/components/ui/Select.tsx";
+import { t } from "@/core/i18n.ts";
 
 interface CustomFieldModalProps {
   isOpen: boolean;
@@ -46,9 +46,11 @@ export default function CustomFieldModal(props: CustomFieldModalProps) {
     <BaseSlideModal
       isOpen={props.isOpen}
       onClose={props.onClose}
-      title={props.isEdit
-        ? t("edit_field_modal_title_edit")
-        : t("edit_field_modal_title_add")}
+      title={
+        props.isEdit
+          ? t("edit_field_modal_title_edit")
+          : t("edit_field_modal_title_add")
+      }
     >
       {(triggerClose) => {
         const handleSave = () => {
@@ -79,7 +81,7 @@ export default function CustomFieldModal(props: CustomFieldModalProps) {
                 <Select
                   value={type()}
                   onChange={(e) => {
-                    const val = parseInt(e.currentTarget.value);
+                    const val = parseInt(e.currentTarget.value, 10);
                     if (
                       val === CustomFieldType.Text ||
                       val === CustomFieldType.Hidden ||
@@ -98,9 +100,11 @@ export default function CustomFieldModal(props: CustomFieldModalProps) {
                 <label>{t("edit_field_name_placeholder")}</label>
                 <Input
                   type="text"
-                  placeholder={type() === CustomFieldType.Divider
-                    ? t("edit_field_modal_placeholder_divider")
-                    : t("edit_field_modal_placeholder_name")}
+                  placeholder={
+                    type() === CustomFieldType.Divider
+                      ? t("edit_field_modal_placeholder_divider")
+                      : t("edit_field_modal_placeholder_name")
+                  }
                   value={name()}
                   onInput={(e) => setName(e.currentTarget.value)}
                 />
@@ -110,10 +114,10 @@ export default function CustomFieldModal(props: CustomFieldModalProps) {
                 <div class="form-group">
                   <label>{t("edit_field_val_placeholder")}</label>
                   <Input
-                    type={type() === CustomFieldType.Hidden
-                      ? "password"
-                      : "text"}
-                    placeholder={t("edit_field_val_placeholder") + "..."}
+                    type={
+                      type() === CustomFieldType.Hidden ? "password" : "text"
+                    }
+                    placeholder={`${t("edit_field_val_placeholder")}...`}
                     value={value()}
                     onInput={(e) => setValue(e.currentTarget.value)}
                   />

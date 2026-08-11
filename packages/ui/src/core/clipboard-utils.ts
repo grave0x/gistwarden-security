@@ -1,5 +1,5 @@
-import { err, ok, Result } from "neverthrow";
 import { logger, type TranslationKey } from "@gistwarden/domain";
+import { err, ok, type Result } from "neverthrow";
 
 let autoClearTimerId: ReturnType<typeof setTimeout> | null = null;
 

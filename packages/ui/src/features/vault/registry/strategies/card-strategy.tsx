@@ -1,12 +1,12 @@
-import { type Component, Show } from "solid-js";
 import {
   type CardVaultItem,
   isCardItem,
   type VaultItem,
   VaultItemType,
 } from "@gistwarden/domain";
-import { t } from "@/core/i18n.ts";
+import { type Component, Show } from "solid-js";
 import CardBrandIcon from "@/components/ui/CardBrandIcon.tsx";
+import { t } from "@/core/i18n.ts";
 import CardDetailFields from "@/features/vault/item-detail/CardDetailFields.tsx";
 import CardEditFields from "@/features/vault/item-edit/CardEditFields.tsx";
 import type { ItemEditFormState } from "@/features/vault/item-edit/vault-edit-helper.ts";

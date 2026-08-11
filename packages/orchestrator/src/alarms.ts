@@ -1,5 +1,5 @@
-import { err, ok, Result } from "neverthrow";
 import { isExtension, type TranslationKey } from "@gistwarden/domain";
+import { err, ok, type Result } from "neverthrow";
 
 export function hasAlarms(): boolean {
   return isExtension() && typeof chrome !== "undefined" && !!chrome.alarms;

@@ -1,8 +1,12 @@
 import type {
-  MessageContext,
-  MessageRouter,
-} from "@/extension/message-router.ts";
-import { type SimpleSuccessResponse } from "@gistwarden/repository";
+  CheckAutofillSuggestionMsg,
+  CheckAutofillSuggestionResponse,
+  CheckPendingNotificationMsg,
+  CheckPendingNotificationResponse,
+  CredentialsSubmittedMsg,
+  SaveCredentialActionMsg,
+  SaveCredentialActionResponse,
+} from "@gistwarden/domain";
 import {
   checkAutofillSuggestionRoute,
   checkAutofillSuggestionUseCase,
@@ -13,15 +17,11 @@ import {
   saveCredentialActionRoute,
   saveCredentialActionUseCase,
 } from "@gistwarden/orchestrator";
-import {
-  type CheckAutofillSuggestionMsg,
-  type CheckAutofillSuggestionResponse,
-  type CheckPendingNotificationMsg,
-  type CheckPendingNotificationResponse,
-  type CredentialsSubmittedMsg,
-  type SaveCredentialActionMsg,
-  type SaveCredentialActionResponse,
-} from "@gistwarden/domain";
+import type { SimpleSuccessResponse } from "@gistwarden/repository";
+import type {
+  MessageContext,
+  MessageRouter,
+} from "@/extension/message-router.ts";
 
 export async function handleSaveCredentialAction(
   rawPayload: unknown,
@@ -50,8 +50,8 @@ export async function handleCheckPendingNotification(
       return { success: true, payload: pending.payload };
     }
   }
-  const globalPending = await pendingNotificationManager
-    .getGlobalNotification();
+  const globalPending =
+    await pendingNotificationManager.getGlobalNotification();
   if (globalPending && Date.now() - globalPending.timestamp < 120000) {
     const payload = globalPending.payload;
     await pendingNotificationManager.setGlobalNotification(null);

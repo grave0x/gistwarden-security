@@ -1,6 +1,6 @@
 import { isExtension, POPOUT_HEIGHT, POPUP_WIDTH } from "@gistwarden/domain";
-import { uiStore } from "@/core/store.ts";
 import { getAssetUrl } from "@/core/runtime.ts";
+import { uiStore } from "@/core/store.ts";
 
 export const isPopout = (): boolean => {
   return new URLSearchParams(window.location.search).get("mode") === "tab";
@@ -16,11 +16,11 @@ export const handlePopout = () => {
         const offsetRight = 20;
         const offsetTop = 80;
         if (
-          parentWindow.left !== undefined && parentWindow.width !== undefined
+          parentWindow.left !== undefined &&
+          parentWindow.width !== undefined
         ) {
           left = Math.round(
-            parentWindow.left + parentWindow.width - POPUP_WIDTH -
-              offsetRight,
+            parentWindow.left + parentWindow.width - POPUP_WIDTH - offsetRight,
           );
         }
         if (parentWindow.top !== undefined) {

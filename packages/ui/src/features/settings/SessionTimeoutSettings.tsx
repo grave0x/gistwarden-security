@@ -1,6 +1,6 @@
 import { type Component, createEffect, createSignal } from "solid-js";
-import { t } from "@/core/i18n.ts";
 import Select from "@/components/ui/Select.tsx";
+import { t } from "@/core/i18n.ts";
 import {
   type VaultTimeoutAction,
   VaultTimeoutActionSchema,
@@ -44,9 +44,7 @@ export const SessionTimeoutSettings: Component<SessionTimeoutSettingsProps> = (
     setSelectedAction(props.action);
   });
 
-  const handleTimeoutChange = (
-    e: { currentTarget: { value: string } },
-  ) => {
+  const handleTimeoutChange = (e: { currentTarget: { value: string } }) => {
     const parsed = VaultTimeoutValueSchema.safeParse(e.currentTarget.value);
     if (parsed.success) {
       setSelectedTimeout(parsed.data);
@@ -54,9 +52,7 @@ export const SessionTimeoutSettings: Component<SessionTimeoutSettingsProps> = (
     }
   };
 
-  const handleActionChange = (
-    e: { currentTarget: { value: string } },
-  ) => {
+  const handleActionChange = (e: { currentTarget: { value: string } }) => {
     const parsed = VaultTimeoutActionSchema.safeParse(e.currentTarget.value);
     if (parsed.success) {
       setSelectedAction(parsed.data);

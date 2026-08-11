@@ -1,8 +1,8 @@
+import { err, ok, type Result } from "neverthrow";
 import { getDomain, getHostname as tldtsGetHostname } from "tldts";
-import { err, ok, Result } from "neverthrow";
 import type { TranslationKey } from "./i18n.ts";
-import { isLoginItem } from "./vault-types.ts";
 import type { VaultItem } from "./vault-schemas.ts";
+import { isLoginItem } from "./vault-types.ts";
 
 /**
  * Phân tích URL an toàn sử dụng neverthrow Result.
@@ -58,9 +58,11 @@ export function getDomainFromItem(item: VaultItem): string | null {
   const uri = firstUri.uri;
   let hostname = uri;
   if (!/^https?:\/\//i.test(hostname)) {
-    hostname = "http://" + hostname;
+    hostname = `http://${hostname}`;
   }
-  return safeParseUrl(hostname).map((url) => url.hostname).unwrapOr(null);
+  return safeParseUrl(hostname)
+    .map((url) => url.hostname)
+    .unwrapOr(null);
 }
 
 /**

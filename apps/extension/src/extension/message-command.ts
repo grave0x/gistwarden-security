@@ -1,16 +1,13 @@
-import { z } from "zod";
 import type { RouteContract } from "@gistwarden/orchestrator";
 import { isRecord } from "@gistwarden/repository";
+import type { z } from "zod";
 
 export interface MessageContext {
   sender: chrome.runtime.MessageSender;
   isExtensionSender: boolean;
 }
 
-export interface MessageCommand<
-  TPayload = unknown,
-  TResponse = unknown,
-> {
+export interface MessageCommand<TPayload = unknown, TResponse = unknown> {
   readonly type: string;
   readonly payloadSchema?: z.ZodTypeAny;
   readonly responseSchema?: z.ZodTypeAny;
@@ -25,15 +22,11 @@ function isRouteContract(
   val: unknown,
 ): val is RouteContract<string, z.ZodTypeAny, z.ZodTypeAny> {
   return (
-    isRecord(val) &&
-    typeof val.type === "string" &&
-    "payloadSchema" in val
+    isRecord(val) && typeof val.type === "string" && "payloadSchema" in val
   );
 }
 
-function isCommandOptions(
-  val: unknown,
-): val is {
+function isCommandOptions(val: unknown): val is {
   type: string;
   schema?: z.ZodTypeAny;
   internalOnly?: boolean;

@@ -1,6 +1,6 @@
-import { z } from "zod";
-import { err, ok, Result } from "neverthrow";
 import { isExtension, logger, type TranslationKey } from "@gistwarden/domain";
+import { err, ok, type Result } from "neverthrow";
+import type { z } from "zod";
 
 export interface RouteContract<
   TType extends string,
@@ -33,7 +33,7 @@ export type ExtensionMessageHandler = (
   message: unknown,
   sender: chrome.runtime.MessageSender,
   sendResponse: (response?: unknown) => void,
-) => boolean | void;
+) => boolean | undefined;
 
 /**
  * Register a listener for extension runtime messages with safety checks for non-extension environments.
@@ -59,7 +59,9 @@ export function onExtensionMessage(
 /**
  * Send a strongly-typed message to the background script using a RouteContract.
  */
-export type InMemoryRouteHandler = (payload: unknown) => Promise<unknown> | unknown;
+export type InMemoryRouteHandler = (
+  payload: unknown,
+) => Promise<unknown> | unknown;
 
 const inMemoryRouteHandlers = new Map<string, InMemoryRouteHandler>();
 
@@ -196,7 +198,9 @@ export async function sendMessageToTab(
   message: unknown,
 ): Promise<Result<unknown, TranslationKey>> {
   if (
-    typeof chrome === "undefined" || !chrome.tabs || !chrome.tabs.sendMessage
+    typeof chrome === "undefined" ||
+    !chrome.tabs ||
+    !chrome.tabs.sendMessage
   ) {
     return err("tab_error_send_message");
   }

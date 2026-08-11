@@ -1,27 +1,40 @@
-import { z } from "zod";
 import type { TranslationKey } from "@gistwarden/domain";
-import { defineRoute } from "./messaging.ts";
 import {
-  MSG_CHECK_AUTOFILL_SUGGESTION,
-  MSG_CHECK_PENDING_NOTIFICATION,
-  MSG_CREDENTIALS_SUBMITTED,
-  MSG_DELETE_GIST,
-  MSG_DELETE_LOCAL_VAULT,
-  MSG_DOWNLOAD_FROM_GIST,
-  MSG_DOWNLOAD_FROM_LOCAL,
-  MSG_FIDO2_CREDENTIAL_CREATION_REQUEST,
-  MSG_FIDO2_CREDENTIAL_GET_REQUEST,
-  MSG_FIDO2_HEARTBEAT,
-  MSG_GET_PENDING_FIDO2_REQUEST,
-  MSG_REJECT_FIDO2_REQUEST,
-  MSG_RESOLVE_FIDO2_REQUEST,
-  MSG_SAVE_CREDENTIAL_ACTION,
-  MSG_START_GITHUB_OAUTH,
-  MSG_UPLOAD_TO_GIST,
-  MSG_UPLOAD_TO_LOCAL,
-  MSG_USER_ACTIVITY,
-  MSG_VALIDATE_TOKEN,
-} from "@/core/constants.ts";
+  type CheckAutofillSuggestionMsg,
+  CheckAutofillSuggestionMsgSchema,
+  type CheckAutofillSuggestionResponse,
+  CheckAutofillSuggestionResponseSchema,
+  type CheckPendingNotificationMsg,
+  CheckPendingNotificationMsgSchema,
+  type CheckPendingNotificationResponse,
+  CheckPendingNotificationResponseSchema,
+  type CredentialsSubmittedMsg,
+  CredentialsSubmittedMsgSchema,
+  type Fido2ActionResponse,
+  Fido2ActionResponseSchema,
+  type Fido2CredentialCreationRequestMsg,
+  Fido2CredentialCreationRequestMsgSchema,
+  type Fido2CredentialGetRequestMsg,
+  Fido2CredentialGetRequestMsgSchema,
+  type Fido2HeartbeatMsg,
+  Fido2HeartbeatMsgSchema,
+  type Fido2PromptResponse,
+  Fido2PromptResponseSchema,
+  type GetPendingFido2RequestMsg,
+  GetPendingFido2RequestMsgSchema,
+  type GetPendingFido2RequestResponse,
+  GetPendingFido2RequestResponseSchema,
+  type RejectFido2RequestMsg,
+  RejectFido2RequestMsgSchema,
+  type ResolveFido2RequestMsg,
+  ResolveFido2RequestMsgSchema,
+  type SaveCredentialActionMsg,
+  SaveCredentialActionMsgSchema,
+  type SaveCredentialActionResponse,
+  SaveCredentialActionResponseSchema,
+  type UserActivityMsg,
+  UserActivityMsgSchema,
+} from "@gistwarden/domain";
 import {
   type DeleteGistMsg,
   DeleteGistMsgSchema,
@@ -44,44 +57,29 @@ import {
   type ValidateTokenResponse,
   ValidateTokenResponseSchema,
 } from "@gistwarden/repository";
+import { z } from "zod";
 import {
-  type Fido2ActionResponse,
-  Fido2ActionResponseSchema,
-  type Fido2CredentialCreationRequestMsg,
-  Fido2CredentialCreationRequestMsgSchema,
-  type Fido2CredentialGetRequestMsg,
-  Fido2CredentialGetRequestMsgSchema,
-  type Fido2HeartbeatMsg,
-  Fido2HeartbeatMsgSchema,
-  type Fido2PromptResponse,
-  Fido2PromptResponseSchema,
-  type GetPendingFido2RequestMsg,
-  GetPendingFido2RequestMsgSchema,
-  type GetPendingFido2RequestResponse,
-  GetPendingFido2RequestResponseSchema,
-  type RejectFido2RequestMsg,
-  RejectFido2RequestMsgSchema,
-  type ResolveFido2RequestMsg,
-  ResolveFido2RequestMsgSchema,
-} from "@gistwarden/domain";
-import {
-  type CheckAutofillSuggestionMsg,
-  CheckAutofillSuggestionMsgSchema,
-  type CheckAutofillSuggestionResponse,
-  CheckAutofillSuggestionResponseSchema,
-  type CheckPendingNotificationMsg,
-  CheckPendingNotificationMsgSchema,
-  type CheckPendingNotificationResponse,
-  CheckPendingNotificationResponseSchema,
-  type CredentialsSubmittedMsg,
-  CredentialsSubmittedMsgSchema,
-  type SaveCredentialActionMsg,
-  SaveCredentialActionMsgSchema,
-  type SaveCredentialActionResponse,
-  SaveCredentialActionResponseSchema,
-  type UserActivityMsg,
-  UserActivityMsgSchema,
-} from "@gistwarden/domain";
+  MSG_CHECK_AUTOFILL_SUGGESTION,
+  MSG_CHECK_PENDING_NOTIFICATION,
+  MSG_CREDENTIALS_SUBMITTED,
+  MSG_DELETE_GIST,
+  MSG_DELETE_LOCAL_VAULT,
+  MSG_DOWNLOAD_FROM_GIST,
+  MSG_DOWNLOAD_FROM_LOCAL,
+  MSG_FIDO2_CREDENTIAL_CREATION_REQUEST,
+  MSG_FIDO2_CREDENTIAL_GET_REQUEST,
+  MSG_FIDO2_HEARTBEAT,
+  MSG_GET_PENDING_FIDO2_REQUEST,
+  MSG_REJECT_FIDO2_REQUEST,
+  MSG_RESOLVE_FIDO2_REQUEST,
+  MSG_SAVE_CREDENTIAL_ACTION,
+  MSG_START_SYNC_OAUTH,
+  MSG_UPLOAD_TO_GIST,
+  MSG_UPLOAD_TO_LOCAL,
+  MSG_USER_ACTIVITY,
+  MSG_VALIDATE_TOKEN,
+} from "@/core/constants.ts";
+import { defineRoute } from "./messaging.ts";
 
 export type MessageContract<TPayload, TResponse> = {
   payloadSchema: z.ZodType<TPayload>;
@@ -89,7 +87,7 @@ export type MessageContract<TPayload, TResponse> = {
 };
 
 export type ContractMap = {
-  [MSG_START_GITHUB_OAUTH]: MessageContract<
+  [MSG_START_SYNC_OAUTH]: MessageContract<
     StartGithubOauthMsg,
     StartGithubOauthResponse
   >;
@@ -111,10 +109,7 @@ export type ContractMap = {
     DownloadFromGistMsg,
     DownloadGistResponse
   >;
-  [MSG_USER_ACTIVITY]: MessageContract<
-    UserActivityMsg,
-    SimpleSuccessResponse
-  >;
+  [MSG_USER_ACTIVITY]: MessageContract<UserActivityMsg, SimpleSuccessResponse>;
   [MSG_VALIDATE_TOKEN]: MessageContract<
     ValidateTokenMsg,
     ValidateTokenResponse
@@ -150,7 +145,7 @@ export type ContractMap = {
 };
 
 export const MESSAGE_CONTRACTS: ContractMap = {
-  [MSG_START_GITHUB_OAUTH]: {
+  [MSG_START_SYNC_OAUTH]: {
     payloadSchema: StartGithubOauthMsgSchema,
     responseSchema: StartGithubOauthResponseSchema,
   },
@@ -284,7 +279,7 @@ export const validateTokenRoute = defineRoute({
 });
 
 export const startGithubOauthRoute = defineRoute({
-  type: MSG_START_GITHUB_OAUTH,
+  type: MSG_START_SYNC_OAUTH,
   payloadSchema: StartGithubOauthMsgSchema,
   responseSchema: StartGithubOauthResponseSchema,
   internalOnly: true,
@@ -367,28 +362,35 @@ const TranslationKeySchema = z.custom<TranslationKey>(
 
 export const checkHIBPRoute = defineRoute({
   type: "CHECK_PASSWORD_HIBP",
-  payloadSchema: z.object({
-    type: z.literal("CHECK_PASSWORD_HIBP"),
-    password: z.string(),
-  }).readonly(),
-  responseSchema: z.object({
-    success: z.boolean(),
-    count: z.number(),
-    errorKey: TranslationKeySchema.optional(),
-  }).readonly(),
+  payloadSchema: z
+    .object({
+      type: z.literal("CHECK_PASSWORD_HIBP"),
+      password: z.string(),
+    })
+    .readonly(),
+  responseSchema: z
+    .object({
+      success: z.boolean(),
+      count: z.number(),
+      errorKey: TranslationKeySchema.optional(),
+    })
+    .readonly(),
 });
 
 export const checkDataBreachRoute = defineRoute({
   type: "CHECK_EMAIL_BREACH",
-  payloadSchema: z.object({
-    type: z.literal("CHECK_EMAIL_BREACH"),
-    email: z.string(),
-  }).readonly(),
-  responseSchema: z.object({
-    success: z.boolean(),
-    status: z.enum(["clean", "exposed", "rate_limited", "error"]),
-    breaches: z.array(z.string()).optional(),
-    errorKey: TranslationKeySchema.optional(),
-  }).readonly(),
+  payloadSchema: z
+    .object({
+      type: z.literal("CHECK_EMAIL_BREACH"),
+      email: z.string(),
+    })
+    .readonly(),
+  responseSchema: z
+    .object({
+      success: z.boolean(),
+      status: z.enum(["clean", "exposed", "rate_limited", "error"]),
+      breaches: z.array(z.string()).optional(),
+      errorKey: TranslationKeySchema.optional(),
+    })
+    .readonly(),
 });
-

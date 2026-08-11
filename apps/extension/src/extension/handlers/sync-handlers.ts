@@ -1,4 +1,3 @@
-import type { MessageRouter } from "@/extension/message-router.ts";
 import {
   deleteGistRoute,
   deleteVaultUseCase,
@@ -11,6 +10,7 @@ import {
   validateTokenRoute,
   validateTokenUseCase,
 } from "@gistwarden/orchestrator";
+import type { MessageRouter } from "@/extension/message-router.ts";
 
 export function registerSyncRoutes(router: MessageRouter): void {
   router

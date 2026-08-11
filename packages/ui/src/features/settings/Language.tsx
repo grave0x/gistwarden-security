@@ -1,10 +1,10 @@
+import { updateLanguage } from "@gistwarden/ui";
 import { type Component, Show } from "solid-js";
+import DetailHeader from "@/components/ui/DetailHeader.tsx";
+import { t } from "@/core/i18n.ts";
+import { navigate } from "@/core/navigation.ts";
 import { settingsStore } from "@/core/store.ts";
 import { View } from "@/core/types.ts";
-import { navigate } from "@/core/navigation.ts";
-import { updateLanguage } from "@gistwarden/ui";
-import { t } from "@/core/i18n.ts";
-import DetailHeader from "@/components/ui/DetailHeader.tsx";
 import { EnIcon, ViIcon } from "@/icons/svg/index.ts";
 
 export const Language: Component = () => {

@@ -1,5 +1,5 @@
-import { type Component, createSignal, Show } from "solid-js";
 import type { IdentityVaultItem } from "@gistwarden/domain";
+import { type Component, createSignal, Show } from "solid-js";
 import { t } from "@/core/i18n.ts";
 import { CopyIcon, EyeIcon, EyeOffIcon } from "@/icons/svg/index.ts";
 
@@ -20,7 +20,9 @@ export const IdentityDetailFields: Component<IdentityDetailFieldsProps> = (
       props.item.identity.firstName,
       props.item.identity.middleName,
       props.item.identity.lastName,
-    ].map((p) => p?.trim()).filter(Boolean);
+    ]
+      .map((p) => p?.trim())
+      .filter(Boolean);
     return parts.join(" ");
   };
 
@@ -33,23 +35,34 @@ export const IdentityDetailFields: Component<IdentityDetailFieldsProps> = (
       props.item.identity.state,
       props.item.identity.postalCode,
       props.item.identity.country,
-    ].map((p) => p?.trim()).filter(Boolean);
+    ]
+      .map((p) => p?.trim())
+      .filter(Boolean);
     return parts.join("\n");
   };
 
   const hasPersonalDetails = () => {
-    return !!(getFullName() || props.item.identity.username ||
-      props.item.identity.company);
+    return !!(
+      getFullName() ||
+      props.item.identity.username ||
+      props.item.identity.company
+    );
   };
 
   const hasIdentificationDetails = () => {
-    return !!(props.item.identity.ssn || props.item.identity.passportNumber ||
-      props.item.identity.licenseNumber);
+    return !!(
+      props.item.identity.ssn ||
+      props.item.identity.passportNumber ||
+      props.item.identity.licenseNumber
+    );
   };
 
   const hasContactDetails = () => {
-    return !!(props.item.identity.email || props.item.identity.phone ||
-      getFullAddress());
+    return !!(
+      props.item.identity.email ||
+      props.item.identity.phone ||
+      getFullAddress()
+    );
   };
 
   return (
@@ -71,7 +84,8 @@ export const IdentityDetailFields: Component<IdentityDetailFieldsProps> = (
                 type="button"
                 class="action-btn"
                 onClick={() =>
-                  props.onCopy(getFullName(), t("detail_identity_first_name"))}
+                  props.onCopy(getFullName(), t("detail_identity_first_name"))
+                }
                 title={t("btn_copy")}
               >
                 <CopyIcon />
@@ -95,7 +109,8 @@ export const IdentityDetailFields: Component<IdentityDetailFieldsProps> = (
                   props.onCopy(
                     props.item.identity.username || "",
                     t("detail_identity_username"),
-                  )}
+                  )
+                }
                 title={t("btn_copy")}
               >
                 <CopyIcon />
@@ -119,7 +134,8 @@ export const IdentityDetailFields: Component<IdentityDetailFieldsProps> = (
                   props.onCopy(
                     props.item.identity.company || "",
                     t("detail_identity_company"),
-                  )}
+                  )
+                }
                 title={t("btn_copy")}
               >
                 <CopyIcon />
@@ -167,7 +183,8 @@ export const IdentityDetailFields: Component<IdentityDetailFieldsProps> = (
                     props.onCopy(
                       props.item.identity.ssn || "",
                       t("detail_identity_ssn"),
-                    )}
+                    )
+                  }
                   title={t("btn_copy")}
                 >
                   <CopyIcon />
@@ -185,9 +202,9 @@ export const IdentityDetailFields: Component<IdentityDetailFieldsProps> = (
                   {showPassport()
                     ? props.item.identity.passportNumber
                     : (props.item.identity.passportNumber || "").replace(
-                      /./g,
-                      "•",
-                    )}
+                        /./g,
+                        "•",
+                      )}
                 </div>
               </div>
               <div class="field-actions">
@@ -211,7 +228,8 @@ export const IdentityDetailFields: Component<IdentityDetailFieldsProps> = (
                     props.onCopy(
                       props.item.identity.passportNumber || "",
                       t("detail_identity_passport"),
-                    )}
+                    )
+                  }
                   title={t("btn_copy")}
                 >
                   <CopyIcon />
@@ -236,7 +254,8 @@ export const IdentityDetailFields: Component<IdentityDetailFieldsProps> = (
                   props.onCopy(
                     props.item.identity.licenseNumber || "",
                     t("detail_identity_license"),
-                  )}
+                  )
+                }
                 title={t("btn_copy")}
               >
                 <CopyIcon />
@@ -268,7 +287,8 @@ export const IdentityDetailFields: Component<IdentityDetailFieldsProps> = (
                   props.onCopy(
                     props.item.identity.email || "",
                     t("detail_identity_email"),
-                  )}
+                  )
+                }
                 title={t("btn_copy")}
               >
                 <CopyIcon />
@@ -292,7 +312,8 @@ export const IdentityDetailFields: Component<IdentityDetailFieldsProps> = (
                   props.onCopy(
                     props.item.identity.phone || "",
                     t("detail_identity_phone"),
-                  )}
+                  )
+                }
                 title={t("btn_copy")}
               >
                 <CopyIcon />
@@ -313,7 +334,8 @@ export const IdentityDetailFields: Component<IdentityDetailFieldsProps> = (
                 type="button"
                 class="action-btn align-self-start mt-8"
                 onClick={() =>
-                  props.onCopy(getFullAddress(), t("detail_identity_address"))}
+                  props.onCopy(getFullAddress(), t("detail_identity_address"))
+                }
                 title={t("btn_copy")}
               >
                 <CopyIcon />

@@ -1,6 +1,6 @@
-import CopyableField from "@/components/ui/CopyableField.tsx";
-import { type Component, createSignal, Show } from "solid-js";
 import type { SshKeyVaultItem } from "@gistwarden/domain";
+import { type Component, createSignal, Show } from "solid-js";
+import CopyableField from "@/components/ui/CopyableField.tsx";
 import { t } from "@/core/i18n.ts";
 import { CopyIcon, EyeIcon, EyeOffIcon } from "@/icons/svg/index.ts";
 
@@ -16,9 +16,7 @@ export const SshKeyDetailFields: Component<SshKeyDetailFieldsProps> = (
 
   return (
     <>
-      <div class="detail-section-title">
-        {t("vault_item_ssh_key")}
-      </div>
+      <div class="detail-section-title">{t("vault_item_ssh_key")}</div>
       <div class="card mb-16">
         {/* Private Key */}
         <div class="detail-row">
@@ -26,7 +24,7 @@ export const SshKeyDetailFields: Component<SshKeyDetailFieldsProps> = (
             <div class="field-label">{t("detail_ssh_private_key")}</div>
             <div class="field-value password-font text-break">
               {showPrivateKey()
-                ? (props.item.sshKey.privateKey || "")
+                ? props.item.sshKey.privateKey || ""
                 : "●●●●●●●●●●●●●●●●●●●●●●●●●●●●●●"}
             </div>
           </div>
@@ -52,7 +50,8 @@ export const SshKeyDetailFields: Component<SshKeyDetailFieldsProps> = (
                   props.onCopy(
                     props.item.sshKey.privateKey || "",
                     t("detail_ssh_private_key"),
-                  )}
+                  )
+                }
                 title={t("btn_copy")}
               >
                 <CopyIcon />

@@ -1,46 +1,43 @@
 import {
+  type AutofillMatchingAccount,
+  NotificationPayloadSchema,
+} from "@gistwarden/domain";
+import {
+  checkAutofillSuggestionRoute,
+  checkPendingNotificationRoute,
+} from "@gistwarden/orchestrator";
+import { writeClipboardText } from "@/core/clipboard-utils.ts";
+import {
   MSG_AUTOFILL_CREDENTIALS,
   MSG_CREDENTIALS_SUBMITTED,
   MSG_SHOW_NOTIFICATION_BAR,
   STORAGE_KEY,
 } from "@/core/constants.ts";
-
-import {
-  performAutofill,
-  setupAutofillFocusMonitoring,
-  setupFormSubmitMonitoring,
-  type SubmittedCredentials,
-} from "@/extension/autofill-core.ts";
-import { showNotificationBar } from "@/features/notification/index.ts";
 import { getBaseDomain } from "@/core/domain-utils.ts";
-import { generateTotpSafe } from "@/core/totp-utils.ts";
-import { writeClipboardText } from "@/core/clipboard-utils.ts";
-import { getLocalItem, isRecord } from "@/core/storage.ts";
 import {
   notifyBackground,
   onExtensionMessage,
   sendBackgroundMessage,
 } from "@/core/messaging.ts";
+import { getLocalItem, isRecord } from "@/core/storage.ts";
+import { generateTotpSafe } from "@/core/totp-utils.ts";
 import {
-  checkAutofillSuggestionRoute,
-  checkPendingNotificationRoute,
-} from "@gistwarden/orchestrator";
-import {
-  type AutofillMatchingAccount,
-  NotificationPayloadSchema,
-} from "@gistwarden/domain";
+  performAutofill,
+  type SubmittedCredentials,
+  setupAutofillFocusMonitoring,
+  setupFormSubmitMonitoring,
+} from "@/extension/autofill-core.ts";
+import { showNotificationBar } from "@/features/notification/index.ts";
 
 // Listen for messages from background script
 onExtensionMessage((message, _sender, sendResponse) => {
   if (!isRecord(message)) return;
 
   if (message.type === MSG_AUTOFILL_CREDENTIALS) {
-    const username = typeof message.username === "string"
-      ? message.username
-      : undefined;
-    const password = typeof message.password === "string"
-      ? message.password
-      : undefined;
+    const username =
+      typeof message.username === "string" ? message.username : undefined;
+    const password =
+      typeof message.password === "string" ? message.password : undefined;
     const success = performAutofill(username, password);
     sendResponse({ success });
     return;
@@ -65,8 +62,8 @@ setupFormSubmitMonitoring((creds: SubmittedCredentials) => {
 // Setup monitoring for focus on login input fields to show Autofill Suggestion Toast (when unlocked)
 let autofillDismissedForTab = false;
 let isProgrammaticAutofilling = false;
-const currentDomain = window.location.hostname ||
-  getBaseDomain(window.location.href);
+const currentDomain =
+  window.location.hostname || getBaseDomain(window.location.href);
 
 setupAutofillFocusMonitoring(async () => {
   if (autofillDismissedForTab || isProgrammaticAutofilling) return;
@@ -82,10 +79,9 @@ setupAutofillFocusMonitoring(async () => {
   }
   if (!showSuggestions) return;
 
-  const msgRes = await sendBackgroundMessage(
-    checkAutofillSuggestionRoute,
-    { domain: currentDomain },
-  );
+  const msgRes = await sendBackgroundMessage(checkAutofillSuggestionRoute, {
+    domain: currentDomain,
+  });
 
   if (msgRes.isErr() || !msgRes.value.success) return;
   const payloadData = msgRes.value.payload;
@@ -128,10 +124,9 @@ setupAutofillFocusMonitoring(async () => {
 
 // Check if there is a pending notification bar for this tab upon page load
 const checkPendingNotification = async () => {
-  const msgRes = await sendBackgroundMessage(
-    checkPendingNotificationRoute,
-    { content: currentDomain },
-  );
+  const msgRes = await sendBackgroundMessage(checkPendingNotificationRoute, {
+    content: currentDomain,
+  });
   if (msgRes.isOk() && msgRes.value.success) {
     const parseRes = NotificationPayloadSchema.safeParse(msgRes.value.payload);
     if (parseRes.success) {

@@ -1,9 +1,9 @@
-import { type Component, createSignal, For, Show } from "solid-js";
-import { CustomFieldType } from "@gistwarden/domain";
 import type { VaultField } from "@gistwarden/domain";
-import { DragIcon, EditIcon, PlusIcon, TrashIcon } from "@/icons/svg/index.ts";
-import { t } from "@/core/i18n.ts";
+import { CustomFieldType } from "@gistwarden/domain";
+import { type Component, createSignal, For, Show } from "solid-js";
 import CustomFieldModal from "@/components/ui/CustomFieldModal.tsx";
+import { t } from "@/core/i18n.ts";
+import { DragIcon, EditIcon, PlusIcon, TrashIcon } from "@/icons/svg/index.ts";
 
 interface CustomFieldsEditProps {
   fields: VaultField[];
@@ -35,16 +35,16 @@ export const CustomFieldsEdit: Component<CustomFieldsEditProps> = (props) => {
     setShowEditFieldModal(true);
   };
 
-  const handleSaveFieldEdit = (
-    field: { name: string; value: string; type: number },
-  ) => {
+  const handleSaveFieldEdit = (field: {
+    name: string;
+    value: string;
+    type: number;
+  }) => {
     const idx = selectedFieldIndex();
     if (idx === null) {
       props.onChange([...props.fields, field]);
     } else {
-      props.onChange(
-        props.fields.map((f, i) => (i === idx ? field : f)),
-      );
+      props.onChange(props.fields.map((f, i) => (i === idx ? field : f)));
     }
     setShowEditFieldModal(false);
     setSelectedFieldIndex(null);
@@ -115,7 +115,7 @@ export const CustomFieldsEdit: Component<CustomFieldsEditProps> = (props) => {
                           <span class="field-sub-value">
                             {field.type === CustomFieldType.Hidden
                               ? "••••••••"
-                              : (field.value || t("detail_no_value"))}
+                              : field.value || t("detail_no_value")}
                           </span>
                         </div>
                         <div class="d-flex gap-8">
@@ -155,9 +155,7 @@ export const CustomFieldsEdit: Component<CustomFieldsEditProps> = (props) => {
                         <div class="cursor-grab d-flex align-center justify-center text-muted">
                           <DragIcon class="icon-inline" />
                         </div>
-                        <span class="divider-row-title">
-                          {field.name}
-                        </span>
+                        <span class="divider-row-title">{field.name}</span>
                       </div>
                       <div class="d-flex gap-8">
                         <button

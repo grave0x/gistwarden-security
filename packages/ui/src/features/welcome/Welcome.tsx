@@ -1,19 +1,19 @@
+import { updateLanguage } from "@gistwarden/ui";
 import { type Component, createSignal, Match, Switch } from "solid-js";
+import Button from "@/components/ui/Button.tsx";
+import { APP_NAME } from "@/core/constants.ts";
+import { t } from "@/core/i18n.ts";
 import { settingsStore } from "@/core/store.ts";
 import { acceptWelcome } from "@/features/auth/auth-service.ts";
-import { updateLanguage } from "@gistwarden/ui";
-import Button from "@/components/ui/Button.tsx";
+import PasskeyIllustration from "@/features/welcome/components/PasskeyIllustration.tsx";
+import SecurityIllustration from "@/features/welcome/components/SecurityIllustration.tsx";
+import TotpIllustration from "@/features/welcome/components/TotpIllustration.tsx";
+import WarningIllustration from "@/features/welcome/components/WarningIllustration.tsx";
 import {
   AppIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
 } from "@/icons/svg/index.ts";
-import { t } from "@/core/i18n.ts";
-import { APP_NAME } from "@/core/constants.ts";
-import SecurityIllustration from "@/features/welcome/components/SecurityIllustration.tsx";
-import PasskeyIllustration from "@/features/welcome/components/PasskeyIllustration.tsx";
-import TotpIllustration from "@/features/welcome/components/TotpIllustration.tsx";
-import WarningIllustration from "@/features/welcome/components/WarningIllustration.tsx";
 
 export const Welcome: Component = () => {
   const [activeSlide, setActiveSlide] = createSignal(0);

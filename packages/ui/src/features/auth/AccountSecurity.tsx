@@ -1,22 +1,22 @@
-import { type Component, createSignal, Show } from "solid-js";
-import { accountStore, setSettingsStore, settingsStore } from "@/core/store.ts";
-import { View } from "@/core/types.ts";
-import {
-  type VaultTimeoutAction,
-  type VaultTimeoutValue,
-} from "@/core/storage-schemas.ts";
-import { navigate } from "@/core/navigation.ts";
-import { disablePinUnlock, setPinUnlock } from "@/features/auth/pin-service.ts";
-import { updateSessionTimeout } from "@/features/auth/auth-service.ts";
 import { confirm, setGlobalLoading, showToast } from "@gistwarden/ui";
-import { updateExtensionSettings } from "@/core/storage.ts";
-import { ChevronRightIcon, KeyIcon } from "@/icons/svg/index.ts";
-import { t } from "@/core/i18n.ts";
-import SetPinModal from "@/features/auth/SetPinModal.tsx";
-import SessionTimeoutSettings from "@/features/settings/SessionTimeoutSettings.tsx";
-import { isExtension } from "@/core/runtime.ts";
+import { type Component, createSignal, Show } from "solid-js";
 import Checkbox from "@/components/ui/Checkbox.tsx";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
+import { t } from "@/core/i18n.ts";
+import { navigate } from "@/core/navigation.ts";
+import { isExtension } from "@/core/runtime.ts";
+import { updateExtensionSettings } from "@/core/storage.ts";
+import type {
+  VaultTimeoutAction,
+  VaultTimeoutValue,
+} from "@/core/storage-schemas.ts";
+import { accountStore, setSettingsStore, settingsStore } from "@/core/store.ts";
+import { View } from "@/core/types.ts";
+import { updateSessionTimeout } from "@/features/auth/auth-service.ts";
+import { disablePinUnlock, setPinUnlock } from "@/features/auth/pin-service.ts";
+import SetPinModal from "@/features/auth/SetPinModal.tsx";
+import SessionTimeoutSettings from "@/features/settings/SessionTimeoutSettings.tsx";
+import { ChevronRightIcon, KeyIcon } from "@/icons/svg/index.ts";
 
 export const AccountSecurity: Component = () => {
   const [isPinModalOpen, setIsPinModalOpen] = createSignal(false);
@@ -31,17 +31,10 @@ export const AccountSecurity: Component = () => {
       setIsPinModalOpen(true);
     } else {
       if (
-        await confirm(
-          t("confirm_title"),
-          t("confirm_disable_pin"),
-          "warning",
-        )
+        await confirm(t("confirm_title"), t("confirm_disable_pin"), "warning")
       ) {
         await disablePinUnlock();
-        showToast(
-          t("toast_pin_disabled"),
-          "info",
-        );
+        showToast(t("toast_pin_disabled"), "info");
       }
     }
   };
@@ -53,10 +46,7 @@ export const AccountSecurity: Component = () => {
     const res = await setPinUnlock(pin, requireRestart);
     setGlobalLoading(false);
     if (res.isOk()) {
-      showToast(
-        t("toast_pin_set_success"),
-        "success",
-      );
+      showToast(t("toast_pin_set_success"), "success");
     } else {
       setError(t(res.error));
     }
@@ -72,10 +62,7 @@ export const AccountSecurity: Component = () => {
     action: VaultTimeoutAction,
   ) => {
     await updateSessionTimeout(timeout, action);
-    showToast(
-      t("toast_timeout_updated"),
-      "success",
-    );
+    showToast(t("toast_timeout_updated"), "success");
   };
 
   const isPinEnabled = () => accountStore.pinConfig.enabled;
@@ -128,9 +115,7 @@ export const AccountSecurity: Component = () => {
         </Show>
 
         {/* Section 3: Change Master Password Action */}
-        <div class="detail-section-title">
-          {t("settings_change_mp_title")}
-        </div>
+        <div class="detail-section-title">{t("settings_change_mp_title")}</div>
         <div class="card card-list">
           <div
             class="setting-row"
@@ -139,12 +124,8 @@ export const AccountSecurity: Component = () => {
             <div class="setting-row-left">
               <KeyIcon />
               <div>
-                <div class="setting-label">
-                  {t("settings_change_mp_title")}
-                </div>
-                <div class="setting-sub">
-                  {t("settings_change_mp_sub")}
-                </div>
+                <div class="setting-label">{t("settings_change_mp_title")}</div>
+                <div class="setting-sub">{t("settings_change_mp_sub")}</div>
               </div>
             </div>
             <ChevronRightIcon />

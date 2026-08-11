@@ -1,7 +1,7 @@
+import { err, ok, type Result } from "neverthrow";
 import { z } from "zod";
-import { ENGLISH_WORDLIST } from "./wordlist.ts";
-import { err, ok, Result } from "neverthrow";
 import type { TranslationKey } from "./i18n.ts";
+import { ENGLISH_WORDLIST } from "./wordlist.ts";
 
 /**
  * CSPRNG Rejection Sampling (RFC 8949 / Standard CSPRNG Unbiased Uniform Integer)
@@ -21,16 +21,18 @@ export function getRandomBoundedInt(max: number): number {
   }
 }
 
-export const GeneratePasswordOptionsSchema = z.object({
-  length: z.number(),
-  uppercase: z.boolean(),
-  lowercase: z.boolean(),
-  numbers: z.boolean(),
-  specials: z.boolean(),
-  avoidAmbiguous: z.boolean(),
-  minNumbers: z.number(),
-  minSpecials: z.number(),
-}).readonly();
+export const GeneratePasswordOptionsSchema = z
+  .object({
+    length: z.number(),
+    uppercase: z.boolean(),
+    lowercase: z.boolean(),
+    numbers: z.boolean(),
+    specials: z.boolean(),
+    avoidAmbiguous: z.boolean(),
+    minNumbers: z.number(),
+    minSpecials: z.number(),
+  })
+  .readonly();
 export type GeneratePasswordOptions = z.infer<
   typeof GeneratePasswordOptionsSchema
 >;

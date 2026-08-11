@@ -1,7 +1,7 @@
-import { type Component } from "solid-js";
-import { t } from "@/core/i18n.ts";
+import type { Component } from "solid-js";
 import Checkbox from "@/components/ui/Checkbox.tsx";
 import FormField from "@/components/ui/FormField.tsx";
+import { t } from "@/core/i18n.ts";
 import type { ItemEditFormState } from "@/features/vault/item-edit/vault-edit-helper.ts";
 
 interface NoteEditFieldsProps {
@@ -32,7 +32,8 @@ export const NoteEditFields: Component<NoteEditFieldsProps> = (props) => {
             id="item-reprompt-note"
             checked={props.formState.reprompt === 1}
             onChange={(checked) =>
-              props.updateForm("reprompt", checked ? 1 : 0)}
+              props.updateForm("reprompt", checked ? 1 : 0)
+            }
             label={t("edit_label_reprompt")}
           />
         </div>

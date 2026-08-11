@@ -15,13 +15,13 @@ export const SESSION_KEY_SESSION_UNLOCKED = "sessionUnlocked";
 export const SESSION_KEY_ENCRYPTED_VAULT = "encryptedVault";
 export const SESSION_KEY_LAST_VIEW = "lastView";
 export const SESSION_KEY_LAST_SELECTED_ITEM_ID = "lastSelectedItemId";
-export const SESSION_KEY_GITHUB_TOKEN = "githubToken";
-export const SESSION_KEY_PENDING_GITHUB_TOKEN = "pendingGithubToken";
+export const SESSION_KEY_SYNC_TOKEN = "syncToken";
+export const SESSION_KEY_PENDING_SYNC_TOKEN = "pendingSyncToken";
 export const SESSION_KEY_SESSION_INITIALIZED = "session_initialized";
 export const SESSION_KEY_PENDING_FIDO2_REQUEST = "pending_fido2_request";
 
 // IPC Message Types
-export const MSG_START_GITHUB_OAUTH = "START_GITHUB_OAUTH";
+export const MSG_START_SYNC_OAUTH = "START_SYNC_OAUTH";
 export const MSG_GET_PENDING_FIDO2_REQUEST = "GET_PENDING_FIDO2_REQUEST";
 export const MSG_RESOLVE_FIDO2_REQUEST = "RESOLVE_FIDO2_REQUEST";
 export const MSG_REJECT_FIDO2_REQUEST = "REJECT_FIDO2_REQUEST";
@@ -52,25 +52,19 @@ export const SESSION_KEY_SHOW_FILTER_PANEL = "showFilterPanel";
 export const SESSION_KEY_SELECTED_FILTER_TYPE = "selectedFilterType";
 
 // Local Vault Storage Keys & IPC Messages
-export const STORAGE_KEY_LOCAL_VAULT_PAYLOAD =
-  `${APP_NAME.toLowerCase()}_local_vault_payload`;
-export const STORAGE_KEY_LOCAL_ACCOUNT_SETTINGS =
-  `${APP_NAME.toLowerCase()}_local_storage_account_settings`;
-export const STORAGE_KEY_LOCAL_PASSWORD_HISTORY =
-  `${APP_NAME.toLowerCase()}_local_storage_password_history`;
+export const STORAGE_KEY_LOCAL_VAULT_PAYLOAD = `${APP_NAME.toLowerCase()}_local_vault_payload`;
+export const STORAGE_KEY_LOCAL_ACCOUNT_SETTINGS = `${APP_NAME.toLowerCase()}_local_storage_account_settings`;
+export const STORAGE_KEY_LOCAL_PASSWORD_HISTORY = `${APP_NAME.toLowerCase()}_local_storage_password_history`;
 export const MSG_UPLOAD_TO_LOCAL = "UPLOAD_TO_LOCAL";
 export const MSG_DOWNLOAD_FROM_LOCAL = "DOWNLOAD_FROM_LOCAL";
 export const MSG_DELETE_LOCAL_VAULT = "DELETE_LOCAL_VAULT";
 
 // Browser Local Storage Keys
-export const STORAGE_KEY_EXTENSION_SETTINGS =
-  `${APP_NAME.toLowerCase()}_extension_settings`;
-export const STORAGE_KEY_ACCOUNT_SETTINGS =
-  `${APP_NAME.toLowerCase()}_account_settings`;
+export const STORAGE_KEY_EXTENSION_SETTINGS = `${APP_NAME.toLowerCase()}_extension_settings`;
+export const STORAGE_KEY_ACCOUNT_SETTINGS = `${APP_NAME.toLowerCase()}_account_settings`;
 export const STORAGE_KEY = STORAGE_KEY_EXTENSION_SETTINGS; // Backward compatibility fallback
 export const LOCAL_STORAGE_KEY_THEME = `${APP_NAME.toLowerCase()}_theme`;
-export const STORAGE_KEY_PASSWORD_HISTORY =
-  `${APP_NAME.toLowerCase()}_password_history`;
+export const STORAGE_KEY_PASSWORD_HISTORY = `${APP_NAME.toLowerCase()}_password_history`;
 
 // SolidJS Store Keys
 export const STORE_KEY_TOAST_MESSAGE = "toastMessage";
@@ -102,8 +96,8 @@ export const SESSION_KEYS_ON_LOCK = [
   SESSION_KEY_SESSION_UNLOCKED,
   SESSION_KEY_VERIFICATION_IV,
   SESSION_KEY_VERIFICATION_CIPHERTEXT,
-  SESSION_KEY_GITHUB_TOKEN,
-  SESSION_KEY_PENDING_GITHUB_TOKEN,
+  SESSION_KEY_SYNC_TOKEN,
+  SESSION_KEY_PENDING_SYNC_TOKEN,
   SESSION_KEY_ENCRYPTED_VAULT,
   SESSION_KEY_LAST_VIEW,
   SESSION_KEY_LAST_SELECTED_ITEM_ID,

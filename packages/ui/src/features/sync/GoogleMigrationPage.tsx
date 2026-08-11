@@ -1,4 +1,17 @@
 import {
+  asVaultItemId,
+  type GoogleMigrationAccountMapping,
+  type GoogleMigrationAction,
+  type GoogleOtpAccount,
+  generateTotpSafe,
+  isLoginItem,
+  matchGoogleMigrationAccounts,
+  parseGoogleMigrationUri,
+  safeDecodeQr,
+  type VaultItemId,
+} from "@gistwarden/domain";
+import { batchImportGoogleMigrationAccountsUseCase } from "@gistwarden/orchestrator";
+import {
   type Component,
   createSignal,
   For,
@@ -7,40 +20,28 @@ import {
   Show,
 } from "solid-js";
 import { createStore } from "solid-js/store";
+import Button from "@/components/ui/Button.tsx";
+import CopyableField from "@/components/ui/CopyableField.tsx";
+import DetailHeader from "@/components/ui/DetailHeader.tsx";
+import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
+import Input from "@/components/ui/Input.tsx";
+import Select from "@/components/ui/Select.tsx";
+import { t } from "@/core/i18n.ts";
+import { navigate } from "@/core/navigation.ts";
 import {
   accountStore,
   applyVaultPayloadToStore,
-  setUiStore,
   settingsStore,
+  setUiStore,
   uiStore,
 } from "@/core/store.ts";
-import { setGlobalLoading, showToast } from "@/core/ui-service.ts";
 import { View } from "@/core/types.ts";
-import { navigate } from "@/core/navigation.ts";
-import { t } from "@/core/i18n.ts";
-import DetailHeader from "@/components/ui/DetailHeader.tsx";
-import Button from "@/components/ui/Button.tsx";
-import Input from "@/components/ui/Input.tsx";
-import Select from "@/components/ui/Select.tsx";
-import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
-import CopyableField from "@/components/ui/CopyableField.tsx";
-import {
-  asVaultItemId,
-  type GoogleMigrationAccountMapping,
-  type GoogleMigrationAction,
-  type GoogleOtpAccount,
-  isLoginItem,
-  matchGoogleMigrationAccounts,
-  parseGoogleMigrationUri,
-  safeDecodeQr,
-  type VaultItemId,
-} from "@gistwarden/domain";
-
-import { batchImportGoogleMigrationAccountsUseCase } from "@gistwarden/orchestrator";
-import { generateTotpSafe } from "@gistwarden/domain";
+import { setGlobalLoading, showToast } from "@/core/ui-service.ts";
 
 export const GoogleMigrationPage: Component = () => {
-  const [mappings, setMappings] = createStore<GoogleMigrationAccountMapping[]>([]);
+  const [mappings, setMappings] = createStore<GoogleMigrationAccountMapping[]>(
+    [],
+  );
   const [totpCodes, setTotpCodes] = createSignal<Record<string, string>>({});
   const [totpRemaining, setTotpRemaining] = createSignal(30);
   const [error, setError] = createSignal("");
@@ -66,9 +67,10 @@ export const GoogleMigrationPage: Component = () => {
       const res = generateTotpSafe(acc.secretBase32, settingsStore.timeOffset);
       if (res.isOk()) {
         const rawCode = res.value;
-        const formatted = rawCode.length === 6
-          ? `${rawCode.slice(0, 3)} ${rawCode.slice(3)}`
-          : rawCode;
+        const formatted =
+          rawCode.length === 6
+            ? `${rawCode.slice(0, 3)} ${rawCode.slice(3)}`
+            : rawCode;
         newCodes[acc.id] = formatted;
       } else {
         newCodes[acc.id] = "------";
@@ -171,8 +173,7 @@ export const GoogleMigrationPage: Component = () => {
       const currentMapping = mappings[index];
       const usedIds = getUsedTargetItemIds(index);
       if (
-        !currentMapping ||
-        !currentMapping.targetItemId ||
+        !currentMapping?.targetItemId ||
         usedIds.has(currentMapping.targetItemId)
       ) {
         const availableItem = accountStore.vaultItems.find(
@@ -181,7 +182,11 @@ export const GoogleMigrationPage: Component = () => {
             !item.login?.totp?.trim() &&
             !usedIds.has(item.id),
         );
-        setMappings(index, "targetItemId", availableItem ? availableItem.id : null);
+        setMappings(
+          index,
+          "targetItemId",
+          availableItem ? availableItem.id : null,
+        );
       }
     }
   };
@@ -201,8 +206,6 @@ export const GoogleMigrationPage: Component = () => {
     currentIndex: number,
     currentTargetItemId?: VaultItemId | null,
   ) => {
-
-
     const usedIds = getUsedTargetItemIds(currentIndex);
 
     return accountStore.vaultItems
@@ -219,9 +222,10 @@ export const GoogleMigrationPage: Component = () => {
       })
       .map((item) => ({
         value: item.id,
-        label: isLoginItem(item) && item.login?.username
-          ? `${item.name} (${item.login.username})`
-          : item.name,
+        label:
+          isLoginItem(item) && item.login?.username
+            ? `${item.name} (${item.login.username})`
+            : item.name,
       }));
   };
 
@@ -290,7 +294,10 @@ export const GoogleMigrationPage: Component = () => {
           <form onSubmit={handleFormSubmit}>
             <div class="google-migration-tool-title d-inline-flex align-items-center gap-6 mb-8">
               <span>{t("google_tool_paste_label")}</span>
-              <GuideHelpButton route="passkey-auth/google-migration" size={16} />
+              <GuideHelpButton
+                route="passkey-auth/google-migration"
+                size={16}
+              />
             </div>
             <div class="google-migration-input-group">
               <Input
@@ -349,7 +356,10 @@ export const GoogleMigrationPage: Component = () => {
                       <div
                         class="totp-row mb-0"
                         onClick={() => {
-                          const code = (totpCodes()[account.id] || "").replace(/\s/g, "");
+                          const code = (totpCodes()[account.id] || "").replace(
+                            /\s/g,
+                            "",
+                          );
                           if (code && code !== "------") {
                             handleCopyUri(code);
                           }
@@ -358,7 +368,9 @@ export const GoogleMigrationPage: Component = () => {
                       >
                         <div class="totp-content">
                           <div class="totp-label">{t("detail_totp_label")}</div>
-                          <div class="totp-code">{totpCodes()[account.id] || "------"}</div>
+                          <div class="totp-code">
+                            {totpCodes()[account.id] || "------"}
+                          </div>
                         </div>
                         <div class="totp-timer">
                           <svg class="timer-ring">
@@ -423,12 +435,18 @@ export const GoogleMigrationPage: Component = () => {
                       <Show when={mapping.action === "link"}>
                         <div class="google-migration-picker-container">
                           <Select
-                            options={loginItemOptions(index(), mapping.targetItemId)}
+                            options={loginItemOptions(
+                              index(),
+                              mapping.targetItemId,
+                            )}
                             value={mapping.targetItemId || ""}
                             searchable={true}
                             onChange={(e) =>
-                              handleTargetItemChange(index(), asVaultItemId(e.target.value))}
-
+                              handleTargetItemChange(
+                                index(),
+                                asVaultItemId(e.target.value),
+                              )
+                            }
                           />
                         </div>
                       </Show>

@@ -1,4 +1,10 @@
-import { type Component, createEffect, createSignal, For, Show } from "solid-js";
+import {
+  type Component,
+  createEffect,
+  createSignal,
+  For,
+  Show,
+} from "solid-js";
 import { t } from "@/core/i18n.ts";
 import {
   GUIDE_STRUCTURE,
@@ -17,7 +23,7 @@ export interface GuideTreeSidebarProps {
 }
 
 export const GuideTreeSidebar: Component<GuideTreeSidebarProps> = (props) => {
-  const activeCategoryId = () =>
+  const _activeCategoryId = () =>
     props.currentRoute.split("/")[0] || "getting-started";
 
   const [searchQuery, setSearchQuery] = createSignal("");
@@ -60,8 +66,8 @@ export const GuideTreeSidebar: Component<GuideTreeSidebarProps> = (props) => {
 
     return GUIDE_STRUCTURE.map((cat) => {
       const catMatch = t(cat.titleKey).toLowerCase().includes(q);
-      const filteredItems = cat.items.filter((item) =>
-        catMatch || t(item.titleKey).toLowerCase().includes(q)
+      const filteredItems = cat.items.filter(
+        (item) => catMatch || t(item.titleKey).toLowerCase().includes(q),
       );
 
       return {
@@ -136,7 +142,8 @@ export const GuideTreeSidebar: Component<GuideTreeSidebarProps> = (props) => {
                   <div class="subcategory-items-list">
                     <For each={cat.items}>
                       {(item) => {
-                        const isActive = () => props.currentRoute === item.route;
+                        const isActive = () =>
+                          props.currentRoute === item.route;
                         const ItemIcon = item.icon;
 
                         return (
@@ -148,7 +155,9 @@ export const GuideTreeSidebar: Component<GuideTreeSidebarProps> = (props) => {
                             <span class="sub-item-icon">
                               <ItemIcon size={14} />
                             </span>
-                            <span class="sub-item-label">{t(item.titleKey)}</span>
+                            <span class="sub-item-label">
+                              {t(item.titleKey)}
+                            </span>
                           </button>
                         );
                       }}

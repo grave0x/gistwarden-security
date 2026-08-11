@@ -1,4 +1,4 @@
-import { type Component } from "solid-js";
+import type { Component } from "solid-js";
 
 export const SecurityIllustration: Component = () => (
   <svg viewBox="0 0 200 150" class="tour-svg">
@@ -38,7 +38,9 @@ export const SecurityIllustration: Component = () => (
         stroke="#3b82f6"
         stroke-width="1.5"
       />
-      <text x="37" y="42" font-size="12" text-anchor="middle">🔑</text>
+      <text x="37" y="42" font-size="12" text-anchor="middle">
+        🔑
+      </text>
     </g>
     <g class="floating-icon-delayed">
       <rect
@@ -51,7 +53,9 @@ export const SecurityIllustration: Component = () => (
         stroke="#10b981"
         stroke-width="1.5"
       />
-      <text x="162" y="102" font-size="12" text-anchor="middle">💳</text>
+      <text x="162" y="102" font-size="12" text-anchor="middle">
+        💳
+      </text>
     </g>
     <g class="floating-icon-delayed-2">
       <rect
@@ -64,7 +68,9 @@ export const SecurityIllustration: Component = () => (
         stroke="#a855f7"
         stroke-width="1.5"
       />
-      <text x="162" y="42" font-size="12" text-anchor="middle">📝</text>
+      <text x="162" y="42" font-size="12" text-anchor="middle">
+        📝
+      </text>
     </g>
   </svg>
 );

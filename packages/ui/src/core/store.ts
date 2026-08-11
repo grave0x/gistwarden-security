@@ -1,23 +1,3 @@
-import { createStore } from "solid-js/store";
-import { computeHmac, ThemeMode, View } from "@gistwarden/domain";
-import {
-  type ConfirmType,
-  DEFAULT_EXCLUDED_DOMAINS,
-  DEFAULT_GITHUB_CONFIG,
-  DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
-  DEFAULT_PIN_CONFIG,
-  getAccountSettings,
-  getExtensionSettings,
-  type GithubConfig,
-  type MasterPasswordSecurityConfig,
-  type PinUnlockConfig,
-  type ThemeModeType,
-  type ToastType,
-  updateAccountSettings,
-  type VaultTimeoutAction,
-  type VaultTimeoutValue,
-  type VaultMode,
-} from "@gistwarden/repository";
 import type {
   Folder,
   GoogleMigrationPayload,
@@ -25,11 +5,29 @@ import type {
   VaultItem,
   VaultPayload,
 } from "@gistwarden/domain";
-
+import { ThemeMode, View } from "@gistwarden/domain";
 import {
   checkVaultConfiguredUseCase,
   validateSecurityConfigUseCase,
 } from "@gistwarden/orchestrator";
+import {
+  type ConfirmType,
+  DEFAULT_EXCLUDED_DOMAINS,
+  DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
+  DEFAULT_PIN_CONFIG,
+  DEFAULT_SYNC_CONFIG,
+  getAccountSettings,
+  getExtensionSettings,
+  type MasterPasswordSecurityConfig,
+  type PinUnlockConfig,
+  type SyncConfig,
+  type ThemeModeType,
+  type ToastType,
+  type VaultMode,
+  type VaultTimeoutAction,
+  type VaultTimeoutValue,
+} from "@gistwarden/repository";
+import { createStore } from "solid-js/store";
 
 export interface ExtensionSettingsStore {
   language: "en" | "vi";
@@ -48,8 +46,8 @@ export interface ExtensionSettingsStore {
 }
 
 export interface AccountStore {
-  githubToken: string;
-  githubConfigured: boolean;
+  syncToken: string;
+  vaultConfigured: boolean;
   gistId: string;
   lastSync: number;
 
@@ -62,7 +60,7 @@ export interface AccountStore {
   trashItems: TrashVaultItem[];
 
   // Config groups
-  githubConfig: GithubConfig;
+  syncConfig: SyncConfig;
   pinConfig: PinUnlockConfig;
   masterPasswordConfig: MasterPasswordSecurityConfig;
 }
@@ -116,8 +114,8 @@ export const initialExtensionSettings: Omit<
 };
 
 export const initialAccountState: Omit<AccountStore, "isLoaded"> = {
-  githubToken: "",
-  githubConfigured: false,
+  syncToken: "",
+  vaultConfigured: false,
   gistId: "",
   lastSync: 0,
   isLocked: true,
@@ -126,7 +124,7 @@ export const initialAccountState: Omit<AccountStore, "isLoaded"> = {
   folders: [],
   vaultItems: [],
   trashItems: [],
-  githubConfig: DEFAULT_GITHUB_CONFIG,
+  syncConfig: DEFAULT_SYNC_CONFIG,
   pinConfig: DEFAULT_PIN_CONFIG,
   masterPasswordConfig: DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
 };
@@ -155,12 +153,11 @@ export const initialUiState: UiSessionStore = {
   globalLoadingText: "",
 };
 
-export const [settingsStore, setSettingsStore] = createStore<
-  ExtensionSettingsStore
->({
-  ...initialExtensionSettings,
-  isLoaded: false,
-});
+export const [settingsStore, setSettingsStore] =
+  createStore<ExtensionSettingsStore>({
+    ...initialExtensionSettings,
+    isLoaded: false,
+  });
 
 export const [accountStore, setAccountStore] = createStore<AccountStore>({
   ...initialAccountState,
@@ -208,22 +205,23 @@ export async function loadAllStores(): Promise<void> {
   const accRes = await getAccountSettings(activeMode);
   if (accRes.isOk()) {
     const acc = accRes.value;
-    const githubConfig = acc.githubConfig || DEFAULT_GITHUB_CONFIG;
-    const masterPasswordConfig = acc.masterPasswordConfig ||
-      DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG;
+    const _syncConfig = acc.syncConfig || DEFAULT_SYNC_CONFIG;
+    const masterPasswordConfig =
+      acc.masterPasswordConfig || DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG;
     const secSalt = masterPasswordConfig.salt || "master_password_hmac_secret";
     await validateSecurityConfigUseCase(activeMode, secSalt);
     const updatedAcc = (await getAccountSettings(activeMode)).unwrapOr(acc);
 
     const isConfigured = await checkVaultConfiguredUseCase(activeMode, acc);
+    const activeSyncConfig = updatedAcc.syncConfig || DEFAULT_SYNC_CONFIG;
 
     setAccountStore({
-      gistId: updatedAcc.githubConfig.gistId,
-      githubConfig: updatedAcc.githubConfig,
+      gistId: activeSyncConfig.gistId,
+      syncConfig: activeSyncConfig,
       lastSync: updatedAcc.lastSync,
       pinConfig: updatedAcc.pinConfig,
       masterPasswordConfig: updatedAcc.masterPasswordConfig,
-      githubConfigured: isConfigured,
+      vaultConfigured: isConfigured,
     });
   } else {
     setAccountStore({

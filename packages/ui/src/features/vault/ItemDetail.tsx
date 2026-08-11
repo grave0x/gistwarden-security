@@ -1,24 +1,19 @@
+import type { VaultField } from "@gistwarden/domain";
+import { CustomFieldType, VaultItemType } from "@gistwarden/domain";
+import { copyToClipboardWithMessage } from "@gistwarden/ui";
 import { type Component, createSignal, For, onMount, Show } from "solid-js";
+import Button from "@/components/ui/Button.tsx";
+import DetailHeader from "@/components/ui/DetailHeader.tsx";
+import { formatDateTime, t } from "@/core/i18n.ts";
+import { navigate, selectItem } from "@/core/navigation.ts";
 import { accountStore, uiStore } from "@/core/store.ts";
 import { View } from "@/core/types.ts";
-import { navigate, selectItem } from "@/core/navigation.ts";
-import { copyToClipboardWithMessage } from "@gistwarden/ui";
-import { CustomFieldType, VaultItemType } from "@gistwarden/domain";
-import type { VaultField } from "@gistwarden/domain";
+import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
 import {
   deleteVaultItemWithConfirm,
   getVaultItemDetailTitle,
 } from "@/features/vault/vault-utils.ts";
-import Button from "@/components/ui/Button.tsx";
-import {
-  CopyIcon,
-  EyeIcon,
-  EyeOffIcon,
-  TrashIcon,
-} from "@/icons/svg/index.ts";
-import { formatDateTime, t } from "@/core/i18n.ts";
-import DetailHeader from "@/components/ui/DetailHeader.tsx";
-import { getVaultItemStrategy } from "@/features/vault/registry/vault-item-registry.ts";
+import { CopyIcon, EyeIcon, EyeOffIcon, TrashIcon } from "@/icons/svg/index.ts";
 
 export const ItemDetail: Component = () => {
   // Local view states
@@ -127,9 +122,9 @@ export const ItemDetail: Component = () => {
                           </div>
                           <div class="field-value">
                             {field.type === CustomFieldType.Hidden
-                              ? (visibleFields()[index()]
+                              ? visibleFields()[index()]
                                 ? field.value
-                                : "••••••••••••")
+                                : "••••••••••••"
                               : field.value || t("detail_no_value")}
                           </div>
                         </div>
@@ -154,10 +149,8 @@ export const ItemDetail: Component = () => {
                               type="button"
                               class="action-btn"
                               onClick={() =>
-                                handleCopy(
-                                  field.value,
-                                  field.name || "value",
-                                )}
+                                handleCopy(field.value, field.name || "value")
+                              }
                               title={t("btn_copy")}
                             >
                               <CopyIcon />
@@ -179,13 +172,14 @@ export const ItemDetail: Component = () => {
 
           {/* Card 5: Notes display (Only for Login & Card since Secure Note displays it above) */}
           <Show
-            when={uiStore.selectedItem?.type !== VaultItemType.SecureNote &&
-              notes()}
+            when={
+              uiStore.selectedItem?.type !== VaultItemType.SecureNote && notes()
+            }
           >
             <div
               class={`detail-section-title ${
-                (uiStore.selectedItem?.type === VaultItemType.SecureNote &&
-                    fields().length === 0)
+                uiStore.selectedItem?.type === VaultItemType.SecureNote &&
+                fields().length === 0
                   ? "mt-0"
                   : "mt-16"
               }`}
@@ -209,8 +203,8 @@ export const ItemDetail: Component = () => {
                     <div class="py-6 d-flex align-center gap-8">
                       <span>{t("vault_item_folder")}:</span>
                       <span class="font-w-500 text-normal">
-                        {accountStore.folders.find((f) =>
-                          f.id === item().folderId
+                        {accountStore.folders.find(
+                          (f) => f.id === item().folderId,
                         )?.name || ""}
                       </span>
                     </div>
@@ -235,11 +229,7 @@ export const ItemDetail: Component = () => {
 
         {/* Footer: Sửa và Xóa */}
         <div class="detail-footer-bar">
-          <Button
-            type="button"
-            variant="primary"
-            onClick={handleGoToEdit}
-          >
+          <Button type="button" variant="primary" onClick={handleGoToEdit}>
             {t("btn_edit")}
           </Button>
           <button
@@ -264,4 +254,3 @@ export const ItemDetail: Component = () => {
 };
 
 export default ItemDetail;
-

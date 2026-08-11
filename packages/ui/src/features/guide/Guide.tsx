@@ -1,17 +1,21 @@
-import { type Component, onCleanup, onMount, Show } from "solid-js";
-import { t } from "@/core/i18n.ts";
-import { APP_NAME } from "@/core/constants.ts";
-import { getAppVersion, getAssetUrl, isWeb } from "@/core/runtime.ts";
-import { accountStore, settingsStore } from "@/core/store.ts";
+import { View } from "@gistwarden/domain";
 import { init, updateLanguage } from "@gistwarden/ui";
+import { type Component, onCleanup, onMount, Show } from "solid-js";
 import Button from "@/components/ui/Button.tsx";
 import Select from "@/components/ui/Select.tsx";
-import { useGuideRoute } from "@/features/guide/guide-router.ts";
-import { GuideTreeSidebar } from "@/features/guide/components/GuideTreeSidebar.tsx";
-import { GuideContentRenderer } from "@/features/guide/components/GuideContentRenderer.tsx";
-import { ArrowLeftIcon, ExternalLinkIcon, GlobeIcon } from "@/icons/svg/index.ts";
+import { APP_NAME } from "@/core/constants.ts";
+import { t } from "@/core/i18n.ts";
 import { navigate as navigateApp } from "@/core/navigation.ts";
-import { View } from "@gistwarden/domain";
+import { getAppVersion, getAssetUrl, isWeb } from "@/core/runtime.ts";
+import { accountStore, settingsStore } from "@/core/store.ts";
+import { GuideContentRenderer } from "@/features/guide/components/GuideContentRenderer.tsx";
+import { GuideTreeSidebar } from "@/features/guide/components/GuideTreeSidebar.tsx";
+import { useGuideRoute } from "@/features/guide/guide-router.ts";
+import {
+  ArrowLeftIcon,
+  ExternalLinkIcon,
+  GlobeIcon,
+} from "@/icons/svg/index.ts";
 
 const LANG_OPTIONS = [
   { value: "en", label: "English" },
@@ -89,10 +93,7 @@ export const Guide: Component = () => {
               />
             </div>
 
-            <Button
-              variant="secondary"
-              onClick={handleOpenGist}
-            >
+            <Button variant="secondary" onClick={handleOpenGist}>
               <ExternalLinkIcon size={14} /> {t("settings_open_gist_title")}
             </Button>
           </div>
@@ -101,10 +102,7 @@ export const Guide: Component = () => {
         {/* Main Guide Body */}
         <div class="guide-container">
           {/* Expandable Accordion Tree Sidebar */}
-          <GuideTreeSidebar
-            currentRoute={route()}
-            onNavigate={navigate}
-          />
+          <GuideTreeSidebar currentRoute={route()} onNavigate={navigate} />
 
           {/* Router Content Renderer */}
           <main class="guide-main-content">

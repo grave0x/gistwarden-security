@@ -1,17 +1,17 @@
-import { t } from "@/core/i18n.ts";
-import { View } from "@/core/types.ts";
 import {
   getVaultItemFallbackName,
   type VaultItem,
-  VaultItemType,
+  type VaultItemType,
 } from "@gistwarden/domain";
-import { confirm, setGlobalLoading, showToast } from "@/core/ui-service.ts";
-import { deleteItem } from "@/features/vault/vault-service.ts";
+import { t } from "@/core/i18n.ts";
 import { navigate } from "@/core/navigation.ts";
+import { View } from "@/core/types.ts";
+import { confirm, setGlobalLoading, showToast } from "@/core/ui-service.ts";
 import {
   getVaultItemStrategy,
   getVaultItemTypeLabel as registryGetTypeLabel,
 } from "@/features/vault/registry/vault-item-registry.ts";
+import { deleteItem } from "@/features/vault/vault-service.ts";
 
 export { getVaultItemFallbackName };
 
@@ -58,4 +58,3 @@ export const deleteVaultItemWithConfirm = async (
     return false;
   }
 };
-

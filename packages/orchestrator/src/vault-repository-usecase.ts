@@ -1,8 +1,8 @@
 import {
   decryptData,
   type Folder,
-  safeJsonParse,
   SESSION_KEY_ENCRYPTED_VAULT,
+  safeJsonParse,
   type TrashVaultItem,
   type VaultItem,
   VaultListSchema,
@@ -17,9 +17,7 @@ export type DecryptedVaultData = VaultPayload & {
   salt: string;
 };
 
-export async function getDecryptedVaultItems(): Promise<
-  DecryptedVaultData | null
-> {
+export async function getDecryptedVaultItems(): Promise<DecryptedVaultData | null> {
   const key = await getSessionKey();
   if (!key) return null;
 
@@ -36,7 +34,8 @@ export async function getDecryptedVaultItems(): Promise<
 
   const payloadParse = EncryptedPayloadSchema.safeParse(parsePayloadRes.value);
   if (
-    !payloadParse.success || !payloadParse.data.ciphertext ||
+    !payloadParse.success ||
+    !payloadParse.data.ciphertext ||
     !payloadParse.data.iv
   ) {
     return { folders: [], items: [], trash: [], key, salt: "" };

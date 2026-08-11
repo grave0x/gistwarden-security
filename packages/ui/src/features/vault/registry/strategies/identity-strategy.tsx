@@ -1,15 +1,15 @@
-import { Show } from "solid-js";
 import {
   type IdentityVaultItem,
   isIdentityItem,
   type VaultItem,
   VaultItemType,
 } from "@gistwarden/domain";
+import { Show } from "solid-js";
 import { t } from "@/core/i18n.ts";
-import { IdentityIcon } from "@/icons/svg/index.ts";
 import IdentityDetailFields from "@/features/vault/item-detail/IdentityDetailFields.tsx";
 import IdentityEditFields from "@/features/vault/item-edit/IdentityEditFields.tsx";
 import type { ItemEditFormState } from "@/features/vault/item-edit/vault-edit-helper.ts";
+import { IdentityIcon } from "@/icons/svg/index.ts";
 import type {
   DetailComponentProps,
   EditComponentProps,
@@ -23,7 +23,9 @@ export const identityStrategy: VaultItemStrategy = {
   getEditTitle: () => t("edit_title_edit_identity"),
   getDetailTitle: () => t("detail_title_identity"),
   getToastMsg: (isEdit: boolean) =>
-    isEdit ? t("edit_toast_updated_identity") : t("edit_toast_created_identity"),
+    isEdit
+      ? t("edit_toast_updated_identity")
+      : t("edit_toast_created_identity"),
   renderIcon: (_item: VaultItem) => {
     return <IdentityIcon />;
   },

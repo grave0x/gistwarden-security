@@ -2,9 +2,7 @@ export type AppPlatform = "extension" | "web";
 
 export function isExtension(): boolean {
   return (
-    typeof chrome !== "undefined" &&
-    !!chrome.runtime &&
-    !!chrome.runtime.id
+    typeof chrome !== "undefined" && !!chrome.runtime && !!chrome.runtime.id
   );
 }
 

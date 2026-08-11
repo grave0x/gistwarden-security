@@ -1,11 +1,11 @@
 import {
+  type AppPlatform,
   getPlatform,
   isExtension,
   isWeb,
-  type AppPlatform,
 } from "@gistwarden/domain";
 
-export { getPlatform, isExtension, isWeb, type AppPlatform };
+export { type AppPlatform, getPlatform, isExtension, isWeb };
 
 /**
  * Utility functions for interacting with the Chrome extension runtime.
@@ -60,8 +60,9 @@ export function getExtensionId(): string {
  * Check if running under Firefox browser environment.
  */
 export function isFirefox(): boolean {
-  return typeof navigator !== "undefined" &&
-    navigator.userAgent.includes("Firefox");
+  return (
+    typeof navigator !== "undefined" && navigator.userAgent.includes("Firefox")
+  );
 }
 
 /**

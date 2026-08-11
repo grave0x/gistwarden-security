@@ -1,36 +1,37 @@
 import {
   asFolderId,
-  asGistId,
   asVaultItemId,
   createDefaultVaultItem,
   encryptData,
   type Folder,
   type FolderId,
-  type VaultItemId,
-
-
+  type GoogleMigrationAccountMapping,
   getBaseDomain,
   getDomainFromItem,
-  type GoogleMigrationAccountMapping,
   isLoginItem,
   type LoginVaultItem,
-  mergeVaultItem,
   MSG_VAULT_ITEMS_UPDATED,
+  mergeVaultItem,
   type SaveActionPayload,
   SESSION_KEY_ENCRYPTED_VAULT,
   type TranslationKey,
   type TrashVaultItem,
-
   type VaultItem,
+  type VaultItemId,
   VaultItemType,
   type VaultPayload,
 } from "@gistwarden/domain";
-import { setSessionItem, updateAccountSettings, type VaultMode } from "@gistwarden/repository";
 import { getSyncProvider } from "@gistwarden/network";
-import { err, ok, Result } from "neverthrow";
-import { deleteGistRoute } from "./messaging-contracts.ts";
+import {
+  DEFAULT_SYNC_CONFIG,
+  setSessionItem,
+  updateAccountSettings,
+  type VaultMode,
+} from "@gistwarden/repository";
+import { err, ok, type Result } from "neverthrow";
 import { getSessionKey } from "./crypto-usecases.ts";
 import { broadcastMessage, sendBackgroundMessage } from "./messaging.ts";
+import { deleteGistRoute } from "./messaging-contracts.ts";
 import { syncVaultToGist } from "./vault-sync-usecase.ts";
 
 export async function executeVaultMutationUseCase(
@@ -46,16 +47,11 @@ export async function executeVaultMutationUseCase(
 
   const updatedPayload = await mutationFn(currentPayload);
 
-  const uploadRes = await syncVaultToGist(
-    updatedPayload.items,
-    key,
-    salt,
-    {
-      vaultMode,
-      trashItems: updatedPayload.trash,
-      folders: updatedPayload.folders,
-    },
-  );
+  const uploadRes = await syncVaultToGist(updatedPayload.items, key, salt, {
+    vaultMode,
+    trashItems: updatedPayload.trash,
+    folders: updatedPayload.folders,
+  });
 
   if (uploadRes.isErr()) {
     return err(uploadRes.error);
@@ -86,7 +82,6 @@ export async function addFolderUseCase(
     id: asFolderId(crypto.randomUUID()),
     name: trimmedName,
   };
-
 
   const res = await executeVaultMutationUseCase(
     currentPayload,
@@ -120,12 +115,17 @@ export async function renameFolderUseCase(
     return err("folder_error_duplicate_name");
   }
 
-  return await executeVaultMutationUseCase(currentPayload, salt, vaultMode, (payload) => ({
-    ...payload,
-    folders: payload.folders.map((f) =>
-      f.id === id ? { ...f, name: trimmedName } : f
-    ),
-  }));
+  return await executeVaultMutationUseCase(
+    currentPayload,
+    salt,
+    vaultMode,
+    (payload) => ({
+      ...payload,
+      folders: payload.folders.map((f) =>
+        f.id === id ? { ...f, name: trimmedName } : f,
+      ),
+    }),
+  );
 }
 
 export async function deleteFolderUseCase(
@@ -134,13 +134,18 @@ export async function deleteFolderUseCase(
   vaultMode: VaultMode,
   id: FolderId,
 ): Promise<Result<VaultPayload, TranslationKey>> {
-  return await executeVaultMutationUseCase(currentPayload, salt, vaultMode, (payload) => ({
-    folders: payload.folders.filter((f) => f.id !== id),
-    items: payload.items.map((item) =>
-      item.folderId === id ? { ...item, folderId: null } : item
-    ),
-    trash: payload.trash,
-  }));
+  return await executeVaultMutationUseCase(
+    currentPayload,
+    salt,
+    vaultMode,
+    (payload) => ({
+      folders: payload.folders.filter((f) => f.id !== id),
+      items: payload.items.map((item) =>
+        item.folderId === id ? { ...item, folderId: null } : item,
+      ),
+      trash: payload.trash,
+    }),
+  );
 }
 
 export async function saveItemUseCase(
@@ -149,22 +154,27 @@ export async function saveItemUseCase(
   vaultMode: VaultMode,
   item: Partial<VaultItem>,
 ): Promise<Result<VaultPayload, TranslationKey>> {
-  return await executeVaultMutationUseCase(currentPayload, salt, vaultMode, (payload) => {
-    let updatedList: VaultItem[];
-    if (item.id) {
-      updatedList = payload.items.map((v) => {
-        if (v.id !== item.id) return v;
-        return mergeVaultItem(v, item);
-      });
-    } else {
-      const newItem = createDefaultVaultItem(item);
-      updatedList = [...payload.items, newItem];
-    }
-    return {
-      ...payload,
-      items: updatedList,
-    };
-  });
+  return await executeVaultMutationUseCase(
+    currentPayload,
+    salt,
+    vaultMode,
+    (payload) => {
+      let updatedList: VaultItem[];
+      if (item.id) {
+        updatedList = payload.items.map((v) => {
+          if (v.id !== item.id) return v;
+          return mergeVaultItem(v, item);
+        });
+      } else {
+        const newItem = createDefaultVaultItem(item);
+        updatedList = [...payload.items, newItem];
+      }
+      return {
+        ...payload,
+        items: updatedList,
+      };
+    },
+  );
 }
 
 export async function deleteVaultItemsUseCase(
@@ -177,21 +187,26 @@ export async function deleteVaultItemsUseCase(
     return ok(currentPayload);
   }
 
-  return await executeVaultMutationUseCase(currentPayload, salt, vaultMode, (payload) => {
-    const idSet = new Set(ids);
-    const itemsToMove = payload.items.filter((v) => idSet.has(v.id));
-    const remainingItems = payload.items.filter((v) => !idSet.has(v.id));
-    const deletedDate = new Date().toISOString();
-    const addedTrash: TrashVaultItem[] = itemsToMove.map((item) => ({
-      item,
-      deletedDate,
-    }));
-    return {
-      folders: payload.folders,
-      items: remainingItems,
-      trash: [...payload.trash, ...addedTrash],
-    };
-  });
+  return await executeVaultMutationUseCase(
+    currentPayload,
+    salt,
+    vaultMode,
+    (payload) => {
+      const idSet = new Set(ids);
+      const itemsToMove = payload.items.filter((v) => idSet.has(v.id));
+      const remainingItems = payload.items.filter((v) => !idSet.has(v.id));
+      const deletedDate = new Date().toISOString();
+      const addedTrash: TrashVaultItem[] = itemsToMove.map((item) => ({
+        item,
+        deletedDate,
+      }));
+      return {
+        folders: payload.folders,
+        items: remainingItems,
+        trash: [...payload.trash, ...addedTrash],
+      };
+    },
+  );
 }
 
 export async function moveVaultItemsToFolderUseCase(
@@ -201,31 +216,38 @@ export async function moveVaultItemsToFolderUseCase(
   ids: VaultItemId[],
   folderId: FolderId | null,
 ): Promise<Result<VaultPayload, TranslationKey>> {
-
   if (ids.length === 0) {
     return ok(currentPayload);
   }
 
-  return await executeVaultMutationUseCase(currentPayload, salt, vaultMode, (payload) => {
-    const idSet = new Set(ids);
-    const targetFolderId = folderId ? asFolderId(folderId) : (folderId === null ? null : undefined);
-    const updatedItems = payload.items.map((item) => {
-      if (idSet.has(item.id)) {
-        return {
-          ...item,
-          folderId: targetFolderId,
-          revisionDate: new Date().toISOString(),
-        };
-      }
-      return item;
-    });
+  return await executeVaultMutationUseCase(
+    currentPayload,
+    salt,
+    vaultMode,
+    (payload) => {
+      const idSet = new Set(ids);
+      const targetFolderId = folderId
+        ? asFolderId(folderId)
+        : folderId === null
+          ? null
+          : undefined;
+      const updatedItems = payload.items.map((item) => {
+        if (idSet.has(item.id)) {
+          return {
+            ...item,
+            folderId: targetFolderId,
+            revisionDate: new Date().toISOString(),
+          };
+        }
+        return item;
+      });
 
-
-    return {
-      ...payload,
-      items: updatedItems,
-    };
-  });
+      return {
+        ...payload,
+        items: updatedItems,
+      };
+    },
+  );
 }
 
 export async function restoreVaultItemUseCase(
@@ -234,20 +256,25 @@ export async function restoreVaultItemUseCase(
   vaultMode: VaultMode,
   id: VaultItemId,
 ): Promise<Result<VaultPayload, TranslationKey>> {
-  return await executeVaultMutationUseCase(currentPayload, salt, vaultMode, (payload) => {
-    const trashEntry = payload.trash.find((t) => t.item.id === id);
-    if (!trashEntry) return payload;
-    const remainingTrash = payload.trash.filter((t) => t.item.id !== id);
-    const restoredItem: VaultItem = {
-      ...trashEntry.item,
-      revisionDate: new Date().toISOString(),
-    };
-    return {
-      folders: payload.folders,
-      items: [...payload.items, restoredItem],
-      trash: remainingTrash,
-    };
-  });
+  return await executeVaultMutationUseCase(
+    currentPayload,
+    salt,
+    vaultMode,
+    (payload) => {
+      const trashEntry = payload.trash.find((t) => t.item.id === id);
+      if (!trashEntry) return payload;
+      const remainingTrash = payload.trash.filter((t) => t.item.id !== id);
+      const restoredItem: VaultItem = {
+        ...trashEntry.item,
+        revisionDate: new Date().toISOString(),
+      };
+      return {
+        folders: payload.folders,
+        items: [...payload.items, restoredItem],
+        trash: remainingTrash,
+      };
+    },
+  );
 }
 
 export async function purgeTrashItemUseCase(
@@ -256,22 +283,31 @@ export async function purgeTrashItemUseCase(
   vaultMode: VaultMode,
   id: VaultItemId,
 ): Promise<Result<VaultPayload, TranslationKey>> {
-  return await executeVaultMutationUseCase(currentPayload, salt, vaultMode, (payload) => ({
-    ...payload,
-    trash: payload.trash.filter((t) => t.item.id !== id),
-  }));
+  return await executeVaultMutationUseCase(
+    currentPayload,
+    salt,
+    vaultMode,
+    (payload) => ({
+      ...payload,
+      trash: payload.trash.filter((t) => t.item.id !== id),
+    }),
+  );
 }
-
 
 export async function purgeAllTrashUseCase(
   currentPayload: VaultPayload,
   salt: string,
   vaultMode: VaultMode,
 ): Promise<Result<VaultPayload, TranslationKey>> {
-  return await executeVaultMutationUseCase(currentPayload, salt, vaultMode, (payload) => ({
-    ...payload,
-    trash: [],
-  }));
+  return await executeVaultMutationUseCase(
+    currentPayload,
+    salt,
+    vaultMode,
+    (payload) => ({
+      ...payload,
+      trash: [],
+    }),
+  );
 }
 
 export async function clearVaultUseCase(
@@ -298,13 +334,7 @@ export async function clearVaultUseCase(
 
   const updateSettingsRes = await updateAccountSettings(
     {
-      githubConfig: {
-        gistId: asGistId(""),
-        githubTokenEncrypted: "",
-        githubTokenIv: "",
-        username: "",
-        avatarUrl: "",
-      },
+      syncConfig: DEFAULT_SYNC_CONFIG,
       lastSync: 0,
     },
     mode,
@@ -416,60 +446,64 @@ export async function batchImportGoogleMigrationAccountsUseCase(
 ): Promise<Result<VaultPayload, TranslationKey>> {
   const nowStr = new Date().toISOString();
 
-  return executeVaultMutationUseCase(currentPayload, salt, vaultMode, (payload) => {
-    const updatedItems = [...payload.items];
+  return executeVaultMutationUseCase(
+    currentPayload,
+    salt,
+    vaultMode,
+    (payload) => {
+      const updatedItems = [...payload.items];
 
-    for (const itemMap of mappings) {
-      if (itemMap.action === "skip") continue;
+      for (const itemMap of mappings) {
+        if (itemMap.action === "skip") continue;
 
-      if (itemMap.action === "link" && itemMap.targetItemId) {
-        const targetIndex = updatedItems.findIndex(
-          (item) => item.id === itemMap.targetItemId,
-        );
-        if (targetIndex !== -1) {
-          const existingItem = updatedItems[targetIndex];
-          if (existingItem && isLoginItem(existingItem)) {
-            updatedItems[targetIndex] = {
-              ...existingItem,
-              login: {
-                ...existingItem.login,
-                totp: itemMap.account.otpauthUrl,
-              },
-              revisionDate: nowStr,
-            };
+        if (itemMap.action === "link" && itemMap.targetItemId) {
+          const targetIndex = updatedItems.findIndex(
+            (item) => item.id === itemMap.targetItemId,
+          );
+          if (targetIndex !== -1) {
+            const existingItem = updatedItems[targetIndex];
+            if (existingItem && isLoginItem(existingItem)) {
+              updatedItems[targetIndex] = {
+                ...existingItem,
+                login: {
+                  ...existingItem.login,
+                  totp: itemMap.account.otpauthUrl,
+                },
+                revisionDate: nowStr,
+              };
+            }
           }
+        } else if (itemMap.action === "create") {
+          const titleName = itemMap.account.issuer
+            ? `${itemMap.account.issuer} (${itemMap.account.name})`
+            : itemMap.account.name || "Google Authenticator Import";
+
+          const newItem: LoginVaultItem = {
+            id: asVaultItemId(crypto.randomUUID()),
+            type: VaultItemType.Login,
+
+            name: titleName,
+            login: {
+              username: itemMap.account.name || "",
+              password: "",
+              totp: itemMap.account.otpauthUrl,
+              uris: [],
+            },
+            notes: "",
+            favorite: false,
+            reprompt: 0,
+            fields: [],
+            creationDate: nowStr,
+            revisionDate: nowStr,
+          };
+          updatedItems.push(newItem);
         }
-      } else if (itemMap.action === "create") {
-        const titleName = itemMap.account.issuer
-          ? `${itemMap.account.issuer} (${itemMap.account.name})`
-          : itemMap.account.name || "Google Authenticator Import";
-
-        const newItem: LoginVaultItem = {
-          id: asVaultItemId(crypto.randomUUID()),
-          type: VaultItemType.Login,
-
-          name: titleName,
-          login: {
-            username: itemMap.account.name || "",
-            password: "",
-            totp: itemMap.account.otpauthUrl,
-            uris: [],
-          },
-          notes: "",
-          favorite: false,
-          reprompt: 0,
-          fields: [],
-          creationDate: nowStr,
-          revisionDate: nowStr,
-        };
-        updatedItems.push(newItem);
       }
-    }
 
-    return {
-      ...payload,
-      items: updatedItems,
-    };
-  });
+      return {
+        ...payload,
+        items: updatedItems,
+      };
+    },
+  );
 }
-

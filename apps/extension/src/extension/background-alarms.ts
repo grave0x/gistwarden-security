@@ -1,10 +1,11 @@
+import { clearAlarm, createAlarm, hasAlarms, onAlarm } from "@/core/alarms.ts";
 import {
   ALARM_NAME_VAULT_TIMEOUT,
   MSG_VAULT_LOCKED,
   MSG_VAULT_LOGGED_OUT,
   SESSION_KEY_DERIVED_KEY,
 } from "@/core/constants.ts";
-import { clearAlarm, createAlarm, hasAlarms, onAlarm } from "@/core/alarms.ts";
+import { broadcastMessage } from "@/core/messaging.ts";
 import {
   clearUnlockedSessionState,
   getActiveVaultMode,
@@ -13,7 +14,6 @@ import {
   resetAccountSettings,
 } from "@/core/storage.ts";
 import { ExtensionSettingsSchema } from "@/core/storage-schemas.ts";
-import { broadcastMessage } from "@/core/messaging.ts";
 import { updateExtensionBadge } from "@/extension/background-badge.ts";
 
 export async function updateTimeoutAlarm(): Promise<void> {
@@ -30,7 +30,7 @@ export async function updateTimeoutAlarm(): Promise<void> {
 
   if (timeout !== "onRestart") {
     const minutes = parseInt(timeout, 10);
-    if (!isNaN(minutes) && minutes > 0) {
+    if (!Number.isNaN(minutes) && minutes > 0) {
       const derivedKeyRes = await getSessionItem(SESSION_KEY_DERIVED_KEY);
       const derivedKey = derivedKeyRes.isOk() ? derivedKeyRes.value : null;
       if (derivedKey) {
