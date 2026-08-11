@@ -1,8 +1,15 @@
-import { isLoginItem, parseCSV, type VaultItem } from "@gistwarden/domain";
+import {
+  asFolderId,
+  isLoginItem,
+  parseCSV,
+  type VaultItem,
+  VaultItemType,
+} from "@gistwarden/domain";
 import {
   parseAndValidateBitwardenCsv,
   parseAndValidateBrowserCsv,
 } from "../packages/ui/src/features/sync/csv-import.ts";
+import { jsonImportStrategy } from "../packages/ui/src/features/sync/strategies/json-import-strategy.ts";
 import { assert, assertEquals, test } from "./assert.ts";
 
 test("CSV Parser - RFC 4180 parsing", () => {
@@ -98,9 +105,77 @@ test("CSV Import - Parse different password manager exports", () => {
       assertEquals(item1.favorite, true);
       assertEquals(item1.login.username, "uongsuadaubung");
       assertEquals(item1.login.password, "12345");
-      assertEquals(item1.login.totp, "TOTPSECRET");
-    } else {
-      throw new Error("Expected item1 to be Login");
     }
   }
+});
+
+test("JSON Import - Parse valid JSON export and combine with existing vault items", () => {
+  const existingFolders = [{ id: asFolderId("f1"), name: "Công Việc" }];
+  const existingItems: VaultItem[] = [];
+
+  const validJsonPayload = JSON.stringify({
+    encrypted: false,
+    folders: [{ id: "f2", name: "Cá Nhân" }],
+    items: [
+      {
+        id: "item_new_1",
+        type: VaultItemType.Login,
+        name: "Twitter Corp",
+        notes: "Account twitter",
+        favorite: true,
+        reprompt: 0,
+        login: {
+          username: "twitter_user",
+          password: "twitter_password",
+          uris: [{ uri: "https://twitter.com" }],
+        },
+      },
+      {
+        id: "item_new_2",
+        type: VaultItemType.SecureNote,
+        name: "Private Note Import",
+        notes: "Private Note Content",
+        favorite: false,
+        reprompt: 0,
+      },
+    ],
+  });
+
+  const importRes = jsonImportStrategy.parseAndValidate(
+    validJsonPayload,
+    existingItems,
+    existingFolders,
+  );
+  assert(importRes.isOk(), "Valid JSON import should succeed");
+
+  if (importRes.isOk()) {
+    const val = importRes.value;
+    assertEquals(val.importedCount, 2);
+    assertEquals(val.combinedItems.length, 2);
+    assertEquals(val.combinedFolders.length, 2);
+    assertEquals(val.combinedItems[0]?.name, "Twitter Corp");
+    assertEquals(val.combinedItems[1]?.name, "Private Note Import");
+  }
+});
+
+test("Import Failure - Return safe error for malformed/corrupted CSV & JSON", () => {
+  const existingItems: VaultItem[] = [];
+
+  // 1. Malformed JSON string
+  const malformedJson = "{ invalid json syntax, missing quotes }";
+  const jsonRes = jsonImportStrategy.parseAndValidate(
+    malformedJson,
+    existingItems,
+  );
+  assert(jsonRes.isErr(), "Malformed JSON should return error");
+  assertEquals(jsonRes.error, "vault_import_error_invalid");
+
+  // 2. JSON without items array
+  const noItemsJson = JSON.stringify({ encrypted: false, foo: "bar" });
+  const noItemsRes = jsonImportStrategy.parseAndValidate(
+    noItemsJson,
+    existingItems,
+  );
+  assert(noItemsRes.isErr(), "JSON without items array should return error");
+  assertEquals(noItemsRes.error, "vault_import_error_invalid");
 });

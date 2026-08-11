@@ -1,4 +1,5 @@
 import {
+  asFolderId,
   asVaultItemId,
   parseCSV,
   type VaultItem,
@@ -8,6 +9,7 @@ import {
   exportToBitwardenCsv,
   exportToBrowserCsv,
 } from "../packages/ui/src/features/sync/csv-export.ts";
+import { jsonExportStrategy } from "../packages/ui/src/features/sync/strategies/json-export-strategy.ts";
 import { assert, assertEquals, test } from "./assert.ts";
 
 test("Export CSV - Browser CSV format", () => {
@@ -160,4 +162,62 @@ test("Export CSV - Bitwarden CSV format", () => {
   assertEquals(noteRow[9], "");
   assertEquals(noteRow[10], "");
   assertEquals(noteRow[11], "");
+});
+
+test("Export JSON - Validate JSON format, structure, and items", () => {
+  const folders = [
+    { id: asFolderId("folder_1"), name: "Công Việc" },
+    { id: asFolderId("folder_2"), name: "Cá Nhân" },
+  ];
+
+  const items: VaultItem[] = [
+    {
+      id: asVaultItemId("item_1"),
+      type: VaultItemType.Login,
+      name: "GitHub Corp",
+      notes: "Dev account",
+      favorite: true,
+      reprompt: 0,
+      folderId: asFolderId("folder_1"),
+      fields: [{ type: 0, name: "env", value: "prod" }],
+      login: {
+        username: "dev_user",
+        password: "secret_password",
+        totp: "TOTP_SECRET",
+        uris: [{ uri: "https://github.com" }],
+        fido2Credentials: [],
+        passwordRevisionDate: null,
+        passwordHistory: [],
+      },
+      creationDate: "2024-01-01T00:00:00Z",
+      revisionDate: "2024-01-01T00:00:00Z",
+    },
+    {
+      id: asVaultItemId("item_2"),
+      type: VaultItemType.SecureNote,
+      name: "Server Key Note",
+      notes: "AAAA-BBBB-CCCC",
+      favorite: false,
+      reprompt: 0,
+      folderId: asFolderId("folder_2"),
+      fields: [],
+      creationDate: "2024-01-01T00:00:00Z",
+      revisionDate: "2024-01-01T00:00:00Z",
+    },
+  ];
+
+  const exportResult = jsonExportStrategy.export(items, folders);
+  assertEquals(exportResult.mimeType, "application/json");
+  assert(exportResult.fileName.endsWith(".json"));
+
+  const parsed = JSON.parse(exportResult.fileContent);
+  assertEquals(parsed.encrypted, false);
+  assertEquals(parsed.folders.length, 2);
+  assertEquals(parsed.items.length, 2);
+
+  assertEquals(parsed.folders[0].name, "Công Việc");
+  assertEquals(parsed.items[0].name, "GitHub Corp");
+  assertEquals(parsed.items[0].login.username, "dev_user");
+  assertEquals(parsed.items[1].name, "Server Key Note");
+  assertEquals(parsed.items[1].notes, "AAAA-BBBB-CCCC");
 });

@@ -298,6 +298,7 @@ async function runCommandOrExit(
 async function runVerifications() {
   console.log("Running Linter & TypeCheck...");
   try {
+    await runCommandOrExit("biome format", "bun", ["run", "biome:format"]);
     await Promise.all([
       runCommandOrExit("bun lint", "bun", ["run", "lint"]),
       runCommandOrExit("biome check", "bun", ["run", "biome:check"]),
