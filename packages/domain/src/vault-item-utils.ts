@@ -194,10 +194,23 @@ export function mergeVaultItem(
     const payloadKey = VAULT_ITEM_TYPE_KEY_MAP[targetType];
     const patchPayload = getSubPayload(patch, payloadKey);
     const existingPayload = getSubPayload(existing, payloadKey);
-    baseItem[payloadKey] =
-      patchPayload ??
-      existingPayload ??
-      DEFAULT_VAULT_ITEM_PAYLOADS[targetType];
+
+    if (
+      existingPayload &&
+      typeof existingPayload === "object" &&
+      patchPayload &&
+      typeof patchPayload === "object"
+    ) {
+      baseItem[payloadKey] = {
+        ...existingPayload,
+        ...patchPayload,
+      };
+    } else {
+      baseItem[payloadKey] =
+        patchPayload ??
+        existingPayload ??
+        DEFAULT_VAULT_ITEM_PAYLOADS[targetType];
+    }
   }
 
   const parsed = VaultItemSchema.safeParse(baseItem);

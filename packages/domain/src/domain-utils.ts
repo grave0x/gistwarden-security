@@ -17,12 +17,57 @@ export function safeParseUrl(url: string): Result<URL, TranslationKey> {
 }
 
 /**
+ * Chuyển đổi phần hostname của URL (hoặc tên miền) sang dạng Punycode ASCII mà vẫn giữ nguyên protocol, path, query.
+ * Ví dụ: "https://chínhphủ.vn/login?a=1" -> "https://xn--chnhph-4va0152d.vn/login?a=1"
+ */
+export function toPunycodeUrl(input: string): string {
+  if (!input) return "";
+  const trimmed = input.trim();
+  if (!trimmed) return "";
+
+  const hasProtocol = /^https?:\/\//i.test(trimmed);
+  const urlString = hasProtocol ? trimmed : `http://${trimmed}`;
+  try {
+    const url = new URL(urlString);
+    const href = url.href.toLowerCase();
+    if (!hasProtocol && href.startsWith("http://")) {
+      return href.slice(7);
+    }
+    return href;
+  } catch {
+    return trimmed.toLowerCase();
+  }
+}
+
+/**
+ * Chuyển đổi tên miền / hostname có ký tự Unicode (ví dụ: chínhphủ.vn) sang dạng Punycode ASCII (xn--chngph-tza99a.vn).
+ * Đảm bảo việc so sánh tên miền luôn nhất quán bất kể nguồn nhập là Unicode hay Punycode.
+ */
+export function toPunycodeHostname(input: string): string {
+  if (!input) return "";
+  const trimmed = input.trim();
+  if (!trimmed) return "";
+
+  const urlString = /^https?:\/\//i.test(trimmed)
+    ? trimmed
+    : `http://${trimmed}`;
+  try {
+    const url = new URL(urlString);
+    const hostname = url.hostname.toLowerCase();
+    return hostname.startsWith("www.") ? hostname.slice(4) : hostname;
+  } catch {
+    return trimmed.toLowerCase();
+  }
+}
+
+/**
  * Trích xuất Hostname từ một URL hoặc chuỗi tên miền (đã loại bỏ www., protocol, port, path).
  */
 export function getHostname(input: string): string {
   if (!input) return "";
-  const host = tldtsGetHostname(input);
-  if (!host) return "";
+  const punyHost = toPunycodeHostname(input);
+  const host = tldtsGetHostname(punyHost);
+  if (!host) return punyHost;
   return host.startsWith("www.") ? host.slice(4) : host;
 }
 
@@ -40,11 +85,12 @@ export function getHostname(input: string): string {
  */
 export function getBaseDomain(input: string): string {
   if (!input) return "";
-  const domain = getDomain(input);
+  const punyHost = toPunycodeHostname(input);
+  const domain = getDomain(punyHost);
   if (domain) {
     return domain;
   }
-  return getHostname(input);
+  return getHostname(punyHost);
 }
 
 /**

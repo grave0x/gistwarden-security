@@ -1,4 +1,9 @@
-import { getBaseDomain, getHostname } from "./domain-utils.ts";
+import {
+  getBaseDomain,
+  getHostname,
+  toPunycodeHostname,
+  toPunycodeUrl,
+} from "./domain-utils.ts";
 import { UriMatchMode, type VaultItem } from "./vault-schemas.ts";
 import { isLoginItem, type VaultItemType } from "./vault-types.ts";
 
@@ -21,11 +26,21 @@ export function isSingleUriMatch(
   const cUrl = currentDomainOrUrl.trim();
 
   if (effectiveMode === UriMatchMode.Exact) {
-    return cUrl.toLowerCase() === sUri.toLowerCase();
+    const sPunyUrl = toPunycodeUrl(sUri);
+    const cPunyUrl = toPunycodeUrl(cUrl);
+    return (
+      cUrl.toLowerCase() === sUri.toLowerCase() ||
+      (Boolean(sPunyUrl) && Boolean(cPunyUrl) && cPunyUrl === sPunyUrl)
+    );
   }
 
   if (effectiveMode === UriMatchMode.StartsWith) {
-    return cUrl.toLowerCase().startsWith(sUri.toLowerCase());
+    const sPunyUrl = toPunycodeUrl(sUri);
+    const cPunyUrl = toPunycodeUrl(cUrl);
+    return (
+      cUrl.toLowerCase().startsWith(sUri.toLowerCase()) ||
+      (Boolean(sPunyUrl) && Boolean(cPunyUrl) && cPunyUrl.startsWith(sPunyUrl))
+    );
   }
 
   if (effectiveMode === UriMatchMode.Host) {

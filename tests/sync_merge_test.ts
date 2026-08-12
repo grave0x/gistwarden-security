@@ -1,5 +1,6 @@
 import {
   asVaultItemId,
+  mergeVaultItem,
   type CardVaultItem,
   type IdentityVaultItem,
   type LoginVaultItem,
@@ -356,4 +357,32 @@ test("Vault Merge - Trash array handles deleted items across devices", () => {
   assertEquals(merged.trash.length, 1);
   assert(merged.trash[0]);
   assertEquals(merged.trash[0].item.id, "item-2");
+});
+
+test("Vault Merge - mergeVaultItem preserves TOTP and URIs when partial payload omits totp field", () => {
+  const existingLogin = createMockLogin(
+    asVaultItemId("login-totp-1"),
+    "Original Login with TOTP",
+    "2026-07-24T10:00:00.000Z",
+    "2026-07-24T10:00:00.000Z",
+  );
+  if (existingLogin.type === VaultItemType.Login) {
+    existingLogin.login.totp = "JBSWY3DPEHPK3PXP";
+    existingLogin.login.uris = [{ uri: "https://example.com" }];
+  }
+
+  const patchItem = mergeVaultItem(existingLogin, {
+    login: {
+      username: "user@example.com",
+      password: "UpdatedPassword999!",
+    } as unknown as VaultItem["login"],
+  });
+
+  if (patchItem.type === VaultItemType.Login) {
+    assertEquals(patchItem.login.password, "UpdatedPassword999!");
+    assertEquals(patchItem.login.totp, "JBSWY3DPEHPK3PXP");
+    assertEquals(patchItem.login.uris.length, 1);
+  } else {
+    throw new Error("Item type mismatch");
+  }
 });
