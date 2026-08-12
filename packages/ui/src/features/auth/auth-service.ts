@@ -425,8 +425,8 @@ export async function unlock(
     return err(accSettingsRes.error);
   }
   const accSettings = accSettingsRes.value;
-  let syncConfig = accSettings.syncConfig;
-  let saltBase64 = accSettings.masterPasswordConfig.salt;
+  const syncConfig = accSettings.syncConfig;
+  const saltBase64 = accSettings.masterPasswordConfig.salt;
   clearDerivedKey();
 
   const provider = getSyncProvider(settingsStore.vaultMode);
@@ -448,7 +448,7 @@ export async function unlock(
 
   const {
     content: existingVaultContent,
-    salt: activeSalt,
+    salt: _activeSalt,
     key,
   } = resolveRes.value;
 

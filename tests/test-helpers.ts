@@ -518,7 +518,7 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
   assertEquals(uiStore.view, View.Login);
   assertEquals(await getSessionKey(), null);
 
-  const lockedStatus = await provider.checkVaultStatus({
+  const _lockedStatus = await provider.checkVaultStatus({
     token:
       mode === "github_gist"
         ? asGitHubAccessToken(githubToken)

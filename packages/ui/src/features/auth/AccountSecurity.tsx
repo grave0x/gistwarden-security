@@ -1,4 +1,4 @@
-import { confirm, setGlobalLoading, showToast } from "@gistwarden/ui";
+import { confirm, showToast } from "@gistwarden/ui";
 import { type Component, createSignal, Show } from "solid-js";
 import Checkbox from "@/components/ui/Checkbox.tsx";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";

@@ -19,7 +19,6 @@ import {
   getSyncToken,
   type MasterPasswordSecurityConfig,
   removeSessionItem,
-  resetAccountSettings,
   type SyncConfig,
   setSessionItem,
   setSessionUnlocked,
@@ -162,7 +161,7 @@ export async function lockSessionUseCase(): Promise<void> {
   await clearAlarm(ALARM_NAME_VAULT_TIMEOUT);
 }
 
-export async function logoutSessionUseCase(mode: VaultMode): Promise<void> {
+export async function logoutSessionUseCase(_mode: VaultMode): Promise<void> {
   await clearDerivedKey();
   sessionManager.clearKey();
   await removeSessionItem([...SESSION_KEYS_ON_LOCK]);
