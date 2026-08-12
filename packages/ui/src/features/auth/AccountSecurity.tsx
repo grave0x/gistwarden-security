@@ -42,9 +42,7 @@ export const AccountSecurity: Component = () => {
   const handleSavePin = async (pin: string, requireRestart: boolean) => {
     setIsPinModalOpen(false);
     setError("");
-    setGlobalLoading(true);
     const res = await setPinUnlock(pin, requireRestart);
-    setGlobalLoading(false);
     if (res.isOk()) {
       showToast(t("toast_pin_set_success"), "success");
     } else {
