@@ -1,5 +1,6 @@
 import { createEffect, createSignal, type JSX, Show } from "solid-js";
 import { Portal } from "solid-js/web";
+import Button from "@/components/ui/Button.tsx";
 
 export interface BaseSlideModalProps {
   isOpen: boolean;
@@ -44,13 +45,14 @@ export function BaseSlideModal(props: BaseSlideModalProps): JSX.Element {
         <Show when={props.title}>
           <div class="modal-panel-header">
             <div class="modal-panel-title">{props.title}</div>
-            <button
+            <Button
               type="button"
+              variant="secondary"
               class="modal-close-btn font-sz-16 font-w-600"
               onClick={() => triggerClose()}
             >
               ✕
-            </button>
+            </Button>
           </div>
         </Show>
         {typeof props.children === "function"

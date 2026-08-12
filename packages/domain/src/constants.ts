@@ -63,6 +63,7 @@ export const MSG_DELETE_LOCAL_VAULT = "DELETE_LOCAL_VAULT";
 // Browser Local Storage Keys
 export const STORAGE_KEY_EXTENSION_SETTINGS = `${APP_NAME.toLowerCase()}_extension_settings`;
 export const STORAGE_KEY_ACCOUNT_SETTINGS = `${APP_NAME.toLowerCase()}_account_settings`;
+export const STORAGE_KEY_SELF_HOSTED_ACCOUNT_SETTINGS = `${APP_NAME.toLowerCase()}_self_hosted_account_settings`;
 export const STORAGE_KEY = STORAGE_KEY_EXTENSION_SETTINGS; // Backward compatibility fallback
 export const LOCAL_STORAGE_KEY_THEME = `${APP_NAME.toLowerCase()}_theme`;
 export const STORAGE_KEY_PASSWORD_HISTORY = `${APP_NAME.toLowerCase()}_password_history`;

@@ -96,7 +96,6 @@ export async function createNewVaultUseCase(
       syncTokenIv: iv,
     };
     await updateAccountSettings({ syncConfig: updatedSyncConfig }, mode);
-    await removeSessionItem(SESSION_KEY_PENDING_SYNC_TOKEN);
   }
 
   const initialPayloadObject = { folders: [], items: [], trash: [] };
@@ -131,6 +130,7 @@ export async function createNewVaultUseCase(
     return err(sendResult.value.error || "messaging_error_send_failed");
   }
 
+  await removeSessionItem(SESSION_KEY_PENDING_SYNC_TOKEN);
   await setDerivedKey(key);
   const verificationStr = "verification_token";
   const encryptVerifyRes = await encryptData(verificationStr, key);
@@ -166,7 +166,6 @@ export async function logoutSessionUseCase(mode: VaultMode): Promise<void> {
   await clearDerivedKey();
   sessionManager.clearKey();
   await removeSessionItem([...SESSION_KEYS_ON_LOCK]);
-  await resetAccountSettings(mode);
   await clearAlarm(ALARM_NAME_VAULT_TIMEOUT);
   await broadcastMessage({ type: MSG_VAULT_LOGGED_OUT });
 }
@@ -192,6 +191,8 @@ export async function checkVaultConfiguredUseCase(
   return await provider.isConfigured({
     gistId: syncConfig.gistId || undefined,
     token: decryptedToken || undefined,
+    serverUrl: syncConfig.serverUrl || undefined,
+    username: syncConfig.username || undefined,
     hasStoredEncryptedToken: Boolean(
       syncConfig.syncTokenEncrypted || syncConfig.username,
     ),

@@ -19,6 +19,8 @@ import type {
   SyncResult,
   SyncStatusResult,
   SyncValidationResult,
+  UnlockContext,
+  UnlockVaultResult,
 } from "./sync-provider-types.ts";
 
 /**
@@ -110,10 +112,36 @@ export class LocalStorageProvider implements ISyncProvider {
       return { status: "exists" };
     }
 
-    if (_options?.hasStoredSalt) {
-      await resetAccountSettings("local_storage");
+    // Nếu không có payload local -> Tự động dọn dẹp account_settings cũ rác
+    await resetAccountSettings("local_storage");
+    return { status: "new" };
+  }
+
+  async resolveVaultContentForUnlock(
+    context: UnlockContext,
+  ): Promise<Result<UnlockVaultResult, TranslationKey>> {
+    const downloadRes = await this.download();
+    if (downloadRes.isErr() || !downloadRes.value.content) {
+      return err("vault_error_not_found");
     }
 
-    return { status: "new" };
+    const content = downloadRes.value.content;
+    let salt = context.accSettings.masterPasswordConfig.salt;
+
+    const payloadJsonRes = safeJsonParse(content);
+    if (payloadJsonRes.isOk()) {
+      const parsed = GistPayloadSchema.safeParse(payloadJsonRes.value);
+      if (parsed.success && parsed.data.salt) {
+        salt = parsed.data.salt;
+      }
+    }
+
+    const activeSalt = salt || context.secSalt;
+    if (!activeSalt) return err("vault_error_not_found");
+
+    const keyRes = await context.getOrDeriveKey(context.password, activeSalt);
+    if (keyRes.isErr() || !keyRes.value) return err("login_error_wrong_mp");
+
+    return ok({ content, salt: activeSalt, key: keyRes.value });
   }
 }

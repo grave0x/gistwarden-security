@@ -84,6 +84,7 @@ export function confirm(
   title: string,
   message: string,
   type: ConfirmType = "info",
+  hideCancel = false,
 ): Promise<boolean> {
   return new Promise<boolean>((resolve) => {
     setUiStore(STORE_KEY_CONFIRM_MODAL, {
@@ -91,9 +92,18 @@ export function confirm(
       title,
       message,
       type,
+      hideCancel,
       resolve,
     });
   });
+}
+
+export function alert(
+  title: string,
+  message: string,
+  type: ConfirmType = "warning",
+): Promise<boolean> {
+  return confirm(title, message, type, true);
 }
 
 export function resolveConfirm(result: boolean) {
@@ -106,6 +116,7 @@ export function resolveConfirm(result: boolean) {
     title: "",
     message: "",
     type: "info",
+    hideCancel: false,
     resolve: null,
   });
 }

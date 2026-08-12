@@ -34,17 +34,17 @@ export default {
   fallback_name_ssh_key: "Chưa đặt tên SSH Key",
 
   // Detailed Error Messages
-  github_error_missing_token: "Không tìm thấy token truy cập GitHub.",
-  github_error_user_parse_failed:
-    "Không thể xác thực thông tin người dùng GitHub.",
-  github_error_gist_not_found:
-    "Không tìm thấy Gist dữ liệu két mật khẩu trên GitHub.",
-  github_error_create_gist_failed: "Tạo Gist mới trên GitHub thất bại.",
-  github_error_gist_file_missing:
-    "Không tìm thấy tệp dữ liệu trong Gist GitHub.",
-  github_error_gist_parse_failed:
-    "Dữ liệu Gist từ GitHub bị lỗi hoặc không đúng định dạng.",
-  github_error_missing_gist_id: "Thiếu Gist ID để xử lý yêu cầu.",
+  provider_error_missing_token: "Thiếu Access Token xác thực với máy chủ.",
+  provider_error_unauthorized:
+    "Access Token hết hạn hoặc không có quyền truy cập.",
+  provider_error_not_found: "Không tìm thấy dữ liệu Két trên máy chủ.",
+  provider_error_network: "Lỗi kết nối mạng tới máy chủ lưu trữ.",
+  provider_error_user_parse_failed: "Không thể xác thực thông tin người dùng.",
+  provider_error_create_failed: "Tạo Két mới trên máy chủ lưu trữ thất bại.",
+  provider_error_file_missing: "Tệp dữ liệu Két không tồn tại trên máy chủ.",
+  provider_error_parse_failed:
+    "Dữ liệu Két từ máy chủ bị lỗi hoặc không đúng định dạng.",
+  provider_error_missing_id: "Thiếu ID dữ liệu để xử lý yêu cầu.",
   vault_error_not_found: "Không tìm thấy dữ liệu két sắt.",
   sync_error_corrupted_payload:
     "Dữ liệu đồng bộ bị lỗi cấu trúc hoặc không giải mã được.",
@@ -118,7 +118,9 @@ export default {
   login_placeholder_mp: "Nhập Mật khẩu chính...",
   login_btn_unlock: "Mở khóa",
   login_forgot_password: "Quên Mật khẩu chính?",
-  login_error_empty_pat: "Vui lòng nhập Personal Access Token",
+  login_error_empty_pat: "Chưa nhập GitHub Token.",
+  login_error_empty_username: "Vui lòng nhập tên đăng nhập.",
+  login_error_empty_password: "Vui lòng nhập mật khẩu tài khoản.",
   login_error_invalid_token: "Token không hợp lệ hoặc lỗi kết nối",
   login_error_oauth_no_token: "Không nhận được token từ GitHub",
   login_error_oauth_fail: "Lỗi đăng nhập OAuth",
@@ -656,12 +658,12 @@ export default {
   guide_item_overview: "Tổng quan & Mã hóa E2EE",
   guide_item_master_password: "Mật khẩu chính (Master Password)",
   guide_item_github_gist: "Tạo GitHub Token & Cấu hình Gist",
-  guide_item_self_hosted_server: "Self-Hosted Server (Máy chủ Tự dựng)",
+  guide_item_self_hosted_server: "Máy chủ Cá nhân",
   guide_item_local_vault: "Két sắt Cục bộ & Cảnh báo Bảo mật",
   guide_item_auto_lock: "Khóa Két & Tự Động Khóa",
 
   guide_start_self_hosted_lead:
-    "Self-Hosted Server Provider cho phép bạn tự vận hành máy chủ cá nhân (VPS, Docker, Cloudflare Workers, NAS Synology...) làm nơi lưu trữ và đồng bộ két mật khẩu mã hóa an toàn.",
+    "Máy chủ cá nhân cho phép bạn tự vận hành hạ tầng riêng (VPS, Docker, Cloudflare Workers, NAS Synology...) làm nơi lưu trữ và đồng bộ két mật khẩu mã hóa an toàn.",
   guide_start_self_hosted_step1_title:
     "1. Nhập Địa chỉ Máy chủ (Server Base URL)",
   guide_start_self_hosted_step1_desc:
@@ -682,18 +684,56 @@ export default {
     "Lưu ý Quan trọng về Bảo mật Mã hóa Đầu-cuối (E2EE)",
   guide_start_self_hosted_note_desc:
     "Mật khẩu tài khoản Server (Server Account Password) chỉ dùng để xác thực API với máy chủ. Master Password dùng để tạo khóa mã hóa AES-256-GCM và KHÔNG BAO GIỜ được gửi lên máy chủ.",
+  guide_self_hosted_cors_title:
+    "Bắt Buộc Cấu Hình CORS Cho Phiên Bản Web (GitHub Pages)",
+  guide_self_hosted_cors_desc:
+    "Nếu sử dụng ứng dụng GistWarden phiên bản Web (https://uongsuadaubung.github.io), máy chủ cá nhân BẮT BUỘC phải bật CORS (Access-Control-Allow-Origin: https://uongsuadaubung.github.io hoặc *) và hỗ trợ phương thức HTTP OPTIONS cho các truy vấn Preflight.",
   guide_start_self_hosted_app_title: "Hướng Dẫn Kết Nối Trên App GistWarden",
   guide_start_self_hosted_app_desc:
-    "Tại màn hình Đăng nhập/Khởi tạo của GistWarden, chọn tab Self-Hosted Server, điền Base URL, Đăng ký/Đăng nhập và bắt đầu sử dụng.",
+    "Tại màn hình Đăng nhập/Khởi tạo của GistWarden, chọn tab Máy chủ cá nhân, điền Base URL, Đăng ký/Đăng nhập và bắt đầu sử dụng.",
 
-  guide_self_hosted_why_title: "Tại Sao Cần Bộ REST API Self-Hosted Này?",
+  login_provider_select_label: "Phương thức lưu trữ Két",
+  login_provider_github_gist: "Đám mây (GitHub Gist)",
+  login_provider_local: "Cục bộ (Local Vault)",
+  login_provider_self_hosted: "Máy chủ cá nhân",
+  login_self_hosted_server_url: "Địa chỉ máy chủ",
+  login_self_hosted_username: "Tên đăng nhập",
+  login_self_hosted_password: "Mật khẩu tài khoản",
+  login_self_hosted_btn_login: "Đăng Nhập Máy Chủ",
+  login_self_hosted_btn_register: "Đăng Ký Tài Khoản",
+  login_self_hosted_tab_login: "Đăng Nhập",
+  login_self_hosted_tab_register: "Đăng Ký",
+  login_self_hosted_forgot_password: "Quên mật khẩu?",
+  login_self_hosted_forgot_password_title: "Khôi Phục Mật Khẩu",
+  login_self_hosted_forgot_password_msg:
+    "Vui lòng liên hệ với Quản trị viên (Admin) của máy chủ host này để được hỗ trợ khôi phục mật khẩu tài khoản của bạn.",
+  login_self_hosted_forgot_mp_title: "Quên Mật Khẩu Chính Máy Chủ",
+  login_self_hosted_forgot_mp_msg:
+    "{APP_NAME} sử dụng cơ chế mã hóa đầu-cuối (Zero-Knowledge). Mật khẩu chính không bao giờ được lưu trữ trên máy chủ và <strong class='text-error'>KHÔNG THỂ KHÔI PHỤC</strong>.<br/><br/>Nếu bạn quên Mật khẩu chính, bạn có thể <strong>Đăng xuất</strong> ra ngoài hoặc <strong>liên hệ Quản trị viên (Admin)</strong> của máy chủ host này để hỗ trợ xóa file Két sắt đã lưu, giúp bạn tạo lại Két sắt mới với cùng tài khoản này.",
+
+  // Server Config Modal
+  server_config_modal_title: "Cấu Hình Máy Chủ Cá Nhân",
+  server_config_btn_test: "Thử Kết Nối",
+  server_config_btn_save: "Lưu Cấu Hình",
+  server_config_test_success: "Kết nối máy chủ thành công!",
+  server_config_test_failed: "Không thể kết nối tới máy chủ.",
+  server_config_current_server: "Máy chủ:",
+  server_config_not_set: "(Chưa cấu hình)",
+  server_config_error_url_required: "Vui lòng nhập địa chỉ URL máy chủ.",
+  self_hosted_error_user_exists: "Tên đăng nhập đã tồn tại trên máy chủ.",
+  self_hosted_error_invalid_credentials:
+    "Tên đăng nhập hoặc mật khẩu máy chủ không đúng.",
+  self_hosted_error_network:
+    "Lỗi kết nối tới máy chủ Self-Host. Vui lòng kiểm tra lại URL.",
+
+  guide_self_hosted_why_title: "Tại Sao Cần Bộ REST API Máy Chủ Cá Nhân Này?",
   guide_self_hosted_why_desc:
-    "Self-Hosted Server API được thiết kế tinh gọn với đúng 6 REST endpoints chuẩn hóa, giúp người dùng tự làm chủ hạ tầng đám mây riêng (Private Cloud/VPS) mà không cần phụ thuộc vào GitHub. Toàn bộ dữ liệu mật khẩu được mã hóa E2EE bằng AES-256-GCM tại Client trước khi gửi lên máy chủ.",
+    "API Máy chủ cá nhân được thiết kế tinh gọn với đúng 6 REST endpoints chuẩn hóa, giúp người dùng tự làm chủ hạ tầng đám mây riêng (Private Cloud/VPS) mà không cần phụ thuộc vào GitHub. Toàn bộ dữ liệu mật khẩu được mã hóa E2EE bằng AES-256-GCM tại Client trước khi gửi lên máy chủ.",
   guide_self_hosted_matrix_title:
     "Bảng So Sánh Tương Thích 1-to-1 Với GitHub API",
   guide_self_hosted_matrix_col_action: "Thao Tác Ứng Dụng",
   guide_self_hosted_matrix_col_github: "Luồng API GitHub Gist",
-  guide_self_hosted_matrix_col_self_hosted: "Luồng API Self-Hosted Server",
+  guide_self_hosted_matrix_col_self_hosted: "Luồng API Máy Chủ Cá Nhân",
   guide_self_hosted_matrix_col_purpose: "Vai Trò & Lý Do Cần Thiết",
 
   guide_self_hosted_row1_action: "Đăng Ký Tài Khoản",

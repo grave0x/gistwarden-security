@@ -50,7 +50,7 @@ async function githubRequest(
   options: RequestInit = {},
   authToken?: GitHubAccessToken,
 ): Promise<Result<unknown, TranslationKey>> {
-  if (!authToken) return err("github_error_missing_token");
+  if (!authToken) return err("provider_error_missing_token");
 
   const res = await fetchText(`${DEFAULT_GITHUB_API_BASE}${path}`, {
     ...options,
@@ -91,12 +91,12 @@ export async function validateToken(
 
   const parseRes = safeJsonParse(fetchRes.value);
   if (parseRes.isErr()) {
-    return err("github_error_user_parse_failed");
+    return err("provider_error_user_parse_failed");
   }
 
   const parsed = GithubUserSchema.safeParse(parseRes.value);
   if (!parsed.success) {
-    return err("github_error_user_parse_failed");
+    return err("provider_error_user_parse_failed");
   }
 
   return ok({
@@ -114,7 +114,7 @@ export async function findGistId(
   }
   const parsed = GistArraySchema.safeParse(reqRes.value);
   if (!parsed.success) {
-    return err("github_error_gist_parse_failed");
+    return err("provider_error_parse_failed");
   }
   const target = parsed.data.find(
     (g) => g.description === GIST_DESCRIPTION && GIST_FILE_NAME in g.files,
@@ -147,7 +147,7 @@ export async function createGist(
   }
   const parsed = GistSchema.safeParse(reqRes.value);
   if (!parsed.success) {
-    return err("github_error_create_gist_failed");
+    return err("provider_error_create_failed");
   }
   return ok(parsed.data);
 }
@@ -179,7 +179,7 @@ export async function uploadToGist(
   apiOpts?: SyncOptions,
 ): Promise<Result<SyncResult, TranslationKey>> {
   const token = apiOpts?.token;
-  if (!token) return err("github_error_missing_token");
+  if (!token) return err("provider_error_missing_token");
 
   let gistId = apiOpts?.gistId;
 
@@ -211,7 +211,7 @@ export async function getGist(
   gistId: GistId,
   token?: GitHubAccessToken,
 ): Promise<Result<string, TranslationKey>> {
-  if (!gistId) return err("github_error_missing_gist_id");
+  if (!gistId) return err("provider_error_missing_id");
 
   const reqRes = await githubRequest(`/gists/${gistId}`, {}, token);
   if (reqRes.isErr()) {
@@ -220,12 +220,12 @@ export async function getGist(
 
   const parsed = GistSchema.safeParse(reqRes.value);
   if (!parsed.success) {
-    return err("github_error_gist_parse_failed");
+    return err("provider_error_parse_failed");
   }
 
   const file = parsed.data.files[GIST_FILE_NAME];
   if (!file) {
-    return err("github_error_gist_file_missing");
+    return err("provider_error_file_missing");
   }
 
   if (file.content) {
@@ -246,7 +246,7 @@ export async function getGist(
     }
   }
 
-  return err("github_error_gist_file_missing");
+  return err("provider_error_file_missing");
 }
 
 /**
@@ -258,7 +258,7 @@ export async function downloadFromGistPublic(
   username?: string,
   token?: GitHubAccessToken,
 ): Promise<Result<string, TranslationKey>> {
-  if (!gistId) return err("github_error_missing_gist_id");
+  if (!gistId) return err("provider_error_missing_id");
 
   const cacheBuster = `_t=${Date.now()}`;
 
@@ -278,7 +278,7 @@ export async function downloadFromGistPublic(
   });
 
   if (rawRes.isErr() || !rawRes.value.trim()) {
-    return err("github_error_gist_file_missing");
+    return err("provider_error_file_missing");
   }
 
   return ok(rawRes.value);
@@ -307,7 +307,7 @@ export async function downloadFromGist(
 
   // 2. Nếu chưa có gistId hoặc gistId cũ bị xóa -> Tìm Gist ID mới qua REST API
   if (!token) {
-    return err("github_error_missing_token");
+    return err("provider_error_missing_token");
   }
 
   const findRes = await findGistId(token);
@@ -316,7 +316,7 @@ export async function downloadFromGist(
   }
   gistId = findRes.value;
   if (!gistId) {
-    return err("github_error_gist_not_found");
+    return err("provider_error_not_found");
   }
 
   const downloadRes = await getGist(gistId, token);

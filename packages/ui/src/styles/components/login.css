@@ -59,11 +59,11 @@
 
 .login-tabs {
   display: flex;
-  background: var(--bg-card, rgba(255, 255, 255, 0.04));
-  padding: 4px;
-  border-radius: 12px;
-  border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
-  gap: 4px;
+  background: var(--white-translucent-4, rgba(255, 255, 255, 0.04));
+  padding: var(--space-1);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--border);
+  gap: var(--space-1);
 
   .login-tab-btn {
     flex: 1;
@@ -71,25 +71,37 @@
     background: transparent;
     border: none;
     outline: none;
-    border-radius: 8px;
-    padding: 8px 12px;
-    font-size: 12.5px;
-    font-weight: 600;
-    color: var(--text-muted, #94a3b8);
+    border-radius: var(--radius-md);
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-semibold);
+    color: var(--text-muted);
     cursor: pointer;
     user-select: none;
-    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all var(--transition-fast);
 
     &:hover {
-      color: var(--text, #f8fafc);
-      background: rgba(255, 255, 255, 0.06);
+      color: var(--text);
+      background: var(--white-translucent-5);
     }
 
     &.active {
-      background: var(--primary, #3b82f6);
-      color: #ffffff;
-      box-shadow: 0 2px 8px rgba(59, 130, 246, 0.35);
+      background: var(--primary);
+      color: var(--white);
+      box-shadow: 0 2px 8px var(--primary-translucent-20);
     }
+  }
+}
+
+.form-label-with-icon {
+  display: flex !important;
+  align-items: center !important;
+  gap: var(--space-2);
+  line-height: 1;
+
+  svg {
+    flex-shrink: 0;
+    display: block;
   }
 }
 
@@ -193,6 +205,70 @@
       font-size: 11px;
       font-weight: 600;
       color: var(--text-muted);
+    }
+  }
+}
+
+/* Self-Hosted Server Bar & Settings Button */
+.selfhosted-server-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: var(--white-translucent-4, rgba(255, 255, 255, 0.04));
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-4);
+
+  .server-info-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: var(--text-muted);
+    min-width: 0;
+
+    .server-icon {
+      color: var(--primary-accent, var(--primary));
+      flex-shrink: 0;
+    }
+
+    .server-label {
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .server-url-val {
+      font-family: var(--font-mono);
+      font-weight: 600;
+      color: var(--text);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 200px;
+    }
+  }
+
+  .server-config-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex-shrink: 0;
+
+    &:hover {
+      color: var(--text);
+      background: var(--white-translucent-5);
+      border-color: var(--border);
+      transform: rotate(30deg);
     }
   }
 }

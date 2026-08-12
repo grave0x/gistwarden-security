@@ -35,9 +35,14 @@ export const ConfirmModal: Component = () => {
               >
                 {t("btn_confirm")}
               </Button>
-              <Button variant="secondary" onClick={() => resolveConfirm(false)}>
-                {t("btn_cancel")}
-              </Button>
+              <Show when={!uiStore.confirmModal.hideCancel}>
+                <Button
+                  variant="secondary"
+                  onClick={() => resolveConfirm(false)}
+                >
+                  {t("btn_cancel")}
+                </Button>
+              </Show>
             </div>
           </div>
         </div>

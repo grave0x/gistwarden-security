@@ -1,8 +1,11 @@
 import {
+  base64ToArrayBuffer,
   computeHmac,
+  decryptData,
   deriveKey,
   encryptData,
   generateSalt,
+  SESSION_KEY_PENDING_SYNC_TOKEN,
   SESSION_KEY_VERIFICATION_CIPHERTEXT,
   SESSION_KEY_VERIFICATION_IV,
   type TranslationKey,
@@ -14,6 +17,7 @@ import {
   getAccountSettings,
   getSyncToken,
   type MasterPasswordSecurityConfig,
+  removeSessionItem,
   type SyncConfig,
   setSessionItem,
   updateAccountSettings,
@@ -89,7 +93,31 @@ export async function changeMasterPasswordUseCase(
   await setSessionItem(SESSION_KEY_VERIFICATION_CIPHERTEXT, vCiphertext);
 
   const mode = options.vaultMode;
-  const syncToken = await getSyncToken(mode);
+  let syncToken: string | null = await getSyncToken(mode);
+
+  if (
+    !syncToken &&
+    options.currentSyncConfig.syncTokenEncrypted &&
+    options.currentSyncConfig.syncTokenIv
+  ) {
+    const oldSaltStr = options.currentMpConfig.salt;
+    const oldSaltBufRes = base64ToArrayBuffer(oldSaltStr || "");
+    const oldSaltRaw = oldSaltBufRes.isOk()
+      ? new Uint8Array(oldSaltBufRes.value)
+      : generateSalt();
+    const oldKeyRes = await deriveKey(options.currentPass, oldSaltRaw);
+    if (oldKeyRes.isOk()) {
+      const decTokenRes = await decryptData(
+        options.currentSyncConfig.syncTokenEncrypted,
+        options.currentSyncConfig.syncTokenIv,
+        oldKeyRes.value,
+      );
+      if (decTokenRes.isOk()) {
+        syncToken = decTokenRes.value;
+      }
+    }
+  }
+
   const updatedMpConfig: MasterPasswordSecurityConfig = {
     ...options.currentMpConfig,
     salt: newSaltBase64,
@@ -117,6 +145,7 @@ export async function changeMasterPasswordUseCase(
     },
     mode,
   );
+  await removeSessionItem(SESSION_KEY_PENDING_SYNC_TOKEN);
 
   return ok({
     newKey,

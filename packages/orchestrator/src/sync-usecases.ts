@@ -29,7 +29,7 @@ export async function uploadVaultUseCase(
   const provider = getSyncProvider(vaultMode);
 
   if (!(await checkVaultConfiguredUseCase(vaultMode))) {
-    return { success: false, error: "github_error_missing_token" };
+    return { success: false, error: "provider_error_missing_token" };
   }
 
   const token = await getSyncToken(vaultMode);
@@ -39,6 +39,7 @@ export async function uploadVaultUseCase(
     : undefined;
   const res = await provider.upload(payload.content || "", {
     token: token || undefined,
+    serverUrl: syncConfig?.serverUrl,
     gistId: syncConfig?.gistId,
     username: syncConfig?.username,
   });
@@ -69,9 +70,14 @@ export async function deleteVaultUseCase(
   const provider = getSyncProvider(vaultMode);
 
   const token = await getSyncToken(vaultMode);
+  const settingsRes = await getAccountSettings(vaultMode);
+  const syncConfig = settingsRes.isOk()
+    ? settingsRes.value.syncConfig
+    : undefined;
   const gistId = payload.content ? asGistId(payload.content) : undefined;
   const res = await provider.delete(gistId, {
     token: token || undefined,
+    serverUrl: syncConfig?.serverUrl,
   });
   if (res.isOk()) {
     return { success: true };
@@ -92,6 +98,7 @@ export async function downloadVaultUseCase(
 
   const res = await provider.download({
     token: token || undefined,
+    serverUrl: syncConfig?.serverUrl,
     gistId: syncConfig?.gistId,
     username: syncConfig?.username,
   });

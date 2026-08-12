@@ -33,14 +33,17 @@ export default {
   fallback_name_ssh_key: "Untitled SSH Key",
 
   // Detailed Error Messages
-  github_error_missing_token: "GitHub access token is missing.",
-  github_error_user_parse_failed: "Failed to authenticate GitHub user info.",
-  github_error_gist_not_found: "Vault Gist not found on GitHub.",
-  github_error_create_gist_failed: "Failed to create a new Gist on GitHub.",
-  github_error_gist_file_missing: "Vault data file missing in GitHub Gist.",
-  github_error_gist_parse_failed:
-    "Gist data from GitHub is invalid or corrupted.",
-  github_error_missing_gist_id: "Missing Gist ID to process request.",
+  provider_error_missing_token: "Missing authentication access token.",
+  provider_error_unauthorized: "Access token is missing, expired or invalid.",
+  provider_error_not_found: "Vault dataset not found on provider server.",
+  provider_error_network: "Network connection error to provider server.",
+  provider_error_user_parse_failed: "Failed to authenticate user info.",
+  provider_error_create_failed:
+    "Failed to create a new Vault on provider server.",
+  provider_error_file_missing: "Vault data file missing on provider server.",
+  provider_error_parse_failed:
+    "Vault data from server is invalid or corrupted.",
+  provider_error_missing_id: "Missing data ID to process request.",
   vault_error_not_found: "Vault data not found.",
   sync_error_corrupted_payload:
     "Sync data is corrupted or cannot be decrypted.",
@@ -115,7 +118,9 @@ export default {
   login_placeholder_mp: "Enter your Master Password...",
   login_btn_unlock: "Unlock",
   login_forgot_password: "Forgot Master Password?",
-  login_error_empty_pat: "Please enter your Personal Access Token",
+  login_error_empty_pat: "GitHub token is empty.",
+  login_error_empty_username: "Please enter username.",
+  login_error_empty_password: "Please enter account password.",
   login_error_invalid_token: "Invalid token or connection error",
   login_error_oauth_no_token: "Did not receive access token from GitHub",
   login_error_oauth_fail: "OAuth Login failed",
@@ -672,10 +677,47 @@ export default {
     "All vault modifications are encrypted locally using your Master Password before being transmitted to POST /vault. Your server cannot read your plaintext passwords.",
   guide_start_self_hosted_note_title: "Important E2EE Security Note",
   guide_start_self_hosted_note_desc:
-    "Server Account Password is used exclusively for server API authentication. Your Master Password derives the AES-256-GCM encryption key and is NEVER sent to the server.",
-  guide_start_self_hosted_app_title: "Connecting from GistWarden App",
+    "The Server Account Password is only used to authenticate API requests with your server. The Master Password derives the AES-256-GCM encryption key and is NEVER sent to the server.",
+  guide_self_hosted_cors_title:
+    "Mandatory CORS Configuration for Web Version (GitHub Pages)",
+  guide_self_hosted_cors_desc:
+    "When accessing GistWarden Web (https://uongsuadaubung.github.io), your Self-Hosted server MUST enable CORS (Access-Control-Allow-Origin: https://uongsuadaubung.github.io or *) and handle HTTP OPTIONS Preflight requests.",
+  guide_start_self_hosted_app_title: "Connection Steps in GistWarden App",
   guide_start_self_hosted_app_desc:
     "On GistWarden Login/Initialization screen, select Self-Hosted Server tab, enter Base URL, Register/Login, and begin syncing.",
+
+  login_provider_select_label: "Vault Storage Provider",
+  login_provider_github_gist: "Cloud Vault (GitHub Gist)",
+  login_provider_local: "Local Storage (Local Vault)",
+  login_provider_self_hosted: "Self-Hosted Server",
+  login_self_hosted_server_url: "Server Base URL",
+  login_self_hosted_username: "Username",
+  login_self_hosted_password: "Account Password",
+  login_self_hosted_btn_login: "Sign In to Server",
+  login_self_hosted_btn_register: "Register Account",
+  login_self_hosted_tab_login: "Sign In",
+  login_self_hosted_tab_register: "Sign Up",
+  login_self_hosted_forgot_password: "Forgot password?",
+  login_self_hosted_forgot_password_title: "Recover Password",
+  login_self_hosted_forgot_password_msg:
+    "Please contact the Administrator (Admin) of this host server for assistance in recovering your account password.",
+  login_self_hosted_forgot_mp_title: "Forgot Self-Hosted Master Password",
+  login_self_hosted_forgot_mp_msg:
+    "{APP_NAME} uses end-to-end (Zero-Knowledge) encryption. The Master Password is never stored on the server and <strong class='text-error'>CANNOT BE RECOVERED</strong>.<br/><br/>If you forgot your Master Password, you can <strong>Log Out</strong> or <strong>contact the Administrator (Admin)</strong> of this host server to delete the stored vault file, allowing you to create a new vault with this same account.",
+
+  // Server Config Modal
+  server_config_modal_title: "Self-Hosted Server Configuration",
+  server_config_btn_test: "Test Connection",
+  server_config_btn_save: "Save Configuration",
+  server_config_test_success: "Server connection successful!",
+  server_config_test_failed: "Cannot connect to server.",
+  server_config_current_server: "Server:",
+  server_config_not_set: "(Not Configured)",
+  server_config_error_url_required: "Please enter server URL address.",
+  self_hosted_error_user_exists: "Username already exists on server.",
+  self_hosted_error_invalid_credentials: "Invalid server username or password.",
+  self_hosted_error_network:
+    "Connection error to Self-Hosted server. Please check the URL.",
 
   guide_self_hosted_why_title: "Why Are These REST APIs Needed?",
   guide_self_hosted_why_desc:

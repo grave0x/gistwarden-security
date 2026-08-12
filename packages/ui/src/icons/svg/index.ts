@@ -10,22 +10,23 @@ import {
   Clipboard,
   Copy,
   CreditCard,
-  Database,
+  DatabaseZap,
   Download,
   EllipsisVertical,
   ExternalLink,
   Eye,
   EyeOff,
   FileText,
+  FingerprintPattern,
   Folder,
   Gauge,
   Globe,
+  GlobeLock,
   GripVertical,
   Heart,
   Info,
   Key,
   KeyRound,
-  Languages,
   List,
   ListFilter,
   Lock,
@@ -43,9 +44,9 @@ import {
   ShieldAlert,
   ShieldCheck,
   SquareCheck,
+  SquareTerminal,
   Sun,
   SunMedium,
-  Terminal,
   Trash2,
   Upload,
   User,
@@ -59,9 +60,14 @@ import type { IconProps } from "@/icons/svg/types.ts";
 
 function wrapLucide(
   LucideComp: Component<Record<string, unknown>>,
+  defaultProps?: Record<string, unknown>,
 ): Component<IconProps> {
   return (props: IconProps) => {
-    const merged = mergeProps({ size: 16, strokeWidth: 2 }, props);
+    const merged = mergeProps(
+      { size: 16, strokeWidth: 2 },
+      defaultProps,
+      props,
+    );
     return LucideComp(merged);
   };
 }
@@ -69,7 +75,9 @@ function wrapLucide(
 export const RefreshIcon = wrapLucide(RefreshCw);
 export const LockIcon = wrapLucide(Lock);
 export { default as AppIcon } from "@/icons/svg/AppIcon.tsx";
+export { default as EnIcon } from "@/icons/svg/EnIcon.tsx";
 export { default as GithubIcon } from "@/icons/svg/GithubIcon.tsx";
+export { default as ViIcon } from "@/icons/svg/ViIcon.tsx";
 export const VaultIcon = wrapLucide(Vault);
 export const ChevronDownIcon = wrapLucide(ChevronDown);
 export const ChevronLeftIcon = wrapLucide(ChevronLeft);
@@ -95,7 +103,7 @@ export const GeneratorIcon = wrapLucide(KeyRound);
 export const SettingsIcon = wrapLucide(Settings);
 export const DragIcon = wrapLucide(GripVertical);
 export const EditIcon = wrapLucide(Pencil);
-export const HeartFilledIcon = wrapLucide(Heart);
+export const HeartFilledIcon = wrapLucide(Heart, { fill: "currentColor" });
 export const HeartOutlineIcon = wrapLucide(Heart);
 export const NoteIcon = wrapLucide(FileText);
 export const ChevronRightIcon = wrapLucide(ChevronRight);
@@ -112,8 +120,6 @@ export const PopoutIcon = wrapLucide(PictureInPicture2);
 export const MinusCircleIcon = wrapLucide(CircleMinus);
 export const SunIcon = wrapLucide(Sun);
 export const MoonIcon = wrapLucide(Moon);
-export const EnIcon = wrapLucide(Languages);
-export const ViIcon = wrapLucide(Languages);
 export const CapsLockIcon = wrapLucide(ArrowUp);
 export const ListCheckIcon = wrapLucide(SquareCheck);
 export const AutofillIcon = wrapLucide(WandSparkles);
@@ -122,10 +128,10 @@ export const ReportsIcon = wrapLucide(ChartColumn);
 export const ShieldAlertIcon = wrapLucide(ShieldAlert);
 export const RepeatKeyIcon = wrapLucide(Repeat);
 export const GaugeIcon = wrapLucide(Gauge);
-export const GlobeUnlockIcon = wrapLucide(Globe);
-export const Shield2FAIcon = wrapLucide(ShieldCheck);
-export const DatabaseBreachIcon = wrapLucide(Database);
-export const SshKeyIcon = wrapLucide(Terminal);
+export const GlobeUnlockIcon = wrapLucide(GlobeLock);
+export const Shield2FAIcon = wrapLucide(FingerprintPattern);
+export const DatabaseBreachIcon = wrapLucide(DatabaseZap);
+export const SshKeyIcon = wrapLucide(SquareTerminal);
 export const ToolsIcon = wrapLucide(Wrench);
 
 export * from "@/icons/svg/types.ts";

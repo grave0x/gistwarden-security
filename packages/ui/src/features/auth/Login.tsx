@@ -1,15 +1,19 @@
-import { asGitHubAccessToken } from "@gistwarden/domain";
+import {
+  asGitHubAccessToken,
+  SESSION_KEY_ENCRYPTED_VAULT,
+} from "@gistwarden/domain";
 import { getSyncProvider } from "@gistwarden/network";
 import {
   checkVaultConfiguredUseCase,
   startGithubOauthRoute,
 } from "@gistwarden/orchestrator";
-import type { VaultMode } from "@gistwarden/repository";
 import {
   DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
   DEFAULT_SYNC_CONFIG,
+  type VaultMode,
+  VaultModeSchema,
 } from "@gistwarden/repository";
-import { confirm, setGlobalLoading, updateLanguage } from "@gistwarden/ui";
+import { setGlobalLoading, updateLanguage } from "@gistwarden/ui";
 import {
   type Component,
   createEffect,
@@ -21,6 +25,7 @@ import {
 } from "solid-js";
 import { z } from "zod";
 import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
+import { Select } from "@/components/ui/Select.tsx";
 import TypedConfirmModal from "@/components/ui/TypedConfirmModal.tsx";
 import {
   APP_NAME,
@@ -33,7 +38,9 @@ import {
   getAccountSettings,
   getSessionItem,
   getSyncToken,
+  removeSessionItem,
   resetAccountSettings,
+  setSessionItem,
   updateAccountSettings,
   updateExtensionSettings,
 } from "@/core/storage.ts";
@@ -52,10 +59,19 @@ import {
 import { GithubSetupForm } from "@/features/auth/components/GithubSetupForm.tsx";
 import { MasterPasswordCreate } from "@/features/auth/components/MasterPasswordCreate.tsx";
 import { MasterPasswordForm } from "@/features/auth/components/MasterPasswordForm.tsx";
+import { SelfHostedSetupForm } from "@/features/auth/components/SelfHostedSetupForm.tsx";
+import { handleForgotMasterPassword } from "@/features/auth/forgot-password-strategies.ts";
 import PinUnlockForm from "@/features/auth/PinUnlockForm.tsx";
 import { unlockWithPin } from "@/features/auth/pin-service.ts";
 import { setupGithub } from "@/features/sync/github-auth.ts";
-import { AppIcon, ShieldAlertIcon, SyncIcon } from "@/icons/svg/index.ts";
+import {
+  AppIcon,
+  GithubIcon,
+  GlobeIcon,
+  ShieldAlertIcon,
+  SyncIcon,
+  VaultIcon,
+} from "@/icons/svg/index.ts";
 
 export const Login: Component = () => {
   const [error, setError] = createSignal("");
@@ -71,6 +87,7 @@ export const Login: Component = () => {
   ): Promise<"checking" | "exists" | "new"> => {
     const accRes = await getAccountSettings(mode);
     const acc = accRes.isOk() ? accRes.value : null;
+    let isConfigured = false;
 
     if (acc) {
       const currentSyncConfig = acc.syncConfig;
@@ -78,7 +95,10 @@ export const Login: Component = () => {
       setAccountStore("pinConfig", acc.pinConfig);
       setAccountStore("syncConfig", currentSyncConfig);
       setAccountStore("gistId", currentSyncConfig.gistId || "");
-      const isConfigured = await checkVaultConfiguredUseCase(mode, acc);
+      isConfigured = await checkVaultConfiguredUseCase(mode, acc);
+      setAccountStore("vaultConfigured", isConfigured);
+    } else {
+      isConfigured = await checkVaultConfiguredUseCase(mode, null);
       setAccountStore("vaultConfigured", isConfigured);
     }
 
@@ -93,6 +113,7 @@ export const Login: Component = () => {
     const activeSyncConfig = acc?.syncConfig;
     const statusResult = await provider.checkVaultStatus({
       token: activeToken,
+      serverUrl: activeSyncConfig?.serverUrl || undefined,
       gistId: activeSyncConfig?.gistId || undefined,
       hasStoredSalt: Boolean(acc?.masterPasswordConfig.salt),
     });
@@ -125,7 +146,7 @@ export const Login: Component = () => {
       }
     }
 
-    if (statusResult.status === "new") {
+    if (statusResult.status === "new" && !isConfigured) {
       setAccountStore("vaultConfigured", false);
     }
 
@@ -244,9 +265,115 @@ export const Login: Component = () => {
     await handleConnectGithubToken(sendResult.value.token);
   };
 
+  const handleSelfHostedAuth = async (
+    action: "login" | "register",
+    serverUrl: string,
+    username: string,
+    password: string,
+  ) => {
+    if (!serverUrl || !username || !password) {
+      setError("Vui lòng điền đầy đủ Server URL, Username và Password.");
+      return;
+    }
+
+    setGlobalLoading(true);
+    setError("");
+
+    try {
+      const cleanUrl = serverUrl.trim().endsWith("/")
+        ? serverUrl.trim().slice(0, -1)
+        : serverUrl.trim();
+
+      const endpoint =
+        action === "login"
+          ? `${cleanUrl}/auth/login`
+          : `${cleanUrl}/auth/register`;
+
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password }),
+      });
+
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        setGlobalLoading(false);
+        if (response.status === 409 || data.error === "user_already_exists") {
+          setError(t("self_hosted_error_user_exists"));
+        } else if (
+          response.status === 401 ||
+          data.error === "invalid_credentials"
+        ) {
+          setError(t("self_hosted_error_invalid_credentials"));
+        } else {
+          setError(t("self_hosted_error_network"));
+        }
+        return;
+      }
+
+      const accessToken = data.accessToken;
+      if (!accessToken) {
+        setGlobalLoading(false);
+        setError(t("self_hosted_error_network"));
+        return;
+      }
+
+      const currentAccRes = await getAccountSettings("self_hosted_server");
+      const currentAcc = currentAccRes.isOk() ? currentAccRes.value : null;
+
+      const updatedSyncConfig = {
+        ...(currentAcc?.syncConfig || DEFAULT_SYNC_CONFIG),
+        serverUrl: cleanUrl,
+        username,
+        syncTokenEncrypted: "",
+        syncTokenIv: "",
+      };
+
+      await setSessionItem(SESSION_KEY_PENDING_SYNC_TOKEN, accessToken);
+      await updateAccountSettings(
+        { syncConfig: updatedSyncConfig },
+        "self_hosted_server",
+      );
+
+      setAccountStore("syncConfig", updatedSyncConfig);
+      setAccountStore("syncToken", accessToken);
+      setAccountStore("vaultConfigured", true);
+
+      const status = await checkVaultStatusForMode("self_hosted_server");
+      setGistStatus(status);
+      setGlobalLoading(false);
+    } catch {
+      setGlobalLoading(false);
+      setError(t("self_hosted_error_network"));
+    }
+  };
+
+  const handleSaveSelfHostedServerUrl = async (serverUrl: string) => {
+    const cleanUrl = serverUrl.trim().endsWith("/")
+      ? serverUrl.trim().slice(0, -1)
+      : serverUrl.trim();
+
+    const currentAccRes = await getAccountSettings("self_hosted_server");
+    const currentAcc = currentAccRes.isOk() ? currentAccRes.value : null;
+
+    const updatedSyncConfig = {
+      ...(currentAcc?.syncConfig || DEFAULT_SYNC_CONFIG),
+      serverUrl: cleanUrl,
+    };
+
+    await updateAccountSettings(
+      { syncConfig: updatedSyncConfig },
+      "self_hosted_server",
+    );
+
+    setAccountStore("syncConfig", updatedSyncConfig);
+  };
+
   const handleSwitchVaultMode = async (mode: VaultMode) => {
     setSettingsStore("vaultMode", mode);
     await updateExtensionSettings({ vaultMode: mode });
+    await removeSessionItem(SESSION_KEY_ENCRYPTED_VAULT);
     setError("");
 
     setGistStatus("checking");
@@ -289,24 +416,9 @@ export const Login: Component = () => {
   };
 
   const handleForgotPassword = async () => {
-    if (settingsStore.vaultMode === "local_storage") {
-      setShowResetLocalModal(true);
-      return;
-    }
-
-    const gistId = accountStore.gistId;
-    if (
-      await confirm(
-        t("login_forgot_password_title"),
-        t("login_forgot_password_msg"),
-        "danger",
-      )
-    ) {
-      if (gistId) {
-        window.open(`https://gist.github.com/${gistId}`, "_blank");
-      }
-      logout();
-    }
+    await handleForgotMasterPassword(settingsStore.vaultMode, {
+      onOpenResetLocalModal: () => setShowResetLocalModal(true),
+    });
   };
 
   const handleConfirmResetLocalVault = async () => {
@@ -360,22 +472,36 @@ export const Login: Component = () => {
         </p>
       </div>
 
-      {/* Vault Mode Selector Tabs */}
-      <div class="login-tabs mb-16">
-        <button
-          type="button"
-          class={`login-tab-btn ${settingsStore.vaultMode === "github_gist" ? "active" : ""}`}
-          onClick={() => handleSwitchVaultMode("github_gist")}
-        >
-          Cloud Vault (Gist)
-        </button>
-        <button
-          type="button"
-          class={`login-tab-btn ${settingsStore.vaultMode === "local_storage" ? "active" : ""}`}
-          onClick={() => handleSwitchVaultMode("local_storage")}
-        >
-          Local Vault
-        </button>
+      {/* Provider Selector Dropdown */}
+      <div class="form-group mb-16">
+        <Select
+          id="provider-select"
+          class="w-100"
+          value={settingsStore.vaultMode}
+          onChange={(e) => {
+            const parsedMode = VaultModeSchema.safeParse(e.currentTarget.value);
+            if (parsedMode.success) {
+              handleSwitchVaultMode(parsedMode.data);
+            }
+          }}
+          options={[
+            {
+              value: "github_gist",
+              label: t("login_provider_github_gist"),
+              icon: <GithubIcon size={16} />,
+            },
+            {
+              value: "local_storage",
+              label: t("login_provider_local"),
+              icon: <VaultIcon size={16} />,
+            },
+            {
+              value: "self_hosted_server",
+              label: t("login_provider_self_hosted"),
+              icon: <GlobeIcon size={16} />,
+            },
+          ]}
+        />
       </div>
 
       {/* Local Vault Must Read Warning Banner */}
@@ -410,10 +536,26 @@ export const Login: Component = () => {
           accountStore.vaultConfigured
         }
         fallback={
-          <GithubSetupForm
-            onSaveToken={handleSaveToken}
-            onGithubOauth={handleGithubOauth}
-          />
+          <Switch>
+            <Match when={settingsStore.vaultMode === "self_hosted_server"}>
+              <SelfHostedSetupForm
+                initialServerUrl={accountStore.syncConfig.serverUrl}
+                onSaveServerUrl={handleSaveSelfHostedServerUrl}
+                onLogin={(url, user, pass) =>
+                  handleSelfHostedAuth("login", url, user, pass)
+                }
+                onRegister={(url, user, pass) =>
+                  handleSelfHostedAuth("register", url, user, pass)
+                }
+              />
+            </Match>
+            <Match when={settingsStore.vaultMode === "github_gist"}>
+              <GithubSetupForm
+                onSaveToken={handleSaveToken}
+                onGithubOauth={handleGithubOauth}
+              />
+            </Match>
+          </Switch>
         }
       >
         <Show

@@ -2,3 +2,4 @@ node_modules/
 dist/
 scratch/
 .agents/
+web_test_selfhost/data/

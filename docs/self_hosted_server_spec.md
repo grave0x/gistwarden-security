@@ -74,6 +74,17 @@ sequenceDiagram
 **Base URL**: `https://<domain_hoac_ip>`  
 **Common Content-Type**: `application/json`
 
+### 🌐 Cấu Hình CORS (Cross-Origin Resource Sharing) Bắt Buộc
+
+Khi người dùng sử dụng ứng dụng GistWarden phiên bản Web (trên GitHub Pages `https://uongsuadaubung.github.io`) hoặc Chrome Extension / Mobile Webview, trình duyệt sẽ tự động gửi truy vấn kiểm tra CORS preflight (`OPTIONS`).
+
+Máy chủ Self-Host **BẮT BUỘC** phải trả về các HTTP Headers CORS sau để không bị trình duyệt chặn kết nối:
+
+* **`Access-Control-Allow-Origin`**: `https://uongsuadaubung.github.io` (hoặc `*` để cho phép mọi Origin)
+* **`Access-Control-Allow-Methods`**: `GET, POST, DELETE, OPTIONS`
+* **`Access-Control-Allow-Headers`**: `Authorization, Content-Type`
+* **`Access-Control-Max-Age`**: `86400` (tối ưu số lần gửi request OPTIONS)
+
 ---
 
 ### 2.1 `POST /auth/register` — Đăng Ký Tài Khoản

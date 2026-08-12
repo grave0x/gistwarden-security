@@ -1,5 +1,6 @@
 import {
   asGitHubAccessToken,
+  assertNever,
   base64ToArrayBuffer,
   decryptData,
   type GitHubAccessToken,
@@ -13,9 +14,9 @@ import {
   STORAGE_KEY_ACCOUNT_SETTINGS,
   STORAGE_KEY_EXTENSION_SETTINGS,
   STORAGE_KEY_LOCAL_ACCOUNT_SETTINGS,
-  STORAGE_KEY_LOCAL_PASSWORD_HISTORY,
   STORAGE_KEY_LOCAL_VAULT_PAYLOAD,
   STORAGE_KEY_PASSWORD_HISTORY,
+  STORAGE_KEY_SELF_HOSTED_ACCOUNT_SETTINGS,
   sessionManager,
   type TranslationKey,
 } from "@gistwarden/domain";
@@ -23,6 +24,7 @@ import { err, ok, type Result } from "neverthrow";
 import {
   type AccountSettings,
   AccountSettingsSchema,
+  DEFAULT_SYNC_CONFIG,
   type ExtensionSettings,
   ExtensionSettingsSchema,
   type GeneratedPasswordHistoryItem,
@@ -115,15 +117,20 @@ export async function getActiveVaultMode(): Promise<VaultMode> {
 }
 
 export function getAccountSettingsStorageKey(mode: VaultMode): string {
-  return mode === "local_storage"
-    ? STORAGE_KEY_LOCAL_ACCOUNT_SETTINGS
-    : STORAGE_KEY_ACCOUNT_SETTINGS;
+  switch (mode) {
+    case "github_gist":
+      return STORAGE_KEY_ACCOUNT_SETTINGS;
+    case "local_storage":
+      return STORAGE_KEY_LOCAL_ACCOUNT_SETTINGS;
+    case "self_hosted_server":
+      return STORAGE_KEY_SELF_HOSTED_ACCOUNT_SETTINGS;
+    default:
+      return assertNever(mode);
+  }
 }
 
-export function getPasswordHistoryStorageKey(mode: VaultMode): string {
-  return mode === "local_storage"
-    ? STORAGE_KEY_LOCAL_PASSWORD_HISTORY
-    : STORAGE_KEY_PASSWORD_HISTORY;
+export function getPasswordHistoryStorageKey(_mode: VaultMode): string {
+  return STORAGE_KEY_PASSWORD_HISTORY;
 }
 
 // ----------------------------------------------------
@@ -164,16 +171,29 @@ export async function updateAccountSettings(
   return await setLocalItem(key, safeNext);
 }
 
-// Reset account store and storage (Logout)
+// Reset account store and storage (Logout) - Preserves serverUrl across all modes
 export async function resetAccountSettings(
   mode: VaultMode,
 ): Promise<Result<void, TranslationKey>> {
   if (!hasLocalStorage() && !hasWebLocalStorage()) {
     return err("storage_error");
   }
+
+  const accRes = await getAccountSettings(mode);
+  const savedServerUrl = accRes.isOk() ? accRes.value.syncConfig.serverUrl : "";
+
   const key = getAccountSettingsStorageKey(mode);
   await removeLocalItem(key);
   await clearSession();
+
+  if (savedServerUrl) {
+    const updatedSyncConfig = {
+      ...DEFAULT_SYNC_CONFIG,
+      serverUrl: savedServerUrl,
+    };
+    await updateAccountSettings({ syncConfig: updatedSyncConfig }, mode);
+  }
+
   return ok();
 }
 

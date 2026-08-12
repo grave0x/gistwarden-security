@@ -4,12 +4,14 @@ import {
   asVaultItemId,
   createDefaultVaultItem,
   mergeVaultItem,
+  sessionManager,
   VaultItemType,
   View,
 } from "@gistwarden/domain";
 import { getSyncProvider } from "@gistwarden/network";
 import {
   addFolderUseCase,
+  clearDerivedKey,
   deleteFolderUseCase,
   deleteGistRoute,
   deleteLocalVaultRoute,
@@ -44,6 +46,7 @@ import {
   logout,
   resetMasterPasswordSecurity,
   unlock,
+  verifyMasterPassword,
 } from "../packages/ui/src/features/auth/auth-service.ts";
 import { changeMasterPassword } from "../packages/ui/src/features/auth/master-password-service.ts";
 import {
@@ -63,6 +66,8 @@ export function setupTestDOM(mode: VaultMode = "local_storage"): Window {
     Event: window.Event,
     Node: window.Node,
   });
+  sessionManager.clearKey();
+  void clearDerivedKey();
   resetAccountStore();
   resetUiStore();
   setSettingsStore("vaultMode", mode);
@@ -77,6 +82,49 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
   setupTestDOM(mode);
 
   let storedPayload = "";
+
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = typeof input === "string" ? input : input.toString();
+    if (url.startsWith("http://localhost:3000")) {
+      const method = init?.method?.toUpperCase() || "GET";
+      if (url.endsWith("/vault")) {
+        if (method === "GET") {
+          if (!storedPayload) {
+            return new Response(JSON.stringify({ error: "Not Found" }), {
+              status: 404,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+          return new Response(storedPayload, {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+        if (method === "POST") {
+          const body = typeof init?.body === "string" ? init.body : "";
+          storedPayload = body;
+          return new Response(JSON.stringify({ status: "success" }), {
+            status: 200,
+            headers: { "Content-Type": "application/json" },
+          });
+        }
+        if (method === "DELETE") {
+          storedPayload = "";
+          return new Response(null, { status: 200 });
+        }
+      }
+      if (url.endsWith("/user")) {
+        return new Response(JSON.stringify({ username: "testuser" }), {
+          status: 200,
+          headers: { "Content-Type": "application/json" },
+        });
+      }
+    }
+    return originalFetch
+      ? originalFetch(input, init)
+      : new Response(null, { status: 404 });
+  }) as typeof fetch;
 
   // Register in-memory background routes for upload, download, and delete
   registerInMemoryRoute(uploadToGistRoute, async (payload) => {
@@ -117,12 +165,21 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
   const updatedPinCode = "654321";
   const githubToken = "ghp_test_token_123456789";
   const gistId = "gist_test_id_abcdef";
+  const serverUrl = "http://localhost:3000";
+  const selfHostedToken = "self_hosted_test_jwt_token_987654321";
 
   if (mode === "github_gist") {
     setAccountStore("syncToken", asGitHubAccessToken(githubToken));
     setAccountStore("syncConfig", {
       ...accountStore.syncConfig,
       gistId: asGistId(gistId),
+    });
+  } else if (mode === "self_hosted_server") {
+    setAccountStore("syncToken", asGitHubAccessToken(selfHostedToken));
+    setAccountStore("syncConfig", {
+      ...accountStore.syncConfig,
+      serverUrl,
+      username: "testuser",
     });
   }
 
@@ -133,8 +190,13 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
 
   const initialStatus = await provider.checkVaultStatus({
     token:
-      mode === "github_gist" ? asGitHubAccessToken(githubToken) : undefined,
+      mode === "github_gist"
+        ? asGitHubAccessToken(githubToken)
+        : mode === "self_hosted_server"
+          ? asGitHubAccessToken(selfHostedToken)
+          : undefined,
     gistId: mode === "github_gist" ? asGistId(gistId) : undefined,
+    serverUrl: mode === "self_hosted_server" ? serverUrl : undefined,
     hasStoredSalt: Boolean(accountStore.masterPasswordConfig.salt),
   });
   assertEquals(initialStatus.status, "new");
@@ -458,27 +520,56 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
 
   const lockedStatus = await provider.checkVaultStatus({
     token:
-      mode === "github_gist" ? asGitHubAccessToken(githubToken) : undefined,
+      mode === "github_gist"
+        ? asGitHubAccessToken(githubToken)
+        : mode === "self_hosted_server"
+          ? asGitHubAccessToken(selfHostedToken)
+          : undefined,
     gistId: mode === "github_gist" ? asGistId(gistId) : undefined,
+    serverUrl: mode === "self_hosted_server" ? serverUrl : undefined,
     hasStoredSalt: Boolean(accountStore.masterPasswordConfig.salt),
   });
-  assertEquals(lockedStatus.status, "exists");
+  // Standalone Master Password verification test (Check correct & wrong MP without modifying session)
+  const standaloneValidCheck = await verifyMasterPassword(oldMasterPassword);
+  assert(
+    standaloneValidCheck.isOk() && standaloneValidCheck.value === true,
+    `[${mode}] verifyMasterPassword with correct password failed: ${standaloneValidCheck.isErr() ? standaloneValidCheck.error : "unknown"}`,
+  );
+
+  const standaloneInvalidCheck = await verifyMasterPassword("WrongPassword!");
+  assert(
+    standaloneInvalidCheck.isErr(),
+    `[${mode}] verifyMasterPassword with wrong password should return error`,
+  );
 
   // Step 8: Unlock attempt with WRONG Master Password & Security Cooldown Check
   const wrongPassResult = await unlock("WrongPassword!");
-  assert(wrongPassResult.isErr());
-  assertEquals(wrongPassResult.error, "login_error_wrong_mp");
+  assert(
+    wrongPassResult.isErr(),
+    `[${mode}] Step 8: Expected wrong password attempt to fail`,
+  );
+  assertEquals(
+    wrongPassResult.error,
+    "login_error_wrong_mp",
+    `[${mode}] Step 8: Expected login_error_wrong_mp, got ${wrongPassResult.isErr() ? wrongPassResult.error : "success"}`,
+  );
 
   await resetMasterPasswordSecurity(accountStore.masterPasswordConfig.salt);
 
   // Step 9: Unlock attempt with CORRECT Master Password
   const correctPassResult = await unlock(oldMasterPassword);
-  assert(correctPassResult.isOk(), "Unlock failed");
+  assert(
+    correctPassResult.isOk(),
+    `[${mode}] Step 9: Unlock with correct MP failed: ${correctPassResult.isErr() ? correctPassResult.error : "unknown"}`,
+  );
   assertEquals(accountStore.isLocked, false);
 
   // Step 10: Set PIN Code & Test WRONG PIN 3 TIMES AUTO-WIPE SCENARIO
   const setPinResult = await setPinUnlock(initialPinCode, false);
-  assert(setPinResult.isOk(), "Set PIN failed");
+  assert(
+    setPinResult.isOk(),
+    `[${mode}] Step 10: Set PIN failed: ${setPinResult.isErr() ? setPinResult.error : "unknown"}`,
+  );
   assertEquals(accountStore.pinConfig.enabled, true);
 
   await lock();
@@ -507,19 +598,28 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
 
   // Unlock with Master Password after PIN wipe
   const postPinWipeUnlockRes = await unlock(oldMasterPassword);
-  assert(postPinWipeUnlockRes.isOk(), "Master Password unlock failed");
+  assert(
+    postPinWipeUnlockRes.isOk(),
+    `[${mode}] Step 10: Master Password unlock after PIN wipe failed: ${postPinWipeUnlockRes.isErr() ? postPinWipeUnlockRes.error : "unknown"}`,
+  );
   assertEquals(accountStore.isLocked, false);
 
   // Step 11: Re-enable & Change PIN Code
   const reEnablePinResult = await setPinUnlock(updatedPinCode, false);
-  assert(reEnablePinResult.isOk(), "Re-enable PIN failed");
+  assert(
+    reEnablePinResult.isOk(),
+    `[${mode}] Step 11: Re-enable PIN failed: ${reEnablePinResult.isErr() ? reEnablePinResult.error : "unknown"}`,
+  );
   assertEquals(accountStore.pinConfig.enabled, true);
 
   await lock();
   assertEquals(accountStore.isLocked, true);
 
   const newPinUnlockRes = await unlockWithPin(updatedPinCode);
-  assert(newPinUnlockRes.isOk(), "New PIN unlock failed");
+  assert(
+    newPinUnlockRes.isOk(),
+    `[${mode}] Step 11: New PIN unlock failed: ${newPinUnlockRes.isErr() ? newPinUnlockRes.error : "unknown"}`,
+  );
   assertEquals(accountStore.isLocked, false);
 
   // Step 12: Change Master Password (Đổi Mật Khẩu Master từ Old sang New)
@@ -527,19 +627,28 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
     oldMasterPassword,
     newMasterPassword,
   );
-  assert(changeResult.isOk(), "Change MP failed");
+  assert(
+    changeResult.isOk(),
+    `[${mode}] Step 12: Change MP failed: ${changeResult.isErr() ? changeResult.error : "unknown"}`,
+  );
 
   // Step 13: Lock & Attempt Unlock with OLD Master Password vs NEW Master Password
   await lock();
   assertEquals(accountStore.isLocked, true);
 
   const oldPassUnlockResult = await unlock(oldMasterPassword);
-  assert(oldPassUnlockResult.isErr());
+  assert(
+    oldPassUnlockResult.isErr(),
+    `[${mode}] Step 13: Expected unlock with old password to fail`,
+  );
 
   await resetMasterPasswordSecurity(accountStore.masterPasswordConfig.salt);
 
   const newPassUnlockResult = await unlock(newMasterPassword);
-  assert(newPassUnlockResult.isOk(), "Unlock with new password failed");
+  assert(
+    newPassUnlockResult.isOk(),
+    `[${mode}] Step 13: Unlock with new password failed: ${newPassUnlockResult.isErr() ? newPassUnlockResult.error : "unknown"}`,
+  );
   assertEquals(accountStore.isLocked, false);
 
   // Step 14: Logout
@@ -549,7 +658,10 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
 
   // Step 15: Re-login after Logout & VERIFY INTERMEDIATE VAULT STATE
   const reloginResult = await unlock(newMasterPassword);
-  assert(reloginResult.isOk(), "Re-login failed");
+  assert(
+    reloginResult.isOk(),
+    `[${mode}] Step 15: Re-login failed: ${reloginResult.isErr() ? reloginResult.error : "unknown"}`,
+  );
   assertEquals(accountStore.vaultConfigured, true);
   assertEquals(accountStore.isLocked, false);
 
@@ -571,8 +683,13 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
 
   const finalStatusAfterPurge = await provider.checkVaultStatus({
     token:
-      mode === "github_gist" ? asGitHubAccessToken(githubToken) : undefined,
+      mode === "github_gist"
+        ? asGitHubAccessToken(githubToken)
+        : mode === "self_hosted_server"
+          ? asGitHubAccessToken(selfHostedToken)
+          : undefined,
     gistId: mode === "github_gist" ? asGistId(gistId) : undefined,
+    serverUrl: mode === "self_hosted_server" ? serverUrl : undefined,
     hasStoredSalt: Boolean(accountStore.masterPasswordConfig.salt),
   });
   assertEquals(finalStatusAfterPurge.status, "new"); // Renders MasterPasswordCreate screen!

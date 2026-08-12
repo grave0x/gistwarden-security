@@ -1,0 +1,13 @@
+{
+  "name": "web-test-selfhost",
+  "version": "1.0.0",
+  "description": "Native Bun Self-Hosted Provider Test API for GistWarden",
+  "main": "server.ts",
+  "type": "module",
+  "scripts": {
+    "start": "bun run server.ts",
+    "dev": "bun --watch server.ts"
+  },
+  "keywords": ["gistwarden", "self-host", "bun", "api"],
+  "license": "MIT"
+}

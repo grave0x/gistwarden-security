@@ -3,6 +3,7 @@ import {
   createEffect,
   createSignal,
   For,
+  type JSX,
   onCleanup,
   onMount,
   Show,
@@ -12,6 +13,7 @@ import { t } from "@/core/i18n.ts";
 export interface SelectOption {
   value: string | number;
   label: string;
+  icon?: JSX.Element;
   isHeader?: boolean;
   disabled?: boolean;
 }
@@ -110,7 +112,12 @@ export const Select: Component<SelectProps> = (props) => {
         onClick={() => !props.disabled && setIsOpen(!isOpen())}
         disabled={props.disabled}
       >
-        <span class="select-value">{selectedOption()?.label || ""}</span>
+        <span class="select-value d-flex align-items-center gap-8">
+          <Show when={selectedOption()?.icon}>
+            <span class="select-icon-inline">{selectedOption()?.icon}</span>
+          </Show>
+          <span>{selectedOption()?.label || ""}</span>
+        </span>
         <div class={`select-arrow ${isOpen() ? "open" : ""}`}>
           <svg
             viewBox="0 0 24 24"
@@ -157,14 +164,17 @@ export const Select: Component<SelectProps> = (props) => {
                   }
                 >
                   <div
-                    class={`select-dropdown-item ${
+                    class={`select-dropdown-item d-flex align-items-center gap-8 ${
                       String(opt.value) === String(props.value)
                         ? "selected"
                         : ""
                     } ${opt.disabled ? "disabled" : ""}`}
                     onClick={() => !opt.disabled && handleSelect(opt.value)}
                   >
-                    {opt.label}
+                    <Show when={opt.icon}>
+                      <span class="select-icon-inline">{opt.icon}</span>
+                    </Show>
+                    <span>{opt.label}</span>
                   </div>
                 </Show>
               )}

@@ -37,6 +37,14 @@
       text-overflow: ellipsis;
     }
 
+    .select-icon-inline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      color: var(--primary, currentColor);
+    }
+
     .select-arrow {
       position: absolute;
       right: 14px;

@@ -8,7 +8,10 @@ import {
 import type { Result } from "neverthrow";
 import { z } from "zod";
 
-export type SyncProviderId = "github_gist" | "local_storage";
+export type SyncProviderId =
+  | "github_gist"
+  | "local_storage"
+  | "self_hosted_server";
 
 export const SyncValidationResultSchema = z
   .object({
@@ -46,6 +49,39 @@ export const SyncStatusResultSchema = z
   })
   .readonly();
 export type SyncStatusResult = z.infer<typeof SyncStatusResultSchema>;
+
+export interface UnlockContext {
+  password: string;
+  accSettings: {
+    syncConfig: {
+      serverUrl?: string;
+      gistId?: GistId;
+      syncTokenEncrypted?: string;
+      syncTokenIv?: string;
+      username?: string;
+    };
+    masterPasswordConfig: {
+      salt?: string;
+    };
+  };
+  secSalt: string;
+  getOrDeriveKey: (
+    password: string,
+    salt: string,
+  ) => Promise<Result<CryptoKey, TranslationKey>>;
+  decryptData: (
+    ciphertext: string,
+    iv: string,
+    key: CryptoKey,
+  ) => Promise<Result<string, TranslationKey>>;
+  downloadVault?: () => Promise<Result<string | null, TranslationKey>>;
+}
+
+export interface UnlockVaultResult {
+  content: string;
+  salt?: string;
+  key: CryptoKey;
+}
 
 /**
  * Interface chuẩn cho các Provider lưu trữ và đồng bộ dữ liệu Vault (Đa hình).
@@ -91,4 +127,11 @@ export interface ISyncProvider {
    * Xử lý đa hình kiểm tra trạng thái Vault ("exists": Đã có Vault để Unlock / "new": Cần tạo Vault mới).
    */
   checkVaultStatus(options?: SyncOptions): Promise<SyncStatusResult>;
+
+  /**
+   * Đa hình chuẩn bị dữ liệu mã hóa và CryptoKey phù hợp nhất cho từng Provider trong luồng unlock.
+   */
+  resolveVaultContentForUnlock(
+    context: UnlockContext,
+  ): Promise<Result<UnlockVaultResult, TranslationKey>>;
 }

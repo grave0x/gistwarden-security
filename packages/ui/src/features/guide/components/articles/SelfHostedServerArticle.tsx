@@ -22,6 +22,14 @@ export const SelfHostedServerArticle: Component = () => {
         </div>
       </div>
 
+      <div class="warning-callout-box mb-24">
+        <GlobeIcon size={24} class="warning-icon" />
+        <div class="warning-content">
+          <h4>{t("guide_self_hosted_cors_title")}</h4>
+          <p>{t("guide_self_hosted_cors_desc")}</p>
+        </div>
+      </div>
+
       <h3 class="mb-12">{t("guide_self_hosted_why_title")}</h3>
       <p class="article-paragraph mb-20">{t("guide_self_hosted_why_desc")}</p>
 

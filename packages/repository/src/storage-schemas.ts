@@ -56,7 +56,11 @@ export type LoginMethod = z.infer<typeof LoginMethodSchema>;
 export const LoginViewModeSchema = z.enum(["masterPassword", "pin"]);
 export type LoginViewMode = z.infer<typeof LoginViewModeSchema>;
 
-export const VaultModeSchema = z.enum(["github_gist", "local_storage"]);
+export const VaultModeSchema = z.enum([
+  "github_gist",
+  "local_storage",
+  "self_hosted_server",
+]);
 export type VaultMode = z.infer<typeof VaultModeSchema>;
 
 export const GithubUserSchema = z

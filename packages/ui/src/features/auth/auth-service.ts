@@ -192,6 +192,14 @@ export async function createNewVault(
     setAccountStore("syncConfig", updatedSyncConfig);
   }
 
+  await updateAccountSettings(
+    {
+      masterPasswordConfig: updatedMpConfig,
+      syncConfig: updatedSyncConfig || accountStore.syncConfig,
+    },
+    settingsStore.vaultMode,
+  );
+
   await setSessionItem(SESSION_KEY_ENCRYPTED_VAULT, encryptedVaultPayload);
 
   return await setupUnlockedSession(key, { folders: [], items: [], trash: [] });
@@ -371,6 +379,37 @@ export async function resetMasterPasswordSecurity(salt: string): Promise<void> {
   );
 }
 
+export async function verifyMasterPassword(
+  password: string,
+): Promise<Result<boolean, TranslationKey>> {
+  const accSettingsRes = await getAccountSettings(settingsStore.vaultMode);
+  if (accSettingsRes.isErr()) return err(accSettingsRes.error);
+  const accSettings = accSettingsRes.value;
+  const secSalt = accSettings.masterPasswordConfig.salt || "";
+
+  const provider = getSyncProvider(settingsStore.vaultMode);
+  const resolveRes = await provider.resolveVaultContentForUnlock({
+    password,
+    accSettings,
+    secSalt,
+    getOrDeriveKey,
+    decryptData,
+    downloadVault: fetchEncryptedVaultContent,
+  });
+
+  if (resolveRes.isErr()) {
+    return err(resolveRes.error);
+  }
+
+  const { content, key } = resolveRes.value;
+  const decryptVaultRes = await decryptVaultPayload(content, key);
+  if (decryptVaultRes.isErr()) {
+    return err(decryptVaultRes.error);
+  }
+
+  return ok(true);
+}
+
 export async function unlock(
   password: string,
 ): Promise<Result<void, TranslationKey>> {
@@ -390,56 +429,30 @@ export async function unlock(
   let saltBase64 = accSettings.masterPasswordConfig.salt;
   clearDerivedKey();
 
-  // A. Đọc cache hoặc tải Encrypted Vault content trước để trích xuất Salt từ Remote/Local Vault (nếu có)
-  const vaultRes = await resolveEncryptedVaultContent();
-  let existingVaultContent = "";
-  if (vaultRes.isOk()) {
-    existingVaultContent = vaultRes.value.content || "";
-    const extractedSalt = vaultRes.value.salt;
-    if (extractedSalt && extractedSalt !== saltBase64) {
-      saltBase64 = extractedSalt;
-      const updatedMpConfig = {
-        ...accSettings.masterPasswordConfig,
-        salt: saltBase64,
-      };
-      await updateAccountSettings(
-        { masterPasswordConfig: updatedMpConfig },
-        settingsStore.vaultMode,
-      );
-      setAccountStore("masterPasswordConfig", updatedMpConfig);
-    }
-  }
+  const provider = getSyncProvider(settingsStore.vaultMode);
+  const resolveRes = await provider.resolveVaultContentForUnlock({
+    password,
+    accSettings,
+    secSalt,
+    getOrDeriveKey,
+    decryptData,
+    downloadVault: fetchEncryptedVaultContent,
+  });
 
-  const notFoundErrorKey: TranslationKey = vaultRes.isErr()
-    ? vaultRes.error
-    : "vault_error_not_found";
-
-  // B. Nếu chưa có salt (cả cục bộ lẫn remote), trả về lỗi không tìm thấy Vault
-  if (!saltBase64) {
+  const realSalt = accSettings.masterPasswordConfig.salt || secSalt;
+  if (resolveRes.isErr()) {
     clearDerivedKey();
-    return err(notFoundErrorKey);
+    await recordMasterPasswordFailure(attempts, realSalt);
+    return err(resolveRes.error);
   }
 
-  // C. Derive Key từ Password và Salt mới nhất
-  const keyRes = await getOrDeriveKey(password, saltBase64);
-  if (keyRes.isErr()) {
-    clearDerivedKey();
-    await recordMasterPasswordFailure(attempts, saltBase64 || secSalt);
-    return err(keyRes.error);
-  }
-  const key = keyRes.value;
-  if (!key) {
-    clearDerivedKey();
-    await recordMasterPasswordFailure(attempts, saltBase64 || secSalt);
-    return err("login_error_wrong_mp");
-  }
+  const {
+    content: existingVaultContent,
+    salt: activeSalt,
+    key,
+  } = resolveRes.value;
 
-  // D. Giải mã Két sắt trước để đảm bảo Master Password nhập vào là chính xác
-  if (!existingVaultContent) {
-    clearDerivedKey();
-    return err(notFoundErrorKey);
-  }
-
+  // D. Giải mã Két sắt để đảm bảo Master Password nhập vào là chính xác
   const decryptVaultRes = await decryptVaultPayload(existingVaultContent, key);
   if (decryptVaultRes.isErr()) {
     clearDerivedKey();
@@ -447,7 +460,7 @@ export async function unlock(
     return err(decryptVaultRes.error);
   }
 
-  // E. Giải mã / Kiểm tra Token GitHub (nếu có)
+  // E. Kiểm tra giải mã Token (nếu có)
   if (syncConfig.syncTokenEncrypted && syncConfig.syncTokenIv) {
     const decryptTokenRes = await decryptData(
       syncConfig.syncTokenEncrypted,
@@ -455,20 +468,7 @@ export async function unlock(
       key,
     );
     if (decryptTokenRes.isErr()) {
-      logger.storage.warn(
-        "Failed to decrypt syncToken with current key, clearing invalid encrypted token config",
-      );
-      const clearedSyncConfig = {
-        ...syncConfig,
-        syncTokenEncrypted: "",
-        syncTokenIv: "",
-      };
-      await updateAccountSettings(
-        { syncConfig: clearedSyncConfig },
-        settingsStore.vaultMode,
-      );
-      setAccountStore("syncConfig", clearedSyncConfig);
-      syncConfig = clearedSyncConfig;
+      logger.storage.warn("Failed to decrypt syncToken with current key");
     }
   }
 
@@ -537,7 +537,7 @@ export async function unlockVaultWithKey(
     return err(
       settingsStore.vaultMode === "local_storage"
         ? "vault_error_not_found"
-        : "github_error_gist_not_found",
+        : "provider_error_not_found",
     );
   }
 
@@ -757,9 +757,10 @@ export async function lockVaultSession(): Promise<void> {
 }
 
 export async function logoutVaultSession(): Promise<void> {
+  const currentServerUrl = accountStore.syncConfig.serverUrl;
   await logoutSessionUseCase(settingsStore.vaultMode);
 
-  resetAccountStore();
+  resetAccountStore(currentServerUrl);
   resetUiStore();
 }
 

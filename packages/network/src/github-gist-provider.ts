@@ -1,5 +1,6 @@
 import {
   asGistId,
+  asGitHubAccessToken,
   type GistId,
   type GitHubAccessToken,
   safeJsonParse,
@@ -7,9 +8,10 @@ import {
 } from "@gistwarden/domain";
 import {
   GistPayloadSchema,
+  getSyncToken,
   resetAccountSettings,
 } from "@gistwarden/repository";
-import { err, type Result } from "neverthrow";
+import { err, ok, type Result } from "neverthrow";
 import {
   deleteGist,
   downloadFromGist,
@@ -23,6 +25,8 @@ import type {
   SyncResult,
   SyncStatusResult,
   SyncValidationResult,
+  UnlockContext,
+  UnlockVaultResult,
 } from "./sync-provider-types.ts";
 
 /**
@@ -68,7 +72,7 @@ export class GithubGistProvider implements ISyncProvider {
     configToken?: GitHubAccessToken,
   ): Promise<Result<SyncValidationResult, TranslationKey>> {
     if (!configToken) {
-      return err("github_error_missing_token");
+      return err("provider_error_missing_token");
     }
     return await validateToken(configToken);
   }
@@ -87,7 +91,7 @@ export class GithubGistProvider implements ISyncProvider {
    * 1. Chưa có Token -> "exists" (hiển thị form nhập Token / OAuth)
    * 2. Đã có Token: Gọi download() kiểm tra Gist thực tế từ xa
    * 3. Gist tồn tại -> Trả về "exists", salt, gistId
-   * 4. Gist KHÔNG tồn tại trên GitHub (github_error_gist_not_found) -> Tự dọn dẹp account_settings rác và trả về "new"
+   * 4. Gist KHÔNG tồn tại trên GitHub (provider_error_not_found) -> Tự dọn dẹp account_settings rác và trả về "new"
    * 5. Lỗi mạng / offline mà đã có salt địa phương -> Trả về "exists" để dùng offline
    */
   async checkVaultStatus(options?: SyncOptions): Promise<SyncStatusResult> {
@@ -119,7 +123,7 @@ export class GithubGistProvider implements ISyncProvider {
 
     if (
       downloadRes.isErr() &&
-      downloadRes.error === "github_error_gist_not_found"
+      downloadRes.error === "provider_error_not_found"
     ) {
       if (options?.hasStoredSalt) {
         await resetAccountSettings("github_gist");
@@ -132,5 +136,76 @@ export class GithubGistProvider implements ISyncProvider {
     }
 
     return { status: "new" };
+  }
+
+  async resolveVaultContentForUnlock(
+    context: UnlockContext,
+  ): Promise<Result<UnlockVaultResult, TranslationKey>> {
+    let activeSalt =
+      context.accSettings.masterPasswordConfig.salt || context.secSalt;
+    if (!activeSalt) return err("vault_error_not_found");
+
+    const keyRes = await context.getOrDeriveKey(context.password, activeSalt);
+    if (keyRes.isErr() || !keyRes.value) return err("login_error_wrong_mp");
+    let key = keyRes.value;
+
+    let token: GitHubAccessToken | undefined;
+    if (
+      context.accSettings.syncConfig.syncTokenEncrypted &&
+      context.accSettings.syncConfig.syncTokenIv
+    ) {
+      const decTokenRes = await context.decryptData(
+        context.accSettings.syncConfig.syncTokenEncrypted,
+        context.accSettings.syncConfig.syncTokenIv,
+        key,
+      );
+      if (decTokenRes.isErr()) return err("login_error_wrong_mp");
+      token = asGitHubAccessToken(decTokenRes.value);
+    } else {
+      const fallbackToken = await getSyncToken("github_gist");
+      if (fallbackToken) token = fallbackToken;
+    }
+
+    let content = "";
+    if (context.downloadVault) {
+      const dlRes = await context.downloadVault();
+      if (dlRes.isOk() && dlRes.value) {
+        content = dlRes.value;
+      }
+    }
+
+    if (!content) {
+      const downloadRes = await this.download({
+        gistId: context.accSettings.syncConfig.gistId,
+        token,
+      });
+      if (downloadRes.isErr() || !downloadRes.value.content) {
+        return err(
+          downloadRes.isErr() ? downloadRes.error : "vault_error_not_found",
+        );
+      }
+      content = downloadRes.value.content;
+    }
+
+    const payloadJsonRes = safeJsonParse(content);
+    if (payloadJsonRes.isOk()) {
+      const parsed = GistPayloadSchema.safeParse(payloadJsonRes.value);
+      if (
+        parsed.success &&
+        parsed.data.salt &&
+        parsed.data.salt !== activeSalt
+      ) {
+        activeSalt = parsed.data.salt;
+        const reDeriveRes = await context.getOrDeriveKey(
+          context.password,
+          activeSalt,
+        );
+        if (reDeriveRes.isOk() && reDeriveRes.value) {
+          key = reDeriveRes.value;
+        }
+      }
+    }
+
+    return ok({ content, salt: activeSalt, key });
   }
 }

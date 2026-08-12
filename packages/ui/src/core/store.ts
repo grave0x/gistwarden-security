@@ -83,6 +83,7 @@ export interface UiSessionStore {
     title: string;
     message: string;
     type: ConfirmType;
+    hideCancel?: boolean;
     resolve: ((value: boolean) => void) | null;
   };
   repromptModal: {
@@ -142,6 +143,7 @@ export const initialUiState: UiSessionStore = {
     title: "",
     message: "",
     type: "info",
+    hideCancel: false,
     resolve: null,
   },
   repromptModal: {
@@ -176,10 +178,13 @@ export function applyVaultPayloadToStore(payload: VaultPayload): void {
   });
 }
 
-export function resetAccountStore(): void {
+export function resetAccountStore(savedServerUrl?: string): void {
   setAccountStore({
     ...initialAccountState,
-    syncConfig: { ...DEFAULT_SYNC_CONFIG },
+    syncConfig: {
+      ...DEFAULT_SYNC_CONFIG,
+      ...(savedServerUrl ? { serverUrl: savedServerUrl } : {}),
+    },
     pinConfig: { ...DEFAULT_PIN_CONFIG },
     masterPasswordConfig: { ...DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG },
     isLoaded: true,

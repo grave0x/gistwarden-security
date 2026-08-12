@@ -1,5 +1,6 @@
 import {
   asFolderId,
+  asGistId,
   asVaultItemId,
   createDefaultVaultItem,
   encryptData,
@@ -24,14 +25,16 @@ import {
 import { getSyncProvider } from "@gistwarden/network";
 import {
   DEFAULT_SYNC_CONFIG,
+  getAccountSettings,
+  getSyncToken,
+  removeSessionItem,
   setSessionItem,
   updateAccountSettings,
   type VaultMode,
 } from "@gistwarden/repository";
 import { err, ok, type Result } from "neverthrow";
 import { getSessionKey } from "./crypto-usecases.ts";
-import { broadcastMessage, sendBackgroundMessage } from "./messaging.ts";
-import { deleteGistRoute } from "./messaging-contracts.ts";
+import { broadcastMessage } from "./messaging.ts";
 import { syncVaultToGist } from "./vault-sync-usecase.ts";
 
 export async function executeVaultMutationUseCase(
@@ -315,27 +318,30 @@ export async function clearVaultUseCase(
   mode: VaultMode,
   gistId?: string,
 ): Promise<Result<void, TranslationKey>> {
-  if (gistId) {
-    const sendResult = await sendBackgroundMessage(deleteGistRoute, {
-      content: gistId,
-    });
-    if (sendResult.isErr()) {
-      return err(sendResult.error);
-    }
-    const val = sendResult.value;
-    if (
-      typeof val === "object" &&
-      val !== null &&
-      "success" in val &&
-      val.success === false
-    ) {
-      return err("messaging_error_send_failed");
-    }
+  const provider = getSyncProvider(mode);
+  const token = await getSyncToken(mode);
+  const accRes = await getAccountSettings(mode);
+  const acc = accRes.isOk() ? accRes.value : null;
+  const syncConfig = acc?.syncConfig;
+
+  const deleteRes = await provider.delete(
+    gistId ? asGistId(gistId) : undefined,
+    {
+      token: token || undefined,
+      serverUrl: syncConfig?.serverUrl,
+    },
+  );
+  if (deleteRes.isErr()) {
+    return err(deleteRes.error);
   }
 
+  const savedServerUrl = syncConfig?.serverUrl || "";
   const updateSettingsRes = await updateAccountSettings(
     {
-      syncConfig: DEFAULT_SYNC_CONFIG,
+      syncConfig: {
+        ...DEFAULT_SYNC_CONFIG,
+        ...(savedServerUrl ? { serverUrl: savedServerUrl } : {}),
+      },
       lastSync: 0,
     },
     mode,
@@ -344,6 +350,7 @@ export async function clearVaultUseCase(
     return err(updateSettingsRes.error);
   }
 
+  await removeSessionItem(SESSION_KEY_ENCRYPTED_VAULT);
   return ok();
 }
 
