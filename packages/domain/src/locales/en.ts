@@ -81,6 +81,8 @@ export default {
   crypto_error_encrypt_failed: "Data encryption failed.",
   totp_error_invalid_secret: "Invalid TOTP secret key.",
   clipboard_copy_failed: "Failed to copy content to clipboard.",
+  clipboard_access_denied: "Clipboard access was denied.",
+  clipboard_read_failed: "Failed to read content from clipboard.",
 
   // Notification Toast Bar
   notification_save_title: "Save password suggestion",

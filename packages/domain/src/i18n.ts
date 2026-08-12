@@ -76,6 +76,8 @@ const LangSchema = z.object({
   crypto_error_encrypt_failed: z.string(),
   totp_error_invalid_secret: z.string(),
   clipboard_copy_failed: z.string(),
+  clipboard_access_denied: z.string(),
+  clipboard_read_failed: z.string(),
 
   // Notification Toast Bar
   notification_save_title: z.string(),

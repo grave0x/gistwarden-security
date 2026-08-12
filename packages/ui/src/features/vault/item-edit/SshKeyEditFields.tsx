@@ -1,8 +1,10 @@
+import { logger } from "@gistwarden/domain";
 import { type Component, createSignal, Show } from "solid-js";
 import FormField from "@/components/ui/FormField.tsx";
 import Input from "@/components/ui/Input.tsx";
 import { parseSshKey } from "@/core/crypto.ts";
 import { t } from "@/core/i18n.ts";
+import { isExtension } from "@/core/runtime.ts";
 import type { ItemEditFormState } from "@/features/vault/item-edit/vault-edit-helper.ts";
 import { UploadIcon } from "@/icons/svg/index.ts";
 
@@ -19,12 +21,32 @@ export const SshKeyEditFields: Component<SshKeyEditFieldsProps> = (props) => {
 
   const handlePasteSshKey = async () => {
     setErrorMsg("");
+
+    if (isExtension() && typeof chrome !== "undefined" && chrome?.permissions) {
+      try {
+        const hasPerm = await chrome.permissions.contains({
+          permissions: ["clipboardRead"],
+        });
+        if (!hasPerm) {
+          const granted = await chrome.permissions.request({
+            permissions: ["clipboardRead"],
+          });
+          if (!granted) {
+            setErrorMsg(t("clipboard_access_denied"));
+            return;
+          }
+        }
+      } catch (err) {
+        logger.app.warn("Failed to request clipboardRead permission:", err);
+      }
+    }
+
     let text = "";
     try {
       text = await navigator.clipboard.readText();
     } catch (err) {
-      console.error("Clipboard read error:", err);
-      setErrorMsg("Failed to read from clipboard or clipboard access denied");
+      logger.app.warn("Clipboard read error:", err);
+      setErrorMsg(t("clipboard_read_failed"));
       return;
     }
 

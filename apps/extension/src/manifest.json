@@ -11,7 +11,9 @@
     "storage",
     "activeTab",
     "alarms",
-    "identity",
+    "identity"
+  ],
+  "optional_permissions": [
     "clipboardRead"
   ],
   "host_permissions": [

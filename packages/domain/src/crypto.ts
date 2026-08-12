@@ -364,7 +364,11 @@ export async function parseSshKey(privateKeyText: string): Promise<
     TranslationKey
   >
 > {
-  const trimmed = privateKeyText.trim();
+  // Normalize CRLF (\r\n) to LF (\n) and strip hidden/carriage-return characters
+  const trimmed = privateKeyText
+    .replace(/\r\n/g, "\n")
+    .replace(/[\r\u200B\uFEFF\u00A0]/g, "")
+    .trim();
 
   // 1. Check if direct Public Key string
   if (

@@ -82,6 +82,8 @@ export default {
   crypto_error_encrypt_failed: "Mã hóa dữ liệu thất bại.",
   totp_error_invalid_secret: "Khóa bí mật TOTP không hợp lệ.",
   clipboard_copy_failed: "Không thể sao chép vào bộ nhớ tạm.",
+  clipboard_access_denied: "Quyền truy cập khay nhớ tạm bị từ chối.",
+  clipboard_read_failed: "Không thể đọc nội dung từ khay nhớ tạm.",
 
   // Notification Toast Bar
   notification_save_title: "Gợi ý lưu mật khẩu",
