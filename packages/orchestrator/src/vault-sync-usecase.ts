@@ -13,6 +13,7 @@ import {
 } from "@gistwarden/domain";
 import {
   EncryptedPayloadSchema,
+  resetAccountSettings,
   setSessionItem,
   updateAccountSettings,
   type VaultMode,
@@ -42,10 +43,17 @@ export async function fetchAndMergeRemoteVaultUseCase(
     mode: options.vaultMode,
   });
   if (sendResult.isErr()) {
+    if (sendResult.error === "provider_error_not_found") {
+      await resetAccountSettings(options.vaultMode);
+    }
     return err(sendResult.error);
   }
   if (!sendResult.value.success) {
-    return err(sendResult.value.error || "messaging_error_send_failed");
+    const errorMsg = sendResult.value.error;
+    if (errorMsg === "provider_error_not_found") {
+      await resetAccountSettings(options.vaultMode);
+    }
+    return err(errorMsg || "messaging_error_send_failed");
   }
   const rawContent = sendResult.value.content || "";
   if (!rawContent) {

@@ -6,7 +6,7 @@ import { accountStore } from "@/core/store.ts";
 import { ShieldAlertIcon } from "@/icons/svg/index.ts";
 import { ReportLayout } from "./components/ReportLayout.tsx";
 import {
-  checkPasswordHIBPUseCase,
+  checkPasswordHIBP,
   formatVaultItemUsername,
 } from "./reports-service.ts";
 
@@ -51,7 +51,7 @@ export const ReportExposed: Component = () => {
       if (cache.has(pwd)) {
         count = cache.get(pwd)!;
       } else {
-        const checkRes = await checkPasswordHIBPUseCase(pwd);
+        const checkRes = await checkPasswordHIBP(pwd);
         if (checkRes.errorKey) {
           setErrorMessage(t(checkRes.errorKey));
           setIsScanning(false);

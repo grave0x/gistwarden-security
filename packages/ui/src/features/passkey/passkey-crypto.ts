@@ -5,6 +5,7 @@ import {
   type Fido2CredentialId,
 } from "@gistwarden/domain";
 import { err, ok, type Result } from "neverthrow";
+import { z } from "zod";
 import { packAttestationObject } from "@/core/cbor-utils.ts";
 import { safeParseUrl } from "@/core/domain-utils.ts";
 import type { TranslationKey } from "@/core/i18n.ts";
@@ -346,28 +347,42 @@ export function getRawCredentialId(
   return ok(new TextEncoder().encode(clean));
 }
 
-export interface PasskeyRegisterOptions {
-  rp: {
-    id?: string;
-    name: string;
-  };
-  user: {
-    id: string;
-    name: string;
-    displayName?: string;
-  };
-  challenge: string;
-}
+export const PasskeyRegisterOptionsSchema = z
+  .object({
+    rp: z.object({
+      id: z.string().optional(),
+      name: z.string(),
+    }),
+    user: z.object({
+      id: z.string(),
+      name: z.string(),
+      displayName: z.string().optional(),
+    }),
+    challenge: z.string(),
+  })
+  .readonly();
+export type PasskeyRegisterOptions = z.infer<
+  typeof PasskeyRegisterOptionsSchema
+>;
 
-export interface PasskeyAssertOptions {
-  challenge: string;
-  rpId?: string;
-  userVerification?: "required" | "preferred" | "discouraged";
-  allowCredentials?: Array<{
-    id: string;
-    type: string;
-  }>;
-}
+export const PasskeyAssertOptionsSchema = z
+  .object({
+    challenge: z.string(),
+    rpId: z.string().optional(),
+    userVerification: z
+      .enum(["required", "preferred", "discouraged"])
+      .optional(),
+    allowCredentials: z
+      .array(
+        z.object({
+          id: z.string(),
+          type: z.string(),
+        }),
+      )
+      .optional(),
+  })
+  .readonly();
+export type PasskeyAssertOptions = z.infer<typeof PasskeyAssertOptionsSchema>;
 
 export async function generatePasskeyRegisterResponse(
   options: PasskeyRegisterOptions,

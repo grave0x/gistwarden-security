@@ -24,6 +24,7 @@ import {
   renameFolderUseCase,
   restoreVaultItemUseCase,
   uploadToGistRoute,
+  vaultSecurityContext,
 } from "@gistwarden/orchestrator";
 import {
   getLocalVaultPayload,
@@ -220,6 +221,7 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
   }
 
   const salt = accountStore.masterPasswordConfig.salt;
+  const key = (await vaultSecurityContext.getKey())!;
 
   // Step 3: FOLDER LIFECYCLE - Add Folder 1 ("Công Việc") & Folder 2 ("Cá Nhân")
   const folder1Res = await addFolderUseCase(
@@ -228,6 +230,7 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
       items: accountStore.vaultItems,
       trash: accountStore.trashItems,
     },
+    key,
     salt,
     mode,
     "Công Việc & Tài Chính",
@@ -242,6 +245,7 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
       items: accountStore.vaultItems,
       trash: accountStore.trashItems,
     },
+    key,
     salt,
     mode,
     "Cá Nhân & Gia Đình",
@@ -259,6 +263,7 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
       items: accountStore.vaultItems,
       trash: accountStore.trashItems,
     },
+    key,
     salt,
     mode,
     personalFolderId,
@@ -361,6 +366,7 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
       items: [loginItem, noteItem, cardItem, identityItem, sshKeyItem],
       trash: accountStore.trashItems,
     },
+    key,
     salt,
     mode,
     (p) => p,
@@ -413,6 +419,7 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
       items: updatedItems,
       trash: accountStore.trashItems,
     },
+    key,
     salt,
     mode,
     (p) => p,
@@ -438,6 +445,7 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
       items: accountStore.vaultItems,
       trash: accountStore.trashItems,
     },
+    key,
     salt,
     mode,
     workFolderId,
@@ -461,6 +469,7 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
       items: accountStore.vaultItems,
       trash: accountStore.trashItems,
     },
+    key,
     salt,
     mode,
     [sshKeyItem.id],
@@ -476,6 +485,7 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
       items: accountStore.vaultItems,
       trash: accountStore.trashItems,
     },
+    key,
     salt,
     mode,
     sshKeyItem.id,
@@ -491,6 +501,7 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
       items: accountStore.vaultItems,
       trash: accountStore.trashItems,
     },
+    key,
     salt,
     mode,
     [noteItem.id],
@@ -503,6 +514,7 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
       items: trashNoteRes.value.items,
       trash: trashNoteRes.value.trash,
     },
+    key,
     salt,
     mode,
     noteItem.id,

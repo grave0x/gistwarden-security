@@ -33,18 +33,17 @@ import {
   type VaultMode,
 } from "@gistwarden/repository";
 import { err, ok, type Result } from "neverthrow";
-import { getSessionKey } from "./crypto-usecases.ts";
 import { broadcastMessage } from "./messaging.ts";
 import { syncVaultToGist } from "./vault-sync-usecase.ts";
 
 export async function executeVaultMutationUseCase(
   currentPayload: VaultPayload,
+  key: CryptoKey,
   salt: string,
   vaultMode: VaultMode,
   mutationFn: (payload: VaultPayload) => VaultPayload | Promise<VaultPayload>,
 ): Promise<Result<VaultPayload, TranslationKey>> {
-  const key = await getSessionKey();
-  if (!key || !salt) {
+  if (!salt) {
     return err("login_title_locked");
   }
 
@@ -66,6 +65,7 @@ export async function executeVaultMutationUseCase(
 
 export async function addFolderUseCase(
   currentPayload: VaultPayload,
+  key: CryptoKey,
   salt: string,
   vaultMode: VaultMode,
   name: string,
@@ -89,6 +89,7 @@ export async function addFolderUseCase(
 
   const res = await executeVaultMutationUseCase(
     currentPayload,
+    key,
     salt,
     vaultMode,
     (payload) => ({
@@ -102,6 +103,7 @@ export async function addFolderUseCase(
 
 export async function renameFolderUseCase(
   currentPayload: VaultPayload,
+  key: CryptoKey,
   salt: string,
   vaultMode: VaultMode,
   id: FolderId,
@@ -121,6 +123,7 @@ export async function renameFolderUseCase(
 
   return await executeVaultMutationUseCase(
     currentPayload,
+    key,
     salt,
     vaultMode,
     (payload) => ({
@@ -134,12 +137,14 @@ export async function renameFolderUseCase(
 
 export async function deleteFolderUseCase(
   currentPayload: VaultPayload,
+  key: CryptoKey,
   salt: string,
   vaultMode: VaultMode,
   id: FolderId,
 ): Promise<Result<VaultPayload, TranslationKey>> {
   return await executeVaultMutationUseCase(
     currentPayload,
+    key,
     salt,
     vaultMode,
     (payload) => ({
@@ -154,12 +159,14 @@ export async function deleteFolderUseCase(
 
 export async function saveItemUseCase(
   currentPayload: VaultPayload,
+  key: CryptoKey,
   salt: string,
   vaultMode: VaultMode,
   item: Partial<VaultItem>,
 ): Promise<Result<VaultPayload, TranslationKey>> {
   return await executeVaultMutationUseCase(
     currentPayload,
+    key,
     salt,
     vaultMode,
     (payload) => {
@@ -183,6 +190,7 @@ export async function saveItemUseCase(
 
 export async function deleteVaultItemsUseCase(
   currentPayload: VaultPayload,
+  key: CryptoKey,
   salt: string,
   vaultMode: VaultMode,
   ids: VaultItemId[],
@@ -193,6 +201,7 @@ export async function deleteVaultItemsUseCase(
 
   return await executeVaultMutationUseCase(
     currentPayload,
+    key,
     salt,
     vaultMode,
     (payload) => {
@@ -215,6 +224,7 @@ export async function deleteVaultItemsUseCase(
 
 export async function moveVaultItemsToFolderUseCase(
   currentPayload: VaultPayload,
+  key: CryptoKey,
   salt: string,
   vaultMode: VaultMode,
   ids: VaultItemId[],
@@ -226,6 +236,7 @@ export async function moveVaultItemsToFolderUseCase(
 
   return await executeVaultMutationUseCase(
     currentPayload,
+    key,
     salt,
     vaultMode,
     (payload) => {
@@ -256,12 +267,14 @@ export async function moveVaultItemsToFolderUseCase(
 
 export async function restoreVaultItemUseCase(
   currentPayload: VaultPayload,
+  key: CryptoKey,
   salt: string,
   vaultMode: VaultMode,
   id: VaultItemId,
 ): Promise<Result<VaultPayload, TranslationKey>> {
   return await executeVaultMutationUseCase(
     currentPayload,
+    key,
     salt,
     vaultMode,
     (payload) => {
@@ -283,12 +296,14 @@ export async function restoreVaultItemUseCase(
 
 export async function purgeTrashItemUseCase(
   currentPayload: VaultPayload,
+  key: CryptoKey,
   salt: string,
   vaultMode: VaultMode,
   id: VaultItemId,
 ): Promise<Result<VaultPayload, TranslationKey>> {
   return await executeVaultMutationUseCase(
     currentPayload,
+    key,
     salt,
     vaultMode,
     (payload) => ({
@@ -300,11 +315,13 @@ export async function purgeTrashItemUseCase(
 
 export async function purgeAllTrashUseCase(
   currentPayload: VaultPayload,
+  key: CryptoKey,
   salt: string,
   vaultMode: VaultMode,
 ): Promise<Result<VaultPayload, TranslationKey>> {
   return await executeVaultMutationUseCase(
     currentPayload,
+    key,
     salt,
     vaultMode,
     (payload) => ({
@@ -448,6 +465,7 @@ export async function batchSavePayloads(
 
 export async function batchImportGoogleMigrationAccountsUseCase(
   currentPayload: VaultPayload,
+  key: CryptoKey,
   salt: string,
   vaultMode: VaultMode,
   mappings: GoogleMigrationAccountMapping[],
@@ -456,6 +474,7 @@ export async function batchImportGoogleMigrationAccountsUseCase(
 
   return executeVaultMutationUseCase(
     currentPayload,
+    key,
     salt,
     vaultMode,
     (payload) => {

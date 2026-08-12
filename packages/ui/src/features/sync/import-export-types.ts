@@ -1,12 +1,27 @@
 import type { Folder, VaultItem } from "@gistwarden/domain";
+import { FolderSchema, VaultItemSchema } from "@gistwarden/domain";
 import type { Result } from "neverthrow";
+
+import { z } from "zod";
 import type { TranslationKey } from "@/core/i18n.ts";
 
-export interface ImportResult {
-  importedCount: number;
-  combinedItems: VaultItem[];
-  combinedFolders: Folder[];
-}
+export const ImportResultSchema = z
+  .object({
+    importedCount: z.number(),
+    combinedItems: z.array(VaultItemSchema),
+    combinedFolders: z.array(FolderSchema),
+  })
+  .readonly();
+export type ImportResult = z.infer<typeof ImportResultSchema>;
+
+export const ExportResultSchema = z
+  .object({
+    fileName: z.string(),
+    fileContent: z.string(),
+    mimeType: z.string(),
+  })
+  .readonly();
+export type ExportResult = z.infer<typeof ExportResultSchema>;
 
 export interface ImportStrategy {
   readonly id: string;
@@ -18,12 +33,6 @@ export interface ImportStrategy {
     existingItems: VaultItem[],
     existingFolders?: Folder[],
   ): Result<ImportResult, TranslationKey>;
-}
-
-export interface ExportResult {
-  fileName: string;
-  fileContent: string;
-  mimeType: string;
 }
 
 export interface ExportStrategy {

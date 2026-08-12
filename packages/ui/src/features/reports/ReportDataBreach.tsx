@@ -2,7 +2,7 @@ import { type Component, createSignal, For, Show } from "solid-js";
 import { t } from "@/core/i18n.ts";
 import { DatabaseBreachIcon, SyncIcon } from "@/icons/svg/index.ts";
 import { ReportLayout } from "./components/ReportLayout.tsx";
-import { checkEmailBreachUseCase } from "./reports-service.ts";
+import { checkEmailBreach } from "./reports-service.ts";
 
 export const ReportDataBreach: Component = () => {
   const [emailInput, setEmailInput] = createSignal("");
@@ -23,7 +23,7 @@ export const ReportDataBreach: Component = () => {
     setBreaches([]);
     setCheckedEmail(email);
 
-    const res = await checkEmailBreachUseCase(email);
+    const res = await checkEmailBreach(email);
 
     if (res.errorKey) {
       setErrorMessage(t(res.errorKey));

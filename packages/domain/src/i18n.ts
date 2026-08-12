@@ -1,4 +1,3 @@
-import { createSignal } from "solid-js";
 import { z } from "zod";
 import en from "./locales/en.ts";
 import vi from "./locales/vi.ts";
@@ -1098,16 +1097,28 @@ const dictionaries: Record<SupportLanguage, unknown> = {
   [SupportLanguage.Vi]: vi,
 };
 
-const [translations, setTranslations] = createSignal<Partial<Lang>>({});
-const [currentLanguageCode, setCurrentLanguageCode] =
-  createSignal<SupportLanguage>(SupportLanguage.En);
+let currentTranslations: Partial<Lang> = {};
+let currentLanguageCode: SupportLanguage = SupportLanguage.En;
+const languageChangeListeners = new Set<() => void>();
+
+export function onLanguageChange(listener: () => void): () => void {
+  languageChangeListeners.add(listener);
+  return () => {
+    languageChangeListeners.delete(listener);
+  };
+}
+
+export function getCurrentLanguageCode(): SupportLanguage {
+  return currentLanguageCode;
+}
 
 export function setLanguage(code: SupportLanguage | "en" | "vi"): void {
   const enumCode =
     code === SupportLanguage.Vi ? SupportLanguage.Vi : SupportLanguage.En;
   const raw = dictionaries[enumCode];
-  setTranslations(LangSchema.parse(raw));
-  setCurrentLanguageCode(enumCode);
+  currentTranslations = LangSchema.parse(raw);
+  currentLanguageCode = enumCode;
+  languageChangeListeners.forEach((listener) => listener());
 }
 
 export function initI18n(language?: SupportLanguage | "en" | "vi"): void {
@@ -1127,7 +1138,7 @@ export function t(
   key: TranslationKey,
   params?: Record<string, string | number>,
 ): string {
-  const current = translations();
+  const current = currentTranslations;
   let msg = current[key] ?? key;
   if (params) {
     Object.entries(params).forEach(([k, v]) => {
@@ -1155,8 +1166,7 @@ export function formatDateTime(dateInput: Date | number | string): string {
   const d = new Date(dateInput);
   if (Number.isNaN(d.getTime())) return "";
 
-  const locale =
-    currentLanguageCode() === SupportLanguage.Vi ? "vi-VN" : "en-US";
+  const locale = currentLanguageCode === SupportLanguage.Vi ? "vi-VN" : "en-US";
   return d.toLocaleString(locale, {
     year: "numeric",
     month: "2-digit",

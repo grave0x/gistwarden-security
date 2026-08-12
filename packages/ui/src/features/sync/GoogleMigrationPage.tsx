@@ -10,7 +10,10 @@ import {
   safeDecodeQr,
   type VaultItemId,
 } from "@gistwarden/domain";
-import { batchImportGoogleMigrationAccountsUseCase } from "@gistwarden/orchestrator";
+import {
+  batchImportGoogleMigrationAccountsUseCase,
+  vaultSecurityContext,
+} from "@gistwarden/orchestrator";
 import {
   type Component,
   createSignal,
@@ -243,6 +246,12 @@ export const GoogleMigrationPage: Component = () => {
     }
 
     setGlobalLoading(true, t("vault_importing"));
+    const key = await vaultSecurityContext.getKey();
+    if (!key) {
+      setGlobalLoading(false);
+      showToast(t("toast_error"), "error");
+      return;
+    }
     const vaultPayload = {
       items: accountStore.vaultItems,
       trash: accountStore.trashItems,
@@ -252,6 +261,7 @@ export const GoogleMigrationPage: Component = () => {
 
     const res = await batchImportGoogleMigrationAccountsUseCase(
       vaultPayload,
+      key,
       salt,
       settingsStore.vaultMode,
       mappings,

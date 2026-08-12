@@ -46,10 +46,7 @@ export async function getOrDeriveKey(
   if (deriveRes.isErr()) {
     return err(deriveRes.error);
   }
-  const key = deriveRes.value;
-  await vaultSecurityContext.setUnlockedKey(key);
-
-  return ok(key);
+  return ok(deriveRes.value);
 }
 
 export async function getSessionKey(): Promise<CryptoKey | null> {

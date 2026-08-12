@@ -19,6 +19,7 @@ import {
   renameFolderUseCase,
   restoreVaultItemUseCase,
   saveItemUseCase,
+  vaultSecurityContext,
 } from "@gistwarden/orchestrator";
 import { err, ok, type Result } from "neverthrow";
 import type { TranslationKey } from "@/core/i18n.ts";
@@ -31,25 +32,20 @@ import {
 
 import { handleGlobalApiError } from "@/core/ui-service.ts";
 
-/**
- * Architectural Decision:
- * Each vault mutation function explicitly invokes `getOrBuildCurrentPayloadAndSalt()`
- * and `handleGlobalApiError(res.error)` inline rather than using an abstract HOF wrapper.
- * This explicit pattern prioritizes code readability, clear call stacks, and direct
- * control flow traceability over generic abstraction wrappers.
- */
 async function getOrBuildCurrentPayloadAndSalt(): Promise<{
   payload: VaultPayload;
+  key: CryptoKey | null;
   salt: string;
 }> {
-  const decrypted = await getDecryptedVaultItems();
+  const key = await vaultSecurityContext.getKey();
+  const decrypted = key ? await getDecryptedVaultItems(key) : null;
   const salt = accountStore.masterPasswordConfig.salt || decrypted?.salt || "";
   const payload: VaultPayload = decrypted || {
     folders: accountStore.folders || [],
     items: accountStore.vaultItems || [],
     trash: accountStore.trashItems || [],
   };
-  return { payload, salt };
+  return { payload, key, salt };
 }
 
 export async function persistAndReconcileVault(
@@ -57,9 +53,11 @@ export async function persistAndReconcileVault(
   trashItems: TrashVaultItem[] = accountStore.trashItems || [],
   folders: Folder[] = accountStore.folders || [],
 ): Promise<Result<VaultItem[], TranslationKey>> {
-  const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
+  const { payload, key, salt } = await getOrBuildCurrentPayloadAndSalt();
+  if (!key) return err("login_title_locked");
   const res = await executeVaultMutationUseCase(
     { ...payload, items, trash: trashItems, folders },
+    key,
     salt,
     settingsStore.vaultMode,
     (p) => ({ ...p, items, trash: trashItems, folders }),
@@ -75,9 +73,11 @@ export async function persistAndReconcileVault(
 export async function addFolder(
   name: string,
 ): Promise<Result<Folder, TranslationKey>> {
-  const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
+  const { payload, key, salt } = await getOrBuildCurrentPayloadAndSalt();
+  if (!key) return err("login_title_locked");
   const res = await addFolderUseCase(
     payload,
+    key,
     salt,
     settingsStore.vaultMode,
     name,
@@ -94,9 +94,11 @@ export async function renameFolder(
   id: FolderId,
   newName: string,
 ): Promise<Result<void, TranslationKey>> {
-  const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
+  const { payload, key, salt } = await getOrBuildCurrentPayloadAndSalt();
+  if (!key) return err("login_title_locked");
   const res = await renameFolderUseCase(
     payload,
+    key,
     salt,
     settingsStore.vaultMode,
     id,
@@ -113,9 +115,11 @@ export async function renameFolder(
 export async function deleteFolder(
   id: FolderId,
 ): Promise<Result<void, TranslationKey>> {
-  const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
+  const { payload, key, salt } = await getOrBuildCurrentPayloadAndSalt();
+  if (!key) return err("login_title_locked");
   const res = await deleteFolderUseCase(
     payload,
+    key,
     salt,
     settingsStore.vaultMode,
     id,
@@ -131,9 +135,11 @@ export async function deleteFolder(
 export async function saveItem(
   item: Partial<VaultItem>,
 ): Promise<Result<void, TranslationKey>> {
-  const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
+  const { payload, key, salt } = await getOrBuildCurrentPayloadAndSalt();
+  if (!key) return err("login_title_locked");
   const res = await saveItemUseCase(
     payload,
+    key,
     salt,
     settingsStore.vaultMode,
     item,
@@ -155,9 +161,11 @@ export async function deleteItem(
 export async function deleteVaultItems(
   ids: VaultItemId[],
 ): Promise<Result<void, TranslationKey>> {
-  const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
+  const { payload, key, salt } = await getOrBuildCurrentPayloadAndSalt();
+  if (!key) return err("login_title_locked");
   const res = await deleteVaultItemsUseCase(
     payload,
+    key,
     salt,
     settingsStore.vaultMode,
     ids,
@@ -174,9 +182,11 @@ export async function moveVaultItemsToFolder(
   ids: VaultItemId[],
   folderId: FolderId | null,
 ): Promise<Result<void, TranslationKey>> {
-  const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
+  const { payload, key, salt } = await getOrBuildCurrentPayloadAndSalt();
+  if (!key) return err("login_title_locked");
   const res = await moveVaultItemsToFolderUseCase(
     payload,
+    key,
     salt,
     settingsStore.vaultMode,
     ids,
@@ -193,9 +203,11 @@ export async function moveVaultItemsToFolder(
 export async function restoreVaultItem(
   id: VaultItemId,
 ): Promise<Result<void, TranslationKey>> {
-  const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
+  const { payload, key, salt } = await getOrBuildCurrentPayloadAndSalt();
+  if (!key) return err("login_title_locked");
   const res = await restoreVaultItemUseCase(
     payload,
+    key,
     salt,
     settingsStore.vaultMode,
     id,
@@ -211,9 +223,11 @@ export async function restoreVaultItem(
 export async function purgeTrashItem(
   id: VaultItemId,
 ): Promise<Result<void, TranslationKey>> {
-  const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
+  const { payload, key, salt } = await getOrBuildCurrentPayloadAndSalt();
+  if (!key) return err("login_title_locked");
   const res = await purgeTrashItemUseCase(
     payload,
+    key,
     salt,
     settingsStore.vaultMode,
     id,
@@ -227,9 +241,11 @@ export async function purgeTrashItem(
 }
 
 export async function purgeAllTrash(): Promise<Result<void, TranslationKey>> {
-  const { payload, salt } = await getOrBuildCurrentPayloadAndSalt();
+  const { payload, key, salt } = await getOrBuildCurrentPayloadAndSalt();
+  if (!key) return err("login_title_locked");
   const res = await purgeAllTrashUseCase(
     payload,
+    key,
     salt,
     settingsStore.vaultMode,
   );

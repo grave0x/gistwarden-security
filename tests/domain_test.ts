@@ -8,7 +8,6 @@ import {
   mergeVaultItem,
   toPunycodeHostname,
   UriMatchMode,
-  type VaultItem,
   VaultItemType,
 } from "@gistwarden/domain";
 import { assertEquals, test } from "./assert.ts";

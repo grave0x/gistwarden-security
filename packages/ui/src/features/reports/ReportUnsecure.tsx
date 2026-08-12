@@ -7,7 +7,7 @@ import { accountStore } from "@/core/store.ts";
 import { ReportLayout } from "./components/ReportLayout.tsx";
 import {
   getUnsecureLoginItems,
-  upgradeLoginItemToHttpsUseCase,
+  upgradeLoginItemToHttps,
 } from "./reports-service.ts";
 
 export const ReportUnsecure: Component = () => {
@@ -18,7 +18,7 @@ export const ReportUnsecure: Component = () => {
   const handleUpgradeHttps = async (item: LoginVaultItem) => {
     setGlobalLoading(true);
     try {
-      await upgradeLoginItemToHttpsUseCase(item);
+      await upgradeLoginItemToHttps(item);
     } catch (err) {
       console.error("[ReportUnsecure] Upgrade to HTTPS failed:", err);
     } finally {

@@ -4,8 +4,16 @@ import {
   asFolderId,
   asVaultItemId,
   type BaseVaultItem,
+  type CardDetails,
+  type CardVaultItem,
   CustomFieldTypeSchema,
   type FolderId,
+  type IdentityDetails,
+  type IdentityVaultItem,
+  type LoginVaultItem,
+  type SecureNoteVaultItem,
+  type SshKeyDetails,
+  type SshKeyVaultItem,
   type VaultField,
   type VaultItem,
   type VaultItemId,
@@ -102,6 +110,97 @@ export function getVaultItemFallbackName(
   }
 }
 
+export interface VaultItemCreationMap {
+  [VaultItemType.Login]: Partial<NonNullable<LoginVaultItem["login"]>>;
+  [VaultItemType.Card]: Partial<CardDetails>;
+  [VaultItemType.Identity]: Partial<IdentityDetails>;
+  [VaultItemType.SecureNote]: Record<string, never> | undefined;
+  [VaultItemType.SshKey]: Partial<SshKeyDetails>;
+}
+
+function isVaultPayload<T extends object>(val: unknown): val is T {
+  return typeof val === "object" && val !== null;
+}
+
+export function createVaultItem(
+  type: VaultItemType.Login,
+  baseInput: CreateBaseVaultItemInput,
+  payload?: VaultItemCreationMap[VaultItemType.Login],
+): LoginVaultItem;
+export function createVaultItem(
+  type: VaultItemType.Card,
+  baseInput: CreateBaseVaultItemInput,
+  payload?: VaultItemCreationMap[VaultItemType.Card],
+): CardVaultItem;
+export function createVaultItem(
+  type: VaultItemType.Identity,
+  baseInput: CreateBaseVaultItemInput,
+  payload?: VaultItemCreationMap[VaultItemType.Identity],
+): IdentityVaultItem;
+export function createVaultItem(
+  type: VaultItemType.SecureNote,
+  baseInput: CreateBaseVaultItemInput,
+  payload?: VaultItemCreationMap[VaultItemType.SecureNote],
+): SecureNoteVaultItem;
+export function createVaultItem(
+  type: VaultItemType.SshKey,
+  baseInput: CreateBaseVaultItemInput,
+  payload?: VaultItemCreationMap[VaultItemType.SshKey],
+): SshKeyVaultItem;
+export function createVaultItem<K extends VaultItemType>(
+  type: K,
+  baseInput: CreateBaseVaultItemInput,
+  payload?: VaultItemCreationMap[K],
+): Extract<VaultItem, { type: K }>;
+export function createVaultItem(
+  type: VaultItemType,
+  baseInput: CreateBaseVaultItemInput,
+  payload?: unknown,
+): VaultItem;
+export function createVaultItem(
+  type: VaultItemType,
+  baseInput: CreateBaseVaultItemInput,
+  payload?: unknown,
+): VaultItem {
+  const base = createBaseVaultItem(baseInput);
+  const targetType = isVaultItemType(type) ? type : VaultItemType.Login;
+  const payloadKey = VAULT_ITEM_TYPE_KEY_MAP[targetType];
+  const payloadData = isVaultPayload(payload) ? payload : {};
+
+  const rawObj: Record<string, unknown> = {
+    ...base,
+    type: targetType,
+    ...(payloadKey ? { [payloadKey]: payloadData } : {}),
+  };
+
+  const parsed = VaultItemSchema.safeParse(rawObj);
+  if (parsed.success) {
+    return parsed.data;
+  }
+
+  const fallbackObj: Record<string, unknown> = {
+    ...base,
+    type: targetType,
+    ...(payloadKey ? { [payloadKey]: {} } : {}),
+  };
+  const fallbackParsed = VaultItemSchema.safeParse(fallbackObj);
+  if (fallbackParsed.success) {
+    return fallbackParsed.data;
+  }
+
+  return {
+    ...base,
+    type: VaultItemType.Login,
+    login: {
+      username: "",
+      password: "",
+      totp: "",
+      uris: [],
+      fido2Credentials: [],
+    },
+  };
+}
+
 function getSubPayload(item: unknown, key: string): unknown {
   if (item && typeof item === "object") {
     return Reflect.get(item, key);
@@ -115,53 +214,6 @@ const VAULT_ITEM_TYPE_KEY_MAP: Record<VaultItemType, string> = {
   [VaultItemType.Identity]: "identity",
   [VaultItemType.SecureNote]: "secureNote",
   [VaultItemType.SshKey]: "sshKey",
-};
-
-const DEFAULT_VAULT_ITEM_PAYLOADS: Record<
-  VaultItemType,
-  Record<string, unknown>
-> = {
-  [VaultItemType.Login]: {
-    username: "",
-    password: "",
-    totp: "",
-    uris: [],
-    fido2Credentials: [],
-  },
-  [VaultItemType.Card]: {
-    cardholderName: "",
-    brand: "",
-    number: "",
-    expMonth: "",
-    expYear: "",
-    code: "",
-  },
-  [VaultItemType.Identity]: {
-    title: "",
-    firstName: "",
-    middleName: "",
-    lastName: "",
-    company: "",
-    ssn: "",
-    passportNumber: "",
-    licenseNumber: "",
-    email: "",
-    phone: "",
-    address1: "",
-    address2: "",
-    city: "",
-    state: "",
-    postalCode: "",
-    country: "",
-  },
-  [VaultItemType.SecureNote]: { type: 0 },
-  [VaultItemType.SshKey]: {
-    privateKey: "",
-    publicKey: "",
-    fingerprint: "",
-    keyType: "",
-    passphrase: "",
-  },
 };
 
 export function mergeVaultItem(
@@ -206,10 +258,7 @@ export function mergeVaultItem(
         ...patchPayload,
       };
     } else {
-      baseItem[payloadKey] =
-        patchPayload ??
-        existingPayload ??
-        DEFAULT_VAULT_ITEM_PAYLOADS[targetType];
+      baseItem[payloadKey] = patchPayload ?? existingPayload ?? {};
     }
   }
 
@@ -221,51 +270,25 @@ export function mergeVaultItem(
 }
 
 export function createDefaultVaultItem(patch: Partial<VaultItem>): VaultItem {
-  const now = new Date().toISOString();
-  const targetType =
-    patch.type !== undefined ? Number(patch.type) : VaultItemType.Login;
+  const numType = Number(patch.type);
+  const targetType: VaultItemType = isVaultItemType(numType)
+    ? numType
+    : VaultItemType.Login;
 
-  const baseItem: Record<string, unknown> = {
-    id: patch.id || crypto.randomUUID(),
-    folderId: patch.folderId || null,
-    type: targetType,
-    name: patch.name || t("fallback_name_default"),
-    notes: patch.notes || "",
-    favorite: patch.favorite || false,
-    reprompt: patch.reprompt || 0,
-    fields: patch.fields || [],
-    creationDate: now,
-    revisionDate: now,
+  const baseInput: CreateBaseVaultItemInput = {
+    id: patch.id,
+    folderId: patch.folderId,
+    name: patch.name || getVaultItemFallbackName(targetType),
+    notes: patch.notes,
+    favorite: patch.favorite,
+    reprompt: patch.reprompt,
+    fields: patch.fields,
+    creationDate: patch.creationDate,
+    revisionDate: patch.revisionDate,
   };
 
-  if (isVaultItemType(targetType)) {
-    const payloadKey = VAULT_ITEM_TYPE_KEY_MAP[targetType];
-    const patchPayload = getSubPayload(patch, payloadKey);
-    baseItem[payloadKey] =
-      patchPayload ?? DEFAULT_VAULT_ITEM_PAYLOADS[targetType];
-  }
+  const payloadKey = VAULT_ITEM_TYPE_KEY_MAP[targetType];
+  const payload = payloadKey ? getSubPayload(patch, payloadKey) : undefined;
 
-  const parsed = VaultItemSchema.safeParse(baseItem);
-  if (parsed.success) {
-    return parsed.data;
-  }
-  return {
-    id: asVaultItemId(crypto.randomUUID()),
-    type: VaultItemType.Login,
-
-    name: t("fallback_name_default"),
-    notes: "",
-    favorite: false,
-    reprompt: 0,
-    fields: [],
-    creationDate: now,
-    revisionDate: now,
-    login: {
-      username: "",
-      password: "",
-      totp: "",
-      uris: [],
-      fido2Credentials: [],
-    },
-  };
+  return createVaultItem(targetType, baseInput, payload);
 }

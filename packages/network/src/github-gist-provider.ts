@@ -1,17 +1,12 @@
 import {
   asGistId,
-  asGitHubAccessToken,
   type GistId,
   type GitHubAccessToken,
   safeJsonParse,
   type TranslationKey,
 } from "@gistwarden/domain";
-import {
-  GistPayloadSchema,
-  getSyncToken,
-  resetAccountSettings,
-} from "@gistwarden/repository";
-import { err, ok, type Result } from "neverthrow";
+import { GistPayloadSchema } from "@gistwarden/repository";
+import { err, type Result } from "neverthrow";
 import {
   deleteGist,
   downloadFromGist,
@@ -25,8 +20,6 @@ import type {
   SyncResult,
   SyncStatusResult,
   SyncValidationResult,
-  UnlockContext,
-  UnlockVaultResult,
 } from "./sync-provider-types.ts";
 
 /**
@@ -125,9 +118,6 @@ export class GithubGistProvider implements ISyncProvider {
       downloadRes.isErr() &&
       downloadRes.error === "provider_error_not_found"
     ) {
-      if (options?.hasStoredSalt) {
-        await resetAccountSettings("github_gist");
-      }
       return { status: "new" };
     }
 
@@ -136,76 +126,5 @@ export class GithubGistProvider implements ISyncProvider {
     }
 
     return { status: "new" };
-  }
-
-  async resolveVaultContentForUnlock(
-    context: UnlockContext,
-  ): Promise<Result<UnlockVaultResult, TranslationKey>> {
-    let activeSalt =
-      context.accSettings.masterPasswordConfig.salt || context.secSalt;
-    if (!activeSalt) return err("vault_error_not_found");
-
-    const keyRes = await context.getOrDeriveKey(context.password, activeSalt);
-    if (keyRes.isErr() || !keyRes.value) return err("login_error_wrong_mp");
-    let key = keyRes.value;
-
-    let token: GitHubAccessToken | undefined;
-    if (
-      context.accSettings.syncConfig.syncTokenEncrypted &&
-      context.accSettings.syncConfig.syncTokenIv
-    ) {
-      const decTokenRes = await context.decryptData(
-        context.accSettings.syncConfig.syncTokenEncrypted,
-        context.accSettings.syncConfig.syncTokenIv,
-        key,
-      );
-      if (decTokenRes.isErr()) return err("login_error_wrong_mp");
-      token = asGitHubAccessToken(decTokenRes.value);
-    } else {
-      const fallbackToken = await getSyncToken("github_gist");
-      if (fallbackToken) token = fallbackToken;
-    }
-
-    let content = "";
-    if (context.downloadVault) {
-      const dlRes = await context.downloadVault();
-      if (dlRes.isOk() && dlRes.value) {
-        content = dlRes.value;
-      }
-    }
-
-    if (!content) {
-      const downloadRes = await this.download({
-        gistId: context.accSettings.syncConfig.gistId,
-        token,
-      });
-      if (downloadRes.isErr() || !downloadRes.value.content) {
-        return err(
-          downloadRes.isErr() ? downloadRes.error : "vault_error_not_found",
-        );
-      }
-      content = downloadRes.value.content;
-    }
-
-    const payloadJsonRes = safeJsonParse(content);
-    if (payloadJsonRes.isOk()) {
-      const parsed = GistPayloadSchema.safeParse(payloadJsonRes.value);
-      if (
-        parsed.success &&
-        parsed.data.salt &&
-        parsed.data.salt !== activeSalt
-      ) {
-        activeSalt = parsed.data.salt;
-        const reDeriveRes = await context.getOrDeriveKey(
-          context.password,
-          activeSalt,
-        );
-        if (reDeriveRes.isOk() && reDeriveRes.value) {
-          key = reDeriveRes.value;
-        }
-      }
-    }
-
-    return ok({ content, salt: activeSalt, key });
   }
 }

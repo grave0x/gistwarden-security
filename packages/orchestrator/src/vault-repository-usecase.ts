@@ -10,17 +10,15 @@ import {
   VaultPayloadSchema,
 } from "@gistwarden/domain";
 import { EncryptedPayloadSchema, getSessionItem } from "@gistwarden/repository";
-import { getSessionKey } from "./crypto-usecases.ts";
 
 export type DecryptedVaultData = VaultPayload & {
   key: CryptoKey;
   salt: string;
 };
 
-export async function getDecryptedVaultItems(): Promise<DecryptedVaultData | null> {
-  const key = await getSessionKey();
-  if (!key) return null;
-
+export async function getDecryptedVaultItems(
+  key: CryptoKey,
+): Promise<DecryptedVaultData | null> {
   const rawVaultRes = await getSessionItem(SESSION_KEY_ENCRYPTED_VAULT);
   const rawVault = rawVaultRes.isOk() ? rawVaultRes.value : null;
   if (typeof rawVault !== "string" || !rawVault) {

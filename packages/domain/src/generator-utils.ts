@@ -43,49 +43,41 @@ const NUMBER_CHARS = "0123456789";
 const SPECIAL_CHARS = "!@#$%^&*()_+-=[]{}|;:,.<>?";
 const AMBIGUOUS_REGEX = /[Il1O0o]/g;
 
-export class PasswordCharsetBuilder {
-  private uSet = UPPERCASE_CHARS;
-  private lSet = LOWERCASE_CHARS;
-  private nSet = NUMBER_CHARS;
-  private sSet = SPECIAL_CHARS;
+export interface PasswordCharsets {
+  readonly uppercase: string;
+  readonly lowercase: string;
+  readonly numbers: string;
+  readonly specials: string;
+  readonly combined: string;
+}
 
-  constructor(avoidAmbiguous: boolean) {
-    if (avoidAmbiguous) {
-      this.uSet = this.uSet.replace(AMBIGUOUS_REGEX, "");
-      this.lSet = this.lSet.replace(AMBIGUOUS_REGEX, "");
-      this.nSet = this.nSet.replace(AMBIGUOUS_REGEX, "");
-      this.sSet = this.sSet.replace(AMBIGUOUS_REGEX, "");
-    }
-  }
+export function getCharset(options: GeneratePasswordOptions): PasswordCharsets {
+  let uppercase = UPPERCASE_CHARS;
+  let lowercase = LOWERCASE_CHARS;
+  let numbers = NUMBER_CHARS;
+  let specials = SPECIAL_CHARS;
 
-  get uppercase(): string {
-    return this.uSet;
-  }
-  get lowercase(): string {
-    return this.lSet;
-  }
-  get numbers(): string {
-    return this.nSet;
-  }
-  get specials(): string {
-    return this.sSet;
+  if (options.avoidAmbiguous) {
+    uppercase = uppercase.replace(AMBIGUOUS_REGEX, "");
+    lowercase = lowercase.replace(AMBIGUOUS_REGEX, "");
+    numbers = numbers.replace(AMBIGUOUS_REGEX, "");
+    specials = specials.replace(AMBIGUOUS_REGEX, "");
   }
 
-  buildCombinedCharset(options: GeneratePasswordOptions): string {
-    let charset = "";
-    if (options.uppercase) charset += this.uSet;
-    if (options.lowercase) charset += this.lSet;
-    if (options.numbers) charset += this.nSet;
-    if (options.specials) charset += this.sSet;
-    return charset;
-  }
+  let combined = "";
+  if (options.uppercase) combined += uppercase;
+  if (options.lowercase) combined += lowercase;
+  if (options.numbers) combined += numbers;
+  if (options.specials) combined += specials;
+
+  return { uppercase, lowercase, numbers, specials, combined };
 }
 
 export function generatePassword(
   options: GeneratePasswordOptions,
 ): Result<string, TranslationKey> {
-  const charsetBuilder = new PasswordCharsetBuilder(options.avoidAmbiguous);
-  const charset = charsetBuilder.buildCombinedCharset(options);
+  const charsets = getCharset(options);
+  const charset = charsets.combined;
 
   if (!charset) {
     return err("gen_error_charset_empty");
@@ -105,15 +97,15 @@ export function generatePassword(
     return str[getRandomBoundedInt(str.length)] ?? "";
   };
 
-  if (options.numbers && minNum > 0 && charsetBuilder.numbers.length > 0) {
+  if (options.numbers && minNum > 0 && charsets.numbers.length > 0) {
     for (let i = 0; i < minNum; i++) {
-      resultChars.push(getRandomChar(charsetBuilder.numbers));
+      resultChars.push(getRandomChar(charsets.numbers));
     }
   }
 
-  if (options.specials && minSpec > 0 && charsetBuilder.specials.length > 0) {
+  if (options.specials && minSpec > 0 && charsets.specials.length > 0) {
     for (let i = 0; i < minSpec; i++) {
-      resultChars.push(getRandomChar(charsetBuilder.specials));
+      resultChars.push(getRandomChar(charsets.specials));
     }
   }
 
@@ -136,12 +128,17 @@ export function generatePassword(
   return ok(resultChars.join(""));
 }
 
-export interface GeneratePassphraseOptions {
-  numWords: number;
-  wordSeparator: string;
-  capitalize: boolean;
-  includeNumber: boolean;
-}
+export const GeneratePassphraseOptionsSchema = z
+  .object({
+    numWords: z.number(),
+    wordSeparator: z.string(),
+    capitalize: z.boolean(),
+    includeNumber: z.boolean(),
+  })
+  .readonly();
+export type GeneratePassphraseOptions = z.infer<
+  typeof GeneratePassphraseOptionsSchema
+>;
 
 export function generatePassphrase(
   options: GeneratePassphraseOptions,

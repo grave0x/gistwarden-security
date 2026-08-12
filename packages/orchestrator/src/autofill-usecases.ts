@@ -22,6 +22,7 @@ import { sendMessageToTab } from "./messaging.ts";
 import { pendingNotificationManager } from "./pending-notification-manager.ts";
 import { batchSavePayloads } from "./vault-mutation-usecases.ts";
 import { getDecryptedVaultItems } from "./vault-repository-usecase.ts";
+import { vaultSecurityContext } from "./vault-security-state.ts";
 
 const SubmittedCredentialsSchema = z
   .object({
@@ -79,7 +80,8 @@ export async function processSubmittedCredentialsUseCase(
     return;
   }
 
-  const vaultData = await getDecryptedVaultItems();
+  const key = await vaultSecurityContext.getKey();
+  const vaultData = key ? await getDecryptedVaultItems(key) : null;
   const items = vaultData ? vaultData.items : [];
   const normalizedUser = creds.username.toLowerCase().trim();
 
@@ -159,7 +161,8 @@ export async function processPendingUnapprovedCredentialsUseCase(): Promise<void
   await removeLocalItem(STORAGE_KEY_UNAPPROVED_PENDING_LOGINS);
   await pendingNotificationManager.clearAll();
 
-  const vaultData = await getDecryptedVaultItems();
+  const key = await vaultSecurityContext.getKey();
+  const vaultData = key ? await getDecryptedVaultItems(key) : null;
   if (!vaultData) {
     isProcessingPendingQueue = false;
     return;
@@ -188,7 +191,8 @@ export async function saveCredentialActionUseCase(
   if (!parseRes.success) return false;
   const payload = parseRes.data;
 
-  const vaultData = await getDecryptedVaultItems();
+  const key = await vaultSecurityContext.getKey();
+  const vaultData = key ? await getDecryptedVaultItems(key) : null;
   if (!vaultData) {
     const rawPendingRes = await getLocalItem(
       STORAGE_KEY_UNAPPROVED_PENDING_LOGINS,
@@ -237,7 +241,8 @@ export async function checkAutofillSuggestionUseCase(
     return { success: false, reason: "excluded_domain" };
   }
 
-  const vaultData = await getDecryptedVaultItems();
+  const key = await vaultSecurityContext.getKey();
+  const vaultData = key ? await getDecryptedVaultItems(key) : null;
   if (!vaultData) {
     return { success: false, reason: "locked" };
   }

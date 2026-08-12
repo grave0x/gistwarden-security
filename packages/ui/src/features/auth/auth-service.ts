@@ -14,7 +14,6 @@ import {
   type VaultPayload,
   VaultPayloadSchema,
 } from "@gistwarden/domain";
-import { getSyncProvider } from "@gistwarden/network";
 import {
   checkVaultConfiguredUseCase,
   clearDerivedKey,
@@ -24,6 +23,8 @@ import {
   getSessionKey,
   lockSessionUseCase,
   logoutSessionUseCase,
+  onboardPendingTokenUseCase,
+  resolveVaultContentForUnlockUseCase,
   setDerivedKey,
   validateSecurityConfigUseCase,
 } from "@gistwarden/orchestrator";
@@ -39,7 +40,6 @@ import { reconcile } from "solid-js/store";
 import {
   MSG_USER_ACTIVITY,
   SESSION_KEY_ENCRYPTED_VAULT,
-  SESSION_KEY_PENDING_SYNC_TOKEN,
   SESSION_KEY_VERIFICATION_CIPHERTEXT,
   SESSION_KEY_VERIFICATION_IV,
 } from "@/core/constants.ts";
@@ -54,7 +54,6 @@ import {
 } from "@/core/session-usecases.ts";
 import {
   getSessionItem,
-  removeSessionItem,
   setSessionItem,
   setSessionUnlocked,
   updateAccountSettings,
@@ -387,15 +386,15 @@ export async function verifyMasterPassword(
   const accSettings = accSettingsRes.value;
   const secSalt = accSettings.masterPasswordConfig.salt || "";
 
-  const provider = getSyncProvider(settingsStore.vaultMode);
-  const resolveRes = await provider.resolveVaultContentForUnlock({
-    password,
-    accSettings,
-    secSalt,
-    getOrDeriveKey,
-    decryptData,
-    downloadVault: fetchEncryptedVaultContent,
-  });
+  const resolveRes = await resolveVaultContentForUnlockUseCase(
+    settingsStore.vaultMode,
+    {
+      password,
+      accSettings,
+      secSalt,
+      downloadVault: fetchEncryptedVaultContent,
+    },
+  );
 
   if (resolveRes.isErr()) {
     return err(resolveRes.error);
@@ -429,15 +428,15 @@ export async function unlock(
   const saltBase64 = accSettings.masterPasswordConfig.salt;
   clearDerivedKey();
 
-  const provider = getSyncProvider(settingsStore.vaultMode);
-  const resolveRes = await provider.resolveVaultContentForUnlock({
-    password,
-    accSettings,
-    secSalt,
-    getOrDeriveKey,
-    decryptData,
-    downloadVault: fetchEncryptedVaultContent,
-  });
+  const resolveRes = await resolveVaultContentForUnlockUseCase(
+    settingsStore.vaultMode,
+    {
+      password,
+      accSettings,
+      secSalt,
+      downloadVault: fetchEncryptedVaultContent,
+    },
+  );
 
   const realSalt = accSettings.masterPasswordConfig.salt || secSalt;
   if (resolveRes.isErr()) {
@@ -480,25 +479,13 @@ export async function unlock(
   setAccountStore("vaultConfigured", isReady);
 
   // F. Onboarding token mã hóa nếu đang có pending token
-  const activeToken = await getSyncToken(settingsStore.vaultMode);
-  if (
-    activeToken &&
-    (!syncConfig.syncTokenEncrypted || !syncConfig.syncTokenIv)
-  ) {
-    const encryptRes = await encryptData(activeToken, key);
-    if (encryptRes.isOk()) {
-      const updatedSyncConfig = {
-        ...syncConfig,
-        syncTokenEncrypted: encryptRes.value.ciphertext,
-        syncTokenIv: encryptRes.value.iv,
-      };
-      await updateAccountSettings(
-        { syncConfig: updatedSyncConfig },
-        settingsStore.vaultMode,
-      );
-      setAccountStore("syncConfig", updatedSyncConfig);
-      await removeSessionItem(SESSION_KEY_PENDING_SYNC_TOKEN);
-    }
+  const updatedSyncConfig = await onboardPendingTokenUseCase(
+    key,
+    settingsStore.vaultMode,
+    syncConfig,
+  );
+  if (updatedSyncConfig) {
+    setAccountStore("syncConfig", updatedSyncConfig);
   }
 
   await resetMasterPasswordSecurity(saltBase64);
@@ -516,8 +503,6 @@ export async function unlock(
 export async function unlockVaultWithKey(
   key: CryptoKey,
 ): Promise<Result<void, TranslationKey>> {
-  const _provider = getSyncProvider(settingsStore.vaultMode);
-
   await persistSessionKey(key);
 
   const isReady = await checkVaultConfiguredUseCase(settingsStore.vaultMode);
@@ -560,8 +545,6 @@ export async function unlockVaultWithKey(
 export async function unlockVaultWithMasterPassword(
   password: string,
 ): Promise<Result<void, TranslationKey>> {
-  const _provider = getSyncProvider(settingsStore.vaultMode);
-
   const secRes = await verifyMasterPasswordSecurity();
   if (secRes.isErr()) {
     return err(secRes.error);

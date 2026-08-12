@@ -9,7 +9,7 @@ import {
   SESSION_KEY_VERIFICATION_CIPHERTEXT,
   SESSION_KEY_VERIFICATION_IV,
   type TranslationKey,
-  type VaultPayload,
+  VaultPayloadSchema,
 } from "@gistwarden/domain";
 import {
   DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
@@ -17,30 +17,43 @@ import {
   getAccountSettings,
   getSyncToken,
   type MasterPasswordSecurityConfig,
+  MasterPasswordSecurityConfigSchema,
   removeSessionItem,
-  type SyncConfig,
+  SyncConfigSchema,
   setSessionItem,
   updateAccountSettings,
   type VaultMode,
+  VaultModeSchema,
 } from "@gistwarden/repository";
 import { err, ok, type Result } from "neverthrow";
+import { z } from "zod";
 import { setDerivedKey, verifyMasterPassword } from "./crypto-usecases.ts";
 import { syncVaultToGist } from "./vault-sync-usecase.ts";
 
-export interface ChangeMasterPasswordOptions {
-  currentPass: string;
-  newPass: string;
-  payload: VaultPayload;
-  currentSyncConfig: SyncConfig;
-  currentMpConfig: MasterPasswordSecurityConfig;
-  vaultMode: VaultMode;
-}
+export const ChangeMasterPasswordOptionsSchema = z
+  .object({
+    currentPass: z.string(),
+    newPass: z.string(),
+    payload: VaultPayloadSchema,
+    currentSyncConfig: SyncConfigSchema,
+    currentMpConfig: MasterPasswordSecurityConfigSchema,
+    vaultMode: VaultModeSchema,
+  })
+  .readonly();
+export type ChangeMasterPasswordOptions = z.infer<
+  typeof ChangeMasterPasswordOptionsSchema
+>;
 
-export interface ChangeMasterPasswordResult {
-  newKey: CryptoKey;
-  updatedSyncConfig: SyncConfig;
-  updatedMpConfig: MasterPasswordSecurityConfig;
-}
+export const ChangeMasterPasswordResultSchema = z
+  .object({
+    newKey: z.custom<CryptoKey>((val) => Boolean(val)),
+    updatedSyncConfig: SyncConfigSchema,
+    updatedMpConfig: MasterPasswordSecurityConfigSchema,
+  })
+  .readonly();
+export type ChangeMasterPasswordResult = z.infer<
+  typeof ChangeMasterPasswordResultSchema
+>;
 
 export async function changeMasterPasswordUseCase(
   options: ChangeMasterPasswordOptions,

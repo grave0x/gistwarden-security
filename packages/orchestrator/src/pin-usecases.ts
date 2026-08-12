@@ -8,23 +8,31 @@ import {
 } from "@gistwarden/domain";
 import {
   DEFAULT_PIN_CONFIG,
-  type PinUnlockConfig,
+  PinUnlockConfigSchema,
   updateAccountSettings,
   updateExtensionSettings,
   type VaultMode,
+  VaultModeSchema,
 } from "@gistwarden/repository";
 import { err, ok, type Result } from "neverthrow";
+import { z } from "zod";
 
-export interface SetPinUnlockOptions {
-  pin: string;
-  requireRestart: boolean;
-  vaultMode: VaultMode;
-  key: CryptoKey;
-}
+export const SetPinUnlockOptionsSchema = z
+  .object({
+    pin: z.string(),
+    requireRestart: z.boolean(),
+    vaultMode: VaultModeSchema,
+    key: z.custom<CryptoKey>((val) => Boolean(val)),
+  })
+  .readonly();
+export type SetPinUnlockOptions = z.infer<typeof SetPinUnlockOptionsSchema>;
 
-export interface SetPinUnlockResult {
-  pinConfig: PinUnlockConfig;
-}
+export const SetPinUnlockResultSchema = z
+  .object({
+    pinConfig: PinUnlockConfigSchema,
+  })
+  .readonly();
+export type SetPinUnlockResult = z.infer<typeof SetPinUnlockResultSchema>;
 
 export async function setPinUnlockUseCase(
   options: SetPinUnlockOptions,

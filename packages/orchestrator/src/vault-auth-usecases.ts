@@ -40,6 +40,13 @@ import {
 } from "./messaging.ts";
 import { uploadToGistRoute } from "./messaging-contracts.ts";
 
+export {
+  resolveVaultContentForUnlockUseCase,
+  type UnlockVaultContext,
+  type UnlockVaultResult,
+  type UnlockVaultStrategy,
+} from "./unlock-strategies.ts";
+
 export interface CreateNewVaultOptions {
   password: string;
   syncToken?: string;
@@ -197,4 +204,29 @@ export async function checkVaultConfiguredUseCase(
     ),
     hasStoredSalt: Boolean(acc.masterPasswordConfig.salt),
   });
+}
+
+export async function onboardPendingTokenUseCase(
+  key: CryptoKey,
+  vaultMode: VaultMode,
+  syncConfig: SyncConfig,
+): Promise<SyncConfig | null> {
+  const activeToken = await getSyncToken(vaultMode);
+  if (
+    activeToken &&
+    (!syncConfig.syncTokenEncrypted || !syncConfig.syncTokenIv)
+  ) {
+    const encryptRes = await encryptData(activeToken, key);
+    if (encryptRes.isOk()) {
+      const updatedSyncConfig: SyncConfig = {
+        ...syncConfig,
+        syncTokenEncrypted: encryptRes.value.ciphertext,
+        syncTokenIv: encryptRes.value.iv,
+      };
+      await updateAccountSettings({ syncConfig: updatedSyncConfig }, vaultMode);
+      await removeSessionItem(SESSION_KEY_PENDING_SYNC_TOKEN);
+      return updatedSyncConfig;
+    }
+  }
+  return null;
 }
