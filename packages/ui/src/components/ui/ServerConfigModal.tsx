@@ -4,7 +4,6 @@ import BaseSlideModal from "@/components/ui/BaseSlideModal.tsx";
 import Button from "@/components/ui/Button.tsx";
 import Input from "@/components/ui/Input.tsx";
 import { t } from "@/core/i18n.ts";
-import { isExtension } from "@/core/runtime.ts";
 import { GlobeIcon, SyncIcon } from "@/icons/svg/index.ts";
 
 export interface ServerConfigModalProps {
@@ -48,40 +47,6 @@ export const ServerConfigModal: Component<ServerConfigModalProps> = (props) => {
     const targetUrl = rawUrl.replace(/\/+$/, "");
 
     try {
-      // 1. Dynamic Host Permission Request on Extension
-      if (
-        isExtension() &&
-        typeof chrome !== "undefined" &&
-        chrome?.permissions
-      ) {
-        try {
-          const parsed = new URL(targetUrl);
-          const origin = `${parsed.origin}/*`;
-          const hasPerm = await chrome.permissions.contains({
-            origins: [origin],
-          });
-          if (!hasPerm) {
-            const granted = await chrome.permissions.request({
-              origins: [origin],
-            });
-            if (!granted) {
-              setTestStatus({
-                type: "error",
-                message: t("server_config_test_failed"),
-              });
-              setIsTestedSuccess(false);
-              setIsTesting(false);
-              return;
-            }
-          }
-        } catch (permissionErr) {
-          logger.network.warn(
-            "[ServerConfigModal] Permission request failed or invalid URL pattern:",
-            permissionErr,
-          );
-        }
-      }
-
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 4000);
 

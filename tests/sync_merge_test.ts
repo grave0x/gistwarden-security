@@ -1,9 +1,9 @@
 import {
   asVaultItemId,
-  mergeVaultItem,
   type CardVaultItem,
   type IdentityVaultItem,
   type LoginVaultItem,
+  mergeVaultItem,
   type SecureNoteVaultItem,
   type SshKeyVaultItem,
   type VaultItem,
@@ -375,13 +375,13 @@ test("Vault Merge - mergeVaultItem preserves TOTP and URIs when partial payload 
     login: {
       username: "user@example.com",
       password: "UpdatedPassword999!",
-    } as unknown as VaultItem["login"],
+    } as unknown as LoginVaultItem["login"],
   });
 
   if (patchItem.type === VaultItemType.Login) {
     assertEquals(patchItem.login.password, "UpdatedPassword999!");
     assertEquals(patchItem.login.totp, "JBSWY3DPEHPK3PXP");
-    assertEquals(patchItem.login.uris.length, 1);
+    assertEquals(patchItem.login.uris?.length, 1);
   } else {
     throw new Error("Item type mismatch");
   }

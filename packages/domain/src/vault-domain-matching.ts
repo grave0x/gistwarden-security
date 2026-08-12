@@ -1,9 +1,4 @@
-import {
-  getBaseDomain,
-  getHostname,
-  toPunycodeHostname,
-  toPunycodeUrl,
-} from "./domain-utils.ts";
+import { getBaseDomain, getHostname, toPunycodeUrl } from "./domain-utils.ts";
 import { UriMatchMode, type VaultItem } from "./vault-schemas.ts";
 import { isLoginItem, type VaultItemType } from "./vault-types.ts";
 

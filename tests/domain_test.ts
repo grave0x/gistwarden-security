@@ -2,10 +2,13 @@ import {
   createDefaultVaultItem,
   getBaseDomain,
   getHostname,
+  isLoginItem,
   isSingleUriMatch,
+  type LoginVaultItem,
   mergeVaultItem,
   toPunycodeHostname,
   UriMatchMode,
+  type VaultItem,
   VaultItemType,
 } from "@gistwarden/domain";
 import { assertEquals, test } from "./assert.ts";
@@ -116,10 +119,10 @@ test("Vault Item Utils - mergeVaultItem preserves existing TOTP key when patch o
     login: {
       username: "user@example.com",
       password: "NewPassword456!",
-    } as unknown as VaultItem["login"],
+    } as unknown as LoginVaultItem["login"],
   });
 
-  if (updated.type === VaultItemType.Login) {
+  if (isLoginItem(updated)) {
     assertEquals(updated.login.password, "NewPassword456!");
     // Khẳng định totp ban đầu "JBSWY3DPEHPK3PXP" vẫn được giữ nguyên vẹn 100%
     assertEquals(updated.login.totp, "JBSWY3DPEHPK3PXP");
