@@ -5,6 +5,7 @@ import {
   decryptData,
   type GitHubAccessToken,
   isExtension,
+  isRecord,
   logger,
   SESSION_KEY_DERIVED_KEY,
   SESSION_KEY_PENDING_SYNC_TOKEN,
@@ -44,9 +45,7 @@ import {
   setWebSessionItems,
 } from "./web-storage.ts";
 
-export function isRecord(value: unknown): value is Record<string, unknown> {
-  return typeof value === "object" && value !== null;
-}
+export { isRecord };
 
 export function hasLocalStorage(): boolean {
   return (

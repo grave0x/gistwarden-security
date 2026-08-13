@@ -1,10 +1,9 @@
-import { View } from "@gistwarden/domain";
+import { isRecord, View } from "@gistwarden/domain";
 import {
   initializeWebRoutes,
   notifyBackground,
   onExtensionMessage,
 } from "@gistwarden/orchestrator";
-import { isRecord } from "@gistwarden/repository";
 import {
   accountStore,
   getPathView,

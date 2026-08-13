@@ -2,10 +2,10 @@ import {
   asGistId,
   type GistId,
   type GitHubAccessToken,
+  isRecord,
   safeJsonParse,
   type TranslationKey,
 } from "@gistwarden/domain";
-import { GistPayloadSchema } from "@gistwarden/repository";
 import { err, type Result } from "neverthrow";
 import {
   deleteGist,
@@ -101,12 +101,15 @@ export class GithubGistProvider implements ISyncProvider {
       const content = downloadRes.value.content;
       const foundGistId = downloadRes.value.gistId;
       const payloadJsonRes = safeJsonParse(content);
-      if (payloadJsonRes.isOk()) {
-        const parsed = GistPayloadSchema.safeParse(payloadJsonRes.value);
-        if (parsed.success && parsed.data.salt) {
+      if (payloadJsonRes.isOk() && isRecord(payloadJsonRes.value)) {
+        const salt =
+          typeof payloadJsonRes.value.salt === "string"
+            ? payloadJsonRes.value.salt
+            : undefined;
+        if (salt) {
           return {
             status: "exists",
-            salt: parsed.data.salt,
+            salt,
             gistId: foundGistId,
           };
         }

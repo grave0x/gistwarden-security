@@ -1,10 +1,7 @@
-import {
-  asGitHubAccessToken,
-  SESSION_KEY_ENCRYPTED_VAULT,
-} from "@gistwarden/domain";
-import { getSyncProvider } from "@gistwarden/network";
+import { SESSION_KEY_ENCRYPTED_VAULT } from "@gistwarden/domain";
 import {
   checkVaultConfiguredUseCase,
+  checkVaultStatusUseCase,
   startGithubOauthRoute,
 } from "@gistwarden/orchestrator";
 import {
@@ -37,7 +34,6 @@ import { sendBackgroundMessage } from "@/core/messaging.ts";
 import {
   getAccountSettings,
   getSessionItem,
-  getSyncToken,
   removeSessionItem,
   resetAccountSettings,
   setSessionItem,
@@ -102,21 +98,11 @@ export const Login: Component = () => {
       setAccountStore("vaultConfigured", isConfigured);
     }
 
-    const provider = getSyncProvider(mode);
-    const retrievedToken = await getSyncToken(mode);
-    const activeToken =
-      retrievedToken ||
-      (accountStore.syncToken
-        ? asGitHubAccessToken(accountStore.syncToken)
-        : undefined);
-
-    const activeSyncConfig = acc?.syncConfig;
-    const statusResult = await provider.checkVaultStatus({
-      token: activeToken,
-      serverUrl: activeSyncConfig?.serverUrl || undefined,
-      gistId: activeSyncConfig?.gistId || undefined,
-      hasStoredSalt: Boolean(acc?.masterPasswordConfig.salt),
-    });
+    const statusResult = await checkVaultStatusUseCase(
+      mode,
+      acc,
+      accountStore.syncToken,
+    );
 
     if (
       statusResult.salt &&
@@ -127,7 +113,7 @@ export const Login: Component = () => {
           DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG),
         salt: statusResult.salt,
       };
-      const baseSyncConfig = activeSyncConfig || DEFAULT_SYNC_CONFIG;
+      const baseSyncConfig = acc?.syncConfig || DEFAULT_SYNC_CONFIG;
       const updatedSyncConfig = {
         ...baseSyncConfig,
         ...(statusResult.gistId ? { gistId: statusResult.gistId } : {}),

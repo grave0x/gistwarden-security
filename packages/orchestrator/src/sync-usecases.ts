@@ -1,10 +1,16 @@
-import { asGistId, SESSION_KEY_PENDING_SYNC_TOKEN } from "@gistwarden/domain";
+import {
+  asGistId,
+  asGitHubAccessToken,
+  SESSION_KEY_PENDING_SYNC_TOKEN,
+} from "@gistwarden/domain";
 import {
   getSyncProvider,
   launchGithubOauthFlow,
+  type SyncStatusResult,
   validateToken,
 } from "@gistwarden/network";
 import {
+  type AccountSettings,
   type DeleteGistMsg,
   type DownloadFromGistMsg,
   type DownloadGistResponse,
@@ -19,6 +25,7 @@ import {
   updateAccountSettings,
   type ValidateTokenMsg,
   type ValidateTokenResponse,
+  type VaultMode,
 } from "@gistwarden/repository";
 import { checkVaultConfiguredUseCase } from "./vault-auth-usecases.ts";
 
@@ -148,4 +155,23 @@ export async function startGithubOauthUseCase(
     return { success: true, token: oauthRes.value };
   }
   return { success: false, error: oauthRes.error };
+}
+
+export async function checkVaultStatusUseCase(
+  mode: VaultMode,
+  acc: AccountSettings | null,
+  syncToken?: string,
+): Promise<SyncStatusResult> {
+  const provider = getSyncProvider(mode);
+  const retrievedToken = await getSyncToken(mode);
+  const activeToken =
+    retrievedToken || (syncToken ? asGitHubAccessToken(syncToken) : undefined);
+
+  const activeSyncConfig = acc?.syncConfig;
+  return await provider.checkVaultStatus({
+    token: activeToken,
+    serverUrl: activeSyncConfig?.serverUrl || undefined,
+    gistId: activeSyncConfig?.gistId || undefined,
+    hasStoredSalt: Boolean(acc?.masterPasswordConfig.salt),
+  });
 }

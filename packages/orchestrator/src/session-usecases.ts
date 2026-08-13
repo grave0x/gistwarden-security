@@ -68,3 +68,16 @@ export async function updateSessionTimeoutUseCase(
   });
   recordUserActivity();
 }
+
+export async function setSessionStorageUseCase(
+  key: string,
+  value: string,
+): Promise<void> {
+  await setSessionItem(key, value);
+}
+
+export async function removeSessionStorageUseCase(
+  key: string | string[],
+): Promise<void> {
+  await removeSessionItem(key);
+}

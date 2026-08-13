@@ -14,10 +14,10 @@ import {
   credentialsSubmittedRoute,
   pendingNotificationManager,
   processSubmittedCredentialsUseCase,
+  type SimpleSuccessResponse,
   saveCredentialActionRoute,
   saveCredentialActionUseCase,
 } from "@gistwarden/orchestrator";
-import type { SimpleSuccessResponse } from "@gistwarden/repository";
 import type {
   MessageContext,
   MessageRouter,

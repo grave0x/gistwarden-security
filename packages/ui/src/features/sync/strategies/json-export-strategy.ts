@@ -1,7 +1,106 @@
-import type { Folder, VaultItem } from "@gistwarden/domain";
-import { VaultItemType } from "@gistwarden/domain";
+import { type Folder, type VaultItem, VaultItemType } from "@gistwarden/domain";
 import { APP_NAME } from "@/core/constants.ts";
 import type { ExportResult, ExportStrategy } from "../import-export-types.ts";
+
+type ExportItemConverter = (
+  item: VaultItem,
+  base: Record<string, unknown>,
+) => Record<string, unknown>;
+
+const EXPORT_CONVERTERS: Record<VaultItemType, ExportItemConverter> = {
+  [VaultItemType.Login]: (item, base) => {
+    if (item.type !== VaultItemType.Login) return base;
+    return {
+      ...base,
+      type: VaultItemType.Login,
+      reprompt: item.reprompt,
+      login: {
+        username: item.login.username || "",
+        password: item.login.password || "",
+        totp: item.login.totp || "",
+        uris:
+          item.login.uris?.map((u) => ({
+            uri: u.uri,
+            match: null,
+          })) || [],
+        fido2Credentials: item.login.fido2Credentials || [],
+        passwordRevisionDate: item.login.passwordRevisionDate || null,
+        passwordHistory:
+          item.login.passwordHistory?.map((ph) => ({
+            lastUsedDate: ph.lastUsedDate || null,
+            password: ph.password || "",
+          })) || [],
+      },
+    };
+  },
+  [VaultItemType.Card]: (item, base) => {
+    if (item.type !== VaultItemType.Card) return base;
+    return {
+      ...base,
+      type: VaultItemType.Card,
+      reprompt: item.reprompt,
+      card: {
+        cardholderName: item.card.cardholderName || "",
+        brand: item.card.brand || "",
+        number: item.card.number || "",
+        expMonth: item.card.expMonth || "",
+        expYear: item.card.expYear || "",
+        code: item.card.code || "",
+      },
+    };
+  },
+  [VaultItemType.Identity]: (item, base) => {
+    if (item.type !== VaultItemType.Identity) return base;
+    return {
+      ...base,
+      type: VaultItemType.Identity,
+      reprompt: item.reprompt,
+      identity: {
+        title: item.identity.title || "",
+        firstName: item.identity.firstName || "",
+        middleName: item.identity.middleName || "",
+        lastName: item.identity.lastName || "",
+        username: item.identity.username || "",
+        company: item.identity.company || "",
+        ssn: item.identity.ssn || "",
+        passportNumber: item.identity.passportNumber || "",
+        licenseNumber: item.identity.licenseNumber || "",
+        email: item.identity.email || "",
+        phone: item.identity.phone || "",
+        address1: item.identity.address1 || "",
+        address2: item.identity.address2 || "",
+        address3: item.identity.address3 || "",
+        city: item.identity.city || "",
+        state: item.identity.state || "",
+        postalCode: item.identity.postalCode || "",
+        country: item.identity.country || "",
+      },
+    };
+  },
+  [VaultItemType.SecureNote]: (item, base) => {
+    return {
+      ...base,
+      type: VaultItemType.SecureNote,
+      reprompt: item.reprompt,
+      secureNote: {
+        type: 0,
+      },
+    };
+  },
+  [VaultItemType.SshKey]: (item, base) => {
+    if (item.type !== VaultItemType.SshKey) return base;
+    return {
+      ...base,
+      type: VaultItemType.SshKey,
+      reprompt: item.reprompt,
+      sshKey: {
+        privateKey: item.sshKey.privateKey || "",
+        publicKey: item.sshKey.publicKey || "",
+        keyFingerprint: item.sshKey.keyFingerprint || "",
+      },
+    };
+  },
+};
 
 export const jsonExportStrategy = {
   id: "json",
@@ -27,90 +126,10 @@ export const jsonExportStrategy = {
         revisionDate: item.revisionDate,
       };
 
-      if (item.type === VaultItemType.Login) {
-        return {
-          ...base,
-          type: VaultItemType.Login,
-          reprompt: item.reprompt,
-          login: {
-            username: item.login.username || "",
-            password: item.login.password || "",
-            totp: item.login.totp || "",
-            uris:
-              item.login.uris?.map((u) => ({
-                uri: u.uri,
-                match: null,
-              })) || [],
-            fido2Credentials: item.login.fido2Credentials || [],
-            passwordRevisionDate: item.login.passwordRevisionDate || null,
-            passwordHistory:
-              item.login.passwordHistory?.map((ph) => ({
-                lastUsedDate: ph.lastUsedDate || null,
-                password: ph.password || "",
-              })) || [],
-          },
-        };
-      } else if (item.type === VaultItemType.Card) {
-        return {
-          ...base,
-          type: VaultItemType.Card,
-          reprompt: item.reprompt,
-          card: {
-            cardholderName: item.card.cardholderName || "",
-            brand: item.card.brand || "",
-            number: item.card.number || "",
-            expMonth: item.card.expMonth || "",
-            expYear: item.card.expYear || "",
-            code: item.card.code || "",
-          },
-        };
-      } else if (item.type === VaultItemType.Identity) {
-        return {
-          ...base,
-          type: VaultItemType.Identity,
-          reprompt: item.reprompt,
-          identity: {
-            title: item.identity.title || "",
-            firstName: item.identity.firstName || "",
-            middleName: item.identity.middleName || "",
-            lastName: item.identity.lastName || "",
-            username: item.identity.username || "",
-            company: item.identity.company || "",
-            ssn: item.identity.ssn || "",
-            passportNumber: item.identity.passportNumber || "",
-            licenseNumber: item.identity.licenseNumber || "",
-            email: item.identity.email || "",
-            phone: item.identity.phone || "",
-            address1: item.identity.address1 || "",
-            address2: item.identity.address2 || "",
-            address3: item.identity.address3 || "",
-            city: item.identity.city || "",
-            state: item.identity.state || "",
-            postalCode: item.identity.postalCode || "",
-            country: item.identity.country || "",
-          },
-        };
-      } else if (item.type === VaultItemType.SshKey) {
-        return {
-          ...base,
-          type: VaultItemType.SshKey,
-          reprompt: item.reprompt,
-          sshKey: {
-            privateKey: item.sshKey.privateKey || "",
-            publicKey: item.sshKey.publicKey || "",
-            keyFingerprint: item.sshKey.keyFingerprint || "",
-          },
-        };
-      } else {
-        return {
-          ...base,
-          type: VaultItemType.SecureNote,
-          reprompt: item.reprompt,
-          secureNote: {
-            type: 0,
-          },
-        };
-      }
+      const converter =
+        EXPORT_CONVERTERS[item.type] ??
+        EXPORT_CONVERTERS[VaultItemType.SecureNote];
+      return converter(item, base);
     });
 
     const exportPayload = {

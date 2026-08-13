@@ -1,5 +1,5 @@
+import { isRecord } from "@gistwarden/domain";
 import type { RouteContract } from "@gistwarden/orchestrator";
-import { isRecord } from "@gistwarden/repository";
 import type { z } from "zod";
 
 export interface MessageContext {

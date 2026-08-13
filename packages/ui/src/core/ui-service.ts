@@ -1,6 +1,5 @@
 import {
   LOCAL_STORAGE_KEY_THEME,
-  OAUTH_WORKER_URL,
   STORE_KEY_CONFIRM_MODAL,
   STORE_KEY_GLOBAL_LOADING,
   STORE_KEY_GLOBAL_LOADING_TEXT,
@@ -8,10 +7,9 @@ import {
   STORE_KEY_TOAST_MESSAGE,
   STORE_KEY_TOAST_TYPE,
   SupportLanguage,
-  safeJsonParse,
   type TranslationKey,
 } from "@gistwarden/domain";
-import { fetchText } from "@gistwarden/network";
+import { syncTimeOffsetUseCase } from "@gistwarden/orchestrator";
 import {
   type ConfirmType,
   setLocalItem,
@@ -19,7 +17,6 @@ import {
   updateExtensionSettings,
 } from "@gistwarden/repository";
 import { err, ok, type Result } from "neverthrow";
-import { z } from "zod";
 import { writeClipboardText } from "@/core/clipboard-utils.ts";
 import { setLanguage, t } from "@/core/i18n.ts";
 import { setSettingsStore, setUiStore, uiStore } from "@/core/store.ts";
@@ -157,37 +154,12 @@ export async function updateTheme(newTheme: "dark" | "light") {
   await setLocalItem(LOCAL_STORAGE_KEY_THEME, newTheme);
 }
 
-const TimeServerResponseSchema = z
-  .object({
-    unixtime: z.number(),
-  })
-  .readonly();
-
 export async function syncTimeOffset(): Promise<Result<void, TranslationKey>> {
-  const textRes = await fetchText(`${OAUTH_WORKER_URL}/time`);
-  if (textRes.isErr()) {
-    return err(textRes.error);
-  }
-
-  const jsonRes = safeJsonParse(textRes.value);
-  if (jsonRes.isErr()) {
-    return err("settings_sync_time_error");
-  }
-  const data = jsonRes.value;
-
-  const parseResult = TimeServerResponseSchema.safeParse(data);
-  if (parseResult.success) {
-    const serverTime = parseResult.data.unixtime * 1000;
-    const localTime = Date.now();
-    const offset = serverTime - localTime;
-    console.log(`[Store] Time sync successful. Offset: ${offset}ms`);
-    setSettingsStore("timeOffset", offset);
-    const updateRes = await updateExtensionSettings({ timeOffset: offset });
-    if (updateRes.isErr()) {
-      return err("storage_error");
-    }
+  const syncRes = await syncTimeOffsetUseCase();
+  if (syncRes.isOk()) {
+    console.log(`[Store] Time sync successful. Offset: ${syncRes.value}ms`);
+    setSettingsStore("timeOffset", syncRes.value);
     return ok();
   }
-
-  return err("settings_sync_time_error");
+  return err(syncRes.error);
 }

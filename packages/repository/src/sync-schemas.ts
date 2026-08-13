@@ -1,186 +1,39 @@
 import {
-  Fido2CredentialSchema,
-  FolderIdSchema,
   GitHubAccessTokenSchema,
+  ImportArraySchema,
+  ImportCardItemSchema,
+  type ImportFolder,
+  ImportFolderSchema,
+  ImportIdentityItemSchema,
+  type ImportItem,
+  ImportItemSchema,
+  ImportLoginItemSchema,
+  ImportObjectSchema,
+  ImportSecureNoteItemSchema,
+  ImportSshKeyItemSchema,
   MSG_DELETE_GIST,
   MSG_DOWNLOAD_FROM_GIST,
   MSG_START_SYNC_OAUTH,
   MSG_UPLOAD_TO_GIST,
   MSG_VALIDATE_TOKEN,
   type TranslationKey,
-  VaultFieldSchema,
-  VaultItemIdSchema,
-  VaultItemType,
 } from "@gistwarden/domain";
 import { z } from "zod";
 import { VaultModeSchema } from "./storage-schemas.ts";
 
-export const ImportFolderSchema = z
-  .object({
-    id: FolderIdSchema,
-    name: z.string(),
-  })
-  .readonly();
-export type ImportFolder = z.infer<typeof ImportFolderSchema>;
-
-export const ImportLoginItemSchema = z
-  .object({
-    id: VaultItemIdSchema.nullish(),
-    folderId: FolderIdSchema.nullish(),
-    type: z.literal(VaultItemType.Login),
-    name: z.string(),
-    notes: z.string().nullish(),
-    favorite: z.boolean(),
-    reprompt: z.number(),
-    creationDate: z.string().nullish(),
-    revisionDate: z.string().nullish(),
-    fields: z.array(VaultFieldSchema).nullish(),
-    login: z.object({
-      username: z.string().nullish(),
-      password: z.string().nullish(),
-      totp: z.string().nullish(),
-      uris: z
-        .array(
-          z.object({
-            uri: z.string(),
-            match: z.number().nullish(),
-          }),
-        )
-        .nullish(),
-      fido2Credentials: z.array(Fido2CredentialSchema).nullish(),
-      passwordRevisionDate: z.string().nullish(),
-      passwordHistory: z
-        .array(
-          z.object({
-            lastUsedDate: z.string().nullish(),
-            password: z.string().nullish(),
-          }),
-        )
-        .nullish(),
-    }),
-  })
-  .readonly();
-
-export const ImportSecureNoteItemSchema = z
-  .object({
-    id: VaultItemIdSchema.nullish(),
-    folderId: FolderIdSchema.nullish(),
-    type: z.literal(VaultItemType.SecureNote),
-    name: z.string(),
-    notes: z.string().nullish(),
-    favorite: z.boolean(),
-    reprompt: z.number(),
-    creationDate: z.string().nullish(),
-    revisionDate: z.string().nullish(),
-    fields: z.array(VaultFieldSchema).nullish(),
-    secureNote: z
-      .object({
-        type: z.number(),
-      })
-      .nullish(),
-  })
-  .readonly();
-
-export const ImportCardItemSchema = z
-  .object({
-    id: VaultItemIdSchema.nullish(),
-    folderId: FolderIdSchema.nullish(),
-    type: z.literal(VaultItemType.Card),
-    name: z.string(),
-    notes: z.string().nullish(),
-    favorite: z.boolean(),
-    reprompt: z.number(),
-    creationDate: z.string().nullish(),
-    revisionDate: z.string().nullish(),
-    fields: z.array(VaultFieldSchema).nullish(),
-    card: z
-      .object({
-        cardholderName: z.string().nullish(),
-        brand: z.string().nullish(),
-        number: z.string().nullish(),
-        expMonth: z.string().nullish(),
-        expYear: z.string().nullish(),
-        code: z.string().nullish(),
-      })
-      .nullish(),
-  })
-  .readonly();
-
-export const ImportIdentityItemSchema = z
-  .object({
-    id: VaultItemIdSchema.nullish(),
-    folderId: FolderIdSchema.nullish(),
-    type: z.literal(VaultItemType.Identity),
-    name: z.string(),
-    notes: z.string().nullish(),
-    favorite: z.boolean(),
-    reprompt: z.number(),
-    creationDate: z.string().nullish(),
-    revisionDate: z.string().nullish(),
-    fields: z.array(VaultFieldSchema).nullish(),
-    identity: z
-      .object({
-        title: z.string().nullish(),
-        firstName: z.string().nullish(),
-        middleName: z.string().nullish(),
-        lastName: z.string().nullish(),
-        username: z.string().nullish(),
-        company: z.string().nullish(),
-        ssn: z.string().nullish(),
-        passportNumber: z.string().nullish(),
-        licenseNumber: z.string().nullish(),
-        email: z.string().nullish(),
-        phone: z.string().nullish(),
-        address1: z.string().nullish(),
-        address2: z.string().nullish(),
-        address3: z.string().nullish(),
-        city: z.string().nullish(),
-        state: z.string().nullish(),
-        postalCode: z.string().nullish(),
-        country: z.string().nullish(),
-      })
-      .nullish(),
-  })
-  .readonly();
-
-export const ImportSshKeyItemSchema = z
-  .object({
-    id: VaultItemIdSchema.nullish(),
-    folderId: FolderIdSchema.nullish(),
-    type: z.literal(VaultItemType.SshKey),
-    name: z.string(),
-    notes: z.string().nullish(),
-    favorite: z.boolean(),
-    reprompt: z.number(),
-    creationDate: z.string().nullish(),
-    revisionDate: z.string().nullish(),
-    fields: z.array(VaultFieldSchema).nullish(),
-    sshKey: z
-      .object({
-        privateKey: z.string().nullish(),
-        publicKey: z.string().nullish(),
-        keyFingerprint: z.string().nullish(),
-      })
-      .nullish(),
-  })
-  .readonly();
-
-export const ImportItemSchema = z.discriminatedUnion("type", [
-  ImportLoginItemSchema,
-  ImportSecureNoteItemSchema,
+export {
+  ImportArraySchema,
   ImportCardItemSchema,
+  type ImportFolder,
+  ImportFolderSchema,
   ImportIdentityItemSchema,
+  type ImportItem,
+  ImportItemSchema,
+  ImportLoginItemSchema,
+  ImportObjectSchema,
+  ImportSecureNoteItemSchema,
   ImportSshKeyItemSchema,
-]);
-export type ImportItem = z.infer<typeof ImportItemSchema>;
-
-export const ImportArraySchema = z.array(ImportItemSchema).readonly();
-export const ImportObjectSchema = z
-  .object({
-    folders: z.array(ImportFolderSchema).nullish(),
-    items: z.array(ImportItemSchema),
-  })
-  .readonly();
+};
 
 export const GistPayloadSchema = z.object({
   ciphertext: z.string(),

@@ -1,9 +1,9 @@
 import {
   fido2HeartbeatRoute,
   processPendingUnapprovedCredentialsUseCase,
+  type SimpleSuccessResponse,
   userActivityRoute,
 } from "@gistwarden/orchestrator";
-import type { SimpleSuccessResponse } from "@gistwarden/repository";
 import { updateTimeoutAlarm } from "@/extension/background-alarms.ts";
 import { syncLockStateBadge } from "@/extension/background-badge.ts";
 import type { MessageRouter } from "@/extension/message-router.ts";

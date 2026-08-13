@@ -67,3 +67,10 @@ export function createSuccessPayloadResponseSchema<T extends z.ZodTypeAny>(
 export function assertNever(x: never): never {
   throw new Error(`Unexpected value: ${JSON.stringify(x)}`); // linter-disable-line
 }
+
+/**
+ * Type guard for checking if a value is a non-null object record.
+ */
+export function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}

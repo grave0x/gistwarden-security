@@ -5,13 +5,14 @@ import {
   type Folder,
   FolderSchema,
   getVaultItemFallbackName,
+  type ImportItem,
+  ImportItemSchema,
   logger,
   type VaultItem,
   VaultItemType,
   VaultListSchema,
 } from "@gistwarden/domain";
 import { mergeFolders } from "@gistwarden/orchestrator";
-import { type ImportItem, ImportItemSchema } from "@gistwarden/repository";
 import { err, ok, type Result } from "neverthrow";
 import { APP_NAME } from "@/core/constants.ts";
 import type { TranslationKey } from "@/core/i18n.ts";

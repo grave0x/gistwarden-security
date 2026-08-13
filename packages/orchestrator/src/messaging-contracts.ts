@@ -81,6 +81,8 @@ import {
 } from "@/core/constants.ts";
 import { defineRoute } from "./messaging.ts";
 
+export { type SimpleSuccessResponse, SimpleSuccessResponseSchema };
+
 export type MessageContract<TPayload, TResponse> = {
   payloadSchema: z.ZodType<TPayload>;
   responseSchema: z.ZodType<TResponse>;

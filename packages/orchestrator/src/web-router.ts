@@ -1,5 +1,5 @@
-import type { SimpleSuccessResponse } from "@gistwarden/repository";
 import { registerInMemoryRoute } from "./messaging.ts";
+import type { SimpleSuccessResponse } from "./messaging-contracts.ts";
 import {
   checkDataBreachRoute,
   checkHIBPRoute,

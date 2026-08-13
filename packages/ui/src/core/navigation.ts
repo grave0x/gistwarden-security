@@ -5,7 +5,10 @@ import {
   STORE_KEY_SELECTED_ITEM,
   View,
 } from "@gistwarden/domain";
-import { removeSessionItem, setSessionItem } from "@gistwarden/repository";
+import {
+  removeSessionStorageUseCase,
+  setSessionStorageUseCase,
+} from "@gistwarden/orchestrator";
 import { getPathView, getViewPath } from "@/core/router.ts";
 import { setUiStore } from "@/core/store.ts";
 import { requestReprompt } from "./ui-service.ts";
@@ -23,9 +26,9 @@ export class NavigationManager {
     return this.activeNavigator;
   }
 
-  public navigate(newPath: string): void {
+  public navigate(to: string): void {
     if (this.activeNavigator) {
-      this.activeNavigator(newPath);
+      this.activeNavigator(to);
     }
   }
 }
@@ -44,9 +47,9 @@ export function navigatePath(newPath: string): void {
 
   const skipViews = [View.Login, View.Welcome, View.Fido2Prompt];
   if (!skipViews.includes(targetView)) {
-    setSessionItem(SESSION_KEY_LAST_VIEW, targetView);
+    void setSessionStorageUseCase(SESSION_KEY_LAST_VIEW, targetView);
     if (targetView !== View.ItemDetail && targetView !== View.ItemEdit) {
-      removeSessionItem(SESSION_KEY_LAST_SELECTED_ITEM_ID);
+      void removeSessionStorageUseCase(SESSION_KEY_LAST_SELECTED_ITEM_ID);
     }
   }
 }
@@ -63,9 +66,9 @@ function setCurrentSelectedItem(
   setUiStore(STORE_KEY_SELECTED_ITEM, item);
   if (item) {
     navigate(targetView);
-    setSessionItem(SESSION_KEY_LAST_SELECTED_ITEM_ID, item.id);
+    void setSessionStorageUseCase(SESSION_KEY_LAST_SELECTED_ITEM_ID, item.id);
   } else {
-    removeSessionItem(SESSION_KEY_LAST_SELECTED_ITEM_ID);
+    void removeSessionStorageUseCase(SESSION_KEY_LAST_SELECTED_ITEM_ID);
   }
 }
 
