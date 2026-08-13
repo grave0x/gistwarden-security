@@ -3,79 +3,79 @@
 .google-migration-container {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--space-4);
 }
 
 .google-migration-tool-card {
   background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 16px;
+  border: var(--border-std);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
 
   .google-migration-tool-title {
-    font-size: 14px;
+    font-size: var(--font-size-14);
     font-weight: 600;
     color: var(--text);
-    margin-bottom: 8px;
+    margin-bottom: var(--space-2);
   }
 
   .google-migration-input-group {
-    margin-bottom: 12px;
+    margin-bottom: var(--space-3);
   }
 }
 
 .google-migration-account-item {
   background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 14px 16px;
-  margin-bottom: 12px;
+  border: var(--border-std);
+  border-radius: var(--radius-md);
+  padding: var(--space-3-5) var(--space-4);
+  margin-bottom: var(--space-3);
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--space-3);
 
   .google-migration-account-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    gap: 12px;
+    gap: var(--space-3);
 
     .google-migration-account-title {
-      font-size: 14px;
+      font-size: var(--font-size-14);
       font-weight: 600;
       color: var(--text);
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: var(--space-1-5);
       word-break: break-word;
     }
 
     .google-migration-otp-badge {
       font-family: monospace, SFMono-Regular, Consolas, "Liberation Mono", Menlo;
-      font-size: 14px;
+      font-size: var(--font-size-14);
       font-weight: 700;
       letter-spacing: 1px;
-      color: var(--primary-accent, #60a5fa);
+      color: var(--primary-accent);
       background-color: var(--primary-translucent-15);
-      border: 1px solid var(--primary-translucent-20);
-      padding: 4px 10px;
-      border-radius: 6px;
+      border: var(--border-std-primary);
+      padding: var(--space-1) var(--space-2-5);
+      border-radius: var(--radius-sm);
       white-space: nowrap;
     }
   }
 
   .google-migration-totp-box {
     background-color: var(--bg);
-    border: 1px solid var(--border-light);
-    border-radius: 6px;
-    padding: 10px 12px;
+    border: var(--border-std-light);
+    border-radius: var(--radius-sm);
+    padding: var(--space-2-5) var(--space-3);
   }
 
   .google-migration-uri-box {
     background-color: var(--bg);
-    border: 1px solid var(--border-light);
-    border-radius: 6px;
-    padding: 6px 10px;
+    border: var(--border-std-light);
+    border-radius: var(--radius-sm);
+    padding: var(--space-1-5) var(--space-2-5);
 
     .detail-row {
       padding: 0;
@@ -100,16 +100,16 @@
   .google-migration-actions-group {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding-top: 8px;
+    gap: var(--space-2-5);
+    padding-top: var(--space-2);
     border-top: 1px dashed var(--border);
 
     .google-migration-radio-row {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--space-2);
       cursor: pointer;
-      font-size: 13px;
+      font-size: var(--font-size-13);
       color: var(--text);
       user-select: none;
 
@@ -122,8 +122,8 @@
     }
 
     .google-migration-picker-container {
-      margin-left: 24px;
-      margin-top: 4px;
+      margin-left: var(--space-6);
+      margin-top: var(--space-1);
     }
   }
 }
@@ -132,7 +132,7 @@
   display: flex;
   align-items: center;
   justify-content: flex-start;
-  gap: 12px;
-  margin-top: 16px;
-  padding-top: 12px;
+  gap: var(--space-3);
+  margin-top: var(--space-4);
+  padding-top: var(--space-3);
 }

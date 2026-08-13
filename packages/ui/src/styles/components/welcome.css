@@ -2,7 +2,7 @@
   display: flex;
   flex-direction: column;
   height: 100%;
-  padding: 4px;
+  padding: var(--space-1);
   justify-content: space-between;
 
   .tour-header {
@@ -10,14 +10,14 @@
     justify-content: space-between;
     align-items: center;
     width: 100%;
-    margin-bottom: 12px;
-    padding: 0 4px;
+    margin-bottom: var(--space-3);
+    padding: 0 var(--space-1);
 
     .tour-logo {
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 16px;
+      gap: var(--space-2);
+      font-size: var(--font-size-16);
       font-weight: 700;
       color: var(--text);
 
@@ -29,10 +29,10 @@
 
     .login-lang-selector {
       position: static;
-      background: rgba(255, 255, 255, 0.05);
-      padding: 3px 8px;
-      border-radius: 12px;
-      border: 1px solid var(--border);
+      background: var(--white-translucent-5);
+      padding: var(--space-0-5) var(--space-2);
+      border-radius: var(--radius-lg);
+      border: var(--border-std);
     }
   }
 
@@ -60,13 +60,13 @@
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 16px;
+        margin-bottom: var(--space-4);
         position: relative;
 
         .tour-svg {
           width: 180px;
           height: 140px;
-          filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.15));
+          filter: drop-shadow(0 8px 16px var(--shadow-large));
 
           .floating-icon {
             animation: float 3s ease-in-out infinite;
@@ -80,47 +80,47 @@
         .tour-svg-warning {
           width: 150px;
           height: 110px;
-          filter: drop-shadow(0 8px 16px rgba(239, 68, 68, 0.1));
+          filter: drop-shadow(0 8px 16px var(--error-translucent-10));
         }
       }
 
       .tour-title {
-        font-size: 18px;
+        font-size: var(--font-size-18);
         font-weight: 700;
         color: var(--text);
-        margin: 0 0 10px 0;
+        margin: 0 0 var(--space-2-5) 0;
         line-height: 1.3;
       }
 
       .tour-desc {
-        font-size: 12.5px;
+        font-size: var(--font-size-13);
         color: var(--text-muted);
         line-height: 1.45;
         max-width: 380px;
         margin: 0 auto;
-        padding: 0 8px;
+        padding: 0 var(--space-2);
       }
 
       .tour-warning-card {
         background-color: var(--surface);
-        border: 1px solid var(--border);
-        border-left: 4px solid var(--error);
-        border-radius: 8px;
-        padding: 12px 14px;
-        margin-top: 4px;
+        border: var(--border-std);
+        border-left: var(--border-accent-lg-error);
+        border-radius: var(--radius-md);
+        padding: var(--space-3) var(--space-3-5);
+        margin-top: var(--space-1);
         text-align: left;
         max-width: 360px;
 
         .warning-bold {
-          font-size: 12.5px;
+          font-size: var(--font-size-13);
           font-weight: 700;
           color: var(--error);
-          margin: 0 0 6px 0;
+          margin: 0 0 var(--space-1-5) 0;
           line-height: 1.35;
         }
 
         .warning-sub {
-          font-size: 11.5px;
+          font-size: var(--font-size-12);
           color: var(--text-muted);
           margin: 0;
           line-height: 1.4;
@@ -134,13 +134,13 @@
     align-items: center;
     justify-content: space-between;
     width: 100%;
-    margin-top: 12px;
-    margin-bottom: 12px;
-    padding: 0 8px;
+    margin-top: var(--space-3);
+    margin-bottom: var(--space-3);
+    padding: 0 var(--space-2);
 
     .tour-nav-btn {
       background: transparent;
-      border: 1px solid var(--border);
+      border: var(--border-std);
       color: var(--text);
       width: 32px;
       height: 32px;
@@ -149,7 +149,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: all 0.2s;
+      transition: all var(--transition-normal);
 
       &:hover:not(:disabled) {
         background-color: var(--hover-bg);
@@ -158,7 +158,7 @@
       }
 
       &:disabled {
-        opacity: 0.25;
+        opacity: var(--opacity-quarter);
         cursor: not-allowed;
         border-color: var(--border);
       }
@@ -166,7 +166,7 @@
 
     .tour-dots {
       display: flex;
-      gap: 6px;
+      gap: var(--space-1-5);
 
       .tour-dot {
         width: 8px;
@@ -176,11 +176,11 @@
         border: none;
         padding: 0;
         cursor: pointer;
-        transition: all 0.25s ease;
+        transition: all var(--transition-normal);
 
         &.active {
           width: 20px;
-          border-radius: 4px;
+          border-radius: var(--radius-xs);
           background-color: var(--primary);
         }
       }
@@ -189,23 +189,23 @@
 
   .tour-action-area {
     width: 100%;
-    margin-top: 8px;
+    margin-top: var(--space-2);
   }
 
   .tour-checkbox-container {
     display: flex;
     flex-direction: column;
-    gap: 14px;
-    margin-top: 14px;
+    gap: var(--space-3-5);
+    margin-top: var(--space-3-5);
   }
 
   .tour-checkbox-row {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
+    gap: var(--space-2-5);
     cursor: pointer;
     text-align: left;
-    padding: 0 4px;
+    padding: 0 var(--space-1);
 
     .tour-checkbox {
       appearance: none;
@@ -214,15 +214,15 @@
       width: 16px;
       height: 16px;
       min-width: 16px;
-      margin-top: 2px;
-      border: 1.5px solid var(--border);
-      border-radius: 4px;
-      background-color: var(--bg-input, transparent);
+      margin-top: var(--space-0-5);
+      border: var(--border-std-medium);
+      border-radius: var(--radius-xs);
+      background-color: var(--bg-input);
       display: inline-flex;
       align-items: center;
       justify-content: center;
       position: relative;
-      transition: background-color 0.2s, border-color 0.2s;
+      transition: var(--transition-colors);
 
       &:checked {
         background-color: var(--primary);
@@ -233,7 +233,7 @@
           position: absolute;
           width: 4px;
           height: 8px;
-          border: solid #ffffff;
+          border: solid var(--white);
           border-width: 0 2px 2px 0;
           top: 50%;
           left: 50%;
@@ -243,7 +243,7 @@
     }
 
     .tour-checkbox-label {
-      font-size: 12.5px;
+      font-size: var(--font-size-13);
       line-height: 1.45;
       color: var(--text);
       user-select: none;
@@ -252,14 +252,14 @@
 
   .tour-footer {
     width: 100%;
-    margin-top: 4px;
+    margin-top: var(--space-1);
 
     .checkbox-container {
-      margin-bottom: 12px;
-      padding: 0 4px;
+      margin-bottom: var(--space-3);
+      padding: 0 var(--space-1);
 
       .checkbox-label {
-        font-size: 12px;
+        font-size: var(--font-size-12);
         font-weight: 500;
       }
     }
@@ -290,11 +290,11 @@
 @keyframes pulse {
   0%,
   100% {
-    opacity: 0.4;
+    opacity: var(--opacity-disabled);
     transform: scale(1);
   }
   50% {
-    opacity: 0.8;
+    opacity: var(--opacity-medium);
     transform: scale(1.05);
   }
 }

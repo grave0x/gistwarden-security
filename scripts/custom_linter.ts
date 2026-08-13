@@ -386,7 +386,8 @@ function lintFile(filePath: string): LintIssue[] {
     // Rule 6: no-inline-style in TSX
     if (
       normalizedPath.endsWith(".tsx") &&
-      /\bstyle\s*=\s*\{\s*\{/.test(codeNoStrings)
+      (/\bstyle\s*=\s*\{\s*\{/.test(codeNoStrings) ||
+        /\bstyle\s*=\s*["'][^"']+["']/.test(codeNoStrings))
     ) {
       issues.push({
         filePath,
@@ -394,7 +395,7 @@ function lintFile(filePath: string): LintIssue[] {
         column: lineText.indexOf("style=") + 1,
         ruleId: "no-inline-style",
         message:
-          "Do not use inline 'style' object/string. Move styles to SCSS/CSS files instead.",
+          "Do not use inline 'style' object/string in TSX. Move styles to SCSS/CSS files instead.",
       });
     }
 
@@ -612,24 +613,371 @@ function lintFile(filePath: string): LintIssue[] {
   return issues;
 }
 
+const DYNAMIC_CSS_VAR_WHITELIST = new Set(["--menu-x", "--menu-y"]);
+
+function getCssFilesRecursive(dir: string): string[] {
+  const results: string[] = [];
+  try {
+    const list = readdirSync(dir);
+    for (const file of list) {
+      const filePath = join(dir, file);
+      const stat = statSync(filePath);
+      if (stat.isDirectory()) {
+        if (
+          file !== "node_modules" &&
+          file !== "dist" &&
+          file !== ".git" &&
+          file !== "scratch" &&
+          file !== "wasm"
+        ) {
+          results.push(...getCssFilesRecursive(filePath));
+        }
+      } else if (file.endsWith(".css") || file.endsWith(".scss")) {
+        results.push(filePath);
+      }
+    }
+  } catch {
+    // ignore missing dir
+  }
+  return results;
+}
+
+function collectAllCssDefinitions(cssFiles: string[]): Set<string> {
+  const defined = new Set<string>();
+  const defRegex = /(--[\w-]+)\s*:/g;
+
+  for (const filePath of cssFiles) {
+    const content = readFileSync(filePath, "utf-8");
+    let match = defRegex.exec(content);
+    while (match !== null) {
+      if (match[1]) {
+        defined.add(match[1]);
+      }
+      match = defRegex.exec(content);
+    }
+  }
+  return defined;
+}
+
+const COLOR_VALUE_REGEX =
+  /(#[0-9a-fA-F]{3,8}\b|\brgba?\([^)]+\)|\bhsla?\([^)]+\))/;
+
+function lintCssFile(
+  filePath: string,
+  globalDefinedVars: Set<string>,
+): LintIssue[] {
+  const issues: LintIssue[] = [];
+  const content = readFileSync(filePath, "utf-8");
+  const lines = content.split("\n");
+  const isVariablesCssFile = filePath.endsWith("variables.css");
+
+  const localDefs = new Set<string>();
+  const defRegex = /(--[\w-]+)\s*:/g;
+  let defMatch = defRegex.exec(content);
+  while (defMatch !== null) {
+    if (defMatch[1]) {
+      localDefs.add(defMatch[1]);
+    }
+    defMatch = defRegex.exec(content);
+  }
+
+  const varUsageRegex = /var\(\s*(--[\w-]+)(\s*,\s*[^)]+)?\)/g;
+
+  lines.forEach((rawLineText, idx) => {
+    const lineNum = idx + 1;
+    // Strip CSS comments (e.g., /* ... */ or // ...) to avoid false positive lint triggers
+    const lineText = rawLineText
+      .replace(/\/\*[\s\S]*?\*\//g, "")
+      .replace(/\/\/.*/g, "");
+
+    // Rule: No hardcoded color variable definitions outside variables.css
+    if (!isVariablesCssFile) {
+      const colorDefMatch = /(--[\w-]+)\s*:\s*([^;]+);/.exec(lineText);
+      if (colorDefMatch && colorDefMatch[1] && colorDefMatch[2]) {
+        const varName = colorDefMatch[1];
+        const varValue = colorDefMatch[2];
+        if (COLOR_VALUE_REGEX.test(varValue)) {
+          issues.push({
+            filePath,
+            line: lineNum,
+            column: lineText.indexOf(varName) + 1,
+            ruleId: "css-no-local-color-var",
+            message: `[CSS Rule] Defining color variables outside 'variables.css' is forbidden ('${varName}: ${varValue.trim()}'). Move color tokens to 'variables.css'.`,
+          });
+        }
+      }
+
+      // Rule: No hardcoded color values in property declarations outside variables.css
+      const propColorMatch = /^\s*([\w-]+)\s*:\s*([^;]+);/.exec(lineText);
+      if (propColorMatch && propColorMatch[1] && propColorMatch[2]) {
+        const propName = propColorMatch[1];
+        const propVal = propColorMatch[2].trim();
+        if (
+          !propName.startsWith("--") &&
+          !propVal.includes("data:image/svg+xml")
+        ) {
+          const rawColorMatch = propVal.match(
+            /#(?:[0-9a-fA-F]{3,4}){1,2}\b|\brgba?\([^)]+\)|\bhsla?\([^)]+\)/g,
+          );
+          if (rawColorMatch && rawColorMatch.length > 0) {
+            issues.push({
+              filePath,
+              line: lineNum,
+              column: lineText.indexOf(propName) + 1,
+              ruleId: "css-no-hardcoded-color",
+              message: `[CSS Rule] Hardcoded color '${rawColorMatch.join(", ")}' in '${propName}' is forbidden. Use design tokens (e.g. var(--white), var(--primary)...).`,
+            });
+          }
+        }
+      }
+
+      // Rule: No hardcoded z-index values outside variables.css
+      const zIndexMatch = /\bz-index\s*:\s*([^;]+);/.exec(lineText);
+      if (zIndexMatch && zIndexMatch[1]) {
+        const zVal = zIndexMatch[1].trim();
+        if (
+          !zVal.includes("var(") &&
+          !zVal.includes("auto") &&
+          !zVal.includes("inherit") &&
+          !zVal.includes("unset")
+        ) {
+          issues.push({
+            filePath,
+            line: lineNum,
+            column: lineText.indexOf("z-index") + 1,
+            ruleId: "css-no-hardcoded-z-index",
+            message: `[CSS Rule] Hardcoded z-index '${zVal}' is forbidden. Use design tokens (e.g. var(--z-base|header|dropdown|modal|toast|max)).`,
+          });
+        }
+      }
+
+      // Rule: No hardcoded transition values or raw un-tokenized durations outside variables.css
+      const transitionMatch = /\btransition\s*:\s*([^;]+);/.exec(lineText);
+      if (transitionMatch && transitionMatch[1]) {
+        const transVal = transitionMatch[1].trim();
+        // Remove valid var(...) design tokens from string to check if raw durations remain
+        const cleanedVal = transVal.replace(/var\([^)]+\)/g, "").trim();
+        const rawTimeMatches = cleanedVal.match(/\b\d+(\.\d+)?(s|ms)\b/g);
+
+        if (rawTimeMatches && rawTimeMatches.length > 0) {
+          issues.push({
+            filePath,
+            line: lineNum,
+            column: lineText.indexOf("transition") + 1,
+            ruleId: "css-no-hardcoded-transition-duration",
+            message: `[CSS Rule] Hardcoded transition duration '${transVal}' (${rawTimeMatches.join(", ")}) is forbidden. Use transition tokens (e.g. var(--transition-fast), var(--transition-normal), var(--transition-colors)).`,
+          });
+        } else if (
+          transVal.includes("background-color var(--transition-") &&
+          transVal.includes("color var(--transition-")
+        ) {
+          issues.push({
+            filePath,
+            line: lineNum,
+            column: lineText.indexOf("transition") + 1,
+            ruleId: "css-use-composite-transition-token",
+            message: `[CSS Rule] Verbose transition declaration '${transVal}' can be simplified using composite token var(--transition-colors) or var(--transition-colors-fast).`,
+          });
+        }
+      }
+
+      // Rule: No hardcoded border-radius values matching standard tokens
+      const radiusMatch = /\bborder-radius\s*:\s*([^;]+);/.exec(lineText);
+      if (radiusMatch && radiusMatch[1]) {
+        const val = radiusMatch[1].trim();
+        const pxMatches = val.match(/\b(?![01]px\b)\d+(\.\d+)?px\b/g);
+        if (pxMatches && pxMatches.length > 0) {
+          issues.push({
+            filePath,
+            line: lineNum,
+            column: lineText.indexOf("border-radius") + 1,
+            ruleId: "css-no-hardcoded-radius",
+            message: `[CSS Rule] Hardcoded border-radius '${val}' contains raw pixel value (${pxMatches.join(", ")}). Use design tokens (e.g. var(--radius-xs|sm|md|lg|full)).`,
+          });
+        }
+      }
+
+      // Rule: No hardcoded border width values or raw 1px solid var(...) declarations (Enforce border tokens)
+      const borderMatch =
+        /\bborder(-top|-right|-bottom|-left)?\s*:\s*([^;]+);/.exec(lineText);
+      if (borderMatch && borderMatch[2]) {
+        const val = borderMatch[2].trim();
+        const pxMatches = val.match(/\b(?![01]px\b)\d+(\.\d+)?px\b/g);
+        if (pxMatches && pxMatches.length > 0) {
+          issues.push({
+            filePath,
+            line: lineNum,
+            column: lineText.indexOf("border") + 1,
+            ruleId: "css-no-hardcoded-border-width",
+            message: `[CSS Rule] Hardcoded border '${val}' contains raw pixel width (${pxMatches.join(", ")}). Use border design tokens (e.g. var(--border-std), var(--border-width-medium|thick)).`,
+          });
+        } else if (
+          /^(1px\s+solid|var\(--border-width-[\w-]+\)\s+solid)\s+var\(/.test(
+            val,
+          )
+        ) {
+          issues.push({
+            filePath,
+            line: lineNum,
+            column: lineText.indexOf("border") + 1,
+            ruleId: "css-no-raw-1px-border",
+            message: `[CSS Rule] Un-tokenized border declaration '${val}' is forbidden. Use composite border design tokens (e.g. var(--border-std), var(--border-accent-warning-amber), var(--border-accent-lg-error)).`,
+          });
+        }
+      }
+
+      // Rule: No hardcoded box-shadow values containing raw px offsets/blur (excluding var(...) design tokens)
+      const shadowMatch = /\bbox-shadow\s*:\s*([^;]+);/.exec(lineText);
+      if (shadowMatch && shadowMatch[1]) {
+        const val = shadowMatch[1].trim();
+        // Remove var(...) tokens before scanning for hardcoded raw px
+        const cleanedVal = val.replace(/var\([^)]+\)/g, "");
+        const pxMatches = cleanedVal.match(/\b(?![01]px\b)\d+(\.\d+)?px\b/g);
+        if (pxMatches && pxMatches.length > 0) {
+          issues.push({
+            filePath,
+            line: lineNum,
+            column: lineText.indexOf("box-shadow") + 1,
+            ruleId: "css-no-hardcoded-box-shadow",
+            message: `[CSS Rule] Hardcoded box-shadow '${val}' contains raw pixel value (${pxMatches.join(", ")}). Use design tokens (e.g. var(--shadow-sm|card|large|modal-slide)).`,
+          });
+        }
+      }
+
+      // Rule: No hardcoded spacing values (margin, padding, gap)
+      const spacingMatch =
+        /\b(margin|padding|gap)(-top|-right|-bottom|-left)?\s*:\s*([^;]+);/.exec(
+          lineText,
+        );
+      if (spacingMatch && spacingMatch[3]) {
+        const val = spacingMatch[3].trim();
+        const pxMatches = val.match(/\b(?![01]px\b)\d+(\.\d+)?px\b/g);
+        if (pxMatches && pxMatches.length > 0) {
+          issues.push({
+            filePath,
+            line: lineNum,
+            column: lineText.indexOf(spacingMatch[1] ?? "") + 1,
+            ruleId: "css-no-hardcoded-spacing",
+            message: `[CSS Rule] Hardcoded spacing '${val}' contains raw pixel value (${pxMatches.join(", ")}). Use design tokens (e.g. var(--space-1|2|3|4|5|6|8)).`,
+          });
+        }
+      }
+
+      // Rule: No hardcoded font-size values outside variables.css
+      const fontSizeMatch = /\bfont-size\s*:\s*([^;]+);/.exec(lineText);
+      if (fontSizeMatch && fontSizeMatch[1]) {
+        const val = fontSizeMatch[1].trim();
+        // Flag any font-size using raw px, rem, or em numbers instead of var(--font-size-*)
+        if (
+          !val.startsWith("var(--font-size-") &&
+          !val.startsWith("inherit") &&
+          !val.startsWith("unset")
+        ) {
+          issues.push({
+            filePath,
+            line: lineNum,
+            column: lineText.indexOf("font-size") + 1,
+            ruleId: "css-no-hardcoded-font-size",
+            message: `[CSS Rule] Hardcoded font-size '${val}' is forbidden. Use design tokens (e.g. var(--font-size-10|11|12|13|14|15|16|18|20)).`,
+          });
+        }
+      }
+
+      // Rule: No hardcoded opacity values outside variables.css (excluding 0, 1, inherit, unset)
+      const opacityMatch = /\bopacity\s*:\s*([^;]+);/.exec(lineText);
+      if (opacityMatch && opacityMatch[1]) {
+        const val = opacityMatch[1].trim();
+        if (
+          !val.includes("var(") &&
+          val !== "0" &&
+          val !== "1" &&
+          val !== "inherit" &&
+          val !== "unset"
+        ) {
+          issues.push({
+            filePath,
+            line: lineNum,
+            column: lineText.indexOf("opacity") + 1,
+            ruleId: "css-no-hardcoded-opacity",
+            message: `[CSS Rule] Hardcoded opacity '${val}' is forbidden. Use opacity design tokens (e.g. var(--opacity-disabled|disabled-subtle|subtle|muted|medium|hover)).`,
+          });
+        }
+      }
+    }
+
+    let useMatch = varUsageRegex.exec(lineText);
+    while (useMatch !== null) {
+      const varName = useMatch[1];
+      const hasFallback = Boolean(useMatch[2]);
+      const col = useMatch.index + 1;
+
+      if (varName) {
+        const isDeclared =
+          globalDefinedVars.has(varName) ||
+          localDefs.has(varName) ||
+          DYNAMIC_CSS_VAR_WHITELIST.has(varName);
+
+        if (!isDeclared) {
+          issues.push({
+            filePath,
+            line: lineNum,
+            column: col,
+            ruleId: "css-undeclared-var",
+            message: `[CSS Rule] Undeclared CSS variable '${varName}'. Define it in 'variables.css' or local CSS file.`,
+          });
+        }
+
+        if (globalDefinedVars.has(varName) && hasFallback) {
+          issues.push({
+            filePath,
+            line: lineNum,
+            column: col,
+            ruleId: "css-redundant-fallback",
+            message: `[CSS Rule] Redundant fallback in 'var(${varName}, ...)'. Variable is already standardized in global design tokens.`,
+          });
+        }
+      }
+
+      useMatch = varUsageRegex.exec(lineText);
+    }
+  });
+
+  return issues;
+}
+
 function runLinter() {
-  console.log("🔍 Running Custom AST Linter...");
+  console.log("🔍 Running Custom AST & CSS Linter...");
   const rootDirs = ["packages", "apps"];
-  const allFiles: string[] = [];
+  const allTsFiles: string[] = [];
+  const allCssFiles: string[] = [];
 
   for (const dir of rootDirs) {
     const fullDir = resolve(dir);
-    allFiles.push(...getFilesRecursive(fullDir));
+    allTsFiles.push(...getFilesRecursive(fullDir));
+    allCssFiles.push(...getCssFilesRecursive(fullDir));
   }
+
+  const globalCssDefs = collectAllCssDefinitions(allCssFiles);
 
   let totalIssues = 0;
   const issuesByFile = new Map<string, LintIssue[]>();
 
-  for (const file of allFiles) {
+  // Lint TypeScript / TSX files
+  for (const file of allTsFiles) {
     const issues = lintFile(file);
     if (issues.length > 0) {
       totalIssues += issues.length;
       issuesByFile.set(file, issues);
+    }
+  }
+
+  // Lint CSS / SCSS files
+  for (const file of allCssFiles) {
+    const cssIssues = lintCssFile(file, globalCssDefs);
+    if (cssIssues.length > 0) {
+      totalIssues += cssIssues.length;
+      const existing = issuesByFile.get(file) ?? [];
+      issuesByFile.set(file, [...existing, ...cssIssues]);
     }
   }
 
@@ -646,7 +994,9 @@ function runLinter() {
     console.error("\n💥 Linting failed!");
     process.exit(1);
   } else {
-    console.log(`✓ Lint passed clean across ${allFiles.length} file(s).`);
+    console.log(
+      `✓ Lint passed clean across ${allTsFiles.length} TS file(s) and ${allCssFiles.length} CSS file(s).`,
+    );
   }
 }
 

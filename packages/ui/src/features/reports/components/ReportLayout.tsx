@@ -53,28 +53,32 @@ export function ReportLayout<T>(props: ReportLayoutProps<T>): JSX.Element {
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: #0f172a; color: #f8fafc; padding: 30px; margin: 0; }
-    .container { max-width: 800px; margin: 0 auto; background-color: #1e293b; border: 1px solid #334155; border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #334155; padding-bottom: 16px; margin-bottom: 20px; }
-    .title { font-size: 20px; font-weight: bold; color: #38bdf8; margin: 0; }
-    .meta { font-size: 12px; color: #94a3b8; }
-    .summary { background-color: rgba(239, 68, 68, 0.15); border: 1px solid #ef4444; border-radius: 8px; padding: 12px 16px; color: #fca5a5; font-weight: bold; margin-bottom: 20px; }
+    body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background-color: var(--bg, #0f172b); color: var(--text, #f7f9fa); padding: 30px; margin: 0; }
+    .container { max-width: 800px; margin: 0 auto; background-color: var(--surface, #1d293d); border: 1px solid var(--border, #314158); border-radius: 12px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+    .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border, #314158); padding-bottom: 16px; margin-bottom: 20px; }
+    .title { font-size: 20px; font-weight: bold; color: var(--primary-accent, #65abff); margin: 0; }
+    .meta { font-size: 12px; color: var(--text-muted, #8496b0); }
+    .summary { background-color: var(--error-translucent-15, rgba(255, 78, 99, 0.15)); border: 1px solid var(--error-translucent-30, rgba(255, 78, 99, 0.3)); border-radius: 8px; padding: 12px 16px; color: var(--error, #ff4e63); font-weight: bold; margin-bottom: 20px; }
     table { width: 100%; border-collapse: collapse; text-align: left; }
-    th { padding: 10px; border-bottom: 2px solid #334155; color: #94a3b8; font-size: 12px; text-transform: uppercase; }
-    .footer { margin-top: 24px; text-align: center; font-size: 12px; color: #64748b; }
+    th { padding: 10px; border-bottom: 2px solid var(--border, #314158); color: var(--text-muted, #8496b0); font-size: 12px; text-transform: uppercase; }
+    .footer { margin-top: 24px; text-align: center; font-size: 12px; color: var(--text-muted, #8496b0); }
   </style>
 </head>
 <body>
   <div class="container">
     <div class="header">
       <div>
-        <h1 class="title">${t("report_export_heading")}</h1>
+        <h1 class="title" style="display: flex; align-items: center; gap: 8px;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/></svg>
+          ${t("report_export_heading")}
+        </h1>
         <div class="meta">${t("report_export_meta")}</div>
       </div>
       <div class="meta">${dateStr}</div>
     </div>
-    <div class="summary">
-      ${t("report_export_summary").replace("{count}", results.length.toString())}
+    <div class="summary" style="display: flex; align-items: center; gap: 8px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+      <span>${t("report_export_summary").replace("{count}", results.length.toString())}</span>
     </div>
     <table>
       <thead>

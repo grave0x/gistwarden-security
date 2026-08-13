@@ -5,12 +5,12 @@
   padding: var(--space-2) var(--space-4);
   font-family: inherit;
   font-weight: 500;
-  font-size: 13px;
+  font-size: var(--font-size-13);
   border-radius: var(--radius-sm);
   border: none;
   cursor: pointer;
   outline: none;
-  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+  transition: var(--transition-colors), var(--transition-transform);
   gap: var(--space-2);
 
   svg {
@@ -27,7 +27,7 @@
   }
 
   &:disabled {
-    opacity: 0.6;
+    opacity: var(--opacity-muted);
     cursor: not-allowed;
 
     &:active {
@@ -46,7 +46,7 @@
 
   &.btn-outline-primary {
     background-color: transparent;
-    border: 1px solid var(--primary);
+    border: var(--border-std-primary);
     color: var(--primary-accent);
 
     &:hover:not(:disabled) {
@@ -58,7 +58,7 @@
 
   &.btn-secondary {
     background-color: transparent;
-    border: 1px solid var(--border);
+    border: var(--border-std);
     color: var(--text);
 
     &:hover:not(:disabled) {
@@ -76,8 +76,8 @@
   }
 
   &.btn-sm {
-    padding: 5px 10px;
-    font-size: 12px;
+    padding: var(--space-1-25) var(--space-2-5);
+    font-size: var(--font-size-12);
     border-radius: var(--radius-xs);
   }
 
@@ -87,7 +87,7 @@
 }
 
 .action-btn {
-  padding: 6px;
+  padding: var(--space-1-5);
   background: transparent;
   border: none;
   color: var(--text-muted);

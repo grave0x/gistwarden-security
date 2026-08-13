@@ -1,16 +1,16 @@
 .app-header {
-  background-color: #0b101f;
+  background-color: var(--header-dark-bg);
   color: var(--white);
-  padding: 0 16px;
+  padding: 0 var(--space-4);
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 48px;
   flex-shrink: 0;
-  border-bottom: 1px solid var(--border);
+  border-bottom: var(--border-std);
 
   .header-title {
-    font-size: 18px;
+    font-size: var(--font-size-18);
     font-weight: 600;
     color: var(--white);
     margin: 0;
@@ -20,7 +20,7 @@
   .header-actions {
     display: flex;
     align-items: center;
-    gap: 16px;
+    gap: var(--space-4);
 
     .add-menu-container {
       position: relative;
@@ -29,19 +29,19 @@
     .header-btn-new {
       display: flex;
       align-items: center;
-      gap: 6px;
-      background-color: #5b9cf4;
+      gap: var(--space-1-5);
+      background-color: var(--btn-new-bg);
       border: none;
-      color: #0c1322;
-      font-size: 13px;
+      color: var(--btn-new-color);
+      font-size: var(--font-size-13);
       font-weight: 600;
-      padding: 6px 14px;
-      border-radius: 6px;
+      padding: var(--space-1-5) var(--space-3-5);
+      border-radius: var(--radius-sm);
       cursor: pointer;
-      transition: background-color 0.2s ease;
+      transition: var(--transition-colors);
 
       &:hover {
-        background-color: #4a8be3;
+        background-color: var(--btn-new-hover-bg);
       }
 
       svg {
@@ -60,8 +60,8 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 4px;
-      transition: color 0.2s ease;
+      padding: var(--space-1);
+      transition: color var(--transition-normal);
 
       &:hover {
         color: var(--white);
@@ -83,21 +83,21 @@
       width: 28px;
       height: 28px;
       border-radius: 50%;
-      background-color: #7b1fa2;
+      background-color: var(--avatar-bg);
       color: var(--white);
       border: none;
-      font-size: 12px;
+      font-size: var(--font-size-12);
       font-weight: 700;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       text-transform: uppercase;
-      transition: opacity 0.2s ease;
+      transition: opacity var(--transition-normal);
       overflow: hidden;
 
       &:hover {
-        opacity: 0.9;
+        opacity: var(--opacity-hover);
       }
 
       &.has-image {
@@ -124,8 +124,8 @@
     }
 
     .profile-info {
-      padding: 6px 12px;
-      font-size: 12px;
+      padding: var(--space-1-5) var(--space-3);
+      font-size: var(--font-size-12);
       color: var(--text-muted);
       word-break: break-all;
 
@@ -133,29 +133,29 @@
         display: block;
         font-weight: 600;
         color: var(--text);
-        margin-bottom: 2px;
+        margin-bottom: var(--space-0-5);
       }
     }
 
     .dropdown-divider {
       height: 1px;
-      background-color: var(--border-light, var(--border));
-      margin: 6px 0;
+      background-color: var(--border-light);
+      margin: var(--space-1-5) 0;
     }
 
     .dropdown-item {
       display: flex;
       align-items: center;
-      gap: 10px;
+      gap: var(--space-2-5);
       width: 100%;
-      padding: 8px 12px;
+      padding: var(--space-2) var(--space-3);
       background: none;
       border: none;
       color: var(--text);
-      font-size: 13px;
+      font-size: var(--font-size-13);
       text-align: left;
       cursor: pointer;
-      transition: background-color 0.2s ease;
+      transition: var(--transition-colors);
 
       &:hover {
         background-color: var(--hover-bg);
@@ -180,13 +180,13 @@
 .app-header .header-actions .profile-dropdown {
   position: absolute;
   top: 100%;
-  margin-top: 8px;
+  margin-top: var(--space-2);
   background-color: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 6px;
+  border: var(--border-std);
+  border-radius: var(--radius-sm);
   box-shadow: var(--shadow-dropdown);
-  z-index: 1000;
-  padding: 6px 0;
+  z-index: var(--z-sticky);
+  padding: var(--space-1-5) 0;
   display: flex;
   flex-direction: column;
   min-width: 140px;
@@ -195,19 +195,19 @@
 body.light-theme {
   .app-header {
     background-color: var(--header-bg);
-    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    border-bottom: var(--border-std-light);
 
     .header-btn-new {
-      background-color: rgba(255, 255, 255, 0.2);
+      background-color: var(--white-translucent-20);
       color: var(--white);
 
       &:hover {
-        background-color: rgba(255, 255, 255, 0.3);
+        background-color: var(--white-translucent-30);
       }
     }
 
     .header-icon-btn {
-      color: rgba(255, 255, 255, 0.75);
+      color: var(--white-translucent-75);
 
       &:hover {
         color: var(--white);
@@ -215,7 +215,7 @@ body.light-theme {
     }
 
     .profile-avatar-btn {
-      background-color: #8e24aa;
+      background-color: var(--avatar-bg-light);
       color: var(--white);
     }
   }

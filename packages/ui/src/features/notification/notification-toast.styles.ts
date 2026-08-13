@@ -21,11 +21,11 @@ export const notificationToastCss = `
   pointer-events: auto;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-  color: #f8fafc;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  border-left: 4px solid #3b82f6;
-  border-radius: 12px;
+  background: linear-gradient(135deg, var(--surface-card, #232f45) 0%, var(--bg, #0f172b) 100%);
+  color: var(--white, #f1f5f9);
+  border: 1px solid var(--border-translucent, rgba(255, 255, 255, 0.12));
+  border-left: 4px solid var(--primary, #175ddc);
+  border-radius: var(--radius-lg, 12px);
   box-shadow: 0 12px 28px -4px rgba(0, 0, 0, 0.45), 0 4px 10px -2px rgba(0, 0, 0, 0.25);
   padding: 16px;
   padding-bottom: 20px;
@@ -70,21 +70,21 @@ export const notificationToastCss = `
 }
 
 .header-title {
-  font-size: 13px;
+  font-size: var(--font-size-13, 13px);
   font-weight: 600;
-  color: #94a3b8;
+  color: var(--text-muted, #8496b0);
 }
 
 .close-btn {
   pointer-events: auto !important;
   background: transparent;
   border: none;
-  color: #94a3b8;
+  color: var(--text-muted, #8496b0);
   font-size: 22px;
   cursor: pointer !important;
   line-height: 1;
   padding: 2px 6px;
-  border-radius: 4px;
+  border-radius: var(--radius-xs, 4px);
   transition: color 0.15s ease, background-color 0.15s ease;
   user-select: none;
   -webkit-user-select: none;
@@ -92,20 +92,20 @@ export const notificationToastCss = `
 }
 
 .close-btn:hover {
-  color: #f1f5f9;
-  background-color: rgba(255, 255, 255, 0.08);
+  color: var(--white, #f1f5f9);
+  background-color: var(--white-translucent-5, rgba(255, 255, 255, 0.08));
 }
 
 .body-content {
-  font-size: 14px;
+  font-size: var(--font-size-14, 14px);
   line-height: 1.5;
-  color: #e2e8f0;
+  color: var(--text, #f1f5f9);
   word-break: break-word;
 }
 
 .user-highlight {
   font-weight: 700;
-  color: #60a5fa;
+  color: var(--primary-accent, #65abff);
 }
 
 .select-label {
@@ -120,7 +120,7 @@ export const notificationToastCss = `
   max-height: 180px;
   overflow-y: auto;
   scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+  scrollbar-color: var(--white-translucent-20, rgba(255, 255, 255, 0.2)) transparent;
 }
 
 .accounts-list::-webkit-scrollbar {
@@ -133,13 +133,13 @@ export const notificationToastCss = `
 }
 
 .accounts-list::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 4px;
+  background: var(--white-translucent-20, rgba(255, 255, 255, 0.2));
+  border-radius: var(--radius-xs, 4px);
   transition: background 0.2s ease;
 }
 
 .accounts-list::-webkit-scrollbar-thumb:hover {
-  background: rgba(255, 255, 255, 0.4);
+  background: var(--white-translucent-30, rgba(255, 255, 255, 0.4));
 }
 
 .account-item {
@@ -147,16 +147,16 @@ export const notificationToastCss = `
   align-items: center;
   justify-content: space-between;
   padding: 8px 10px;
-  background: rgba(255, 255, 255, 0.06);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
+  background: var(--white-translucent-5, rgba(255, 255, 255, 0.06));
+  border: 1px solid var(--border-translucent, rgba(255, 255, 255, 0.1));
+  border-radius: var(--radius-md, 8px);
   cursor: pointer;
   transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .account-item:hover {
-  background: rgba(59, 130, 246, 0.2);
-  border-color: rgba(59, 130, 246, 0.5);
+  background: var(--primary-translucent-20, rgba(23, 93, 220, 0.2));
+  border-color: var(--primary-accent, rgba(101, 171, 255, 0.5));
 }
 
 .account-info {
@@ -168,9 +168,9 @@ export const notificationToastCss = `
 }
 
 .account-name-sub {
-  font-size: 11px;
+  font-size: var(--font-size-11, 11px);
   font-weight: 500;
-  color: #94a3b8;
+  color: var(--text-muted, #8496b0);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -178,32 +178,32 @@ export const notificationToastCss = `
 
 .account-user {
   font-weight: 600;
-  font-size: 13px;
-  color: #f1f5f9;
+  font-size: var(--font-size-13, 13px);
+  color: var(--white, #f1f5f9);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
 .btn-fill-small {
-  background: #2563eb;
-  color: #ffffff;
+  background: var(--primary, #175ddc);
+  color: var(--white, #f1f5f9);
   border: none;
-  border-radius: 4px;
+  border-radius: var(--radius-xs, 4px);
   padding: 4px 10px;
-  font-size: 12px;
+  font-size: var(--font-size-12, 12px);
   font-weight: 600;
   cursor: pointer;
   white-space: nowrap;
 }
 
 .btn-fill-small:hover {
-  background: #3b82f6;
+  background: var(--primary-hover, #0d43af);
 }
 
 .domain-subtext {
-  font-size: 12px;
-  color: #64748b;
+  font-size: var(--font-size-12, 12px);
+  color: var(--text-muted, #8496b0);
   margin-top: 2px;
 }
 
@@ -217,9 +217,9 @@ export const notificationToastCss = `
 
 .btn {
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius-sm, 6px);
   padding: 8px 16px;
-  font-size: 13px;
+  font-size: var(--font-size-13, 13px);
   font-weight: 600;
   cursor: pointer;
   transition: transform 0.1s ease, background-color 0.15s ease, box-shadow 0.15s ease;
@@ -230,15 +230,15 @@ export const notificationToastCss = `
 }
 
 .btn-primary {
-  background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-  color: #ffffff;
-  box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3);
+  background: var(--primary, #175ddc);
+  color: var(--white, #f1f5f9);
+  box-shadow: 0 2px 6px var(--primary-translucent-20, rgba(23, 93, 220, 0.3));
   width: 100%;
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-  box-shadow: 0 4px 10px rgba(37, 99, 235, 0.4);
+  background: var(--primary-hover, #0d43af);
+  box-shadow: 0 4px 10px var(--primary-translucent-20, rgba(23, 93, 220, 0.4));
 }
 
 .progress-bar {
@@ -247,7 +247,7 @@ export const notificationToastCss = `
   left: 0;
   height: 3px;
   width: 100%;
-  background: linear-gradient(90deg, #3b82f6 0%, #60a5fa 100%);
+  background: linear-gradient(90deg, var(--primary, #175ddc) 0%, var(--primary-accent, #65abff) 100%);
   transform-origin: left center;
   animation: gw-progress 5s linear forwards;
 }

@@ -2,18 +2,18 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
+  padding: var(--space-2-5) var(--space-3-5);
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 8px var(--shadow-2);
+  border: var(--border-std);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-3);
+  box-shadow: var(--shadow-sm);
 
   .trash-count-info {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 12.5px;
+    gap: var(--space-2);
+    font-size: var(--font-size-13);
     font-weight: 500;
     color: var(--text-muted);
     white-space: nowrap;
@@ -25,32 +25,32 @@
       background: var(--error-translucent-15);
       color: var(--error);
       font-weight: 700;
-      font-size: 11.5px;
-      padding: 2px 8px;
-      border-radius: 12px;
+      font-size: var(--font-size-12);
+      padding: var(--space-0-5) var(--space-2);
+      border-radius: var(--radius-lg);
     }
   }
 
   .btn-purge-all {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
-    padding: 6px 12px;
-    font-size: 12px;
+    gap: var(--space-1-5);
+    padding: var(--space-1-5) var(--space-3);
+    font-size: var(--font-size-12);
     font-weight: 600;
     white-space: nowrap;
-    border-radius: 6px;
-    border: 1px solid rgba(255, 78, 99, 0.4);
+    border-radius: var(--radius-sm);
+    border: var(--border-std-error-soft);
     color: var(--error);
     background: var(--error-translucent-15);
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: all var(--transition-normal);
 
     &:hover {
       background: var(--error);
-      color: #ffffff;
+      color: var(--white);
       border-color: var(--error);
-      box-shadow: 0 2px 8px rgba(255, 78, 99, 0.3);
+      box-shadow: var(--shadow-sm);
     }
 
     svg {
@@ -63,18 +63,18 @@
 
 .trash-list-card {
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border: var(--border-std);
+  border-radius: var(--radius-md);
   overflow: hidden;
-  box-shadow: 0 4px 12px var(--shadow-4);
+  box-shadow: var(--shadow-md);
 
   .trash-item-row {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 14px;
-    border-bottom: 1px solid var(--border);
-    transition: background-color 0.15s ease;
+    padding: var(--space-3) var(--space-3-5);
+    border-bottom: var(--border-std);
+    transition: var(--transition-colors-fast);
 
     &:last-child {
       border-bottom: none;
@@ -87,7 +87,7 @@
     .trash-item-icon {
       width: 36px;
       height: 36px;
-      border-radius: 8px;
+      border-radius: var(--radius-md);
       background: var(--primary-translucent-10);
       color: var(--primary-accent);
       display: flex;
@@ -105,17 +105,17 @@
     .trash-item-meta {
       flex: 1;
       min-width: 0;
-      margin: 0 12px;
+      margin: 0 var(--space-3);
 
       .trash-item-title {
         font-weight: 600;
-        font-size: 13.5px;
+        font-size: var(--font-size-14);
         color: var(--text);
-        margin-bottom: 2px;
+        margin-bottom: var(--space-0-5);
       }
 
       .trash-item-date {
-        font-size: 11px;
+        font-size: var(--font-size-11);
         color: var(--text-muted);
       }
     }
@@ -123,28 +123,28 @@
     .trash-item-actions {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: var(--space-1-5);
       flex-shrink: 0;
 
       .btn-restore {
         display: inline-flex;
         align-items: center;
-        gap: 5px;
-        padding: 5px 11px;
-        font-size: 12px;
+        gap: var(--space-1-25);
+        padding: var(--space-1-25) var(--space-2-75);
+        font-size: var(--font-size-12);
         font-weight: 600;
         white-space: nowrap;
-        border-radius: 6px;
-        border: 1px solid var(--primary-accent);
+        border-radius: var(--radius-sm);
+        border: var(--border-std-primary-accent);
         color: var(--primary-accent);
         background: var(--primary-translucent-10);
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all var(--transition-normal);
 
         &:hover {
           background: var(--primary);
           border-color: var(--primary);
-          color: #ffffff;
+          color: var(--white);
         }
 
         svg {
@@ -158,14 +158,14 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        padding: 6px 9px;
-        font-size: 12px;
-        border-radius: 6px;
-        border: 1px solid var(--border);
+        padding: var(--space-1-5) var(--space-2-25);
+        font-size: var(--font-size-12);
+        border-radius: var(--radius-sm);
+        border: var(--border-std);
         color: var(--text-muted);
         background: transparent;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all var(--transition-normal);
 
         &:hover {
           border-color: var(--error);
@@ -188,42 +188,42 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  padding: 48px 24px;
+  padding: var(--space-12) var(--space-6);
   background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: 10px;
+  border: var(--border-std);
+  border-radius: var(--radius-md-lg);
   text-align: center;
-  box-shadow: 0 4px 12px var(--shadow-2);
+  box-shadow: var(--shadow-md);
 
   .empty-icon-wrap {
     width: 60px;
     height: 60px;
     border-radius: 50%;
     background: var(--hover-bg);
-    border: 1px solid var(--border);
+    border: var(--border-std);
     display: flex;
     align-items: center;
     justify-content: center;
     color: var(--text-muted);
-    margin-bottom: 14px;
+    margin-bottom: var(--space-3-5);
 
     svg {
       width: 26px;
       height: 26px;
       fill: currentColor;
-      opacity: 0.6;
+      opacity: var(--opacity-muted);
     }
   }
 
   .empty-title {
-    font-size: 15px;
+    font-size: var(--font-size-15);
     font-weight: 600;
     color: var(--text);
-    margin-bottom: 4px;
+    margin-bottom: var(--space-1);
   }
 
   .empty-sub {
-    font-size: 12px;
+    font-size: var(--font-size-12);
     color: var(--text-muted);
     max-width: 240px;
   }

@@ -4,11 +4,11 @@
   left: 0;
   width: 100%;
   height: 100%;
-  z-index: 9999;
+  z-index: var(--z-modal);
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  background: rgba(0, 0, 0, 0.55);
+  background: var(--overlay-bg);
   will-change: opacity;
   animation: fadeIn 0.2s ease-out forwards;
 
@@ -22,13 +22,13 @@
 
   .modal-slide-panel {
     background-color: var(--surface);
-    border-top: 1px solid var(--border);
+    border-top: var(--border-std);
     border-top-left-radius: var(--radius-lg);
     border-top-right-radius: var(--radius-lg);
     width: 100%;
     max-width: 480px;
     max-height: 85%;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+    box-shadow: var(--shadow-modal-slide);
     padding: var(--space-4);
     display: flex;
     flex-direction: column;
@@ -46,7 +46,7 @@
       margin-bottom: var(--space-4);
 
       .modal-panel-title {
-        font-size: 15px;
+        font-size: var(--font-size-15);
         font-weight: 600;
         color: var(--text);
       }
@@ -55,7 +55,7 @@
         background: none;
         border: none;
         color: var(--text-muted);
-        font-size: 24px;
+        font-size: var(--font-size-24);
         cursor: pointer;
         line-height: 1;
         padding: var(--space-1);
@@ -100,7 +100,7 @@
           min-width: 80px;
           height: 36px;
           padding: 0 var(--space-4);
-          font-size: 13px;
+          font-size: var(--font-size-13);
           border-radius: var(--radius-sm);
         }
       }
@@ -119,7 +119,7 @@
         cursor: pointer;
         margin-left: auto;
         color: var(--error);
-        transition: background-color 0.2s, opacity 0.2s;
+        transition: var(--transition-colors), opacity var(--transition-normal);
 
         &:hover {
           background-color: var(--hover-bg);
@@ -174,7 +174,7 @@
 @media (min-width: 520px) {
   .modal-overlay.bottom-slide {
     .modal-slide-panel {
-      border: 1px solid var(--border);
+      border: var(--border-std);
       border-bottom: none;
     }
   }

@@ -99,10 +99,10 @@ export const ReportExposed: Component = () => {
           .map(
             (res) => `
         <tr>
-          <td style="padding: 10px; border-bottom: 1px solid #334155; font-weight: bold; color: #f8fafc;">${res.item.name}</td>
-          <td style="padding: 10px; border-bottom: 1px solid #334155; color: #94a3b8;">${formatVaultItemUsername(res.item)}</td>
-          <td style="padding: 10px; border-bottom: 1px solid #334155;">
-            <span style="background: rgba(239, 68, 68, 0.2); color: #fca5a5; border: 1px solid rgba(239, 68, 68, 0.4); padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">
+          <td style="padding: 10px; border-bottom: 1px solid var(--border, #314158); font-weight: bold; color: var(--text, #f7f9fa);">${res.item.name}</td>
+          <td style="padding: 10px; border-bottom: 1px solid var(--border, #314158); color: var(--text-muted, #8496b0);">${formatVaultItemUsername(res.item)}</td>
+          <td style="padding: 10px; border-bottom: 1px solid var(--border, #314158);">
+            <span style="background: var(--error-translucent-15, rgba(255, 78, 99, 0.15)); color: var(--error, #ff4e63); border: 1px solid var(--error-translucent-30, rgba(255, 78, 99, 0.3)); padding: 3px 8px; border-radius: 4px; font-size: 12px; font-weight: bold;">
               ${t("report_exposed_times").replace("{count}", res.count.toLocaleString())}
             </span>
           </td>

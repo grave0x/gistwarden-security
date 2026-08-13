@@ -12,24 +12,24 @@
   right: 16px;
   display: flex;
   align-items: center;
-  gap: 4px;
-  background: rgba(255, 255, 255, 0.05);
-  padding: 4px 8px;
-  border-radius: 12px;
-  border: 1px solid var(--border);
+  gap: var(--space-1);
+  background: var(--white-translucent-5);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-lg);
+  border: var(--border-std);
 
   .lang-toggle-btn {
     background: none;
     border: none;
-    font-size: 10px;
+    font-size: var(--font-size-10);
     font-weight: 700;
     color: var(--text-muted);
     cursor: pointer;
-    padding: 2px 4px;
-    transition: all 0.2s;
+    padding: var(--space-0-5) var(--space-1);
+    transition: all var(--transition-normal);
 
     &.active {
-      color: var(--primary-accent, var(--primary));
+      color: var(--primary-accent);
     }
 
     &:hover {
@@ -38,7 +38,7 @@
   }
 
   .lang-divider {
-    font-size: 10px;
+    font-size: var(--font-size-10);
     color: var(--border);
     user-select: none;
   }
@@ -47,22 +47,22 @@
 .login-header-logo {
   width: 48px;
   height: 48px;
-  margin: 0 auto 12px;
+  margin: 0 auto var(--space-3);
 }
 
 .login-brand-title {
   margin: 0;
-  font-size: 20px;
+  font-size: var(--font-size-20);
   font-weight: 700;
   letter-spacing: -0.5px;
 }
 
 .login-tabs {
   display: flex;
-  background: var(--white-translucent-4, rgba(255, 255, 255, 0.04));
+  background: var(--white-translucent-4);
   padding: var(--space-1);
   border-radius: var(--radius-lg);
-  border: 1px solid var(--border);
+  border: var(--border-std);
   gap: var(--space-1);
 
   .login-tab-btn {
@@ -88,7 +88,7 @@
     &.active {
       background: var(--primary);
       color: var(--white);
-      box-shadow: 0 2px 8px var(--primary-translucent-20);
+      box-shadow: var(--shadow-sm);
     }
   }
 }
@@ -106,24 +106,24 @@
 }
 
 .login-subtitle {
-  margin: 6px 0 0 0;
-  font-size: 13px;
+  margin: var(--space-1-5) 0 0 0;
+  font-size: var(--font-size-13);
   color: var(--text-muted);
 }
 
 .login-pat-help {
-  font-size: 11px;
+  font-size: var(--font-size-11);
   color: var(--text-muted);
   display: block;
-  margin-top: 6px;
+  margin-top: var(--space-1-5);
   line-height: 1.4;
 }
 
 .login-oauth-help {
-  font-size: 12px;
+  font-size: var(--font-size-12);
   color: var(--text-muted);
   line-height: 1.5;
-  margin-bottom: 16px;
+  margin-bottom: var(--space-4);
   text-align: left;
 }
 
@@ -131,16 +131,16 @@
   width: 16px;
   height: 16px;
   fill: currentColor;
-  margin-right: 8px;
+  margin-right: var(--space-2);
   vertical-align: middle;
   display: inline-block;
 }
 
 .forgot-pass-link {
   color: var(--text-muted);
-  font-size: 11.5px;
+  font-size: var(--font-size-12);
   text-decoration: underline;
-  transition: color 0.2s;
+  transition: color var(--transition-normal);
 
   &:hover {
     color: var(--primary);
@@ -152,15 +152,15 @@
   align-items: center;
   text-align: center;
   color: var(--text-muted);
-  font-size: 11px;
-  margin: 12px 0;
+  font-size: var(--font-size-11);
+  margin: var(--space-3) 0;
   user-select: none;
 
   span {
-    padding: 0 8px;
+    padding: 0 var(--space-2);
     text-transform: uppercase;
     font-weight: 600;
-    font-size: 10px;
+    font-size: var(--font-size-10);
     letter-spacing: 0.5px;
   }
 }
@@ -169,29 +169,29 @@
 .login-or-divider::after {
   content: "";
   flex: 1;
-  border-bottom: 1px solid var(--border-light, var(--border));
+  border-bottom: var(--border-std-light);
 }
 
 .local-vault-must-read-banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 14px;
-  background: rgba(255, 171, 0, 0.08);
-  border: 1px solid rgba(255, 171, 0, 0.3);
-  border-left: 3.5px solid #ffab00;
-  border-radius: 10px;
+  padding: var(--space-2-5) var(--space-3-5);
+  background: var(--warning-amber-bg);
+  border: var(--border-std-warning);
+  border-left: var(--border-accent-warning-amber);
+  border-radius: var(--radius-md-lg);
 
   .must-read-text {
-    font-size: 12px;
+    font-size: var(--font-size-12);
     font-weight: 600;
     color: var(--text);
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--space-1-5);
 
     .must-read-icon {
-      color: #ffab00;
+      color: var(--warning-amber);
       flex-shrink: 0;
     }
   }
@@ -199,10 +199,10 @@
   .must-read-link-group {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--space-1-5);
 
     .must-read-label {
-      font-size: 11px;
+      font-size: var(--font-size-11);
       font-weight: 600;
       color: var(--text-muted);
     }
@@ -214,22 +214,22 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
-  background: var(--white-translucent-4, rgba(255, 255, 255, 0.04));
-  border: 1px solid var(--border);
+  padding: var(--space-2) var(--space-3);
+  background: var(--white-translucent-4);
+  border: var(--border-std);
   border-radius: var(--radius-md);
   margin-bottom: var(--space-4);
 
   .server-info-badge {
     display: flex;
     align-items: center;
-    gap: 8px;
-    font-size: 12px;
+    gap: var(--space-2);
+    font-size: var(--font-size-12);
     color: var(--text-muted);
     min-width: 0;
 
     .server-icon {
-      color: var(--primary-accent, var(--primary));
+      color: var(--primary-accent);
       flex-shrink: 0;
     }
 
@@ -249,25 +249,36 @@
     }
   }
 
-  .server-config-btn {
+  .server-actions-group {
     display: flex;
     align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    padding: 0;
-    background: transparent;
-    border: 1px solid transparent;
-    border-radius: var(--radius-sm);
-    color: var(--text-muted);
-    cursor: pointer;
-    transition: all 0.2s ease;
+    gap: var(--space-1);
     flex-shrink: 0;
 
-    &:hover {
-      color: var(--text);
-      background: var(--white-translucent-5);
-      border-color: var(--border);
+    .server-config-btn,
+    .guide-help-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 28px;
+      height: 28px;
+      padding: 0;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: var(--radius-full);
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all var(--transition-normal);
+      flex-shrink: 0;
+
+      &:hover {
+        color: var(--text);
+        background: var(--white-translucent-5);
+        border-color: var(--border);
+      }
+    }
+
+    .server-config-btn:hover {
       transform: rotate(30deg);
     }
   }

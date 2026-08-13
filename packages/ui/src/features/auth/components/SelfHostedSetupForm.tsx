@@ -1,6 +1,7 @@
 import { type Component, createEffect, createSignal, Show } from "solid-js";
 import { z } from "zod";
 import Button from "@/components/ui/Button.tsx";
+import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
 import Input from "@/components/ui/Input.tsx";
 import ServerConfigModal from "@/components/ui/ServerConfigModal.tsx";
 import { t } from "@/core/i18n.ts";
@@ -109,15 +110,21 @@ export const SelfHostedSetupForm: Component<SelfHostedSetupFormProps> = (
           <span class="server-label">{t("server_config_current_server")}</span>
           <span class="server-url-val">{currentDisplayUrl()}</span>
         </div>
-        <Button
-          type="button"
-          variant="secondary"
-          class="server-config-btn"
-          onClick={() => setIsModalOpen(true)}
-          title={t("server_config_modal_title")}
-        >
-          <SettingsIcon size={16} />
-        </Button>
+        <div class="server-actions-group">
+          <GuideHelpButton
+            route="getting-started/self-hosted-server"
+            size={16}
+          />
+          <Button
+            type="button"
+            variant="secondary"
+            class="server-config-btn"
+            onClick={() => setIsModalOpen(true)}
+            title={t("server_config_modal_title")}
+          >
+            <SettingsIcon size={16} />
+          </Button>
+        </div>
       </div>
 
       {/* Auth Sub-tabs */}

@@ -49,7 +49,7 @@ export default {
   sync_error_corrupted_payload:
     "Dữ liệu đồng bộ bị lỗi cấu trúc hoặc không giải mã được.",
   sync_error_remote_password_changed:
-    "Mật khẩu chính đã bị thay đổi từ thiết bị khác. Vui lòng đăng nhập lại.",
+    "{login_master_password} đã bị thay đổi từ thiết bị khác. Vui lòng đăng nhập lại.",
   sync_error_invalid_format: "Định dạng dữ liệu két mật khẩu không hợp lệ.",
 
   // Trash View
@@ -117,41 +117,43 @@ export default {
   pwd_strength_fair: "Trung bình",
   pwd_strength_strong: "Mạnh",
   pwd_strength_very_strong: "Rất mạnh",
-  login_placeholder_mp: "Nhập Mật khẩu chính...",
+  login_placeholder_mp: "Nhập {login_master_password}...",
   login_btn_unlock: "Mở khóa",
-  login_forgot_password: "Quên Mật khẩu chính?",
+  login_forgot_password: "Quên {login_master_password}?",
   login_error_empty_pat: "Chưa nhập GitHub Token.",
   login_error_empty_username: "Vui lòng nhập tên đăng nhập.",
   login_error_empty_password: "Vui lòng nhập mật khẩu tài khoản.",
   login_error_invalid_token: "Token không hợp lệ hoặc lỗi kết nối",
   login_error_oauth_no_token: "Không nhận được token từ GitHub",
   login_error_oauth_fail: "Lỗi đăng nhập OAuth",
-  login_error_empty_mp: "Vui lòng nhập Mật khẩu chính",
-  login_error_wrong_mp: "Mật khẩu chính không đúng",
+  login_error_empty_mp: "Vui lòng nhập {login_master_password}",
+  login_error_wrong_mp: "{login_master_password} không đúng",
   caps_lock_on: "Caps Lock đang bật",
   login_error_changed_mp_hint:
-    "Nếu bạn vừa đổi Mật khẩu chính trên một thiết bị khác, bạn cần phải Đăng xuất và đăng nhập lại.",
+    "Nếu bạn vừa đổi {login_master_password} trên một thiết bị khác, bạn cần phải Đăng xuất và đăng nhập lại.",
   login_error_mp_cooldown:
-    "Nhập sai Mật khẩu chính nhiều lần. Vui lòng thử lại sau.",
+    "Nhập sai {login_master_password} nhiều lần. Vui lòng thử lại sau.",
   login_error_mp_tampered:
-    "Dữ liệu bảo vệ Mật khẩu chính bị thay đổi trái phép. Hệ thống đã đăng xuất để bảo vệ tài khoản.",
-  login_forgot_password_title: "Quên Mật khẩu chính",
+    "Dữ liệu bảo vệ {login_master_password} bị thay đổi trái phép. Hệ thống đã đăng xuất để bảo vệ tài khoản.",
+  login_forgot_password_title: "Quên {login_master_password}",
   login_forgot_password_msg:
-    "{APP_NAME} sử dụng cơ chế mã hóa đầu-cuối (Zero-Knowledge). Mật khẩu chính không bao giờ được gửi đi hay lưu trữ trên máy chủ, do đó <strong class='text-error'>KHÔNG CÓ CÁCH NÀO</strong> để khôi phục hoặc đặt lại.<br/><br/>Để bắt đầu lại, hệ thống sẽ <strong>ĐĂNG XUẤT</strong> và <strong>XÓA DỮ LIỆU CỤC BỘ</strong>.<br/><br/>Nếu bạn muốn tiếp tục sử dụng tài khoản GitHub này, hệ thống sẽ mở trang GitHub Gist chứa két sắt cũ để bạn có thể <strong>SAO LƯU</strong> dữ liệu hoặc tiến hành <strong class='text-error'>XÓA THỦ CÔNG</strong> Gist này trên GitHub trước khi đăng nhập lại.<br/><br/>Bạn có chắc chắn muốn đăng xuất và mở trang Gist cũ không?",
-  login_local_forgot_password_title: "Quên Mật khẩu chính Local Vault",
+    "{APP_NAME} sử dụng cơ chế mã hóa đầu-cuối (Zero-Knowledge). {login_master_password} không bao giờ được gửi đi hay lưu trữ trên máy chủ, do đó <strong class='text-error'>KHÔNG CÓ CÁCH NÀO</strong> để khôi phục hoặc đặt lại.<br/><br/>Để bắt đầu lại, hệ thống sẽ <strong>ĐĂNG XUẤT</strong> và <strong>XÓA DỮ LIỆU CỤC BỘ</strong>.<br/><br/>Nếu bạn muốn tiếp tục sử dụng tài khoản GitHub này, hệ thống sẽ mở trang GitHub Gist chứa két sắt cũ để bạn có thể <strong>SAO LƯU</strong> dữ liệu hoặc tiến hành <strong class='text-error'>XÓA THỦ CÔNG</strong> Gist này trên GitHub trước khi đăng nhập lại.<br/><br/>Bạn có chắc chắn muốn đăng xuất và mở trang Gist cũ không?",
+  login_local_forgot_password_title: "Quên {login_master_password} Local Vault",
   login_local_forgot_password_msg:
-    "Local Vault được mã hóa 100% cục bộ trên thiết bị của bạn và không lưu trữ chìa khóa khôi phục dự phòng. Nếu quên Mật khẩu chính, dữ liệu Két sắt hiện tại sẽ <strong class='text-error'>KHÔNG THỂ</strong> giải mã hay khôi phục.<br/><br/>Để xác nhận xóa toàn bộ dữ liệu bị khóa và đặt lại Két sắt, vui lòng nhập chính xác chữ <strong class='text-error'>RESET</strong> vào ô bên dưới:",
+    "Local Vault được mã hóa 100% cục bộ trên thiết bị của bạn và không lưu trữ chìa khóa khôi phục dự phòng. Nếu quên {login_master_password}, dữ liệu Két sắt hiện tại sẽ <strong class='text-error'>KHÔNG THỂ</strong> giải mã hay khôi phục.<br/><br/>Để xác nhận xóa toàn bộ dữ liệu bị khóa và đặt lại Két sắt, vui lòng nhập chính xác chữ <strong class='text-error'>RESET</strong> vào ô bên dưới:",
   login_local_reset_btn: "Xóa & Đặt lại Két sắt",
   login_local_reset_placeholder: "Nhập RESET để xác nhận...",
   app_loading: "Đang tải {APP_NAME}...",
   login_or: "Hoặc",
   login_error_password_mismatch: "Mật khẩu xác nhận không khớp",
-  login_enter_master_password: "Nhập Mật khẩu chính",
+  login_enter_master_password: "Nhập {login_master_password}",
   login_confirm_master_password: "Nhập lại để xác nhận",
-  login_btn_create_master_password: "Tạo Mật khẩu chính",
+  login_btn_create_master_password: "Tạo {login_master_password}",
   login_checking_gist: "Đang kiểm tra dữ liệu...",
   login_local_vault_must_read: "Cảnh báo & lưu ý quan trọng",
   login_local_vault_must_read_btn: "Cần đọc trước",
+  login_self_hosted_must_read: "Cảnh báo & hướng dẫn tự host",
+  login_self_hosted_must_read_btn: "Cần đọc trước",
 
   // Vault Page
   vault_search_placeholder: "Tìm kiếm tài khoản...",
@@ -242,10 +244,10 @@ export default {
   edit_label_website: "Website",
   edit_label_notes: "Ghi chú",
   edit_placeholder_notes: "Nhập ghi chú tại đây...",
-  edit_label_reprompt: "Yêu cầu nhập lại Mật khẩu chính cho mục này",
-  reprompt_modal_title: "Xác nhận Mật khẩu chính",
+  edit_label_reprompt: "Yêu cầu nhập lại {login_master_password} cho mục này",
+  reprompt_modal_title: "Xác nhận {login_master_password}",
   reprompt_modal_desc:
-    "Hành động này được bảo vệ. Để tiếp tục, vui lòng nhập lại Mật khẩu chính của bạn để xác minh danh tính.",
+    "Hành động này được bảo vệ. Để tiếp tục, vui lòng nhập lại {login_master_password} của bạn để xác minh danh tính.",
   reprompt_modal_label: "Mật khẩu chính",
   reprompt_modal_placeholder: "",
   reprompt_modal_confirm: "Ok",
@@ -360,7 +362,7 @@ export default {
 
   // Settings Page
   settings_header: "Cài đặt",
-  settings_change_mp: "Đổi Mật khẩu chính",
+  settings_change_mp: "Đổi {login_master_password}",
   settings_export: "Xuất mật khẩu (JSON)",
   settings_clear_vault: "Xóa sạch két sắt",
   settings_logout: "Đăng xuất tài khoản GitHub",
@@ -433,17 +435,17 @@ export default {
   set_pin_label: "Mã PIN",
   set_pin_error_length: "Mã PIN phải có ít nhất 4 ký tự.",
   login_unlock_with_pin: "Mở khóa bằng mã PIN",
-  login_unlock_with_mp: "Mở khóa bằng Mật khẩu chính",
+  login_unlock_with_mp: "Mở khóa bằng {login_master_password}",
   login_pin_placeholder: "Nhập mã PIN của bạn...",
   login_error_wrong_pin: "Mã PIN không chính xác.",
   login_error_wrong_pin_2_left: "Mã PIN không chính xác. Bạn còn 2 lần thử.",
   login_error_wrong_pin_1_left:
     "Mã PIN không chính xác. Bạn còn 1 lần thử cuối!",
   login_error_pin_max_attempts_reached:
-    "Đã nhập sai Mã PIN 3 lần. Tính năng mở khóa PIN đã bị tắt, vui lòng sử dụng Mật khẩu chính.",
+    "Đã nhập sai Mã PIN 3 lần. Tính năng mở khóa PIN đã bị tắt, vui lòng sử dụng {login_master_password}.",
   login_error_pin_tampered:
-    "Dữ liệu Mã PIN không hợp lệ. Tính năng mở khóa PIN đã bị tắt, vui lòng sử dụng Mật khẩu chính.",
-  settings_change_mp_title: "Đổi Mật khẩu chính",
+    "Dữ liệu Mã PIN không hợp lệ. Tính năng mở khóa PIN đã bị tắt, vui lòng sử dụng {login_master_password}.",
+  settings_change_mp_title: "Đổi {login_master_password}",
   vault_options_group_sync_import: "Đồng bộ & Nhập xuất dữ liệu",
   vault_options_group_management: "Quản lý dữ liệu",
   vault_options_group_danger: "Thao tác nguy hiểm",
@@ -453,12 +455,14 @@ export default {
   settings_change_mp_current: "Mật khẩu hiện tại",
   settings_change_mp_new: "Mật khẩu mới",
   settings_change_mp_confirm: "Xác nhận mật khẩu mới",
-  settings_error_mp_wrong_current: "Mật khẩu chính hiện tại không đúng",
-  settings_error_mp_empty_new: "Mật khẩu chính mới không được để trống",
+  settings_error_mp_wrong_current:
+    "{login_master_password} hiện tại không đúng",
+  settings_error_mp_empty_new:
+    "{login_master_password} mới không được để trống",
   settings_error_mp_mismatch: "Mật khẩu xác nhận không khớp",
   settings_error_mp_fail: "Lỗi đổi mật khẩu",
   settings_error_fields_required: "Vui lòng điền đầy đủ tất cả các trường",
-  settings_mp_success: "Đổi Mật khẩu chính thành công!",
+  settings_mp_success: "Đổi {login_master_password} thành công!",
   settings_export_success: "Đã tải xuống file sao lưu!",
   settings_clear_vault_confirm_title: "Xác nhận xóa vĩnh viễn",
   clear_vault_confirm_prompt_msg:
@@ -550,10 +554,10 @@ export default {
     "Không tìm thấy Passkey nào khớp cho tên miền <strong>{rp}</strong> trong két sắt của bạn.",
   fido2_vault_locked_title: "Két sắt đang Khóa",
   fido2_vault_locked_subtitle:
-    "Mở khóa {APP_NAME} bằng Mật khẩu chính để tiếp tục xác thực Passkey.",
+    "Mở khóa {APP_NAME} bằng {login_master_password} để tiếp tục xác thực Passkey.",
   fido2_not_logged_in_title: "Chưa Đăng Nhập",
   fido2_not_logged_in_subtitle:
-    "Vui lòng mở extension và đăng nhập vào Gistwarden trước khi sử dụng Passkey.",
+    "Vui lòng mở extension và đăng nhập vào {APP_NAME} trước khi sử dụng Passkey.",
   fido2_register_choose_passkey_action:
     "Tài khoản này đã có Passkey. Bạn muốn làm gì?",
   fido2_register_choose_passkey_overwrite:
@@ -628,17 +632,17 @@ export default {
   report_scanning_progress: "Đang quét ({progress}%)...",
   report_exposed_times: "Đã rò rỉ {count} lần",
   report_export_btn: "Xuất HTML",
-  report_export_title: "Báo Cáo Bảo Mật Mật Khẩu Rò Rỉ - Gistwarden",
-  report_export_heading: "🛡️ Báo Cáo Bảo Mật Mật Khẩu Rò Rỉ",
+  report_export_title: "Báo Cáo Bảo Mật Mật Khẩu Rò Rỉ - {APP_NAME}",
+  report_export_heading: "Báo Cáo Bảo Mật Mật Khẩu Rò Rỉ",
   report_export_meta:
-    "Được tạo bởi Gistwarden thông qua API Have I Been Pwned (HIBP)",
+    "Được tạo bởi {APP_NAME} thông qua API Have I Been Pwned (HIBP)",
   report_export_summary:
-    "🚨 Cảnh báo: Phát hiện {count} tài khoản có mật khẩu bị rò rỉ! Hãy thay đổi các mật khẩu này ngay lập tức.",
+    "Cảnh báo: Phát hiện {count} tài khoản có mật khẩu bị rò rỉ! Hãy thay đổi các mật khẩu này ngay lập tức.",
   report_export_col_account: "Tên tài khoản",
   report_export_col_username: "Tên người dùng / Email",
   report_export_col_exposure: "Mức độ rò rỉ",
   report_export_footer:
-    "Kiểm toán bảo mật Gistwarden Vault • Bảo vệ bằng thuật toán băm k-Anonymity SHA-1",
+    "Kiểm toán bảo mật {APP_NAME} Vault • Bảo vệ bằng thuật toán băm k-Anonymity SHA-1",
 
   // Guide Page
   settings_user_guide: "Hướng dẫn sử dụng",
@@ -658,41 +662,41 @@ export default {
   guide_nav_reports_settings: "Báo Cáo & Cài Đặt",
 
   guide_item_overview: "Tổng quan & Mã hóa E2EE",
-  guide_item_master_password: "Mật khẩu chính (Master Password)",
+  guide_item_master_password: "{login_master_password}",
   guide_item_github_gist: "Tạo GitHub Token & Cấu hình Gist",
   guide_item_self_hosted_server: "Máy chủ Cá nhân",
   guide_item_local_vault: "Két sắt Cục bộ & Cảnh báo Bảo mật",
   guide_item_auto_lock: "Khóa Két & Tự Động Khóa",
 
   guide_start_self_hosted_lead:
-    "Máy chủ cá nhân cho phép bạn tự vận hành hạ tầng riêng (VPS, Docker, Cloudflare Workers, NAS Synology...) làm nơi lưu trữ và đồng bộ két mật khẩu mã hóa an toàn.",
+    "{login_provider_self_hosted} cho phép bạn tự vận hành hạ tầng riêng (VPS, Docker, Cloudflare Workers, NAS Synology...) làm nơi lưu trữ và đồng bộ két mật khẩu mã hóa an toàn.",
   guide_start_self_hosted_step1_title:
     "1. Nhập Địa chỉ Máy chủ (Server Base URL)",
   guide_start_self_hosted_step1_desc:
-    "Nhập URL máy chủ cá nhân của bạn (ví dụ: https://abc.com hoặc http://192.168.1.100:3000). GistWarden sẽ tự động kết nối trực tiếp tới các Endpoint của máy chủ.",
+    "Nhập URL máy chủ cá nhân của bạn (ví dụ: https://abc.com hoặc http://192.168.1.100:3000). {APP_NAME} sẽ tự động kết nối trực tiếp tới các Endpoint của máy chủ.",
   guide_start_self_hosted_step2_title:
     "2. Đăng ký hoặc Đăng nhập Tài khoản Máy chủ",
   guide_start_self_hosted_step2_desc:
     "Chuyển sang tab Đăng ký để tạo tài khoản máy chủ mới (POST /auth/register) hoặc Đăng nhập (POST /auth/login) để lấy Access Token kết nối.",
   guide_start_self_hosted_step3_title:
-    "3. Khởi tạo hoặc Mở khóa Két bằng Master Password",
+    "3. Khởi tạo hoặc Mở khóa Két bằng {login_master_password}",
   guide_start_self_hosted_step3_desc:
-    "Sau khi lấy được Access Token, ứng dụng gọi GET /vault để kiểm tra. Nếu server trả về 200 (đã có Vault) -> Nhập Master Password để Unlock; nếu 404 (chưa có Vault) -> Tạo Master Password mới.",
+    "Sau khi lấy được Access Token, ứng dụng gọi GET /vault để kiểm tra. Nếu server trả về 200 (đã có Vault) -> Nhập {login_master_password} để Unlock; nếu 404 (chưa có Vault) -> Tạo {login_master_password} mới.",
   guide_start_self_hosted_step4_title:
     "4. Tự động Đồng bộ hóa Mã hóa Đầu-cuối (E2EE)",
   guide_start_self_hosted_step4_desc:
-    "Mọi thao tác thêm/sửa/xóa mật khẩu đều được mã hóa tại Client bằng Master Password trước khi đẩy qua API POST /vault. Máy chủ hoàn toàn không thể đọc được nội dung két.",
+    "Mọi thao tác thêm/sửa/xóa mật khẩu đều được mã hóa tại Client bằng {login_master_password} trước khi đẩy qua API POST /vault. Máy chủ hoàn toàn không thể đọc được nội dung két.",
   guide_start_self_hosted_note_title:
     "Lưu ý Quan trọng về Bảo mật Mã hóa Đầu-cuối (E2EE)",
   guide_start_self_hosted_note_desc:
-    "Mật khẩu tài khoản Server (Server Account Password) chỉ dùng để xác thực API với máy chủ. Master Password dùng để tạo khóa mã hóa AES-256-GCM và KHÔNG BAO GIỜ được gửi lên máy chủ.",
+    "Mật khẩu tài khoản Server (Server Account Password) chỉ dùng để xác thực API với máy chủ. {login_master_password} (Master Password) dùng để tạo khóa mã hóa AES-256-GCM và KHÔNG BAO GIỜ được gửi lên máy chủ.",
   guide_self_hosted_cors_title:
     "Bắt Buộc Cấu Hình CORS Cho Phiên Bản Web (GitHub Pages)",
   guide_self_hosted_cors_desc:
-    "Nếu sử dụng ứng dụng GistWarden phiên bản Web (https://uongsuadaubung.github.io), máy chủ cá nhân BẮT BUỘC phải bật CORS (Access-Control-Allow-Origin: https://uongsuadaubung.github.io hoặc *) và hỗ trợ phương thức HTTP OPTIONS cho các truy vấn Preflight.",
-  guide_start_self_hosted_app_title: "Hướng Dẫn Kết Nối Trên App GistWarden",
+    "Nếu sử dụng ứng dụng {APP_NAME} phiên bản Web (https://uongsuadaubung.github.io), máy chủ cá nhân BẮT BUỘC phải bật CORS (Access-Control-Allow-Origin: https://uongsuadaubung.github.io hoặc *) và hỗ trợ phương thức HTTP OPTIONS cho các truy vấn Preflight.",
+  guide_start_self_hosted_app_title: "Hướng Dẫn Kết Nối Trên App {APP_NAME}",
   guide_start_self_hosted_app_desc:
-    "Tại màn hình Đăng nhập/Khởi tạo của GistWarden, chọn tab Máy chủ cá nhân, điền Base URL, Đăng ký/Đăng nhập và bắt đầu sử dụng.",
+    "Tại màn hình Đăng nhập/Khởi tạo của {APP_NAME}, chọn tab {login_provider_self_hosted}, điền Base URL, Đăng ký/Đăng nhập và bắt đầu sử dụng.",
 
   login_provider_select_label: "Phương thức lưu trữ Két",
   login_provider_github_gist: "Đám mây (GitHub Gist)",
@@ -711,7 +715,7 @@ export default {
     "Vui lòng liên hệ với Quản trị viên (Admin) của máy chủ host này để được hỗ trợ khôi phục mật khẩu tài khoản của bạn.",
   login_self_hosted_forgot_mp_title: "Quên Mật Khẩu Chính Máy Chủ",
   login_self_hosted_forgot_mp_msg:
-    "{APP_NAME} sử dụng cơ chế mã hóa đầu-cuối (Zero-Knowledge). Mật khẩu chính không bao giờ được lưu trữ trên máy chủ và <strong class='text-error'>KHÔNG THỂ KHÔI PHỤC</strong>.<br/><br/>Nếu bạn quên Mật khẩu chính, bạn có thể <strong>Đăng xuất</strong> ra ngoài hoặc <strong>liên hệ Quản trị viên (Admin)</strong> của máy chủ host này để hỗ trợ xóa file Két sắt đã lưu, giúp bạn tạo lại Két sắt mới với cùng tài khoản này.",
+    "{APP_NAME} sử dụng cơ chế mã hóa đầu-cuối (Zero-Knowledge). {login_master_password} không bao giờ được lưu trữ trên máy chủ và <strong class='text-error'>KHÔNG THỂ KHÔI PHỤC</strong>.<br/><br/>Nếu bạn quên {login_master_password}, bạn có thể <strong>Đăng xuất</strong> ra ngoài hoặc <strong>liên hệ Quản trị viên (Admin)</strong> của máy chủ host này để hỗ trợ xóa file Két sắt đã lưu, giúp bạn tạo lại Két sắt mới với cùng tài khoản này.",
 
   // Server Config Modal
   server_config_modal_title: "Cấu Hình Máy Chủ Cá Nhân",
@@ -730,7 +734,7 @@ export default {
 
   guide_self_hosted_why_title: "Tại Sao Cần Bộ REST API Máy Chủ Cá Nhân Này?",
   guide_self_hosted_why_desc:
-    "API Máy chủ cá nhân được thiết kế tinh gọn với đúng 6 REST endpoints chuẩn hóa, giúp người dùng tự làm chủ hạ tầng đám mây riêng (Private Cloud/VPS) mà không cần phụ thuộc vào GitHub. Toàn bộ dữ liệu mật khẩu được mã hóa E2EE bằng AES-256-GCM tại Client trước khi gửi lên máy chủ.",
+    "API {login_provider_self_hosted} được thiết kế tinh gọn với đúng 6 REST endpoints chuẩn hóa, giúp người dùng tự làm chủ hạ tầng đám mây riêng (Private Cloud/VPS) mà không cần phụ thuộc vào GitHub. Toàn bộ dữ liệu mật khẩu được mã hóa E2EE bằng AES-256-GCM tại Client trước khi gửi lên máy chủ.",
   guide_self_hosted_matrix_title:
     "Bảng So Sánh Tương Thích 1-to-1 Với GitHub API",
   guide_self_hosted_matrix_col_action: "Thao Tác Ứng Dụng",
@@ -760,7 +764,7 @@ export default {
   guide_self_hosted_row4_github: "GET /gists (200 OK / 404 Not Found)",
   guide_self_hosted_row4_self_hosted: "GET /vault (200 OK / 404 Not Found)",
   guide_self_hosted_row4_purpose:
-    "Client dựa vào HTTP 200/404 để mở form Unlock hay Tạo Master Password.",
+    "Client dựa vào HTTP 200/404 để mở form Unlock hay Tạo {login_master_password}.",
 
   guide_self_hosted_row5_action: "Lưu / Cập Nhật Két",
   guide_self_hosted_row5_github: "POST / PATCH /gists",
@@ -774,12 +778,12 @@ export default {
   guide_self_hosted_row6_purpose:
     "Xóa toàn bộ dữ liệu két mật khẩu khỏi máy chủ từ xa.",
 
-  swagger_explorer_title: "GistWarden Self-Hosted REST API Explorer",
+  swagger_explorer_title: "Trình khám phá REST API máy chủ cá nhân {APP_NAME}",
   swagger_base_url_label: "Base URL",
   swagger_collapse: "Thu gọn",
   swagger_expand: "Chi tiết",
-  swagger_request_body_title: "Request Body Example (JSON)",
-  swagger_responses_title: "Responses & HTTP Status Codes",
+  swagger_request_body_title: "Ví dụ Request Body (JSON)",
+  swagger_responses_title: "Mã phản hồi & Mã trạng thái HTTP",
 
   swagger_ep_register_summary: "Đăng ký tài khoản người dùng máy chủ mới",
   swagger_ep_register_desc:
@@ -815,7 +819,7 @@ export default {
   swagger_res_401_token_desc: "Token sai hoặc đã bị thu hồi.",
   swagger_res_404_title: "404 Not Found — Chưa từng có Vault (New Vault)",
   swagger_res_404_desc:
-    "Client xác định đây là Vault Mới và chuyển tới form Tạo Master Password.",
+    "Client xác định đây là Vault Mới và chuyển tới form Tạo {login_master_password}.",
 
   swagger_ep_post_vault_summary: "Lưu / Cập nhật chuỗi dữ liệu Vault mã hóa",
   swagger_ep_post_vault_desc:
@@ -937,9 +941,9 @@ export default {
   guide_vm_logins_card2_desc:
     "Mỗi tài khoản đăng nhập cho phép thêm nhiều địa chỉ URI khác nhau với các chế độ khớp riêng biệt cho từng URI.",
   guide_vm_logins_card3_title:
-    "Yêu cầu Mật khẩu chính (Mật khẩu chính Re-prompt)",
+    "Yêu cầu {login_master_password} ({login_master_password} Re-prompt)",
   guide_vm_logins_card3_desc:
-    "Bật tùy chọn này cho các tài khoản tài chính hoặc ứng dụng nhạy cảm. Mỗi khi mở xem, chỉnh sửa hoặc sao chép mật khẩu, hệ thống sẽ buộc bạn gõ lại Mật khẩu chính để xác minh danh tính.",
+    "Bật tùy chọn này cho các tài khoản tài chính hoặc ứng dụng nhạy cảm. Mỗi khi mở xem, chỉnh sửa hoặc sao chép mật khẩu, hệ thống sẽ buộc bạn gõ lại {login_master_password} để xác minh danh tính.",
   guide_vm_logins_card4_title:
     "Lịch sử Mật khẩu Tài khoản (Item Password History)",
   guide_vm_logins_card4_desc:
@@ -949,7 +953,7 @@ export default {
     "Lưu trữ an toàn các văn bản bí mật, mã khôi phục tài khoản, số sê-ri phần mềm hoặc thông tin cá nhân quan trọng.",
   guide_vm_notes_card_title: "Bảo mật nội dung ghi chú",
   guide_vm_notes_card_desc:
-    "Tất cả văn bản trong Ghi chú bảo mật được mã hóa trực tiếp trên thiết bị trước khi đồng bộ. Bạn cũng có thể bật tùy chọn Yêu cầu nhập lại Mật khẩu chính khi mở xem nội dung này.",
+    "Tất cả văn bản trong Ghi chú bảo mật được mã hóa trực tiếp trên thiết bị trước khi đồng bộ. Bạn cũng có thể bật tùy chọn Yêu cầu nhập lại {login_master_password} khi mở xem nội dung này.",
 
   guide_vm_cards_lead:
     "Lưu giữ thông tin thẻ thanh toán (Credit Card) và danh tính cá nhân để tự động điền form đăng ký, thanh toán nhanh chóng.",
@@ -1002,7 +1006,7 @@ export default {
     "{APP_NAME} là giải pháp két mật khẩu cá nhân mã hóa Zero-Knowledge, tự động đồng bộ hóa đám mây riêng tư thông qua GitHub Gist.",
   guide_start_ov_card1_title: "Mã Hóa Bảo Mật Tuyệt Đối (Zero-Knowledge)",
   guide_start_ov_card1_desc:
-    "Toàn bộ dữ liệu mật khẩu của bạn đều được mã hóa trực tiếp trên thiết bị của bạn trước khi truyền đi hoặc lưu trữ. Tuyệt đối không ai (kể cả nhà phát triển hay nhà cung cấp dịch vụ lưu trữ) có thể đọc được dữ liệu nếu không có Mật khẩu chính của bạn.",
+    "Toàn bộ dữ liệu mật khẩu của bạn đều được mã hóa trực tiếp trên thiết bị của bạn trước khi truyền đi hoặc lưu trữ. Tuyệt đối không ai (kể cả nhà phát triển hay nhà cung cấp dịch vụ lưu trữ) có thể đọc được dữ liệu nếu không có {login_master_password} của bạn.",
   guide_start_ov_card2_title: "Đồng Bộ Đám Mây Cá Nhân Riêng Tư",
   guide_start_ov_card2_desc:
     "Thay vì gửi dữ liệu về máy chủ trung gian của bên thứ 3, {APP_NAME} trực tiếp đồng bộ dữ liệu vào một tệp bí mật (Private Gist) trên tài khoản GitHub cá nhân của chính bạn.",
@@ -1011,16 +1015,17 @@ export default {
     "Hỗ trợ lưu trữ và đăng nhập nhanh chóng bằng Passkey (FIDO2 / WebAuthn) với vân tay, khuôn mặt hoặc mã PIN thiết bị, loại bỏ hoàn toàn rủi ro lộ mật khẩu.",
 
   guide_start_mp_lead:
-    "Mật khẩu chính (Mật khẩu chính) là chìa khóa duy nhất dùng để giải mã và bảo vệ toàn bộ dữ liệu két sắt của bạn.",
-  guide_start_mp_step1_title: "1. Vai trò của Mật khẩu chính",
+    "{login_master_password} ({login_master_password}) là chìa khóa duy nhất dùng để giải mã và bảo vệ toàn bộ dữ liệu két sắt của bạn.",
+  guide_start_mp_step1_title: "1. Vai trò của {login_master_password}",
   guide_start_mp_step1_desc:
-    "Mật khẩu chính vừa đóng vai trò mở khóa két sắt, vừa dùng làm chìa khóa gốc để mã hóa toàn bộ mật khẩu, ghi chú và tài khoản. Hãy tạo Mật khẩu chính đủ dài, dễ nhớ với bạn nhưng khó đoán với người khác.",
-  guide_start_mp_step2_title: "2. Nguyên tắc Không lưu trữ Mật khẩu chính",
+    "{login_master_password} vừa đóng vai trò mở khóa két sắt, vừa dùng làm chìa khóa gốc để mã hóa toàn bộ mật khẩu, ghi chú và tài khoản. Hãy tạo {login_master_password} đủ dài, dễ nhớ với bạn nhưng khó đoán với người khác.",
+  guide_start_mp_step2_title:
+    "2. Nguyên tắc Không lưu trữ {login_master_password}",
   guide_start_mp_step2_desc:
-    "{APP_NAME} tuân thủ nguyên tắc Zero-Knowledge: ứng dụng tuyệt đối không bao giờ lưu trữ hay gửi Mật khẩu chính lên bất kỳ máy chủ nào. Nếu bạn quên Mật khẩu chính, dữ liệu sẽ không thể khôi phục.",
-  guide_start_mp_step3_title: "3. Cách thay đổi Mật khẩu chính",
+    "{APP_NAME} tuân thủ nguyên tắc Zero-Knowledge: ứng dụng tuyệt đối không bao giờ lưu trữ hay gửi {login_master_password} lên bất kỳ máy chủ nào. Nếu bạn quên {login_master_password}, dữ liệu sẽ không thể khôi phục.",
+  guide_start_mp_step3_title: "3. Cách thay đổi {login_master_password}",
   guide_start_mp_step3_desc:
-    "Bạn có thể đổi Mật khẩu chính bất cứ lúc nào bằng cách mở ứng dụng → chọn {settings_header} → {settings_account_security} → {settings_change_mp}. Khi đổi, hệ thống sẽ tự động giải mã và mã hóa lại toàn bộ két sắt bằng chìa khóa mới.",
+    "Bạn có thể đổi {login_master_password} bất cứ lúc nào bằng cách mở ứng dụng → chọn {settings_header} → {settings_account_security} → {settings_change_mp}. Khi đổi, hệ thống sẽ tự động giải mã và mã hóa lại toàn bộ két sắt bằng chìa khóa mới.",
 
   guide_start_lock_lead:
     "Tự động bảo vệ dữ liệu két mật khẩu khi bạn không thao tác hoặc khi khởi động lại trình duyệt.",
@@ -1033,17 +1038,17 @@ export default {
   guide_start_lock_step3_title:
     "3. Lựa chọn Hành động khi hết thời gian (Timeout Action)",
   guide_start_lock_step3_lock:
-    "Khóa két (Lock): Xóa chìa khóa giải mã khỏi bộ nhớ RAM. Yêu cầu nhập Mật khẩu chính hoặc Mã PIN để mở lại.",
+    "Khóa két (Lock): Xóa chìa khóa giải mã khỏi bộ nhớ RAM. Yêu cầu nhập {login_master_password} hoặc Mã PIN để mở lại.",
   guide_start_lock_step3_logout:
     "Đăng xuất (Log out): Xóa toàn bộ trạng thái phiên và yêu cầu đăng nhập lại từ đầu.",
   guide_start_lock_step4_title:
-    "4. Mã PIN mở khóa nhanh & Yêu cầu Mật khẩu chính",
+    "4. Mã PIN mở khóa nhanh & Yêu cầu {login_master_password}",
   guide_start_lock_step4_desc:
-    "Kích hoạt tùy chọn Mở khóa bằng Mã PIN (Unlock with PIN) để mở két mượt mà. Đánh dấu chọn Yêu cầu Mật khẩu chính khi khởi động lại trình duyệt để đảm bảo an toàn tuyệt đối khi tắt mở trình duyệt.",
+    "Kích hoạt tùy chọn Mở khóa bằng Mã PIN (Unlock with PIN) để mở két mượt mà. Đánh dấu chọn Yêu cầu {login_master_password} khi khởi động lại trình duyệt để đảm bảo an toàn tuyệt đối khi tắt mở trình duyệt.",
 
   guide_start_pin_title: "Cấu hình & Sử dụng Mã PIN Mở Khóa Nhanh",
   guide_start_pin_lead:
-    "Mã PIN giúp bạn mở khóa két nhanh chóng bằng một chuỗi số ngắn mà không cần nhập lại Mật khẩu chính dài phức tạp mỗi lần sử dụng.",
+    "Mã PIN giúp bạn mở khóa két nhanh chóng bằng một chuỗi số ngắn mà không cần nhập lại {login_master_password} dài phức tạp mỗi lần sử dụng.",
   guide_start_pin_step1_title: "1. Bật tùy chọn Mở khóa bằng Mã PIN",
   guide_start_pin_step1_desc:
     "Mở ứng dụng {APP_NAME} ➔ chọn {settings_header} ➔ {settings_account_security}. Tích chọn vào ô 'Mở khóa bằng mã PIN' (Unlock with PIN).",
@@ -1052,7 +1057,7 @@ export default {
     "Cửa sổ Thiết lập mã PIN sẽ xuất hiện. Hãy nhập mã PIN dễ nhớ với bạn (tối thiểu 4 ký tự/chữ số) và bấm 'Xác nhận' để lưu cấu hình.",
   guide_start_pin_step3_title: "3. Mở khóa nhanh bằng PIN khi két bị khóa",
   guide_start_pin_step3_desc:
-    "Khi két mật khẩu bị khóa theo thời gian chờ, bạn chỉ cần gõ Mã PIN và nhấn 'Mở khóa'. Chìa khóa mã hóa sẽ tự động mở mà không cần gõ lại Mật khẩu chính.",
+    "Khi két mật khẩu bị khóa theo thời gian chờ, bạn chỉ cần gõ Mã PIN và nhấn 'Mở khóa'. Chìa khóa mã hóa sẽ tự động mở mà không cần gõ lại {login_master_password}.",
   guide_start_pin_note_title: "Lưu ý bảo mật quan trọng về Mã PIN:",
   guide_start_pin_note_desc:
     "Mã PIN chỉ được lưu an toàn trong bộ nhớ thiết bị. Nếu bạn nhập sai Mã PIN 3 lần liên tiếp, hệ thống sẽ tự động hủy Mã PIN và đăng xuất để bảo vệ an toàn. Đồng thời, khi bạn Đăng xuất tài khoản lưu trữ, Mã PIN cũng sẽ tự động được xóa bỏ.",
@@ -1087,7 +1092,7 @@ export default {
   // Autofill & Password Generator Guides
   guide_auto_lead:
     "Tự động nhận diện biểu mẫu và điền Tên đăng nhập / Mật khẩu trên các trang web.",
-  guide_auto_card1_title: "Biểu tượng Gistwarden trên ô nhập liệu",
+  guide_auto_card1_title: "Biểu tượng {APP_NAME} trên ô nhập liệu",
   guide_auto_card1_desc:
     "Khi bấm vào ô đăng nhập trên bất kỳ trang web nào, biểu tượng {APP_NAME} sẽ xuất hiện cho phép bạn chọn tài khoản và tự động điền ngay lập tức.",
   guide_auto_card2_title: "Tự động gửi biểu mẫu (Auto-Submit)",
@@ -1148,7 +1153,7 @@ export default {
     "Mở ứng dụng {APP_NAME} → chọn menu {settings_header} → {settings_vault_options_label} → {vault_options_import}.",
   guide_imp_json_step2_title: "2. Chọn định dạng tệp JSON",
   guide_imp_json_step2_desc:
-    "Tại danh sách chọn định dạng tệp, chọn Gistwarden / Bitwarden JSON (.json).",
+    "Tại danh sách chọn định dạng tệp, chọn {APP_NAME} / Bitwarden JSON (.json).",
   guide_imp_json_step3_title: "3. Tải tệp JSON & Xem trước kết quả",
   guide_imp_json_step3_desc:
     "Nhấn nút chọn tệp JSON từ máy tính. {APP_NAME} sẽ hiển thị bảng Xem trước kết quả (Preview) số lượng tài khoản chuẩn bị nạp vào két.",
@@ -1164,9 +1169,10 @@ export default {
   guide_exp_csv_step1_title: "1. Truy cập tính năng Xuất dữ liệu",
   guide_exp_csv_step1_desc:
     "Mở ứng dụng {APP_NAME} → chọn menu {settings_header} → {settings_vault_options_label} → {vault_options_export}.",
-  guide_exp_csv_step2_title: "2. Nhập Mật khẩu chính để xác minh bảo mật",
+  guide_exp_csv_step2_title:
+    "2. Nhập {login_master_password} để xác minh bảo mật",
   guide_exp_csv_step2_desc:
-    "Để bảo vệ an toàn, ứng dụng yêu cầu bạn nhập lại Mật khẩu chính (Mật khẩu chính) để xác nhận quyền truy cập trước khi tạo tệp CSV.",
+    "Để bảo vệ an toàn, ứng dụng yêu cầu bạn nhập lại {login_master_password} ({login_master_password}) để xác nhận quyền truy cập trước khi tạo tệp CSV.",
   guide_exp_csv_step3_title: "3. Lựa chọn định dạng tệp CSV",
   guide_exp_csv_step3_browser:
     "Browser CSV: Xuất dạng định dạng cơ bản để nạp trực tiếp vào Google Chrome, Firefox, Edge, Safari, Brave.",
@@ -1183,10 +1189,10 @@ export default {
     "Tệp JSON sao lưu toàn bộ 5 nhóm phần tử (Mật khẩu, Ghi chú, Thẻ, Danh tính, Khóa SSH), Thư mục, Yêu thích và Trường tùy chỉnh.",
   guide_exp_json_step2_title: "2. Tùy chọn Xuất Mã hóa hoặc Không Mã hóa",
   guide_exp_json_step2_desc:
-    "Nên chọn Xuất mã hóa (Encrypted JSON) để tệp sao lưu được bảo vệ bằng Mật khẩu chính của bạn. Người khác không thể mở nếu không có Mật khẩu chính.",
+    "Nên chọn Xuất mã hóa (Encrypted JSON) để tệp sao lưu được bảo vệ bằng {login_master_password} của bạn. Người khác không thể mở nếu không có {login_master_password}.",
   guide_exp_json_step3_title: "3. Các bước xuất tệp sao lưu JSON",
   guide_exp_json_step3_desc:
-    "Mở {APP_NAME} → chọn {settings_header} → {settings_vault_options_label} → {vault_options_export} → nhập Mật khẩu chính → chọn định dạng JSON và nhấn Tải tệp Sao lưu JSON.",
+    "Mở {APP_NAME} → chọn {settings_header} → {settings_vault_options_label} → {vault_options_export} → nhập {login_master_password} → chọn định dạng JSON và nhấn Tải tệp Sao lưu JSON.",
 
   // Extension Downloads Guide
   guide_item_download_extension: "Tải Extension",
@@ -1204,7 +1210,7 @@ export default {
   guide_item_web_version: "Phiên bản Web",
   guide_web_ver_lead:
     "Truy cập két mật khẩu {APP_NAME} trực tiếp trên trình duyệt web mà không cần cài đặt Extension.",
-  guide_web_ver_btn: "Truy cập Gistwarden Web",
+  guide_web_ver_btn: "Truy cập {APP_NAME} Web",
   guide_web_ver_advantages_title: "Truy cập linh hoạt mọi nơi",
   guide_web_ver_advantages_desc:
     "Thích hợp khi bạn sử dụng máy tính công cộng, thiết bị lạ hoặc môi trường trình duyệt không cho phép cài đặt Extension.",
@@ -1272,37 +1278,37 @@ export default {
   // Guide FAQ Tab
   guide_faq_subtitle:
     "Giải đáp một số thắc mắc phổ biến về cơ chế đồng bộ, bảo mật và mật khẩu của {APP_NAME}.",
-  guide_faq_q1_title: "Mật khẩu chính của tôi có an toàn không?",
+  guide_faq_q1_title: "{login_master_password} của tôi có an toàn không?",
   guide_faq_q1_desc:
-    "Cực kỳ an toàn. {APP_NAME} áp dụng cơ chế Zero-Knowledge (Kiến thức bằng Không). Mật khẩu chính của bạn chỉ dùng để sinh khóa mã hóa cục bộ ngay tại trình duyệt, không bao giờ được lưu lại hay gửi qua Internet.",
-  guide_faq_q2_title: "Tôi quên Mật khẩu chính thì phải làm sao?",
+    "Cực kỳ an toàn. {APP_NAME} áp dụng cơ chế Zero-Knowledge (Kiến thức bằng Không). {login_master_password} của bạn chỉ dùng để sinh khóa mã hóa cục bộ ngay tại trình duyệt, không bao giờ được lưu lại hay gửi qua Internet.",
+  guide_faq_q2_title: "Tôi quên {login_master_password} thì phải làm sao?",
   guide_faq_q2_desc:
-    "Không có cách nào khôi phục Mật khẩu chính. Nếu quên, bạn buộc phải đặt lại extension để bắt đầu lại từ đầu. Hãy ghi nhớ hoặc ghi Mật khẩu chính ra giấy cất ở nơi an toàn.",
+    "Không có cách nào khôi phục {login_master_password}. Nếu quên, bạn buộc phải đặt lại extension để bắt đầu lại từ đầu. Hãy ghi nhớ hoặc ghi {login_master_password} ra giấy cất ở nơi an toàn.",
   guide_faq_q3_title: "Tôi có thể đồng bộ mật khẩu trên nhiều máy tính không?",
   guide_faq_q3_desc:
-    "Có. Chỉ cần cài đặt {APP_NAME} lên máy tính khác, đăng nhập cùng tài khoản GitHub (hoặc cấu hình cùng mã Token) và điền ĐÚNG Mật khẩu chính đã dùng ở máy cũ. Dữ liệu sẽ tự động tải về và giải mã mượt mà.",
+    "Có. Chỉ cần cài đặt {APP_NAME} lên máy tính khác, đăng nhập cùng tài khoản GitHub (hoặc cấu hình cùng mã Token) và điền ĐÚNG {login_master_password} đã dùng ở máy cũ. Dữ liệu sẽ tự động tải về và giải mã mượt mà.",
   guide_faq_q4_title:
     "Két sắt lưu trên GitHub Gist dưới dạng bí mật (Secret Gist) có thực sự riêng tư?",
   guide_faq_q4_desc:
-    "Có. Secret Gist không được index bởi các công cụ tìm kiếm và không hiện công khai trên profile GitHub của bạn. Ngay cả khi có ai đó đoán được URL của Gist, họ cũng chỉ nhìn thấy một chuỗi ký tự mã hóa vô nghĩa. Không có Mật khẩu chính, dữ liệu đó hoàn toàn không thể giải mã.",
+    "Có. Secret Gist không được index bởi các công cụ tìm kiếm và không hiện công khai trên profile GitHub của bạn. Ngay cả khi có ai đó đoán được URL của Gist, họ cũng chỉ nhìn thấy một chuỗi ký tự mã hóa vô nghĩa. Không có {login_master_password}, dữ liệu đó hoàn toàn không thể giải mã.",
 
   // Welcome View
   welcome_feat_security_title: "Mã hóa Zero-Knowledge",
   welcome_feat_security_desc:
-    "Dữ liệu được mã hóa cục bộ bằng Mật khẩu chính trước khi đồng bộ lên GitHub Gist cá nhân. Tuyệt đối không ai khác có thể đọc được dữ liệu của bạn.",
+    "Dữ liệu được mã hóa cục bộ bằng {login_master_password} trước khi đồng bộ lên GitHub Gist cá nhân. Tuyệt đối không ai khác có thể đọc được dữ liệu của bạn.",
   welcome_feat_passkeys_title: "Đăng nhập không mật khẩu (Passkey)",
   welcome_feat_passkeys_desc:
     "Đăng ký và xác thực an toàn bằng tiêu chuẩn WebAuthn/Passkey hiện đại, loại bỏ hoàn toàn mật khẩu truyền thống.",
   welcome_feat_totp_title: "Mã xác thực hai lớp (TOTP/2FA)",
   welcome_feat_totp_desc:
     "Lưu trữ và tự động tạo mã OTP 6 số cập nhật liên tục mỗi 30 giây giúp nâng cao bảo mật tài khoản.",
-  welcome_security_notice_title: "⚠️ LƯU Ý BẢO MẬT QUAN TRỌNG",
+  welcome_security_notice_title: "LƯU Ý BẢO MẬT QUAN TRỌNG",
   welcome_warning_bold:
-    "Quên Mật khẩu chính sẽ làm MẤT DỮ LIỆU VĨNH VIỄN, KHÔNG thể khôi phục.",
+    "Quên {login_master_password} sẽ làm MẤT DỮ LIỆU VĨNH VIỄN, KHÔNG thể khôi phục.",
   welcome_warning_sub:
-    "Chúng tôi không lưu trữ mật khẩu của bạn trên bất kỳ máy chủ nào và nhà cung cấp dịch vụ lưu trữ cũng chỉ thấy dữ liệu két sắt dưới dạng các ký tự mã hóa vô nghĩa. (Lưu ý: Bạn vẫn có thể đổi Mật khẩu chính trong phần Cài đặt bất cứ lúc nào nếu muốn).",
+    "Chúng tôi không lưu trữ mật khẩu của bạn trên bất kỳ máy chủ nào và nhà cung cấp dịch vụ lưu trữ cũng chỉ thấy dữ liệu két sắt dưới dạng các ký tự mã hóa vô nghĩa. (Lưu ý: Bạn vẫn có thể đổi {login_master_password} trong phần Cài đặt bất cứ lúc nào nếu muốn).",
   welcome_checkbox_label:
-    "Tôi đã hiểu rằng nếu quên Mật khẩu chính, tôi chấp nhận mất toàn bộ dữ liệu vĩnh viễn và không thể khôi phục.",
+    "Tôi đã hiểu rằng nếu quên {login_master_password}, tôi chấp nhận mất toàn bộ dữ liệu vĩnh viễn và không thể khôi phục.",
   welcome_btn_continue: "Bắt đầu thiết lập",
   welcome_btn_next: "Tiếp tục",
   welcome_btn_prev: "Quay lại",

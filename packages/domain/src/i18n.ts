@@ -138,6 +138,8 @@ const LangSchema = z.object({
   login_checking_gist: z.string(),
   login_local_vault_must_read: z.string(),
   login_local_vault_must_read_btn: z.string(),
+  login_self_hosted_must_read: z.string(),
+  login_self_hosted_must_read_btn: z.string(),
 
   // Vault Page
   vault_search_placeholder: z.string(),

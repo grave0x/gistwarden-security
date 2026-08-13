@@ -5,26 +5,98 @@
   --font-family: var(--font-sans);
 
   /* Border Radius Tokens */
+  --radius-3xs: 2px;
+  --radius-2xs: 3px;
   --radius-xs: 4px;
   --radius-sm: 6px;
+  --radius-1-75: 7px;
   --radius-md: 8px;
+  --radius-md-lg: 10px;
   --radius-lg: 12px;
+  --radius-xl: 14px;
   --radius-full: 9999px;
 
-  /* Spacing System Tokens (4px / 8px grid) */
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 20px;
-  --space-6: 24px;
-  --space-8: 32px;
+  /* Border Width Tokens */
+  --border-width-thin: 1px;
+  --border-width-medium: 1.5px;
+  --border-width-thick: 2px;
+  --border-width-accent: 3.5px;
+  --border-width-accent-lg: 4px;
 
-  /* Font Size Tokens */
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.85rem;
-  --font-size-base: 0.95rem;
-  --font-size-lg: 1.1rem;
+  /* Composite Border Tokens */
+  --border-std: var(--border-width-thin) solid var(--border);
+  --border-std-light: var(--border-width-thin) solid var(--border-light);
+  --border-std-hover: var(--border-width-thin) solid var(--border-hover);
+  --border-std-primary: var(--border-width-thin) solid var(--primary);
+  --border-std-primary-accent: var(--border-width-thin) solid var(--primary-accent);
+  --border-std-error: var(--border-width-thin) solid var(--error);
+  --border-std-error-soft: var(--border-width-thin) solid var(--error-translucent-40);
+  --border-std-error-translucent: var(--border-width-thin) solid var(--error-translucent-30);
+  --border-std-success: var(--border-width-thin) solid var(--success);
+  --border-std-success-translucent: var(--border-width-thin) solid var(--success-translucent-30);
+  --border-std-warning: var(--border-width-thin) solid var(--warning-amber-border);
+  --border-std-warning-translucent: var(--border-width-thin) solid var(--warning-translucent-30);
+  --border-std-badge-danger-dark: var(--border-width-thin) solid var(--badge-danger-dark-border);
+  --border-std-translucent: var(--border-width-thin) solid var(--border-translucent);
+
+  --border-std-medium: var(--border-width-medium) solid var(--border);
+  --border-std-thick: var(--border-width-thick) solid var(--border);
+
+  /* Accent Border Tokens (Left/Top accent bars) */
+  --border-accent-primary: var(--border-width-accent) solid var(--primary);
+  --border-accent-lg-primary: var(--border-width-accent-lg) solid var(--primary);
+  --border-accent-warning-amber: var(--border-width-accent) solid var(--warning-amber);
+  --border-accent-lg-warning-amber: var(--border-width-accent-lg) solid var(--warning-amber);
+  --border-accent-lg-warning-fido: var(--border-width-accent-lg) solid var(--fido2-bg-warning);
+  --border-accent-lg-error: var(--border-width-accent-lg) solid var(--error);
+
+  /* Spacing System Tokens */
+  --space-0-5: 2px;
+  --space-0-75: 3px;
+  --space-1: 4px;
+  --space-1-25: 5px;
+  --space-1-5: 6px;
+  --space-1-75: 7px;
+  --space-2: 8px;
+  --space-2-25: 9px;
+  --space-2-5: 10px;
+  --space-2-75: 11px;
+  --space-3: 12px;
+  --space-3-5: 14px;
+  --space-4: 16px;
+  --space-4-5: 18px;
+  --space-5: 20px;
+  --space-5-5: 22px;
+  --space-6: 24px;
+  --space-6-5: 26px;
+  --space-8: 32px;
+  --space-9: 36px;
+  --space-12: 48px;
+  --space-15: 60px;
+
+  /* Font Size Tokens (Optimized & scaled up ~0.5px-1px for maximum legibility) */
+  --font-size-7: 0.46875rem;  /* ~7.5px */
+  --font-size-8: 0.53125rem;  /* ~8.5px */
+  --font-size-9: 0.59375rem;  /* ~9.5px */
+  --font-size-10: 0.65625rem; /* ~10.5px */
+  --font-size-11: 0.71875rem; /* ~11.5px */
+  --font-size-12: 0.78125rem; /* ~12.5px */
+  --font-size-13: 0.84375rem; /* ~13.5px */
+  --font-size-14: 0.90625rem; /* ~14.5px */
+  --font-size-15: 0.96875rem; /* ~15.5px */
+  --font-size-16: 1.03125rem; /* ~16.5px */
+  --font-size-18: 1.15625rem; /* ~18.5px */
+  --font-size-20: 1.28125rem; /* ~20.5px */
+  --font-size-22: 1.40625rem; /* ~22.5px */
+  --font-size-24: 1.53125rem; /* ~24.5px */
+  --font-size-25: 1.59375rem; /* ~25.5px */
+  --font-size-32: 2.0625rem;  /* ~33px */
+
+  /* Legacy aliases for backward compatibility */
+  --font-size-xs: var(--font-size-12);
+  --font-size-sm: var(--font-size-13);
+  --font-size-base: var(--font-size-14);
+  --font-size-lg: var(--font-size-16);
 
   /* Font Weight Tokens */
   --font-weight-regular: 400;
@@ -36,10 +108,40 @@
   /* Transition Tokens */
   --transition-fast: 0.15s ease;
   --transition-normal: 0.2s ease;
+  --transition-slow: 0.3s ease;
 
-  /* Constant Colors */
-  --white: #ffffff;
-  --black: #000000;
+  /* Composite Transition Tokens */
+  --transition-colors: color var(--transition-normal), background-color var(--transition-normal), border-color var(--transition-normal);
+  --transition-colors-fast: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+  --transition-focus: border-color var(--transition-normal), box-shadow var(--transition-normal);
+  --transition-transform: transform var(--transition-fast);
+  --transition-all: all var(--transition-normal);
+  --transition-all-fast: all var(--transition-fast);
+  --transition-fade-slide: opacity var(--transition-normal), transform var(--transition-normal), visibility var(--transition-normal);
+
+  /* Opacity Design Tokens */
+  --opacity-quarter: 0.25;
+  --opacity-disabled: 0.4;
+  --opacity-disabled-subtle: 0.45;
+  --opacity-subtle: 0.5;
+  --opacity-muted: 0.6;
+  --opacity-medium: 0.8;
+  --opacity-hover: 0.9;
+
+  /* Z-Index Hierarchy Tokens */
+  --z-base: 1;
+  --z-above: 2;
+  --z-header: 10;
+  --z-dropdown: 500;
+  --z-sticky: 1000;
+  --z-backdrop: 2000;
+  --z-modal: 9999;
+  --z-toast: 20000;
+  --z-max: 2147483647;
+
+  /* Soft Base Palette (Eliminates harsh #000000 pure black and #ffffff pure white) */
+  --white: #f1f5f9;
+  --black: #0b101f; /* Rich Charcoal Off-Black */
 
   /* Default Theme (Dark) */
   --primary: #175ddc;
@@ -78,6 +180,16 @@
   --shadow-2: rgba(0, 0, 0, 0.1);
   --shadow-large: rgba(0, 0, 0, 0.15);
   --shadow-dropdown: rgba(0, 0, 0, 0.35);
+  --shadow-xs: 0 2px 4px var(--shadow-2);
+  --shadow-sm: 0 2px 8px var(--shadow-2);
+  --shadow-md: 0 4px 12px var(--shadow-2);
+  --shadow-lg: 0 4px 16px var(--black-translucent-8);
+  --shadow-xl: 0 10px 25px var(--shadow-dropdown);
+  --shadow-modal: 0 16px 48px var(--black-translucent-50), 0 0 60px var(--primary-translucent-15);
+  --shadow-card: 0 4px 16px var(--black-translucent-8);
+  --shadow-card-hover: 0 8px 24px var(--glow-primary);
+  --shadow-focus: 0 0 0 2px var(--primary-translucent-20);
+  --shadow-focus-lg: 0 0 0 3px var(--glow-primary);
 
   /* FIDO2 Prompt States */
   --fido2-bg-success: #22c55e;
@@ -100,9 +212,114 @@
   --swagger-put-bg: #f59e0b;
   --swagger-code-bg: #1e1e1e;
   --swagger-code-text: #d4d4d4;
+
+  /* Standardized Component Tokens */
+  --text-secondary: #8496b0;
+  --bg-input: #0f172b;
+  --primary-light: rgba(23, 93, 220, 0.15);
+  --surface-card: #232f45;
+  --surface-hover: rgba(255, 255, 255, 0.05);
+  --surface-light: rgba(255, 255, 255, 0.03);
+  --border-translucent: rgba(255, 255, 255, 0.05);
+  --border-hover: #435570;
+  --error-translucent-30: rgba(229, 62, 62, 0.3);
+  --warning-translucent-30: rgba(245, 158, 11, 0.3);
+  --success-translucent-30: rgba(24, 220, 122, 0.3);
+
+  /* Password Strength & Report Category Colors */
+  --strength-very-weak: #ef4444;
+  --strength-weak: #f97316;
+  --strength-medium: #f59e0b;
+  --strength-strong: #3b82f6;
+  --strength-very-strong: #10b981;
+  --report-purple: #a855f7;
+
+  /* Special Warning & Card Brand Tokens */
+  --warning-amber: #ffab00;
+  --warning-amber-bg: rgba(255, 171, 0, 0.08);
+  --warning-amber-border: rgba(255, 171, 0, 0.3);
+  --card-visa-bg: #1a1f2c;
+  --card-amex-bg: #007bc1;
+  --card-mastercard-red: #eb001b;
+  --card-mastercard-orange: #ff5f00;
+
+  /* Badges & Special Translucent Tokens */
+  --badge-danger-dark-bg: rgba(185, 28, 28, 0.25);
+  --badge-danger-dark-text: #fca5a5;
+  --badge-danger-dark-border: rgba(239, 68, 68, 0.35);
+  --error-translucent-10: rgba(255, 78, 99, 0.1);
+  --error-translucent-40: rgba(255, 78, 99, 0.4);
+  --overlay-bg: rgba(0, 0, 0, 0.55);
+  --shadow-modal-slide: 0 -4px 20px rgba(0, 0, 0, 0.4);
+
+  /* Translucent Alpha Utilities */
+  --white-translucent-20: rgba(255, 255, 255, 0.2);
+  --white-translucent-30: rgba(255, 255, 255, 0.3);
+  --white-translucent-70: rgba(255, 255, 255, 0.7);
+  --white-translucent-75: rgba(255, 255, 255, 0.75);
+  --black-translucent-8: rgba(0, 0, 0, 0.08);
+  --black-translucent-15: rgba(0, 0, 0, 0.15);
+  --black-translucent-20: rgba(0, 0, 0, 0.2);
+  --black-translucent-25: rgba(0, 0, 0, 0.25);
+  --black-translucent-30: rgba(0, 0, 0, 0.3);
+  --black-translucent-40: rgba(0, 0, 0, 0.4);
+  --black-translucent-45: rgba(0, 0, 0, 0.45);
+  --black-translucent-50: rgba(0, 0, 0, 0.5);
+  --black-translucent-60: rgba(0, 0, 0, 0.6);
+  --black-translucent-70: rgba(0, 0, 0, 0.7);
+
+  /* Header & Avatar Specific Colors */
+  --header-dark-bg: #0b101f;
+  --btn-new-bg: #5b9cf4;
+  --btn-new-color: #0c1322;
+  --btn-new-hover-bg: #4a8be3;
+  --avatar-bg: #7b1fa2;
+  --avatar-bg-light: #8e24aa;
+  --guide-card-border: rgba(23, 93, 220, 0.25);
+
+  /* Toast Notification & Responsive Background Tokens */
+  --toast-dark-bg: rgba(30, 41, 59, 0.96);
+  --toast-dark-text: #f8fafc;
+  --toast-dark-border: #334155;
+  --toast-light-bg: rgba(255, 255, 255, 0.96);
+  --toast-light-text: #0f172a;
+  --toast-light-border: #e2e8f0;
+  --toast-dark-card-bg: rgba(15, 23, 42, 0.96);
+  --toast-success-border: rgba(34, 197, 94, 0.35);
+  --toast-success-text: #4ade80;
+  --toast-error-border: rgba(239, 68, 68, 0.35);
+  --toast-error-text: #f87171;
+  --toast-info-border: rgba(59, 130, 246, 0.35);
+  --toast-info-text: #60a5fa;
+  --toast-light-success-bg: rgba(240, 253, 244, 0.95);
+  --toast-light-success-border: rgba(22, 163, 74, 0.3);
+  --toast-light-success-text: #16a34a;
+  --toast-light-error-bg: rgba(254, 242, 242, 0.95);
+  --toast-light-error-border: rgba(220, 38, 38, 0.3);
+  --toast-light-error-text: #dc2626;
+  --toast-light-info-bg: rgba(239, 246, 255, 0.95);
+  --toast-light-info-border: rgba(37, 99, 235, 0.3);
+  --toast-light-info-text: #2563eb;
+  --radial-bg-dark-start: #162238;
+  --radial-bg-dark-mid: #0b1220;
+  --radial-bg-dark-end: #070a12;
+  --radial-bg-light-start: #f1f5f9;
+  --radial-bg-light-end: #e2e8f0;
+
+  /* RGB & Palette Alias Tokens */
+  --primary-rgb: 23, 93, 220;
+  --primary-dark: #0d43af;
+  --secondary: #65abff;
+  --secondary-rgb: 101, 171, 255;
+  --secondary-dark: #2563eb;
+  --text-dim: var(--text-muted);
+  --error-rgb: 255, 78, 99;
+  --glow-primary: rgba(23, 93, 220, 0.3);
 }
 
 body.light-theme {
+  --white: #f8fafc;
+  --black: #0f172b;
   --primary: #175ddc;
   --primary-hover: #0d43af;
   --primary-accent: #175ddc;
@@ -110,8 +327,8 @@ body.light-theme {
   --link-color: #175ddc;
   --link-hover-color: #0d43af;
 
-  --bg: #f7f9fa;
-  --surface: #ffffff;
+  --bg: #f1f5f9;
+  --surface: #f8fafc;
   --text: #0f172b;
   --text-muted: #45556c;
   --border: #d5dde8;
@@ -155,4 +372,56 @@ body.light-theme {
   --swagger-put-bg: #d97706;
   --swagger-code-bg: #1e293b;
   --swagger-code-text: #f1f5f9;
+
+  /* Standardized Component Tokens */
+  --text-secondary: #45556c;
+  --bg-input: #f8fafc;
+  --primary-light: rgba(23, 93, 220, 0.1);
+  --surface-card: #f8fafc;
+  --surface-hover: rgba(0, 0, 0, 0.04);
+  --surface-light: rgba(0, 0, 0, 0.03);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --border-translucent: rgba(0, 0, 0, 0.04);
+  --border-hover: #b0becd;
+  --error-translucent-30: rgba(193, 0, 7, 0.2);
+  --warning-translucent-30: rgba(217, 119, 6, 0.2);
+  --success-translucent-30: rgba(0, 130, 54, 0.2);
+
+  /* Password Strength & Report Category Colors (Light Theme) */
+  --strength-very-weak: #dc2626;
+  --strength-weak: #ea580c;
+  --strength-medium: #d97706;
+  --strength-strong: #2563eb;
+  --strength-very-strong: #059669;
+  --report-purple: #9333ea;
+
+  /* Special Warning & Card Brand Tokens (Light Theme) */
+  --warning-amber: #d97706;
+  --warning-amber-bg: rgba(245, 158, 11, 0.08);
+  --warning-amber-border: rgba(217, 119, 6, 0.25);
+  --card-visa-bg: #1e293b;
+
+  /* Badges & Special Translucent Tokens (Light Theme) */
+  --badge-danger-dark-bg: rgba(254, 226, 226, 0.8);
+  --badge-danger-dark-text: #991b1b;
+  --badge-danger-dark-border: rgba(239, 68, 68, 0.25);
+  --error-translucent-10: rgba(193, 0, 7, 0.06);
+  --error-translucent-40: rgba(193, 0, 7, 0.25);
+
+  /* Header & Component Specific Colors (Light Theme) */
+  --header-dark-bg: #f8fafc;
+  --btn-new-bg: #175ddc;
+  --btn-new-color: #f8fafc;
+  --btn-new-hover-bg: #0d43af;
+  --guide-card-border: rgba(23, 93, 220, 0.15);
+
+  /* RGB & Palette Alias Tokens */
+  --primary-rgb: 23, 93, 220;
+  --primary-dark: #0d43af;
+  --secondary: #175ddc;
+  --secondary-rgb: 23, 93, 220;
+  --secondary-dark: #0d43af;
+  --text-dim: var(--text-muted);
+  --error-rgb: 193, 0, 7;
+  --glow-primary: rgba(23, 93, 220, 0.15);
 }

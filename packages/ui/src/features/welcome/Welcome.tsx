@@ -13,6 +13,7 @@ import {
   AppIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
+  ShieldAlertIcon,
 } from "@/icons/svg/index.ts";
 
 export const Welcome: Component = () => {
@@ -105,7 +106,10 @@ export const Welcome: Component = () => {
                 <div class="tour-svg-container">
                   <WarningIllustration />
                 </div>
-                <h3 class="tour-title">{t("welcome_security_notice_title")}</h3>
+                <h3 class="tour-title flex align-items-center justify-center gap-8">
+                  <ShieldAlertIcon size={20} class="text-warning" />
+                  <span>{t("welcome_security_notice_title")}</span>
+                </h3>
                 <div class="tour-warning-card">
                   <p class="warning-bold">{t("welcome_warning_bold")}</p>
                   <p class="warning-sub">{t("welcome_warning_sub")}</p>

@@ -117,41 +117,44 @@ export default {
   pwd_strength_fair: "Fair",
   pwd_strength_strong: "Strong",
   pwd_strength_very_strong: "Very Strong",
-  login_placeholder_mp: "Enter your Master Password...",
+  login_placeholder_mp: "Enter your {login_master_password}...",
   login_btn_unlock: "Unlock",
-  login_forgot_password: "Forgot Master Password?",
+  login_forgot_password: "Forgot {login_master_password}?",
   login_error_empty_pat: "GitHub token is empty.",
   login_error_empty_username: "Please enter username.",
   login_error_empty_password: "Please enter account password.",
   login_error_invalid_token: "Invalid token or connection error",
   login_error_oauth_no_token: "Did not receive access token from GitHub",
   login_error_oauth_fail: "OAuth Login failed",
-  login_error_empty_mp: "Please enter Master Password",
-  login_error_wrong_mp: "Master Password incorrect",
+  login_error_empty_mp: "Please enter {login_master_password}",
+  login_error_wrong_mp: "{login_master_password} incorrect",
   caps_lock_on: "Caps Lock is on",
   login_error_changed_mp_hint:
-    "If you recently changed your Master Password on another device, you need to log out and log in again.",
+    "If you recently changed your {login_master_password} on another device, you need to log out and log in again.",
   login_error_mp_cooldown:
-    "Too many failed Master Password attempts. Please try again later.",
+    "Too many failed {login_master_password} attempts. Please try again later.",
   login_error_mp_tampered:
-    "Master Password security data has been tampered with. System logged out for protection.",
-  login_forgot_password_title: "Forgot Master Password",
+    "{login_master_password} security data has been tampered with. System logged out for protection.",
+  login_forgot_password_title: "Forgot {login_master_password}",
   login_forgot_password_msg:
-    "{APP_NAME} uses end-to-end encryption (Zero-Knowledge). The Master Password is never sent or stored on any server, hence there is <strong class='text-error'>NO WAY</strong> to recover or reset it.<br/><br/>To start over, the system will <strong>LOG OUT</strong> and <strong>CLEAR LOCAL DATA</strong>.<br/><br/>If you want to continue using this GitHub account, the system will open the GitHub Gist page containing the old vault so you can <strong>BACK UP</strong> the data or <strong class='text-error'>MANUALLY DELETE</strong> this Gist on GitHub before logging in again.<br/><br/>Are you sure you want to log out and open the old Gist page?",
-  login_local_forgot_password_title: "Forgot Local Vault Master Password?",
+    "{APP_NAME} uses end-to-end encryption (Zero-Knowledge). The {login_master_password} is never sent or stored on any server, hence there is <strong class='text-error'>NO WAY</strong> to recover or reset it.<br/><br/>To start over, the system will <strong>LOG OUT</strong> and <strong>CLEAR LOCAL DATA</strong>.<br/><br/>If you want to continue using this GitHub account, the system will open the GitHub Gist page containing the old vault so you can <strong>BACK UP</strong> the data or <strong class='text-error'>MANUALLY DELETE</strong> this Gist on GitHub before logging in again.<br/><br/>Are you sure you want to log out and open the old Gist page?",
+  login_local_forgot_password_title:
+    "Forgot Local Vault {login_master_password}?",
   login_local_forgot_password_msg:
-    "Local Vault encrypts data 100% locally on your device and holds no recovery key. If you forget your Master Password, your current vault data <strong class='text-error'>CANNOT</strong> be decrypted or recovered.<br/><br/>To confirm wiping the locked vault and resetting, please type <strong class='text-error'>RESET</strong> in the box below:",
+    "Local Vault encrypts data 100% locally on your device and holds no recovery key. If you forget your {login_master_password}, your current vault data <strong class='text-error'>CANNOT</strong> be decrypted or recovered.<br/><br/>To confirm wiping the locked vault and resetting, please type <strong class='text-error'>RESET</strong> in the box below:",
   login_local_reset_btn: "Wipe & Reset Vault",
   login_local_reset_placeholder: "Type RESET to confirm...",
   app_loading: "Loading {APP_NAME}...",
   login_or: "Or",
-  login_error_password_mismatch: "Confirm password does not match",
-  login_enter_master_password: "Enter master password",
+  login_error_password_mismatch: "Password confirmation does not match",
+  login_enter_master_password: "Enter {login_master_password}",
   login_confirm_master_password: "Re-enter to confirm",
-  login_btn_create_master_password: "Create master password",
+  login_btn_create_master_password: "Create {login_master_password}",
   login_checking_gist: "Checking data...",
   login_local_vault_must_read: "Important guidelines & warnings",
   login_local_vault_must_read_btn: "Must read",
+  login_self_hosted_must_read: "Important guidelines & setup",
+  login_self_hosted_must_read_btn: "Must read",
 
   // Vault Page
   vault_search_placeholder: "Search accounts...",
@@ -360,7 +363,7 @@ export default {
 
   // Settings Page
   settings_header: "Settings",
-  settings_change_mp: "Change Master Password",
+  settings_change_mp: "Change {login_master_password}",
   settings_export: "Export Vault (JSON)",
   settings_clear_vault: "Clear Vault",
   settings_logout: "Logout GitHub Account",
@@ -434,31 +437,32 @@ export default {
   set_pin_label: "PIN",
   set_pin_error_length: "PIN must be at least 4 characters.",
   login_unlock_with_pin: "Unlock with PIN",
-  login_unlock_with_mp: "Unlock with Master Password",
+  login_unlock_with_mp: "Unlock with {login_master_password}",
   login_pin_placeholder: "Enter your PIN...",
   login_error_wrong_pin: "Incorrect PIN.",
   login_error_wrong_pin_2_left: "Incorrect PIN. 2 attempts remaining.",
   login_error_wrong_pin_1_left: "Incorrect PIN. 1 attempt remaining!",
   login_error_pin_max_attempts_reached:
-    "Incorrect PIN entered 3 times. PIN unlock has been disabled, please use your Master Password.",
+    "Incorrect PIN entered 3 times. PIN unlock has been disabled, please use your {login_master_password}.",
   login_error_pin_tampered:
-    "PIN security data tampered. PIN unlock has been disabled, please use your Master Password.",
-  settings_change_mp_title: "Change Master Password",
+    "PIN security data tampered. PIN unlock has been disabled, please use your {login_master_password}.",
+  settings_change_mp_title: "Change {login_master_password}",
   vault_options_group_sync_import: "Sync & Data Transfer",
   vault_options_group_management: "Storage & Management",
   vault_options_group_danger: "Danger Zone",
   settings_change_mp_sub: "Re-encrypt vault with a new master password",
   settings_clear_vault_sub: "Permanently delete all vault data",
   settings_open_gist_title: "Open storage Gist on GitHub",
-  settings_change_mp_current: "Current Master Password",
-  settings_change_mp_new: "New Master Password",
-  settings_change_mp_confirm: "Confirm New Master Password",
-  settings_error_mp_wrong_current: "Current Master Password is incorrect",
-  settings_error_mp_empty_new: "New Master Password cannot be empty",
+  settings_change_mp_current: "Current {login_master_password}",
+  settings_change_mp_new: "New {login_master_password}",
+  settings_change_mp_confirm: "Confirm New {login_master_password}",
+  settings_error_mp_wrong_current:
+    "Current {login_master_password} is incorrect",
+  settings_error_mp_empty_new: "New {login_master_password} cannot be empty",
   settings_error_mp_mismatch: "Password confirmation does not match",
   settings_error_mp_fail: "Failed to change password",
   settings_error_fields_required: "Please fill in all fields",
-  settings_mp_success: "Master Password changed successfully!",
+  settings_mp_success: "{login_master_password} changed successfully!",
   settings_export_success: "Backup file downloaded!",
   settings_clear_vault_confirm_title: "Confirm Permanent Deletion",
   clear_vault_confirm_prompt_msg:
@@ -548,10 +552,10 @@ export default {
     "No matching Passkey found for domain <strong>{rp}</strong> in your vault.",
   fido2_vault_locked_title: "Vault is Locked",
   fido2_vault_locked_subtitle:
-    "Unlock {APP_NAME} with Master Password to continue Passkey authentication.",
+    "Unlock {APP_NAME} with {login_master_password} to continue Passkey authentication.",
   fido2_not_logged_in_title: "Not Logged In",
   fido2_not_logged_in_subtitle:
-    "Please open the extension and log in to Gistwarden before using Passkeys.",
+    "Please open the extension and log in to {APP_NAME} before using Passkeys.",
   fido2_register_choose_passkey_action:
     "This account already has a Passkey. What would you like to do?",
   fido2_register_choose_passkey_overwrite:
@@ -624,17 +628,17 @@ export default {
   report_scanning_progress: "Scanning ({progress}%)...",
   report_exposed_times: "Exposed {count} times",
   report_export_btn: "Export HTML",
-  report_export_title: "Exposed Passwords Security Report - Gistwarden",
-  report_export_heading: "🛡️ Exposed Passwords Security Report",
+  report_export_title: "Exposed Passwords Security Report - {APP_NAME}",
+  report_export_heading: "Exposed Passwords Security Report",
   report_export_meta:
-    "Generated by Gistwarden via Have I Been Pwned (HIBP) API",
+    "Generated by {APP_NAME} via Have I Been Pwned (HIBP) API",
   report_export_summary:
-    "🚨 Warning: Found {count} account(s) with exposed passwords! Change these passwords immediately.",
+    "Warning: Found {count} account(s) with exposed passwords! Change these passwords immediately.",
   report_export_col_account: "Account Name",
   report_export_col_username: "Username / Email",
   report_export_col_exposure: "Breach Exposure",
   report_export_footer:
-    "Gistwarden Vault Security Audit • Protected via k-Anonymity SHA-1 Hash Matching",
+    "{APP_NAME} Vault Security Audit • Protected via k-Anonymity SHA-1 Hash Matching",
 
   // Guide Page
   settings_user_guide: "User Guide",
@@ -655,38 +659,38 @@ export default {
   guide_nav_reports_settings: "Reports & Settings",
 
   guide_item_overview: "Overview & E2EE Encryption",
-  guide_item_master_password: "Master Password & PBKDF2",
+  guide_item_master_password: "{login_master_password} & PBKDF2",
   guide_item_github_gist: "GitHub Token & Gist Setup",
-  guide_item_self_hosted_server: "Self-Hosted Server Setup",
+  guide_item_self_hosted_server: "{login_provider_self_hosted} Setup",
   guide_item_local_vault: "Local Vault & Security Warnings",
   guide_item_auto_lock: "Vault Lock & Auto-Lock Timer",
 
   guide_start_self_hosted_lead:
-    "Self-Hosted Server Provider allows you to build or run your own personal server (VPS, Docker, Cloudflare Workers, NAS Synology...) to store and synchronize your encrypted vault safely.",
+    "{login_provider_self_hosted} Provider allows you to build or run your own personal server (VPS, Docker, Cloudflare Workers, NAS Synology...) to store and synchronize your encrypted vault safely.",
   guide_start_self_hosted_step1_title: "1. Enter Server Base URL",
   guide_start_self_hosted_step1_desc:
-    "Enter your server URL (e.g. https://abc.com or http://192.168.1.100:3000). GistWarden will connect directly to your server endpoints.",
+    "Enter your server URL (e.g. https://abc.com or http://192.168.1.100:3000). {APP_NAME} will connect directly to your server endpoints.",
   guide_start_self_hosted_step2_title: "2. Register or Login Server Account",
   guide_start_self_hosted_step2_desc:
     "Switch to Register tab to create a new server account (POST /auth/register) or Login (POST /auth/login) to receive your Access Token.",
   guide_start_self_hosted_step3_title:
-    "3. Initialize or Unlock Vault with Master Password",
+    "3. Initialize or Unlock Vault with {login_master_password}",
   guide_start_self_hosted_step3_desc:
-    "After obtaining Access Token, the client calls GET /vault. HTTP 200 (Existing Vault) -> Enter Master Password to Unlock; HTTP 404 (New Vault) -> Set a new Master Password.",
+    "After obtaining Access Token, the client calls GET /vault. HTTP 200 (Existing Vault) -> Enter {login_master_password} to Unlock; HTTP 404 (New Vault) -> Set a new {login_master_password}.",
   guide_start_self_hosted_step4_title:
     "4. Automatic End-to-End Encrypted Sync (E2EE)",
   guide_start_self_hosted_step4_desc:
-    "All vault modifications are encrypted locally using your Master Password before being transmitted to POST /vault. Your server cannot read your plaintext passwords.",
+    "All vault modifications are encrypted locally using your {login_master_password} before being transmitted to POST /vault. Your server cannot read your plaintext passwords.",
   guide_start_self_hosted_note_title: "Important E2EE Security Note",
   guide_start_self_hosted_note_desc:
-    "The Server Account Password is only used to authenticate API requests with your server. The Master Password derives the AES-256-GCM encryption key and is NEVER sent to the server.",
+    "The Server Account Password is only used to authenticate API requests with your server. The {login_master_password} derives the AES-256-GCM encryption key and is NEVER sent to the server.",
   guide_self_hosted_cors_title:
     "Mandatory CORS Configuration for Web Version (GitHub Pages)",
   guide_self_hosted_cors_desc:
-    "When accessing GistWarden Web (https://uongsuadaubung.github.io), your Self-Hosted server MUST enable CORS (Access-Control-Allow-Origin: https://uongsuadaubung.github.io or *) and handle HTTP OPTIONS Preflight requests.",
-  guide_start_self_hosted_app_title: "Connection Steps in GistWarden App",
+    "When accessing {APP_NAME} Web (https://uongsuadaubung.github.io), your Self-Hosted server MUST enable CORS (Access-Control-Allow-Origin: https://uongsuadaubung.github.io or *) and handle HTTP OPTIONS Preflight requests.",
+  guide_start_self_hosted_app_title: "Connection Steps in {APP_NAME} App",
   guide_start_self_hosted_app_desc:
-    "On GistWarden Login/Initialization screen, select Self-Hosted Server tab, enter Base URL, Register/Login, and begin syncing.",
+    "On {APP_NAME} Login/Initialization screen, select {login_provider_self_hosted} tab, enter Base URL, Register/Login, and begin syncing.",
 
   login_provider_select_label: "Vault Storage Provider",
   login_provider_github_gist: "Cloud Vault (GitHub Gist)",
@@ -702,13 +706,14 @@ export default {
   login_self_hosted_forgot_password: "Forgot password?",
   login_self_hosted_forgot_password_title: "Recover Password",
   login_self_hosted_forgot_password_msg:
-    "Please contact the Administrator (Admin) of this host server for assistance in recovering your account password.",
-  login_self_hosted_forgot_mp_title: "Forgot Self-Hosted Master Password",
+    "Please contact the Administrator of this host server for assistance in recovering your account password.",
+  login_self_hosted_forgot_mp_title:
+    "Forgot Self-Hosted {login_master_password}",
   login_self_hosted_forgot_mp_msg:
-    "{APP_NAME} uses end-to-end (Zero-Knowledge) encryption. The Master Password is never stored on the server and <strong class='text-error'>CANNOT BE RECOVERED</strong>.<br/><br/>If you forgot your Master Password, you can <strong>Log Out</strong> or <strong>contact the Administrator (Admin)</strong> of this host server to delete the stored vault file, allowing you to create a new vault with this same account.",
+    "{APP_NAME} uses end-to-end (Zero-Knowledge) encryption. The {login_master_password} is never stored on the server and <strong class='text-error'>CANNOT BE RECOVERED</strong>.<br/><br/>If you forgot your {login_master_password}, you can <strong>Log Out</strong> or <strong>contact the Administrator (Admin)</strong> of this host server to delete the stored vault file, allowing you to create a new vault with this same account.",
 
   // Server Config Modal
-  server_config_modal_title: "Self-Hosted Server Configuration",
+  server_config_modal_title: "{login_provider_self_hosted} Configuration",
   server_config_btn_test: "Test Connection",
   server_config_btn_save: "Save Configuration",
   server_config_test_success: "Server connection successful!",
@@ -723,12 +728,13 @@ export default {
 
   guide_self_hosted_why_title: "Why Are These REST APIs Needed?",
   guide_self_hosted_why_desc:
-    "The Self-Hosted Server API is designed with 6 standardized REST endpoints, empowering users to host their own private infrastructure (Private Cloud/VPS) independently of GitHub. All vault contents are end-to-end encrypted (E2EE) using AES-256-GCM on the client before being sent to the server.",
+    "The {login_provider_self_hosted} API is designed with 6 standardized REST endpoints, empowering users to host their own private infrastructure (Private Cloud/VPS) independently of GitHub. All vault contents are end-to-end encrypted (E2EE) using AES-256-GCM on the client before being sent to the server.",
   guide_self_hosted_matrix_title:
     "1-to-1 API Feature Comparison Matrix vs GitHub API",
   guide_self_hosted_matrix_col_action: "App Operation",
   guide_self_hosted_matrix_col_github: "GitHub Gist API Flow",
-  guide_self_hosted_matrix_col_self_hosted: "Self-Hosted Server API Flow",
+  guide_self_hosted_matrix_col_self_hosted:
+    "{login_provider_self_hosted} API Flow",
   guide_self_hosted_matrix_col_purpose: "Role & Necessity",
 
   guide_self_hosted_row1_action: "Register Account",
@@ -753,7 +759,7 @@ export default {
   guide_self_hosted_row4_github: "GET /gists (200 OK / 404 Not Found)",
   guide_self_hosted_row4_self_hosted: "GET /vault (200 OK / 404 Not Found)",
   guide_self_hosted_row4_purpose:
-    "Client relies on HTTP 200/404 to display Unlock or Master Password setup screen.",
+    "Client relies on HTTP 200/404 to display Unlock or {login_master_password} setup screen.",
 
   guide_self_hosted_row5_action: "Save / Update Vault",
   guide_self_hosted_row5_github: "POST / PATCH /gists",
@@ -767,7 +773,7 @@ export default {
   guide_self_hosted_row6_purpose:
     "Purges remote vault data from server upon account reset.",
 
-  swagger_explorer_title: "GistWarden Self-Hosted REST API Explorer",
+  swagger_explorer_title: "{APP_NAME} Self-Hosted REST API Explorer",
   swagger_base_url_label: "Base URL",
   swagger_collapse: "Collapse",
   swagger_expand: "Details",
@@ -808,7 +814,7 @@ export default {
   swagger_res_401_token_desc: "Token is invalid or has been revoked.",
   swagger_res_404_title: "404 Not Found — New Vault Account",
   swagger_res_404_desc:
-    "Client flags account as New Vault and displays Master Password setup screen.",
+    "Client flags account as New Vault and displays {login_master_password} setup screen.",
 
   swagger_ep_post_vault_summary: "Save / Update Encrypted Vault Payload",
   swagger_ep_post_vault_desc:
@@ -924,9 +930,9 @@ export default {
   guide_vm_logins_card2_title: "Multiple URIs Support",
   guide_vm_logins_card2_desc:
     "Each login item allows storing multiple URIs with distinct match options.",
-  guide_vm_logins_card3_title: "Master Password Re-prompt",
+  guide_vm_logins_card3_title: "{login_master_password} Re-prompt",
   guide_vm_logins_card3_desc:
-    "Enable this protection for sensitive financial or high-risk accounts. Every time you view, edit, or copy the password, {APP_NAME} will require re-entering your Master Password to verify identity.",
+    "Enable this protection for sensitive financial or high-risk accounts. Every time you view, edit, or copy the password, {APP_NAME} will require re-entering your {login_master_password} to verify identity.",
   guide_vm_logins_card4_title: "Item Password Revision History",
   guide_vm_logins_card4_desc:
     "Whenever you update an item's password, {APP_NAME} automatically saves previous passwords into the item's revision history. Open item details ➔ click 'Password History' to view or restore previous passwords anytime.",
@@ -935,7 +941,7 @@ export default {
     "Securely store private text, account recovery codes, software keys, or sensitive notes.",
   guide_vm_notes_card_title: "Secure Note Privacy",
   guide_vm_notes_card_desc:
-    "All text in Secure Notes is encrypted directly on your device before syncing. You can also turn on Master Password Reprompt when opening.",
+    "All text in Secure Notes is encrypted directly on your device before syncing. You can also turn on {login_master_password} Reprompt when opening.",
 
   guide_vm_cards_lead:
     "Store credit card details and personal identity information for 1-click form autofill and payments.",
@@ -990,7 +996,7 @@ export default {
     "{APP_NAME} is a Zero-Knowledge encrypted personal password vault solution, automatically syncing to your private personal cloud via GitHub Gist.",
   guide_start_ov_card1_title: "Zero-Knowledge Encryption Security",
   guide_start_ov_card1_desc:
-    "All vault data is encrypted directly on your device before transmission or storage. Absolutely no one (including developers or cloud storage providers) can read your data without your Master Password.",
+    "All vault data is encrypted directly on your device before transmission or storage. Absolutely no one (including developers or cloud storage providers) can read your data without your {login_master_password}.",
   guide_start_ov_card2_title: "Private Personal Cloud Sync",
   guide_start_ov_card2_desc:
     "Instead of sending data to third-party servers, {APP_NAME} syncs data directly into a Private Gist on your personal GitHub account.",
@@ -999,16 +1005,16 @@ export default {
     "Support storing and logging in with Passkeys (FIDO2 / WebAuthn) using biometrics or device PIN, eliminating password leaks.",
 
   guide_start_mp_lead:
-    "The Master Password is the sole key used to decrypt and protect your entire vault data.",
-  guide_start_mp_step1_title: "1. Master Password Role",
+    "The {login_master_password} is the sole key used to decrypt and protect your entire vault data.",
+  guide_start_mp_step1_title: "1. {login_master_password} Role",
   guide_start_mp_step1_desc:
-    "The Master Password unlocks your vault and acts as the root key encrypting all items. Make it strong and memorable.",
-  guide_start_mp_step2_title: "2. No Master Password Storage Principle",
+    "The {login_master_password} unlocks your vault and acts as the root key encrypting all items. Make it strong and memorable.",
+  guide_start_mp_step2_title: "2. No {login_master_password} Storage Principle",
   guide_start_mp_step2_desc:
-    "{APP_NAME} adheres to Zero-Knowledge: the app never stores or sends your Master Password anywhere. If forgotten, data cannot be recovered.",
-  guide_start_mp_step3_title: "3. How to Change Master Password",
+    "{APP_NAME} adheres to Zero-Knowledge: the app never stores or sends your {login_master_password} anywhere. If forgotten, data cannot be recovered.",
+  guide_start_mp_step3_title: "3. How to Change {login_master_password}",
   guide_start_mp_step3_desc:
-    "Change your Master Password anytime in {settings_header} → {settings_account_security} → {settings_change_mp}. Re-encrypts your entire vault with the new key.",
+    "Change your {login_master_password} anytime in {settings_header} → {settings_account_security} → {settings_change_mp}. Re-encrypts your entire vault with the new key.",
 
   guide_start_lock_lead:
     "Automatically lock vault data when inactive or on browser restart.",
@@ -1020,16 +1026,17 @@ export default {
     "Choose timeout duration: On Restart, 1 minute, 5 minutes, 15 minutes, 30 minutes, 1 hour, or 4 hours.",
   guide_start_lock_step3_title: "3. Choose Timeout Action",
   guide_start_lock_step3_lock:
-    "Lock: Clears decryption keys from RAM. Requires Master Password or PIN to unlock.",
+    "Lock: Clears decryption keys from RAM. Requires {login_master_password} or PIN to unlock.",
   guide_start_lock_step3_logout:
     "Log out: Clears session state and requires logging in again.",
-  guide_start_lock_step4_title: "4. PIN Unlock & Master Password Requirements",
+  guide_start_lock_step4_title:
+    "4. PIN Unlock & {login_master_password} Requirements",
   guide_start_lock_step4_desc:
-    "Enable Unlock with PIN for smooth access. Check Require Master Password on Restart for maximum security.",
+    "Enable Unlock with PIN for smooth access. Check Require {login_master_password} on Restart for maximum security.",
 
   guide_start_pin_title: "Configure & Use PIN Quick Unlock",
   guide_start_pin_lead:
-    "PIN code allows unlocking your vault quickly with a short numeric code without re-typing a long Master Password every time.",
+    "PIN code allows unlocking your vault quickly with a short numeric code without re-typing a long {login_master_password} every time.",
   guide_start_pin_step1_title: "1. Turn on Unlock with PIN option",
   guide_start_pin_step1_desc:
     "Open {APP_NAME} ➔ go to {settings_header} ➔ {settings_account_security}. Check the 'Unlock with PIN' option.",
@@ -1038,7 +1045,7 @@ export default {
     "A PIN setup dialog will appear. Enter your preferred PIN (at least 4 digits) and click Confirm to save.",
   guide_start_pin_step3_title: "3. Quick unlock with PIN when vault locks",
   guide_start_pin_step3_desc:
-    "When the vault is locked due to timeout, simply type your PIN code and click Unlock. Encryption keys will be restored smoothly without typing your full Master Password.",
+    "When the vault is locked due to timeout, simply type your PIN code and click Unlock. Encryption keys will be restored smoothly without typing your full {login_master_password}.",
   guide_start_pin_note_title: "Important Security Note on PIN:",
   guide_start_pin_note_desc:
     "PIN code is stored securely in local device storage. If you enter incorrect PIN 3 times, PIN mode is automatically disabled and you will be logged out to prevent brute-force attempts. Logging out of your account also removes PIN data automatically.",
@@ -1072,7 +1079,7 @@ export default {
   // Autofill & Password Generator Guides
   guide_auto_lead:
     "Automatically detect forms and autofill Username / Password on websites.",
-  guide_auto_card1_title: "Gistwarden Icon in Input Fields",
+  guide_auto_card1_title: "{APP_NAME} Icon in Input Fields",
   guide_auto_card1_desc:
     "Clicking any login field on a website displays the {APP_NAME} icon, allowing 1-click account selection and instant autofill.",
   guide_auto_card2_title: "Auto-Submit Forms",
@@ -1133,7 +1140,7 @@ export default {
     "Open {APP_NAME} → navigate to {settings_header} → {settings_vault_options_label} → {vault_options_import}.",
   guide_imp_json_step2_title: "2. Select JSON File Format",
   guide_imp_json_step2_desc:
-    "In the file format selector, choose Gistwarden / Bitwarden JSON (.json).",
+    "In the file format selector, choose {APP_NAME} / Bitwarden JSON (.json).",
   guide_imp_json_step3_title: "3. Upload JSON File & Preview Results",
   guide_imp_json_step3_desc:
     "Select your JSON file from your computer. {APP_NAME} displays a Preview window showing the number of items about to be imported.",
@@ -1151,9 +1158,9 @@ export default {
   guide_exp_csv_step1_desc:
     "Open {APP_NAME} → navigate to {settings_header} → {settings_vault_options_label} → {vault_options_export}.",
   guide_exp_csv_step2_title:
-    "2. Enter Master Password for Security Verification",
+    "2. Enter {login_master_password} for Security Verification",
   guide_exp_csv_step2_desc:
-    "For security reasons, the app prompts for your Master Password to verify access before generating the CSV file.",
+    "For security reasons, the app prompts for your {login_master_password} to verify access before generating the CSV file.",
   guide_exp_csv_step3_title: "3. Choose CSV File Format",
   guide_exp_csv_step3_browser:
     "Browser CSV: Basic format for direct import into Google Chrome, Firefox, Edge, Safari, Brave.",
@@ -1170,10 +1177,10 @@ export default {
     "JSON backup captures all 5 item types (Logins, Secure Notes, Cards, Identities, SSH Keys), Folders, Favorites, and Custom Fields.",
   guide_exp_json_step2_title: "2. Encrypted or Unencrypted Export Options",
   guide_exp_json_step2_desc:
-    "Encrypted JSON is recommended so your backup remains protected by your Master Password. Others cannot read it without your Master Password.",
+    "Encrypted JSON is recommended so your backup remains protected by your {login_master_password}. Others cannot read it without your {login_master_password}.",
   guide_exp_json_step3_title: "3. Steps to Export JSON Backup",
   guide_exp_json_step3_desc:
-    "Open {APP_NAME} → navigate to {settings_header} → {settings_vault_options_label} → {vault_options_export} → enter Master Password → choose JSON format and click Download JSON Backup.",
+    "Open {APP_NAME} → navigate to {settings_header} → {settings_vault_options_label} → {vault_options_export} → enter {login_master_password} → choose JSON format and click Download JSON Backup.",
 
   // Extension Downloads Guide
   guide_item_download_extension: "Download Extension",
@@ -1191,7 +1198,7 @@ export default {
   guide_item_web_version: "Web Version",
   guide_web_ver_lead:
     "Access your {APP_NAME} vault directly in any web browser without installing an extension.",
-  guide_web_ver_btn: "Open Gistwarden Web",
+  guide_web_ver_btn: "Open {APP_NAME} Web",
   guide_web_ver_advantages_title: "Flexible Access Anywhere",
   guide_web_ver_advantages_desc:
     "Ideal when using public computers, guest devices, or browser environments where installing extensions is restricted.",
@@ -1259,36 +1266,36 @@ export default {
   // Guide FAQ Tab
   guide_faq_subtitle:
     "Find answers to common questions about {APP_NAME}'s sync, security, and passwords.",
-  guide_faq_q1_title: "Is my Master Password safe?",
+  guide_faq_q1_title: "Is my {login_master_password} safe?",
   guide_faq_q1_desc:
-    "Extremely safe. {APP_NAME} utilizes Zero-Knowledge encryption. Your Master Password is only used to derive encryption keys locally in your browser and is never stored or transmitted over the internet.",
-  guide_faq_q2_title: "What if I forget my Master Password?",
+    "Extremely safe. {APP_NAME} utilizes Zero-Knowledge encryption. Your {login_master_password} is only used to derive encryption keys locally in your browser and is never stored or transmitted over the internet.",
+  guide_faq_q2_title: "What if I forget my {login_master_password}?",
   guide_faq_q2_desc:
-    "There is no way to recover your Master Password. If forgotten, you will have to reset the extension and start over. Please memorize or write down your Master Password and store it in a safe place.",
+    "There is no way to recover your {login_master_password}. If forgotten, you will have to reset the extension and start over. Please memorize or write down your {login_master_password} and store it in a safe place.",
   guide_faq_q3_title: "Can I sync my passwords across multiple computers?",
   guide_faq_q3_desc:
-    "Yes. Simply install {APP_NAME} on the other computer, sign in with the same GitHub account (or paste the same token), and enter the EXACT Master Password you used on your first computer. Your vault will load and decrypt automatically.",
+    "Yes. Simply install {APP_NAME} on the other computer, sign in with the same GitHub account (or paste the same token), and enter the EXACT {login_master_password} you used on your first computer. Your vault will load and decrypt automatically.",
   guide_faq_q4_title: "Is storing my vault in a Secret Gist really private?",
   guide_faq_q4_desc:
-    "Yes. Secret Gists are not indexed by search engines and do not appear on your public GitHub profile page. Even if someone happens to guess the direct Gist URL, they will only see meaningless encrypted cipher text. Without your Master Password, it is impossible to decrypt.",
+    "Yes. Secret Gists are not indexed by search engines and do not appear on your public GitHub profile page. Even if someone happens to guess the direct Gist URL, they will only see meaningless encrypted cipher text. Without your {login_master_password}, it is impossible to decrypt.",
 
   // Welcome View
   welcome_feat_security_title: "Zero-Knowledge Encryption",
   welcome_feat_security_desc:
-    "Your data is encrypted locally using your Master Password before syncing to your private GitHub Gist. No one else can read your data.",
+    "Your data is encrypted locally using your {login_master_password} before syncing to your private GitHub Gist. No one else can read your data.",
   welcome_feat_passkeys_title: "Passwordless Passkeys (FIDO2)",
   welcome_feat_passkeys_desc:
     "Register and authenticate securely with modern WebAuthn/Passkeys, avoiding traditional passwords.",
   welcome_feat_totp_title: "Dynamic TOTP Codes",
   welcome_feat_totp_desc:
     "Store and generate 2-factor authentication codes automatically refreshing every 30 seconds.",
-  welcome_security_notice_title: "⚠️ IMPORTANT SECURITY NOTICE",
+  welcome_security_notice_title: "IMPORTANT SECURITY NOTICE",
   welcome_warning_bold:
-    "Forgetting your Master Password results in PERMANENT DATA LOSS with NO recovery.",
+    "Forgetting your {login_master_password} results in PERMANENT DATA LOSS with NO recovery.",
   welcome_warning_sub:
-    "We do not store your password on any server, and storage providers only see your vault data as meaningless encrypted cipher text. (Note: You can still change your Master Password anytime in Settings if needed).",
+    "We do not store your password on any server, and storage providers only see your vault data as meaningless encrypted cipher text. (Note: You can still change your {login_master_password} anytime in Settings if needed).",
   welcome_checkbox_label:
-    "I understand and agree that if I forget my Master Password, I accept losing all my data permanently.",
+    "I understand and agree that if I forget my {login_master_password}, I accept losing all my data permanently.",
   welcome_btn_continue: "Get Started",
   welcome_btn_next: "Next",
   welcome_btn_prev: "Back",
