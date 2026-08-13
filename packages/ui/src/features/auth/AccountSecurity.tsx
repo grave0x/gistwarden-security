@@ -1,3 +1,4 @@
+import { updateExtensionSettingsUseCase } from "@gistwarden/orchestrator";
 import { confirm, showToast } from "@gistwarden/ui";
 import { type Component, createSignal, Show } from "solid-js";
 import Checkbox from "@/components/ui/Checkbox.tsx";
@@ -5,7 +6,6 @@ import DetailHeader from "@/components/ui/DetailHeader.tsx";
 import { t } from "@/core/i18n.ts";
 import { navigate } from "@/core/navigation.ts";
 import { isExtension } from "@/core/runtime.ts";
-import { updateExtensionSettings } from "@/core/storage.ts";
 import type {
   VaultTimeoutAction,
   VaultTimeoutValue,
@@ -52,7 +52,9 @@ export const AccountSecurity: Component = () => {
 
   const handleRequireRestartChange = async (checked: boolean) => {
     setSettingsStore("requireMasterPasswordOnRestart", checked);
-    await updateExtensionSettings({ requireMasterPasswordOnRestart: checked });
+    await updateExtensionSettingsUseCase({
+      requireMasterPasswordOnRestart: checked,
+    });
   };
 
   const handleTimeoutChange = async (

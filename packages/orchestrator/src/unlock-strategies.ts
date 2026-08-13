@@ -4,7 +4,6 @@ import {
   safeJsonParse,
   type TranslationKey,
 } from "@gistwarden/domain";
-import { getSyncProvider } from "@gistwarden/network";
 import {
   type AccountSettings,
   GistPayloadSchema,
@@ -13,6 +12,7 @@ import {
 } from "@gistwarden/repository";
 import { err, ok, type Result } from "neverthrow";
 import { getOrDeriveKey } from "./crypto-usecases.ts";
+import { getSyncProvider } from "./sync-provider-registry.ts";
 
 export interface UnlockVaultContext {
   password: string;

@@ -20,8 +20,10 @@ import {
 import { z } from "zod";
 import { sendMessageToTab } from "./messaging.ts";
 import { pendingNotificationManager } from "./pending-notification-manager.ts";
-import { batchSavePayloads } from "./vault-mutation-usecases.ts";
-import { getDecryptedVaultItems } from "./vault-repository-usecase.ts";
+import {
+  batchSavePayloads,
+  getDecryptedVaultItems,
+} from "./vault-mutation-usecases.ts";
 import { vaultSecurityContext } from "./vault-security-state.ts";
 
 const SubmittedCredentialsSchema = z

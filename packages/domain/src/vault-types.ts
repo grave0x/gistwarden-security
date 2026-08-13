@@ -7,6 +7,8 @@ import type {
   VaultItem,
 } from "./vault-schemas.ts";
 
+export type VaultMode = "github_gist" | "local_storage" | "self_hosted_server";
+
 export enum VaultItemType {
   Login = 1,
   SecureNote = 2,

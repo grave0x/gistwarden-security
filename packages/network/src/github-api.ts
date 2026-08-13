@@ -6,6 +6,8 @@ import {
   type GistId,
   type GitHubAccessToken,
   isExtension,
+  type SyncOptions,
+  type SyncResult,
   safeJsonParse,
   safeParseUrl,
   type TranslationKey,
@@ -13,7 +15,6 @@ import {
 import { err, ok, type Result } from "neverthrow";
 import { z } from "zod";
 import { fetchText } from "./fetch-utils.ts";
-import type { SyncOptions, SyncResult } from "./sync-provider-types.ts";
 
 const GIST_DESCRIPTION = `${APP_NAME.toLowerCase()}_vault`;
 const GIST_FILE_NAME = `${APP_NAME.toLowerCase()}.json`;

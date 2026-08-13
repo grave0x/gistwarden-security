@@ -34,6 +34,9 @@ export enum View {
   Guide = "Guide",
 }
 
+export type LoginMethod = "pat" | "oauth";
+export type LoginViewMode = "masterPassword" | "pin";
+
 export enum SupportLanguage {
   En = "en",
   Vi = "vi",

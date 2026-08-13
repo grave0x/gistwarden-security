@@ -1,5 +1,7 @@
-import { changeMasterPasswordUseCase } from "@gistwarden/orchestrator";
-import { DEFAULT_PIN_CONFIG } from "@gistwarden/repository";
+import {
+  changeMasterPasswordUseCase,
+  DEFAULT_PIN_CONFIG,
+} from "@gistwarden/orchestrator";
 import { err, ok, type Result } from "neverthrow";
 import type { TranslationKey } from "@/core/i18n.ts";
 import { accountStore, setAccountStore, settingsStore } from "@/core/store.ts";

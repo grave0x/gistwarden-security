@@ -1,12 +1,12 @@
+import type { Result } from "neverthrow";
+import { z } from "zod";
+import type { TranslationKey } from "./i18n.ts";
 import {
   type GistId,
   GistIdSchema,
   type GitHubAccessToken,
   GitHubAccessTokenSchema,
-  type TranslationKey,
-} from "@gistwarden/domain";
-import type { Result } from "neverthrow";
-import { z } from "zod";
+} from "./vault-schemas.ts";
 
 export type SyncProviderId =
   | "github_gist"

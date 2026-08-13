@@ -3,3 +3,6 @@ dist/
 scratch/
 .agents/
 web_test_selfhost/data/
+*.tsbuildinfo
+*.d.ts
+

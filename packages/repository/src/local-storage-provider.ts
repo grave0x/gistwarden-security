@@ -1,27 +1,25 @@
 import {
   type GistId,
   type GitHubAccessToken,
+  type ISyncProvider,
+  isRecord,
+  type SyncOptions,
+  type SyncProviderId,
+  type SyncResult,
+  type SyncStatusResult,
+  type SyncValidationResult,
   safeJsonParse,
   type TranslationKey,
 } from "@gistwarden/domain";
+import { err, ok, type Result } from "neverthrow";
 import {
-  GistPayloadSchema,
   getLocalVaultPayload,
   removeLocalVaultPayload,
   setLocalVaultPayload,
-} from "@gistwarden/repository";
-import { err, ok, type Result } from "neverthrow";
-import type {
-  ISyncProvider,
-  SyncOptions,
-  SyncProviderId,
-  SyncResult,
-  SyncStatusResult,
-  SyncValidationResult,
-} from "./sync-provider-types.ts";
+} from "./storage.ts";
 
 /**
- * Provider quản lý lưu trữ Vault hoàn toàn cục bộ trong Local Storage.
+ * Provider quản lý lưu trữ Vault hoàn toàn cục bộ trong Local Storage (Tầng Repository).
  */
 export class LocalStorageProvider implements ISyncProvider {
   readonly id: SyncProviderId = "local_storage";
@@ -97,12 +95,12 @@ export class LocalStorageProvider implements ISyncProvider {
     const downloadRes = await this.download();
     if (downloadRes.isOk() && downloadRes.value.content) {
       const payloadJsonRes = safeJsonParse(downloadRes.value.content);
-      if (payloadJsonRes.isOk()) {
-        const parsed = GistPayloadSchema.safeParse(payloadJsonRes.value);
-        if (parsed.success && parsed.data.salt) {
+      if (payloadJsonRes.isOk() && isRecord(payloadJsonRes.value)) {
+        const salt = payloadJsonRes.value.salt;
+        if (typeof salt === "string" && salt) {
           return {
             status: "exists",
-            salt: parsed.data.salt,
+            salt,
           };
         }
       }

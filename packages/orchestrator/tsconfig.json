@@ -1,0 +1,14 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "declaration": true,
+    "emitDeclarationOnly": true
+  },
+  "include": ["mod.ts", "src/**/*"],
+  "references": [
+    { "path": "../domain" },
+    { "path": "../repository" },
+    { "path": "../network" }
+  ]
+}

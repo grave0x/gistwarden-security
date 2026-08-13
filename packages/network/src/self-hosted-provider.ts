@@ -1,6 +1,3 @@
-import type { TranslationKey } from "@gistwarden/domain";
-import { err, ok, type Result } from "neverthrow";
-import { z } from "zod";
 import type {
   ISyncProvider,
   SyncOptions,
@@ -8,7 +5,10 @@ import type {
   SyncResult,
   SyncStatusResult,
   SyncValidationResult,
-} from "./sync-provider-types.ts";
+  TranslationKey,
+} from "@gistwarden/domain";
+import { err, ok, type Result } from "neverthrow";
+import { z } from "zod";
 
 export class SelfHostedProvider implements ISyncProvider {
   readonly id: SyncProviderId = "self_hosted_server";

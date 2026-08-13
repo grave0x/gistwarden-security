@@ -1,9 +1,9 @@
 import {
+  DEFAULT_PIN_CONFIG,
   disablePinUnlockUseCase,
   getSessionKey,
   setPinUnlockUseCase,
 } from "@gistwarden/orchestrator";
-import { DEFAULT_PIN_CONFIG } from "@gistwarden/repository";
 import { err, ok, type Result } from "neverthrow";
 import type { TranslationKey } from "@/core/i18n.ts";
 import {

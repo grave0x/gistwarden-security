@@ -6,7 +6,7 @@
       "name": "gistwarden",
       "dependencies": {
         "@solidjs/router": "^1.0.0",
-        "@zxcvbn-ts/core": "^4.1.2",
+        "@zxcvbn-ts/core": "^4.2.0",
         "consola": "^3.4.2",
         "esbuild": "^0.28.2",
         "esbuild-plugin-solid": "^0.6.0",
@@ -236,7 +236,7 @@
 
     "@typescript/typescript-win32-x64": ["@typescript/typescript-win32-x64@7.0.2", "", { "os": "win32", "cpu": "x64" }, "sha512-0BQ3HkAHHlKLSp1qRvf3SUhGpGsDuhB/jgFw75guyqbxJqEaS0Cw/VFO8i2nHglJUzQCRtMMR/IBAKE3ETMC4g=="],
 
-    "@zxcvbn-ts/core": ["@zxcvbn-ts/core@4.1.2", "", { "dependencies": { "fastest-levenshtein": "1.0.16" } }, "sha512-RQmxWB3AMI+HGQErQdUv6Aq32aQhp6xOxrfgCP0+T9MsLZoP3xtLHuT8O8VojsUxdmQVZfJlYkYb1A0wOwIS+Q=="],
+    "@zxcvbn-ts/core": ["@zxcvbn-ts/core@4.2.0", "", { "dependencies": { "fastest-levenshtein": "1.0.16" } }, "sha512-tuwzwOcYVca9MufHuUvzKGRyL04iP52OjCNoRDuGXjzzrtPiPcl8r5QtOotbx0AyTR/CMcDTU9qLkN16b9fXiw=="],
 
     "babel-plugin-jsx-dom-expressions": ["babel-plugin-jsx-dom-expressions@0.40.7", "", { "dependencies": { "@babel/helper-module-imports": "7.18.6", "@babel/plugin-syntax-jsx": "^7.18.6", "@babel/types": "^7.20.7", "html-entities": "2.3.3", "parse5": "^7.1.2" }, "peerDependencies": { "@babel/core": "^7.20.12" } }, "sha512-/O6JWUmjv03OI9lL2ry9bUjpD5S3PclM55RRJEyCdcFZ5W2SEA/59d+l2hNsk3gI6kiWRdRPdOtqZmsQzFN1pQ=="],
 

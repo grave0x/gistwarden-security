@@ -8,6 +8,9 @@ export const OAUTH_WORKER_URL = "https://gistwarden.uongsuadaubung.workers.dev";
 export const FIREFOX_ADDON_SLUG = "gistwarden";
 export const DEFAULT_GITHUB_API_BASE = "https://api.github.com";
 
+// Chrome Local Storage Keys
+export const STORAGE_KEY_ENCRYPTED_VAULT = "gistwarden_encrypted_vault";
+
 // Chrome Session Storage Keys
 export const SESSION_KEY_DERIVED_KEY = "derivedKey";
 export const SESSION_KEY_VERIFICATION_IV = "verificationIv";

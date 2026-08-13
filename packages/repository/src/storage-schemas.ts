@@ -80,7 +80,7 @@ export const ExtensionSettingsSchema = z
   .object({
     language: SupportLanguageSchema.default(SupportLanguage.En),
     welcomeAccepted: z.boolean().default(false),
-    theme: z.nativeEnum(ThemeMode).default(ThemeMode.Dark),
+    theme: z.enum(ThemeMode).default(ThemeMode.Dark),
     requireMasterPasswordOnRestart: z.boolean().default(true),
     vaultTimeout: VaultTimeoutValueSchema.default("onRestart"),
     vaultTimeoutAction: VaultTimeoutActionSchema.default("lock"),

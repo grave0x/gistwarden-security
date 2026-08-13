@@ -70,7 +70,7 @@ const AutofillResponseSchema = z
   })
   .readonly();
 
-const VaultItemTypeSchema = z.nativeEnum(VaultItemType);
+const VaultItemTypeSchema = z.enum(VaultItemType);
 
 export const Vault: Component = () => {
   const [search, updateSearch] = createSessionSignal(

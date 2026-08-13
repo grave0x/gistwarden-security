@@ -1,10 +1,10 @@
+import type { LoginMethod } from "@gistwarden/domain";
 import { type Component, createSignal, Show } from "solid-js";
 import Button from "@/components/ui/Button.tsx";
 import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
 import Input from "@/components/ui/Input.tsx";
 import SafeHtml from "@/components/ui/SafeHtml.tsx";
 import { t } from "@/core/i18n.ts";
-import type { LoginMethod } from "@/core/storage-schemas.ts";
 import { GithubIcon } from "@/icons/svg/index.ts";
 
 export interface GithubSetupFormProps {

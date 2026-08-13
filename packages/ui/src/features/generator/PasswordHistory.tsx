@@ -1,10 +1,13 @@
-import type { GeneratedPasswordHistoryItem } from "@gistwarden/repository";
+import {
+  clearPasswordHistoryUseCase,
+  type GeneratedPasswordHistoryItem,
+  getPasswordHistoryUseCase,
+} from "@gistwarden/orchestrator";
 import { confirm, copyToClipboardWithMessage } from "@gistwarden/ui";
 import { type Component, createSignal, For, onMount, Show } from "solid-js";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
 import { formatDateTime, t } from "@/core/i18n.ts";
 import { navigate } from "@/core/navigation.ts";
-import { clearPasswordHistory, getPasswordHistory } from "@/core/storage.ts";
 import { View } from "@/core/types.ts";
 import { CopyIcon, TrashIcon } from "@/icons/svg/index.ts";
 
@@ -15,7 +18,7 @@ export const PasswordHistory: Component = () => {
   const [copiedIndex, setCopiedIndex] = createSignal<number | null>(null);
 
   const loadHistory = async () => {
-    const res = await getPasswordHistory();
+    const res = await getPasswordHistoryUseCase();
     if (res.isOk()) {
       setHistoryItems(res.value);
     }
@@ -38,7 +41,7 @@ export const PasswordHistory: Component = () => {
       "danger",
     );
     if (!isConfirmed) return;
-    await clearPasswordHistory();
+    await clearPasswordHistoryUseCase();
     setHistoryItems([]);
   };
 

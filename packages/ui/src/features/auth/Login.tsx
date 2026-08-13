@@ -1,4 +1,7 @@
-import { SESSION_KEY_ENCRYPTED_VAULT } from "@gistwarden/domain";
+import {
+  type LoginViewMode,
+  SESSION_KEY_ENCRYPTED_VAULT,
+} from "@gistwarden/domain";
 import {
   checkVaultConfiguredUseCase,
   checkVaultStatusUseCase,
@@ -40,7 +43,6 @@ import {
   updateAccountSettings,
   updateExtensionSettings,
 } from "@/core/storage.ts";
-import type { LoginViewMode } from "@/core/storage-schemas.ts";
 import {
   accountStore,
   setAccountStore,

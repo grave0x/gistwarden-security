@@ -8,7 +8,6 @@ import {
   VaultItemType,
   View,
 } from "@gistwarden/domain";
-import { getSyncProvider } from "@gistwarden/network";
 import {
   addFolderUseCase,
   clearDerivedKey,
@@ -19,6 +18,7 @@ import {
   downloadVaultRoute,
   executeVaultMutationUseCase,
   getSessionKey,
+  getSyncProvider,
   purgeTrashItemUseCase,
   registerInMemoryRoute,
   renameFolderUseCase,

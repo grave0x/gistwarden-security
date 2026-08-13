@@ -1,3 +1,4 @@
+import { fetchBlobUseCase } from "@gistwarden/orchestrator";
 import {
   type Component,
   createEffect,
@@ -7,7 +8,6 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import { fetchBlob } from "@/core/fetch-utils.ts";
 
 // Global cache to avoid duplicate network requests across items with identical domains
 const faviconCache = new Map<string, string>();
@@ -72,7 +72,7 @@ export const Favicon: Component<{ domain: string; fallback: JSX.Element }> = (
       domain,
     )}&sz=32`;
 
-    fetchBlob(faviconUrl, { cache: "force-cache" }).then((res) => {
+    fetchBlobUseCase(faviconUrl, { cache: "force-cache" }).then((res) => {
       if (res.isOk()) {
         const objectUrl = URL.createObjectURL(res.value);
         faviconCache.set(domain, objectUrl);

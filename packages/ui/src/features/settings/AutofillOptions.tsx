@@ -1,4 +1,7 @@
-import { DEFAULT_EXCLUDED_DOMAINS } from "@gistwarden/repository";
+import {
+  DEFAULT_EXCLUDED_DOMAINS,
+  updateExtensionSettingsUseCase,
+} from "@gistwarden/orchestrator";
 import { type Component, createSignal, For, Show } from "solid-js";
 import Button from "@/components/ui/Button.tsx";
 import Checkbox from "@/components/ui/Checkbox.tsx";
@@ -6,7 +9,6 @@ import DetailHeader from "@/components/ui/DetailHeader.tsx";
 import Input from "@/components/ui/Input.tsx";
 import { t } from "@/core/i18n.ts";
 import { navigate } from "@/core/navigation.ts";
-import { updateExtensionSettings } from "@/core/storage.ts";
 import { setSettingsStore, settingsStore } from "@/core/store.ts";
 import { View } from "@/core/types.ts";
 import { PlusIcon, TrashIcon } from "@/icons/svg/index.ts";
@@ -20,7 +22,7 @@ export const AutofillOptions: Component = () => {
 
   const handleAutoSubmitToggle = async (checked: boolean) => {
     setSettingsStore("autoSubmitOnAutofill", checked);
-    await updateExtensionSettings({ autoSubmitOnAutofill: checked });
+    await updateExtensionSettingsUseCase({ autoSubmitOnAutofill: checked });
   };
 
   const handleShowSuggestionsToggle = async (checked: boolean) => {
@@ -29,13 +31,15 @@ export const AutofillOptions: Component = () => {
         showAutofillSuggestionsOnFocus: false,
         autoSubmitOnAutofill: false,
       });
-      await updateExtensionSettings({
+      await updateExtensionSettingsUseCase({
         showAutofillSuggestionsOnFocus: false,
         autoSubmitOnAutofill: false,
       });
     } else {
       setSettingsStore("showAutofillSuggestionsOnFocus", true);
-      await updateExtensionSettings({ showAutofillSuggestionsOnFocus: true });
+      await updateExtensionSettingsUseCase({
+        showAutofillSuggestionsOnFocus: true,
+      });
     }
   };
 
@@ -57,7 +61,7 @@ export const AutofillOptions: Component = () => {
     if (!current.includes(clean)) {
       const updated = [...current, clean];
       setSettingsStore("excludedDomains", updated);
-      await updateExtensionSettings({ excludedDomains: updated });
+      await updateExtensionSettingsUseCase({ excludedDomains: updated });
     }
     setNewDomain("");
   };
@@ -66,7 +70,7 @@ export const AutofillOptions: Component = () => {
     if (isDefaultDomain(domain)) return;
     const updated = excludedDomains().filter((d) => d !== domain);
     setSettingsStore("excludedDomains", updated);
-    await updateExtensionSettings({ excludedDomains: updated });
+    await updateExtensionSettingsUseCase({ excludedDomains: updated });
   };
 
   const isShowSuggestionsEnabled = () =>

@@ -1,6 +1,15 @@
 import {
   ALARM_NAME_VAULT_TIMEOUT,
+  arrayBufferToBase64,
+  asGistId,
+  asGitHubAccessToken,
+  base64ToArrayBuffer,
+  computeHmac,
+  DEFAULT_GITHUB_API_BASE,
+  decryptData,
+  deriveKey,
   encryptData,
+  GistIdSchema,
   generateSalt,
   MSG_USER_ACTIVITY,
   MSG_VAULT_LOGGED_OUT,
@@ -10,28 +19,37 @@ import {
   SESSION_KEYS_ON_LOCK,
   sessionManager,
   type TranslationKey,
+  VaultPayloadSchema,
 } from "@gistwarden/domain";
-import { getSyncProvider } from "@gistwarden/network";
+import { downloadFromGist, validateToken } from "@gistwarden/network";
 import {
   type AccountSettings,
   DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
+  DEFAULT_PIN_CONFIG,
   getAccountSettings,
   getSyncToken,
   type MasterPasswordSecurityConfig,
+  MasterPasswordSecurityConfigSchema,
+  PinUnlockConfigSchema,
   removeSessionItem,
   type SyncConfig,
+  SyncConfigSchema,
   setSessionItem,
   setSessionUnlocked,
   updateAccountSettings,
   updateExtensionSettings,
   type VaultMode,
+  VaultModeSchema,
 } from "@gistwarden/repository";
 import { err, ok, type Result } from "neverthrow";
+import { z } from "zod";
 import { clearAlarm } from "./alarms.ts";
 import {
   clearDerivedKey,
   getOrDeriveKey,
+  getSessionKey,
   setDerivedKey,
+  verifyMasterPassword,
 } from "./crypto-usecases.ts";
 import {
   broadcastMessage,
@@ -39,13 +57,12 @@ import {
   sendBackgroundMessage,
 } from "./messaging.ts";
 import { uploadToGistRoute } from "./messaging-contracts.ts";
+import { getSyncProvider } from "./sync-provider-registry.ts";
+import { syncVaultToGist } from "./sync-usecases.ts";
 
-export {
-  resolveVaultContentForUnlockUseCase,
-  type UnlockVaultContext,
-  type UnlockVaultResult,
-  type UnlockVaultStrategy,
-} from "./unlock-strategies.ts";
+// ----------------------------------------------------
+// Create & Unlock Vault Use Cases
+// ----------------------------------------------------
 
 export interface CreateNewVaultOptions {
   password: string;
@@ -229,4 +246,352 @@ export async function onboardPendingTokenUseCase(
     }
   }
   return null;
+}
+
+// ----------------------------------------------------
+// Master Password Use Cases
+// ----------------------------------------------------
+
+export const ChangeMasterPasswordOptionsSchema = z
+  .object({
+    currentPass: z.string(),
+    newPass: z.string(),
+    payload: VaultPayloadSchema,
+    currentSyncConfig: SyncConfigSchema,
+    currentMpConfig: MasterPasswordSecurityConfigSchema,
+    vaultMode: VaultModeSchema,
+  })
+  .readonly();
+export type ChangeMasterPasswordOptions = z.infer<
+  typeof ChangeMasterPasswordOptionsSchema
+>;
+
+export const ChangeMasterPasswordResultSchema = z
+  .object({
+    newKey: z.custom<CryptoKey>((val) => Boolean(val)),
+    updatedSyncConfig: SyncConfigSchema,
+    updatedMpConfig: MasterPasswordSecurityConfigSchema,
+  })
+  .readonly();
+export type ChangeMasterPasswordResult = z.infer<
+  typeof ChangeMasterPasswordResultSchema
+>;
+
+export async function changeMasterPasswordUseCase(
+  options: ChangeMasterPasswordOptions,
+): Promise<Result<ChangeMasterPasswordResult, TranslationKey>> {
+  if (!options.newPass.trim()) {
+    return err("settings_error_mp_empty_new");
+  }
+
+  const isCurrentPasswordCorrect = await verifyMasterPassword(
+    options.currentPass,
+    options.vaultMode,
+  );
+  if (!isCurrentPasswordCorrect) {
+    return err("settings_error_mp_wrong_current");
+  }
+
+  const rawSalt = generateSalt();
+  const newSaltBase64 = rawSalt.toBase64();
+
+  const deriveResult = await deriveKey(options.newPass, rawSalt);
+  if (deriveResult.isErr()) {
+    return err(deriveResult.error);
+  }
+  const newKey = deriveResult.value;
+
+  const uploadRes = await syncVaultToGist(
+    options.payload.items,
+    newKey,
+    newSaltBase64,
+    {
+      vaultMode: options.vaultMode,
+      folders: options.payload.folders,
+      trashItems: options.payload.trash,
+      skipRemoteMerge: true,
+    },
+  );
+  if (uploadRes.isErr()) {
+    return err(uploadRes.error);
+  }
+
+  await setDerivedKey(newKey);
+  const verificationStr = "verification_token";
+  const encryptVerifyResult = await encryptData(verificationStr, newKey);
+  if (encryptVerifyResult.isErr()) {
+    return err(encryptVerifyResult.error);
+  }
+  const { iv: vIv, ciphertext: vCiphertext } = encryptVerifyResult.value;
+
+  await setSessionItem(SESSION_KEY_VERIFICATION_IV, vIv);
+  await setSessionItem(SESSION_KEY_VERIFICATION_CIPHERTEXT, vCiphertext);
+
+  const mode = options.vaultMode;
+  let syncToken: string | null = await getSyncToken(mode);
+
+  if (
+    !syncToken &&
+    options.currentSyncConfig.syncTokenEncrypted &&
+    options.currentSyncConfig.syncTokenIv
+  ) {
+    const oldSaltStr = options.currentMpConfig.salt;
+    const oldSaltBufRes = base64ToArrayBuffer(oldSaltStr || "");
+    const oldSaltRaw = oldSaltBufRes.isOk()
+      ? new Uint8Array(oldSaltBufRes.value)
+      : generateSalt();
+    const oldKeyRes = await deriveKey(options.currentPass, oldSaltRaw);
+    if (oldKeyRes.isOk()) {
+      const decTokenRes = await decryptData(
+        options.currentSyncConfig.syncTokenEncrypted,
+        options.currentSyncConfig.syncTokenIv,
+        oldKeyRes.value,
+      );
+      if (decTokenRes.isOk()) {
+        syncToken = decTokenRes.value;
+      }
+    }
+  }
+
+  const updatedMpConfig: MasterPasswordSecurityConfig = {
+    ...options.currentMpConfig,
+    salt: newSaltBase64,
+  };
+
+  let updatedSyncConfig = options.currentSyncConfig;
+  if (syncToken) {
+    const encryptTokenResult = await encryptData(syncToken, newKey);
+    if (encryptTokenResult.isErr()) {
+      return err(encryptTokenResult.error);
+    }
+    const { iv, ciphertext } = encryptTokenResult.value;
+    updatedSyncConfig = {
+      ...options.currentSyncConfig,
+      syncTokenEncrypted: ciphertext,
+      syncTokenIv: iv,
+    };
+  }
+
+  await updateAccountSettings(
+    {
+      syncConfig: updatedSyncConfig,
+      masterPasswordConfig: updatedMpConfig,
+      pinConfig: DEFAULT_PIN_CONFIG,
+    },
+    mode,
+  );
+  await removeSessionItem(SESSION_KEY_PENDING_SYNC_TOKEN);
+
+  return ok({
+    newKey,
+    updatedSyncConfig,
+    updatedMpConfig,
+  });
+}
+
+export async function validateSecurityConfigUseCase(
+  mode: VaultMode,
+  secSalt: string,
+): Promise<void> {
+  const accRes = await getAccountSettings(mode);
+  if (accRes.isErr()) return;
+  const acc = accRes.value;
+
+  let pinConfig = { ...acc.pinConfig };
+  let masterPasswordConfig = { ...acc.masterPasswordConfig };
+  let updated = false;
+
+  if (pinConfig.failedAttempts > 0 || pinConfig.failedMac) {
+    const macRes = await computeHmac(
+      String(pinConfig.failedAttempts),
+      pinConfig.salt || secSalt,
+    );
+    const expectedMac = macRes.isOk() ? macRes.value : "";
+    if (
+      !pinConfig.failedMac ||
+      pinConfig.failedMac !== expectedMac ||
+      pinConfig.failedAttempts >= 3
+    ) {
+      pinConfig = DEFAULT_PIN_CONFIG;
+      updated = true;
+    }
+  }
+
+  if (
+    masterPasswordConfig.failedAttempts > 0 ||
+    masterPasswordConfig.lockoutUntil > 0 ||
+    masterPasswordConfig.failedMac
+  ) {
+    const macRes = await computeHmac(
+      `${masterPasswordConfig.failedAttempts}:${masterPasswordConfig.lockoutUntil}`,
+      secSalt,
+    );
+    const expectedMac = macRes.isOk() ? macRes.value : "";
+    if (
+      !masterPasswordConfig.failedMac ||
+      masterPasswordConfig.failedMac !== expectedMac
+    ) {
+      masterPasswordConfig = DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG;
+      updated = true;
+    }
+  }
+
+  if (updated) {
+    await updateAccountSettings({ pinConfig, masterPasswordConfig }, mode);
+  }
+}
+
+// ----------------------------------------------------
+// PIN Unlock Use Cases
+// ----------------------------------------------------
+
+export const SetPinUnlockOptionsSchema = z
+  .object({
+    pin: z.string(),
+    requireRestart: z.boolean(),
+    vaultMode: VaultModeSchema,
+    key: z.custom<CryptoKey>((val) => Boolean(val)),
+  })
+  .readonly();
+export type SetPinUnlockOptions = z.infer<typeof SetPinUnlockOptionsSchema>;
+
+export const SetPinUnlockResultSchema = z
+  .object({
+    pinConfig: PinUnlockConfigSchema,
+  })
+  .readonly();
+export type SetPinUnlockResult = z.infer<typeof SetPinUnlockResultSchema>;
+
+export async function setPinUnlockUseCase(
+  options: SetPinUnlockOptions,
+): Promise<Result<SetPinUnlockResult, TranslationKey>> {
+  const mode = options.vaultMode;
+  const raw = await crypto.subtle.exportKey("raw", options.key);
+  const keyBytesB64 = arrayBufferToBase64(raw);
+
+  const rawSalt = generateSalt();
+  const pinSaltBase64 = rawSalt.toBase64();
+  const pinKeyRes = await deriveKey(options.pin, rawSalt);
+  if (pinKeyRes.isErr()) {
+    return err(pinKeyRes.error);
+  }
+  const pinKey = pinKeyRes.value;
+  const encryptRes = await encryptData(keyBytesB64, pinKey);
+  if (encryptRes.isErr()) {
+    return err(encryptRes.error);
+  }
+  const { iv, ciphertext } = encryptRes.value;
+
+  const macRes = await computeHmac("0", pinSaltBase64);
+  const failedMac = macRes.isOk() ? macRes.value : "";
+
+  const pinConfig = {
+    enabled: true,
+    value: ciphertext,
+    iv,
+    salt: pinSaltBase64,
+    failedAttempts: 0,
+    failedMac,
+  };
+
+  await updateAccountSettings({ pinConfig }, mode);
+  await updateExtensionSettings({
+    requireMasterPasswordOnRestart: options.requireRestart,
+  });
+
+  return ok({ pinConfig });
+}
+
+export async function disablePinUnlockUseCase(
+  vaultMode: VaultMode,
+): Promise<Result<void, TranslationKey>> {
+  await updateAccountSettings({ pinConfig: DEFAULT_PIN_CONFIG }, vaultMode);
+  await updateExtensionSettings({
+    requireMasterPasswordOnRestart: true,
+  });
+  return ok();
+}
+
+// ----------------------------------------------------
+// GitHub Auth Use Cases
+// ----------------------------------------------------
+
+export const SetupGithubOptionsSchema = z
+  .object({
+    token: z.string(),
+    serverUrl: z.string().optional(),
+    currentGistId: GistIdSchema.optional(),
+  })
+  .readonly();
+export type SetupGithubOptions = z.infer<typeof SetupGithubOptionsSchema>;
+
+export const SetupSyncProviderResultSchema = z
+  .object({
+    syncConfig: SyncConfigSchema,
+    token: z.string(),
+  })
+  .readonly();
+export type SetupSyncProviderResult = z.infer<
+  typeof SetupSyncProviderResultSchema
+>;
+
+export async function setupGithubUseCase(
+  options: SetupGithubOptions,
+): Promise<Result<SetupSyncProviderResult, TranslationKey>> {
+  const parsedToken = asGitHubAccessToken(options.token);
+  const validateRes = await validateToken(parsedToken);
+  if (validateRes.isErr()) {
+    return err(validateRes.error);
+  }
+
+  const { username, avatarUrl } = validateRes.value;
+
+  const accRes = await getAccountSettings("github_gist");
+  const currentAcc = accRes.isOk() ? accRes.value : null;
+
+  let gistId =
+    options.currentGistId || currentAcc?.syncConfig.gistId || asGistId("");
+  if (!gistId) {
+    const downloadRes = await downloadFromGist({ token: parsedToken });
+    if (downloadRes.isOk() && downloadRes.value.gistId) {
+      gistId = downloadRes.value.gistId;
+    }
+  }
+
+  const key = await getSessionKey();
+
+  if (key) {
+    const encryptRes = await encryptData(options.token, key);
+    if (encryptRes.isErr()) {
+      return err(encryptRes.error);
+    }
+    const { iv, ciphertext } = encryptRes.value;
+    const updatedSyncConfig: SyncConfig = {
+      serverUrl: options.serverUrl || DEFAULT_GITHUB_API_BASE,
+      gistId,
+      syncTokenEncrypted: ciphertext,
+      syncTokenIv: iv,
+      username,
+      avatarUrl,
+    };
+    await updateAccountSettings(
+      { syncConfig: updatedSyncConfig },
+      "github_gist",
+    );
+    await removeSessionItem(SESSION_KEY_PENDING_SYNC_TOKEN);
+    return ok({ syncConfig: updatedSyncConfig, token: options.token });
+  }
+
+  const newSyncConfig: SyncConfig = {
+    serverUrl: options.serverUrl || DEFAULT_GITHUB_API_BASE,
+    gistId,
+    syncTokenEncrypted: "",
+    syncTokenIv: "",
+    username,
+    avatarUrl,
+  };
+  await setSessionItem(SESSION_KEY_PENDING_SYNC_TOKEN, options.token);
+  await updateAccountSettings({ syncConfig: newSyncConfig }, "github_gist");
+
+  return ok({ syncConfig: newSyncConfig, token: options.token });
 }

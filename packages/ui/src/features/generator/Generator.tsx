@@ -1,3 +1,4 @@
+import { addPasswordHistoryItemUseCase } from "@gistwarden/orchestrator";
 import { copyToClipboardWithMessage } from "@gistwarden/ui";
 import { type Component, createSignal, Index, onMount, Show } from "solid-js";
 import Checkbox from "@/components/ui/Checkbox.tsx";
@@ -12,7 +13,6 @@ import {
 } from "@/core/generator-utils.ts";
 import { t } from "@/core/i18n.ts";
 import { navigate } from "@/core/navigation.ts";
-import { addPasswordHistoryItem } from "@/core/storage.ts";
 import { getCurrentTab } from "@/core/tabs.ts";
 import { View } from "@/core/types.ts";
 import { CopyIcon, RefreshIcon } from "@/icons/svg/index.ts";
@@ -111,7 +111,7 @@ export const Generator: Component = () => {
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
 
-    await addPasswordHistoryItem({
+    await addPasswordHistoryItemUseCase({
       password: pwd,
       copiedAt: Date.now(),
       domain: currentDomain(),

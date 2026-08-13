@@ -2,7 +2,13 @@ import {
   asGistId,
   type GistId,
   type GitHubAccessToken,
+  type ISyncProvider,
   isRecord,
+  type SyncOptions,
+  type SyncProviderId,
+  type SyncResult,
+  type SyncStatusResult,
+  type SyncValidationResult,
   safeJsonParse,
   type TranslationKey,
 } from "@gistwarden/domain";
@@ -13,14 +19,6 @@ import {
   uploadToGist,
   validateToken,
 } from "./github-api.ts";
-import type {
-  ISyncProvider,
-  SyncOptions,
-  SyncProviderId,
-  SyncResult,
-  SyncStatusResult,
-  SyncValidationResult,
-} from "./sync-provider-types.ts";
 
 /**
  * Provider quản lý lưu trữ và đồng bộ dữ liệu Vault qua GitHub Gist.

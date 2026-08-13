@@ -1,11 +1,10 @@
-import { GithubGistProvider } from "./github-gist-provider.ts";
-import { LocalStorageProvider } from "./local-storage-provider.ts";
-import { SelfHostedProvider } from "./self-hosted-provider.ts";
-import type { ISyncProvider, SyncProviderId } from "./sync-provider-types.ts";
+import type { ISyncProvider, SyncProviderId } from "@gistwarden/domain";
+import { GithubGistProvider, SelfHostedProvider } from "@gistwarden/network";
+import { LocalStorageProvider } from "@gistwarden/repository";
 
 const registry = new Map<SyncProviderId, ISyncProvider>();
 
-// Register default providers
+// Register default providers across Network & Repository
 const defaultGistProvider = new GithubGistProvider();
 const defaultLocalStorageProvider = new LocalStorageProvider();
 const defaultSelfHostedProvider = new SelfHostedProvider();

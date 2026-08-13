@@ -126,7 +126,7 @@ async function resolveSavedViewAndItem(
     const savedView = sessionData[SESSION_KEY_LAST_VIEW];
     const savedItemId = sessionData[SESSION_KEY_LAST_SELECTED_ITEM_ID];
 
-    const ViewSchema = z.nativeEnum(View);
+    const ViewSchema = z.enum(View);
     const viewParsed = ViewSchema.safeParse(savedView);
     if (viewParsed.success) {
       const viewVal = viewParsed.data;

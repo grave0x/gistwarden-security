@@ -1,9 +1,9 @@
+import { updateExtensionSettingsUseCase } from "@gistwarden/orchestrator";
 import type { Component } from "solid-js";
 import Checkbox from "@/components/ui/Checkbox.tsx";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
 import { t } from "@/core/i18n.ts";
 import { navigate } from "@/core/navigation.ts";
-import { updateExtensionSettings } from "@/core/storage.ts";
 import { setSettingsStore, settingsStore } from "@/core/store.ts";
 import { View } from "@/core/types.ts";
 import { ChevronRightIcon, GlobeIcon, ThemeIcon } from "@/icons/svg/index.ts";
@@ -13,9 +13,9 @@ export const Appearance: Component = () => {
     navigate(View.Settings);
   };
 
-  const handleAnimationsToggle = async (checked: boolean) => {
+  const handleAnimationChange = async (checked: boolean) => {
     setSettingsStore("enablePageAnimations", checked);
-    await updateExtensionSettings({ enablePageAnimations: checked });
+    await updateExtensionSettingsUseCase({ enablePageAnimations: checked });
   };
 
   return (
@@ -70,7 +70,7 @@ export const Appearance: Component = () => {
           <Checkbox
             id="appearance-enable-animations"
             checked={settingsStore.enablePageAnimations}
-            onChange={handleAnimationsToggle}
+            onChange={handleAnimationChange}
             label={t("settings_enable_animations_label")}
             description={t("settings_enable_animations_sub")}
           />

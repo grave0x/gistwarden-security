@@ -1,4 +1,4 @@
-import type { VaultMode } from "@gistwarden/repository";
+import type { VaultMode } from "@gistwarden/domain";
 import { alert, confirm } from "@gistwarden/ui";
 import { t } from "@/core/i18n.ts";
 import { accountStore } from "@/core/store.ts";

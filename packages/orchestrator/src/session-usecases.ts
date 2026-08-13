@@ -6,14 +6,33 @@ import {
   sessionManager,
 } from "@gistwarden/domain";
 import {
+  addPasswordHistoryItem,
+  clearPasswordHistory,
+  DEFAULT_EXCLUDED_DOMAINS,
+  DEFAULT_PIN_CONFIG,
+  type GeneratedPasswordHistoryItem,
+  getActiveVaultMode,
+  getPasswordHistory,
   getSessionItem,
+  type PinUnlockConfig,
   removeSessionItem,
+  resetAccountSettings,
   setSessionItem,
+  updateAccountSettings,
   updateExtensionSettings,
+  type VaultMode,
   type VaultTimeoutAction,
   type VaultTimeoutValue,
 } from "@gistwarden/repository";
+
 import { notifyBackground } from "./messaging.ts";
+
+export {
+  DEFAULT_EXCLUDED_DOMAINS,
+  DEFAULT_PIN_CONFIG,
+  type GeneratedPasswordHistoryItem,
+  type PinUnlockConfig,
+};
 
 export async function persistSessionKey(key: CryptoKey | null): Promise<void> {
   sessionManager.setKey(key);
@@ -80,4 +99,39 @@ export async function removeSessionStorageUseCase(
   key: string | string[],
 ): Promise<void> {
   await removeSessionItem(key);
+}
+
+export async function updateAccountSettingsUseCase(
+  newSettings: Parameters<typeof updateAccountSettings>[0],
+  vaultMode?: VaultMode,
+) {
+  const mode = vaultMode ?? (await getActiveVaultMode());
+  return await updateAccountSettings(newSettings, mode);
+}
+
+export async function updateExtensionSettingsUseCase(
+  newSettings: Parameters<typeof updateExtensionSettings>[0],
+) {
+  return await updateExtensionSettings(newSettings);
+}
+
+export async function resetAccountSettingsUseCase(vaultMode?: VaultMode) {
+  const mode = vaultMode ?? (await getActiveVaultMode());
+  return await resetAccountSettings(mode);
+}
+
+export async function addPasswordHistoryItemUseCase(
+  item: GeneratedPasswordHistoryItem,
+  mode?: VaultMode,
+) {
+  const activeMode = mode ?? (await getActiveVaultMode());
+  return await addPasswordHistoryItem(item, activeMode);
+}
+
+export async function getPasswordHistoryUseCase() {
+  return await getPasswordHistory();
+}
+
+export async function clearPasswordHistoryUseCase() {
+  return await clearPasswordHistory();
 }

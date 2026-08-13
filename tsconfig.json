@@ -10,9 +10,8 @@
     "noImplicitOverride": true,
     "verbatimModuleSyntax": true,
     "allowImportingTsExtensions": true,
-    "noEmit": true,
-    "incremental": true,
-    "tsBuildInfoFile": "node_modules/.cache/tsbuildinfo",
+    "declaration": true,
+    "emitDeclarationOnly": true,
     "skipLibCheck": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
@@ -39,5 +38,14 @@
       "@/*": ["./packages/ui/src/*"]
     }
   },
-  "exclude": ["dist", "scratch", "node_modules"]
+  "exclude": ["dist", "scratch", "node_modules"],
+  "references": [
+    { "path": "./packages/domain" },
+    { "path": "./packages/repository" },
+    { "path": "./packages/network" },
+    { "path": "./packages/orchestrator" },
+    { "path": "./packages/ui" },
+    { "path": "./apps/extension" },
+    { "path": "./apps/web" }
+  ]
 }

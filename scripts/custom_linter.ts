@@ -64,6 +64,15 @@ function getLayerNumberAndName(normalizedPath: string): {
   return { layer: 0, name: "Unknown" };
 }
 
+const ALLOWED_TARGET_LAYERS: Record<number, number[]> = {
+  1: [1], // Domain (L1): Can ONLY import Domain (L1)
+  2: [1, 2], // Repository (L2): Can ONLY import Domain (L1), Repository (L2)
+  3: [1, 3], // Network (L3): Can ONLY import Domain (L1), Network (L3)
+  4: [1, 2, 3, 4], // Orchestrator (L4): Can import Domain (L1), Repository (L2), Network (L3), Orchestrator (L4)
+  5: [1, 4, 5], // UI (L5): Can ONLY import Domain (L1), Orchestrator (L4), UI (L5) - STRICTLY FORBIDDEN from Repository (L2) & Network (L3)!
+  6: [1, 2, 4, 5, 6], // App Hosts (L6): Can import Domain (L1), Repository (L2), Orchestrator (L4), UI (L5), App (L6)
+};
+
 function getTargetLayerFromImport(importPath: string): {
   layer: number;
   name: string;
@@ -142,7 +151,7 @@ function getTargetLayerFromImport(importPath: string): {
     if (
       rel.startsWith("core/session-usecases") ||
       rel.startsWith("core/autofill-usecases") ||
-      rel.startsWith("core/vault-repository-usecase") ||
+      rel.startsWith("core/vault-mutation-usecases") ||
       rel.startsWith("core/app-init") ||
       rel.startsWith("core/messaging") ||
       rel.startsWith("core/messaging-contracts") ||
@@ -436,6 +445,8 @@ function lintFile(filePath: string): LintIssue[] {
           normalizedPath.includes("/apps/extension/src/extension/") &&
           !normalizedPath.includes("autofill-content-script");
 
+        const allowedLayers = ALLOWED_TARGET_LAYERS[fileLayer];
+
         if (isServiceWorker && targetLayer === 5) {
           issues.push({
             filePath,
@@ -447,14 +458,19 @@ function lintFile(filePath: string): LintIssue[] {
         } else if (
           targetLayer > 0 &&
           fileLayer > 0 &&
-          fileLayer < targetLayer
+          allowedLayers &&
+          !allowedLayers.includes(targetLayer)
         ) {
+          const allowedNames =
+            allowedLayers.length > 0
+              ? allowedLayers.map((l) => `L${l}`).join(", ")
+              : "None (pure layer)";
           issues.push({
             filePath,
             line: lineNum,
             column: lineText.indexOf(importPath) + 1,
             ruleId: "strict-layer-boundaries",
-            message: `Layer Violation: '${fileLayerName}' is forbidden from importing higher layer '${targetLayerName}' ('${importPath}').`,
+            message: `Layer Violation: '${fileLayerName}' is strictly forbidden from importing layer '${targetLayerName}' ('${importPath}'). Allowed target layers: ${allowedNames}.`,
           });
         }
       }

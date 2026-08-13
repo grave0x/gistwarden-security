@@ -13,6 +13,7 @@ export * from "./src/logger.ts";
 export * from "./src/password-strength.ts";
 export * from "./src/runtime-env.ts";
 export * from "./src/session-manager.ts";
+export * from "./src/sync-provider-types.ts";
 export * from "./src/totp-utils.ts";
 export * from "./src/types.ts";
 export * from "./src/vault-domain-matching.ts";

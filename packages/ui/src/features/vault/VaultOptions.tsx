@@ -1,3 +1,4 @@
+import { setSessionStorageUseCase } from "@gistwarden/orchestrator";
 import { requestReprompt, setGlobalLoading, showToast } from "@gistwarden/ui";
 import { type Component, createSignal, Show } from "solid-js";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
@@ -11,7 +12,6 @@ import { t } from "@/core/i18n.ts";
 import { navigate } from "@/core/navigation.ts";
 import { handlePopout, isPopout } from "@/core/popout-utils.ts";
 import { isExtension, isFirefox } from "@/core/runtime.ts";
-import { setSessionItem } from "@/core/storage.ts";
 import { accountStore, setUiStore } from "@/core/store.ts";
 import { View } from "@/core/types.ts";
 import { syncVault } from "@/features/sync/sync-service.ts";
@@ -114,7 +114,7 @@ export const VaultOptions: Component = () => {
             class="setting-row"
             onClick={async () => {
               if (isExtension() && isFirefox() && !isPopout()) {
-                await setSessionItem(
+                await setSessionStorageUseCase(
                   SESSION_KEY_LAST_VIEW,
                   View.ImportAccounts,
                 );
@@ -139,7 +139,7 @@ export const VaultOptions: Component = () => {
             class="setting-row"
             onClick={async () => {
               if (isExtension() && isFirefox() && !isPopout()) {
-                await setSessionItem(
+                await setSessionStorageUseCase(
                   SESSION_KEY_LAST_VIEW,
                   View.GoogleAuthTool,
                 );

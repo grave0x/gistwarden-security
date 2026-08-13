@@ -19,7 +19,7 @@ export enum UriMatchMode {
   Never = 5,
 }
 
-export const UriMatchModeSchema = z.nativeEnum(UriMatchMode);
+export const UriMatchModeSchema = z.enum(UriMatchMode);
 
 export const LoginUriSchema = z
   .object({
@@ -37,7 +37,7 @@ export const PasswordHistorySchema = z
   .readonly();
 export type PasswordHistory = z.infer<typeof PasswordHistorySchema>;
 
-export const CustomFieldTypeSchema = z.nativeEnum(CustomFieldType);
+export const CustomFieldTypeSchema = z.enum(CustomFieldType);
 
 const nullableString = () =>
   z
