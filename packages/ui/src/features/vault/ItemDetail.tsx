@@ -115,7 +115,7 @@ export const ItemDetail: Component = () => {
                   <Show
                     when={field.type === CustomFieldType.Divider}
                     fallback={
-                      <div class="detail-row">
+                      <div class="detail-row custom-field-row">
                         <div class="field-content">
                           <div class="field-label">
                             {field.name || t("edit_label_fields")}
