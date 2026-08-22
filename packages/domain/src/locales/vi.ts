@@ -152,6 +152,7 @@ export default {
   login_checking_gist: "Đang kiểm tra dữ liệu...",
   login_local_vault_must_read: "Cảnh báo & lưu ý quan trọng",
   login_local_vault_must_read_btn: "Cần đọc trước",
+  login_btn_access_local: "Truy cập Kho Cục Bộ",
   login_self_hosted_must_read: "Cảnh báo & hướng dẫn tự host",
   login_self_hosted_must_read_btn: "Cần đọc trước",
 
@@ -255,8 +256,8 @@ export default {
   edit_section_item_details: "Chi tiết mục",
   edit_label_fields: "Các trường tùy chỉnh",
   edit_field_type_text: "Văn bản",
-  edit_field_type_hidden: "Ẩn",
-  edit_field_type_boolean: "Bật / Tắt (Boolean)",
+  edit_field_type_hidden: "Ẩn (Hidden)",
+  edit_field_type_boolean: "Hộp kiểm (Checkbox)",
   edit_field_type_linked: "Liên kết",
   edit_field_name_placeholder: "Tên trường",
   edit_field_val_placeholder: "Giá trị trường",
@@ -405,6 +406,10 @@ export default {
   auto_submit_on_autofill_label: "Tự động đăng nhập sau khi tự điền",
   auto_submit_on_autofill_sub:
     "Tự động gửi form hoặc click nút Đăng nhập sau khi chọn tài khoản từ gợi ý",
+  auto_copy_totp_label: "Tự động sao chép mã TOTP vào bộ nhớ tạm",
+  auto_copy_totp_sub:
+    "Tự động sao chép mã OTP 6 số vào bộ nhớ tạm khi điền tự động tài khoản có 2FA",
+  toast_totp_copied: "Đã sao chép mã TOTP vào bộ nhớ tạm",
   autofill_excluded_domains_title: "Danh sách tên miền ngoại lệ",
   autofill_excluded_domains_sub:
     "Không gửi thông báo lưu mật khẩu hoặc hiển thị gợi ý tự động điền trên các trang web này",
@@ -971,12 +976,41 @@ export default {
     "Lưu trữ khóa riêng tư (Private Key) dạng OpenSSH/PEM cùng với Fingerprint và Mật khẩu bảo vệ của khóa.",
 
   guide_vm_fields_lead:
-    "Mở rộng trường dữ liệu cho mục két sắt với các kiểu dữ liệu phong phú.",
-  guide_vm_fields_card_title: "Các kiểu trường tùy chỉnh (Custom Fields)",
-  guide_vm_fields_item1: "Text: Trường văn bản thông thường.",
-  guide_vm_fields_item2: "Hidden: Văn bản ẩn (mã PIN, đáp án câu hỏi bảo mật).",
-  guide_vm_fields_item3: "Boolean: Công tắc Bật/Tắt (True/False).",
-  guide_vm_fields_item4: "Linked: Liên kết tự động lấy dữ liệu từ trường khác.",
+    "Mở rộng trường dữ liệu linh hoạt cho các mục trong Két sắt, giúp điền tự động chính xác mọi biểu mẫu đăng nhập phức tạp.",
+  guide_vm_fields_card_title: "4 Kiểu Trường Tùy Chỉnh (Custom Fields)",
+  guide_vm_fields_item1: "Text: Lưu trữ chuỗi văn bản thông thường.",
+  guide_vm_fields_item2: "Hidden: Văn bản bảo mật được ẩn ký tự.",
+  guide_vm_fields_item3: "Checkbox: Hộp kiểm bật/tắt (True/False).",
+  guide_vm_fields_item4:
+    "Linked: Trường liên kết động từ Username/Password/2FA.",
+  guide_vm_fields_type_text_title: "1. Trường Văn bản (Text)",
+  guide_vm_fields_type_text_desc:
+    "Lưu trữ các thông tin văn bản tĩnh như: Mã khách hàng, Tên tổ chức/Tenant, Domain công ty, hoặc Số hiệu tài khoản. Khi tự động điền (Autofill), tiện ích sẽ điền chuỗi này vào ô input tương ứng trên trang web.",
+  guide_vm_fields_type_hidden_title: "2. Trường Ẩn (Hidden)",
+  guide_vm_fields_type_hidden_desc:
+    "Lưu trữ các chuỗi nhạy cảm cần bảo mật như: Mã PIN phụ, câu trả lời bí mật, hoặc chuỗi khóa bí mật. Giá trị được che mờ (dạng chấm ••••) trên giao diện và được điền an toàn vào form đăng nhập.",
+  guide_vm_fields_type_checkbox_title: "3. Hộp kiểm (Checkbox)",
+  guide_vm_fields_type_checkbox_desc:
+    "Lưu trữ trạng thái Bật/Tắt (True/False). Khi Autofill, tiện ích sẽ tự động tích chọn hoặc bỏ chọn hộp kiểm trên biểu mẫu web (ví dụ: 'Ghi nhớ đăng nhập', 'Thiết bị tin cậy', 'Tôi đồng ý điều khoản').",
+  guide_vm_fields_type_linked_title: "4. Trường Liên kết (Linked)",
+  guide_vm_fields_type_linked_desc:
+    "Giải pháp đặc trị cho các trang web dùng thuộc tính ô đăng nhập bất quy tắc (ví dụ: id='txt_user_code', name='auth_secret'). Tự động lấy giá trị trực tiếp từ Tên đăng nhập, Mật khẩu hoặc mã 2FA TOTP hiện tại để điền vào đúng vị trí.",
+  guide_vm_fields_linked_guide_title:
+    "Hướng dẫn sử dụng Trường Liên Kết (Linked Fields)",
+  guide_vm_fields_linked_step1_title:
+    "Bước 1: Xác định tên ô input trên trang web",
+  guide_vm_fields_linked_step1_desc:
+    "Chuột phải vào ô input cần điền trên trang web và chọn 'Kiểm tra' (Inspect). Tìm xem thuộc tính 'id', 'name', 'placeholder' hoặc 'aria-label' của ô đó là gì (ví dụ: 'login_username' hoặc 'member_pwd').",
+  guide_vm_fields_linked_step2_title:
+    "Bước 2: Thêm trường Linked vào mục Két sắt",
+  guide_vm_fields_linked_step2_desc:
+    "Mở mục Két sắt cần chỉnh sửa → bấm 'Thêm trường tùy chỉnh' → chọn Loại trường là 'Trường liên kết (Linked)'. Nhập Tên trường trùng với thuộc tính vừa xem ở Bước 1 → Chọn Giá trị liên kết là 'Tên đăng nhập', 'Mật khẩu' hoặc 'Mã xác thực 2FA (TOTP)'.",
+  guide_vm_fields_linked_step3_title: "Bước 3: Tự động điền chính xác 100%",
+  guide_vm_fields_linked_step3_desc:
+    "Khi truy cập trang web và bấm Autofill (hoặc dùng gợi ý thông báo / phím tắt), tiện ích sẽ tự động ánh xạ dữ liệu tài khoản vào đúng các ô input đó.",
+  guide_vm_fields_matching_title: "Quy tắc Nhận diện & Khớp trường Autofill",
+  guide_vm_fields_matching_desc:
+    "Hệ thống Autofill của Gistwarden tự động đối chiếu Tên trường (không phân biệt chữ hoa/thường) theo thứ tự ưu tiên: 1. Thuộc tính 'id' → 2. Thuộc tính 'name' → 3. Thuộc tính 'placeholder' → 4. Thuộc tính 'aria-label' hoặc thẻ '<label>'.",
 
   guide_vm_folders_lead:
     "Tự do phân loại dữ liệu theo Thư mục và quản lý an toàn các mục bị xóa trong Thùng rác.",

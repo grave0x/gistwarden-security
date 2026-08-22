@@ -230,28 +230,30 @@ export const ItemEdit: Component = () => {
               />
             </div>
 
-            <div class="form-group mt-12">
-              <label for="item-folder">{t("folder_select_label")}</label>
-              <Select
-                id="item-folder"
-                value={formState.folderId || ""}
-                onChange={(e) =>
-                  updateForm(
-                    "folderId",
-                    e.currentTarget.value
-                      ? asFolderId(e.currentTarget.value)
-                      : null,
-                  )
-                }
-                options={[
-                  { value: "", label: t("folder_no_folder_option") },
-                  ...(accountStore.folders || []).map((f) => ({
-                    value: f.id,
-                    label: f.name,
-                  })),
-                ]}
-              />
-            </div>
+            <Show when={(accountStore.folders || []).length > 0}>
+              <div class="form-group mt-12">
+                <label for="item-folder">{t("folder_select_label")}</label>
+                <Select
+                  id="item-folder"
+                  value={formState.folderId || ""}
+                  onChange={(e) =>
+                    updateForm(
+                      "folderId",
+                      e.currentTarget.value
+                        ? asFolderId(e.currentTarget.value)
+                        : null,
+                    )
+                  }
+                  options={[
+                    { value: "", label: t("folder_no_folder_option") },
+                    ...(accountStore.folders || []).map((f) => ({
+                      value: f.id,
+                      label: f.name,
+                    })),
+                  ]}
+                />
+              </div>
+            </Show>
           </div>
 
           {(() => {

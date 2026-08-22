@@ -38,7 +38,35 @@ onExtensionMessage((message, _sender, sendResponse) => {
       typeof message.username === "string" ? message.username : undefined;
     const password =
       typeof message.password === "string" ? message.password : undefined;
-    const success = performAutofill(username, password);
+    const customFields = Array.isArray(message.fields)
+      ? message.fields
+      : undefined;
+    const totp = typeof message.totp === "string" ? message.totp : undefined;
+    const success = performAutofill(
+      username,
+      password,
+      false,
+      customFields,
+      totp,
+    );
+
+    if (totp) {
+      void (async () => {
+        const storageRes = await getLocalItem(STORAGE_KEY);
+        let autoCopy = true;
+        const raw = storageRes.isOk() ? storageRes.value : null;
+        if (isRecord(raw) && typeof raw.autoCopyTotp === "boolean") {
+          autoCopy = raw.autoCopyTotp;
+        }
+        if (autoCopy) {
+          const totpRes = generateTotpSafe(totp);
+          if (totpRes.isOk()) {
+            writeClipboardText(totpRes.value);
+          }
+        }
+      })();
+    }
+
     sendResponse({ success });
     return;
   }
@@ -94,6 +122,8 @@ setupAutofillFocusMonitoring(async () => {
       const p = selectedAcc?.password || payloadData.password;
       const tSecret = selectedAcc?.totp || payloadData.totp;
 
+      const customFields = selectedAcc?.fields || payloadData.fields;
+
       const res = await getLocalItem(STORAGE_KEY);
       let autoSubmit = true;
       const rawLocal = res.isOk() ? res.value : null;
@@ -103,9 +133,14 @@ setupAutofillFocusMonitoring(async () => {
       ) {
         autoSubmit = rawLocal.autoSubmitOnAutofill;
       }
-      performAutofill(u, p, autoSubmit);
+      performAutofill(u, p, autoSubmit, customFields, tSecret);
 
-      if (tSecret) {
+      let autoCopy = true;
+      if (isRecord(rawLocal) && typeof rawLocal.autoCopyTotp === "boolean") {
+        autoCopy = rawLocal.autoCopyTotp;
+      }
+
+      if (tSecret && autoCopy) {
         const totpRes = generateTotpSafe(tSecret);
         if (totpRes.isOk()) {
           writeClipboardText(totpRes.value);

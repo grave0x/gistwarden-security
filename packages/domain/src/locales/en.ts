@@ -153,6 +153,7 @@ export default {
   login_checking_gist: "Checking data...",
   login_local_vault_must_read: "Important guidelines & warnings",
   login_local_vault_must_read_btn: "Must read",
+  login_btn_access_local: "Access Local Vault",
   login_self_hosted_must_read: "Important guidelines & setup",
   login_self_hosted_must_read_btn: "Must read",
 
@@ -257,7 +258,7 @@ export default {
   edit_label_fields: "Custom Fields",
   edit_field_type_text: "Text",
   edit_field_type_hidden: "Hidden",
-  edit_field_type_boolean: "Boolean",
+  edit_field_type_boolean: "Checkbox",
   edit_field_type_linked: "Linked",
   edit_field_name_placeholder: "Field Name",
   edit_field_val_placeholder: "Field Value",
@@ -407,6 +408,10 @@ export default {
   auto_submit_on_autofill_label: "Auto-submit after autofill",
   auto_submit_on_autofill_sub:
     "Automatically submit form or click Login button after selecting an account from suggestions",
+  auto_copy_totp_label: "Auto-copy TOTP to clipboard",
+  auto_copy_totp_sub:
+    "Automatically copy the 6-digit TOTP code to the clipboard when autofilling logins with 2FA",
+  toast_totp_copied: "TOTP code copied to clipboard",
   autofill_excluded_domains_title: "Excluded Domains",
   autofill_excluded_domains_sub:
     "Never prompt to save passwords or display autofill suggestions on these websites",
@@ -959,14 +964,39 @@ export default {
     "Store OpenSSH/PEM private keys along with Key Fingerprint and Passphrases.",
 
   guide_vm_fields_lead:
-    "Extend vault item fields with flexible custom data types.",
-  guide_vm_fields_card_title: "Custom Field Types",
-  guide_vm_fields_item1: "Text: Standard text field.",
-  guide_vm_fields_item2:
-    "Hidden: Obfuscated text (PIN codes, security answers).",
-  guide_vm_fields_item3: "Boolean: Toggle switch (True/False).",
+    "Extend vault item fields with flexible custom data types to accurately autofill any complex login forms.",
+  guide_vm_fields_card_title: "4 Custom Field Types",
+  guide_vm_fields_item1: "Text: Store standard static string values.",
+  guide_vm_fields_item2: "Hidden: Obfuscated sensitive text.",
+  guide_vm_fields_item3: "Checkbox: Boolean toggle state (True/False).",
   guide_vm_fields_item4:
-    "Linked: Automatically references values from another field.",
+    "Linked: Dynamically referenced from Username/Password/2FA.",
+  guide_vm_fields_type_text_title: "1. Text Fields",
+  guide_vm_fields_type_text_desc:
+    "Store static text information such as Customer ID, Organization/Tenant Name, Company Domain, or Account Number. When autofilling, the extension fills this string into matching input fields.",
+  guide_vm_fields_type_hidden_title: "2. Hidden Fields",
+  guide_vm_fields_type_hidden_desc:
+    "Store sensitive strings requiring obfuscation such as secondary PIN codes, security answers, or secret tokens. Values are masked as dots (••••) on the UI and filled securely into login forms.",
+  guide_vm_fields_type_checkbox_title: "3. Checkbox Fields",
+  guide_vm_fields_type_checkbox_desc:
+    "Store boolean Toggle state (True/False). During autofill, the extension automatically checks or unchecks checkboxes on the webpage (e.g. 'Remember me', 'Trusted device', 'I agree to terms').",
+  guide_vm_fields_type_linked_title: "4. Linked Fields",
+  guide_vm_fields_type_linked_desc:
+    "Dedicated solution for websites with non-standard input attributes (e.g. id='txt_user_code', name='auth_secret'). Dynamically extracts values directly from the item's Username, Password, or live 2FA TOTP code.",
+  guide_vm_fields_linked_guide_title: "How to Use Linked Fields",
+  guide_vm_fields_linked_step1_title: "Step 1: Inspect the Web Input Name/ID",
+  guide_vm_fields_linked_step1_desc:
+    "Right-click the input field on the website and select 'Inspect'. Identify the input's 'id', 'name', 'placeholder', or 'aria-label' attribute (e.g. 'login_username' or 'member_pwd').",
+  guide_vm_fields_linked_step2_title:
+    "Step 2: Add a Linked Field in Your Vault",
+  guide_vm_fields_linked_step2_desc:
+    "Open the Vault item → click 'Add Custom Field' → select 'Linked' as Field Type. Enter the Field Name matching the attribute from Step 1 → Select Linked Value as 'Username', 'Password', or '2FA Authenticator (TOTP)'.",
+  guide_vm_fields_linked_step3_title: "Step 3: Autofill with 100% Accuracy",
+  guide_vm_fields_linked_step3_desc:
+    "When visiting the website and clicking Autofill (or using notification prompts / hotkeys), Gistwarden automatically maps and fills the exact credential values into those fields.",
+  guide_vm_fields_matching_title: "Autofill Matching Rules",
+  guide_vm_fields_matching_desc:
+    "Gistwarden's Autofill engine matches Field Names (case-insensitive) in order of priority: 1. 'id' attribute → 2. 'name' attribute → 3. 'placeholder' attribute → 4. 'aria-label' attribute or associated '<label>'.",
 
   guide_vm_folders_lead:
     "Organize item data with Folders and safely manage deleted items in Trash.",

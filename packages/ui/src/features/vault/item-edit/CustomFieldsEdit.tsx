@@ -2,6 +2,7 @@ import type { VaultField } from "@gistwarden/domain";
 import { CustomFieldType } from "@gistwarden/domain";
 import { type Component, createSignal, For, Show } from "solid-js";
 import CustomFieldModal from "@/components/ui/CustomFieldModal.tsx";
+import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
 import { t } from "@/core/i18n.ts";
 import { DragIcon, EditIcon, PlusIcon, TrashIcon } from "@/icons/svg/index.ts";
 
@@ -86,7 +87,10 @@ export const CustomFieldsEdit: Component<CustomFieldsEditProps> = (props) => {
 
   return (
     <>
-      <div class="detail-section-title">{t("edit_label_fields")}</div>
+      <div class="detail-section-title d-flex align-items-center gap-6">
+        <span>{t("edit_label_fields")}</span>
+        <GuideHelpButton route="vault-management/custom-fields" />
+      </div>
       <div class="card mb-16">
         <Show when={props.fields.length > 0}>
           <div class="mb-12">
@@ -115,7 +119,13 @@ export const CustomFieldsEdit: Component<CustomFieldsEditProps> = (props) => {
                           <span class="field-sub-value">
                             {field.type === CustomFieldType.Hidden
                               ? "••••••••"
-                              : field.value || t("detail_no_value")}
+                              : field.type === CustomFieldType.Boolean
+                                ? field.value === "true" || field.value === "1"
+                                  ? "✓ True"
+                                  : "✗ False"
+                                : field.type === CustomFieldType.Linked
+                                  ? `🔗 ${field.value}`
+                                  : field.value || t("detail_no_value")}
                           </span>
                         </div>
                         <div class="d-flex gap-8">

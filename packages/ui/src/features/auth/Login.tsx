@@ -1,7 +1,4 @@
-import {
-  type LoginViewMode,
-  SESSION_KEY_ENCRYPTED_VAULT,
-} from "@gistwarden/domain";
+import { SESSION_KEY_ENCRYPTED_VAULT } from "@gistwarden/domain";
 import {
   checkVaultConfiguredUseCase,
   checkVaultStatusUseCase,
@@ -16,7 +13,6 @@ import {
 import { setGlobalLoading, updateLanguage } from "@gistwarden/ui";
 import {
   type Component,
-  createEffect,
   createSignal,
   Match,
   onMount,
@@ -24,9 +20,9 @@ import {
   Switch,
 } from "solid-js";
 import { z } from "zod";
+import Button from "@/components/ui/Button.tsx";
 import GuideHelpButton from "@/components/ui/GuideHelpButton.tsx";
 import { Select } from "@/components/ui/Select.tsx";
-import TypedConfirmModal from "@/components/ui/TypedConfirmModal.tsx";
 import {
   APP_NAME,
   OAUTH_CLIENT_ID,
@@ -38,7 +34,6 @@ import {
   getAccountSettings,
   getSessionItem,
   removeSessionItem,
-  resetAccountSettings,
   setSessionItem,
   updateAccountSettings,
   updateExtensionSettings,
@@ -51,97 +46,29 @@ import {
 } from "@/core/store.ts";
 import {
   createNewVault,
-  logout,
-  unlock,
+  syncVaultStatus,
 } from "@/features/auth/auth-service.ts";
 import { GithubSetupForm } from "@/features/auth/components/GithubSetupForm.tsx";
 import { MasterPasswordCreate } from "@/features/auth/components/MasterPasswordCreate.tsx";
-import { MasterPasswordForm } from "@/features/auth/components/MasterPasswordForm.tsx";
 import { SelfHostedSetupForm } from "@/features/auth/components/SelfHostedSetupForm.tsx";
-import { handleForgotMasterPassword } from "@/features/auth/forgot-password-strategies.ts";
-import PinUnlockForm from "@/features/auth/PinUnlockForm.tsx";
-import { unlockWithPin } from "@/features/auth/pin-service.ts";
 import { setupGithub } from "@/features/sync/github-auth.ts";
 import {
   AppIcon,
   GithubIcon,
   GlobeIcon,
   ShieldAlertIcon,
-  SyncIcon,
   VaultIcon,
 } from "@/icons/svg/index.ts";
 
 export const Login: Component = () => {
   const [error, setError] = createSignal("");
-  const [viewMode, setViewMode] = createSignal<LoginViewMode>("masterPassword");
-  const [failedUnlockAttempts, setFailedUnlockAttempts] = createSignal(0);
+  const [isLocalSetupActive, setIsLocalSetupActive] = createSignal(false);
   const [gistStatus, setGistStatus] = createSignal<
     "checking" | "new" | "exists"
-  >("exists");
-  const [showResetLocalModal, setShowResetLocalModal] = createSignal(false);
-
-  const checkVaultStatusForMode = async (
-    mode: VaultMode,
-  ): Promise<"checking" | "exists" | "new"> => {
-    const accRes = await getAccountSettings(mode);
-    const acc = accRes.isOk() ? accRes.value : null;
-    let isConfigured = false;
-
-    if (acc) {
-      const currentSyncConfig = acc.syncConfig;
-      setAccountStore("masterPasswordConfig", acc.masterPasswordConfig);
-      setAccountStore("pinConfig", acc.pinConfig);
-      setAccountStore("syncConfig", currentSyncConfig);
-      setAccountStore("gistId", currentSyncConfig.gistId || "");
-      isConfigured = await checkVaultConfiguredUseCase(mode, acc);
-      setAccountStore("vaultConfigured", isConfigured);
-    } else {
-      isConfigured = await checkVaultConfiguredUseCase(mode, null);
-      setAccountStore("vaultConfigured", isConfigured);
-    }
-
-    const statusResult = await checkVaultStatusUseCase(
-      mode,
-      acc,
-      accountStore.syncToken,
-    );
-
-    if (
-      statusResult.salt &&
-      statusResult.salt !== acc?.masterPasswordConfig.salt
-    ) {
-      const updatedMpConfig = {
-        ...(acc?.masterPasswordConfig ||
-          DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG),
-        salt: statusResult.salt,
-      };
-      const baseSyncConfig = acc?.syncConfig || DEFAULT_SYNC_CONFIG;
-      const updatedSyncConfig = {
-        ...baseSyncConfig,
-        ...(statusResult.gistId ? { gistId: statusResult.gistId } : {}),
-      };
-      await updateAccountSettings(
-        {
-          masterPasswordConfig: updatedMpConfig,
-          syncConfig: updatedSyncConfig,
-        },
-        mode,
-      );
-      setAccountStore("masterPasswordConfig", updatedMpConfig);
-      setAccountStore("syncConfig", updatedSyncConfig);
-      if (statusResult.gistId) {
-        setAccountStore("gistId", statusResult.gistId);
-      }
-    }
-
-    if (statusResult.status === "new" && !isConfigured) {
-      setAccountStore("vaultConfigured", false);
-    }
-
-    return statusResult.status;
-  };
+  >("checking");
 
   onMount(async () => {
+    setGistStatus("checking");
     let tokenToSetup: string | null = null;
 
     const rawTokenRes = await getSessionItem(SESSION_KEY_PENDING_SYNC_TOKEN);
@@ -173,38 +100,9 @@ export const Login: Component = () => {
       }
     }
 
-    const initialStatus = await checkVaultStatusForMode(
-      settingsStore.vaultMode,
-    );
+    const initialStatus = await syncVaultStatus(settingsStore.vaultMode, false);
     setGistStatus(initialStatus);
   });
-
-  createEffect(() => {
-    if (accountStore.isLoaded && settingsStore.isLoaded) {
-      if (accountStore.pinConfig.enabled) {
-        if (
-          settingsStore.requireMasterPasswordOnRestart &&
-          !accountStore.hasUnlockedInSession
-        ) {
-          setViewMode("masterPassword");
-        } else {
-          setViewMode("pin");
-        }
-      } else {
-        setViewMode("masterPassword");
-      }
-    }
-  });
-
-  const handlePinUnlock = async (pin: string) => {
-    setGlobalLoading(true);
-    setError("");
-    const res = await unlockWithPin(pin);
-    if (res.isErr()) {
-      setError(t(res.error));
-    }
-    setGlobalLoading(false);
-  };
 
   const handleConnectGithubToken = async (rawToken: string) => {
     const trimmed = rawToken.trim();
@@ -213,14 +111,16 @@ export const Login: Component = () => {
       return;
     }
     setGlobalLoading(true);
+    setGistStatus("checking");
     setError("");
     const setupRes = await setupGithub(trimmed);
     if (setupRes.isErr()) {
       setGlobalLoading(false);
+      setGistStatus("exists");
       setError(t(setupRes.error));
       return;
     }
-    const status = await checkVaultStatusForMode(settingsStore.vaultMode);
+    const status = await syncVaultStatus(settingsStore.vaultMode);
     setGistStatus(status);
     setGlobalLoading(false);
   };
@@ -265,6 +165,7 @@ export const Login: Component = () => {
     }
 
     setGlobalLoading(true);
+    setGistStatus("checking");
     setError("");
 
     try {
@@ -287,6 +188,7 @@ export const Login: Component = () => {
 
       if (!response.ok) {
         setGlobalLoading(false);
+        setGistStatus("exists");
         if (response.status === 409 || data.error === "user_already_exists") {
           setError(t("self_hosted_error_user_exists"));
         } else if (
@@ -303,6 +205,7 @@ export const Login: Component = () => {
       const accessToken = data.accessToken;
       if (!accessToken) {
         setGlobalLoading(false);
+        setGistStatus("exists");
         setError(t("self_hosted_error_network"));
         return;
       }
@@ -326,13 +229,13 @@ export const Login: Component = () => {
 
       setAccountStore("syncConfig", updatedSyncConfig);
       setAccountStore("syncToken", accessToken);
-      setAccountStore("vaultConfigured", true);
 
-      const status = await checkVaultStatusForMode("self_hosted_server");
+      const status = await syncVaultStatus("self_hosted_server");
       setGistStatus(status);
       setGlobalLoading(false);
     } catch {
       setGlobalLoading(false);
+      setGistStatus("exists");
       setError(t("self_hosted_error_network"));
     }
   };
@@ -359,14 +262,27 @@ export const Login: Component = () => {
   };
 
   const handleSwitchVaultMode = async (mode: VaultMode) => {
+    setIsLocalSetupActive(false);
     setSettingsStore("vaultMode", mode);
     await updateExtensionSettings({ vaultMode: mode });
     await removeSessionItem(SESSION_KEY_ENCRYPTED_VAULT);
     setError("");
 
     setGistStatus("checking");
-    const status = await checkVaultStatusForMode(mode);
+    const status = await syncVaultStatus(mode, false);
     setGistStatus(status);
+  };
+
+  const handleAccessLocalVault = async () => {
+    setGlobalLoading(true);
+    setError("");
+    const status = await syncVaultStatus("local_storage", true);
+    setGlobalLoading(false);
+    if (status === "exists") {
+      setAccountStore("vaultConfigured", true);
+    } else {
+      setIsLocalSetupActive(true);
+    }
   };
 
   const handleCreateMasterPassword = async (password: string) => {
@@ -381,42 +297,6 @@ export const Login: Component = () => {
     if (result.isErr()) {
       setError(t(result.error));
     }
-  };
-
-  const handleUnlock = async (password: string) => {
-    if (!password) {
-      setError(t("login_error_empty_mp"));
-      return;
-    }
-    setGlobalLoading(true);
-    setError("");
-    const result = await unlock(password);
-    setGlobalLoading(false);
-    if (result.isErr()) {
-      setFailedUnlockAttempts((prev) => prev + 1);
-      setError(t(result.error));
-    }
-  };
-
-  const handleResetToken = async () => {
-    setError("");
-    await logout();
-  };
-
-  const handleForgotPassword = async () => {
-    await handleForgotMasterPassword(settingsStore.vaultMode, {
-      onOpenResetLocalModal: () => setShowResetLocalModal(true),
-    });
-  };
-
-  const handleConfirmResetLocalVault = async () => {
-    setShowResetLocalModal(false);
-    await resetAccountSettings("local_storage");
-    setAccountStore(
-      "masterPasswordConfig",
-      DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
-    );
-    setGistStatus("new");
   };
 
   return (
@@ -447,17 +327,7 @@ export const Login: Component = () => {
       <div class="text-center mb-24">
         <AppIcon class="login-header-logo" />
         <h2 class="login-brand-title">{APP_NAME}</h2>
-        <p class="login-subtitle">
-          <Show
-            when={
-              settingsStore.vaultMode === "local_storage" ||
-              accountStore.vaultConfigured
-            }
-            fallback={t("login_title_setup")}
-          >
-            {t("login_title_locked")}
-          </Show>
-        </p>
+        <p class="login-subtitle">{t("login_title_setup")}</p>
       </div>
 
       {/* Provider Selector Dropdown */}
@@ -512,20 +382,41 @@ export const Login: Component = () => {
         <div class="alert alert-danger mb-16">{error()}</div>
       </Show>
 
-      <Show when={failedUnlockAttempts() >= 3}>
-        <div class="text-center text-sm text-muted mb-16">
-          {t("login_error_changed_mp_hint")}
-        </div>
-      </Show>
+      {/* Setup / Create Flow */}
+      <Switch>
+        <Match when={gistStatus() === "checking"}>
+          <div class="min-h-120" />
+        </Match>
 
-      <Show
-        when={
-          settingsStore.vaultMode === "local_storage" ||
-          accountStore.vaultConfigured
-        }
-        fallback={
-          <Switch>
-            <Match when={settingsStore.vaultMode === "self_hosted_server"}>
+        {/* 1. Local Storage Mode: Show Access Button or Master Password Creation */}
+        <Match when={settingsStore.vaultMode === "local_storage"}>
+          <Show
+            when={isLocalSetupActive()}
+            fallback={
+              <div class="card mb-0 p-16 text-center">
+                <p class="login-oauth-help mb-16">
+                  {t("guide_start_local_lead")}
+                </p>
+                <Button
+                  variant="primary"
+                  block
+                  onClick={handleAccessLocalVault}
+                >
+                  <VaultIcon class="github-btn-icon" size={16} />
+                  <span>{t("login_btn_access_local")}</span>
+                </Button>
+              </div>
+            }
+          >
+            <MasterPasswordCreate onCreate={handleCreateMasterPassword} />
+          </Show>
+        </Match>
+
+        {/* 2. Self-Hosted Mode */}
+        <Match when={settingsStore.vaultMode === "self_hosted_server"}>
+          <Show
+            when={Boolean(accountStore.syncToken) && gistStatus() === "new"}
+            fallback={
               <SelfHostedSetupForm
                 initialServerUrl={accountStore.syncConfig.serverUrl}
                 onSaveServerUrl={handleSaveSelfHostedServerUrl}
@@ -536,62 +427,29 @@ export const Login: Component = () => {
                   handleSelfHostedAuth("register", url, user, pass)
                 }
               />
-            </Match>
-            <Match when={settingsStore.vaultMode === "github_gist"}>
+            }
+          >
+            <MasterPasswordCreate onCreate={handleCreateMasterPassword} />
+          </Show>
+        </Match>
+
+        {/* 3. GitHub Gist Mode */}
+        <Match when={settingsStore.vaultMode === "github_gist"}>
+          <Show
+            when={Boolean(accountStore.syncToken) && gistStatus() === "new"}
+            fallback={
               <GithubSetupForm
                 onSaveToken={handleSaveToken}
                 onGithubOauth={handleGithubOauth}
               />
-            </Match>
-          </Switch>
-        }
-      >
-        <Show
-          when={viewMode() === "pin"}
-          fallback={
-            <Switch>
-              <Match when={gistStatus() === "checking"}>
-                <div class="text-center p-24 card">
-                  <SyncIcon class="spinning loading-icon mb-12" />
-                  <div class="font-sz-13 text-muted">
-                    {t("login_checking_gist")}
-                  </div>
-                </div>
-              </Match>
-              <Match when={gistStatus() === "new"}>
-                <MasterPasswordCreate onCreate={handleCreateMasterPassword} />
-              </Match>
-              <Match when={gistStatus() === "exists"}>
-                <MasterPasswordForm
-                  onUnlock={handleUnlock}
-                  onSwitchToPin={() => setViewMode("pin")}
-                  onLogout={handleResetToken}
-                  onForgotPassword={handleForgotPassword}
-                />
-              </Match>
-            </Switch>
-          }
-        >
-          <PinUnlockForm
-            error={error()}
-            onUnlock={handlePinUnlock}
-            onSwitchToMasterPassword={() => setViewMode("masterPassword")}
-          />
-        </Show>
-      </Show>
-
-      <TypedConfirmModal
-        isOpen={showResetLocalModal()}
-        title={t("login_local_forgot_password_title")}
-        messageHtml={t("login_local_forgot_password_msg")}
-        requiredWord="RESET"
-        placeholder={t("login_local_reset_placeholder")}
-        confirmButtonText={t("login_local_reset_btn")}
-        variant="danger"
-        onClose={() => setShowResetLocalModal(false)}
-        onConfirm={handleConfirmResetLocalVault}
-      />
+            }
+          >
+            <MasterPasswordCreate onCreate={handleCreateMasterPassword} />
+          </Show>
+        </Match>
+      </Switch>
     </div>
   );
 };
+
 export default Login;

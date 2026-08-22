@@ -249,3 +249,284 @@ test("Vault Domain Matching - filterMatchingDomainItems strictly matches by URI 
   assertEquals(matched[0].id, asVaultItemId("3"));
   assertEquals(matched[1].id, asVaultItemId("2"));
 });
+
+test("Vault Domain Matching - Detailed Base Domain edge cases (multi-part TLDs, ports, IPs, localhost)", () => {
+  // Multi-part country code TLD (.com.vn, .co.uk)
+  assertEquals(
+    isSingleUriMatch(
+      "https://portal.bank.com.vn/ebank",
+      "https://sso.bank.com.vn/login",
+      UriMatchMode.Domain,
+    ),
+    true,
+    "Domain mode matches subdomains of .com.vn",
+  );
+  assertEquals(
+    isSingleUriMatch(
+      "https://portal.bank.com.vn/ebank",
+      "https://otherbank.com.vn",
+      UriMatchMode.Domain,
+    ),
+    false,
+    "Domain mode fails for different .com.vn domain",
+  );
+  assertEquals(
+    isSingleUriMatch(
+      "https://sub.service.co.uk",
+      "https://api.service.co.uk",
+      UriMatchMode.Domain,
+    ),
+    true,
+    "Domain mode matches subdomains of .co.uk",
+  );
+
+  // IP addresses & Localhost
+  assertEquals(
+    isSingleUriMatch(
+      "http://192.168.1.100:8080/admin",
+      "http://192.168.1.100:8080/login",
+      UriMatchMode.Domain,
+    ),
+    true,
+    "Domain mode matches IP addresses",
+  );
+  assertEquals(
+    isSingleUriMatch(
+      "http://localhost:3000/app",
+      "http://localhost:3000/login",
+      UriMatchMode.Domain,
+    ),
+    true,
+    "Domain mode matches localhost",
+  );
+});
+
+test("Vault Domain Matching - Detailed Host match edge cases (subdomain separation and port matching)", () => {
+  // Different subdomains should not match in Host mode
+  assertEquals(
+    isSingleUriMatch(
+      "https://auth.company.com/login",
+      "https://auth.company.com/v2/login",
+      UriMatchMode.Host,
+    ),
+    true,
+    "Host mode matches exact same host across different paths",
+  );
+  assertEquals(
+    isSingleUriMatch(
+      "https://auth.company.com",
+      "https://dashboard.company.com",
+      UriMatchMode.Host,
+    ),
+    false,
+    "Host mode strictly rejects different subdomain of same domain",
+  );
+  assertEquals(
+    isSingleUriMatch(
+      "https://gitlab.corp.local:8443/login",
+      "https://gitlab.corp.local:8443/oauth",
+      UriMatchMode.Host,
+    ),
+    true,
+    "Host mode matches custom port host",
+  );
+});
+
+test("Vault Domain Matching - Detailed StartsWith edge cases (path hierarchy and query parameters)", () => {
+  const baseUri = "https://aws.amazon.com/console/home";
+
+  // URL starts with baseUri
+  assertEquals(
+    isSingleUriMatch(
+      baseUri,
+      "https://aws.amazon.com/console/home?region=us-east-1",
+      UriMatchMode.StartsWith,
+    ),
+    true,
+    "StartsWith matches URL with additional query params",
+  );
+  assertEquals(
+    isSingleUriMatch(
+      baseUri,
+      "https://aws.amazon.com/console/home/dashboard",
+      UriMatchMode.StartsWith,
+    ),
+    true,
+    "StartsWith matches URL with subpaths",
+  );
+
+  // URL does not start with baseUri
+  assertEquals(
+    isSingleUriMatch(
+      baseUri,
+      "https://aws.amazon.com/billing",
+      UriMatchMode.StartsWith,
+    ),
+    false,
+    "StartsWith rejects different path",
+  );
+  assertEquals(
+    isSingleUriMatch(
+      baseUri,
+      "http://aws.amazon.com/console/home",
+      UriMatchMode.StartsWith,
+    ),
+    false,
+    "StartsWith rejects protocol mismatch (http vs https)",
+  );
+});
+
+test("Vault Domain Matching - Detailed Exact match edge cases (exact URL, case sensitivity, queries)", () => {
+  const exactUri = "https://id.atlassian.com/login?application=jira";
+
+  assertEquals(
+    isSingleUriMatch(
+      exactUri,
+      "https://id.atlassian.com/login?application=jira",
+      UriMatchMode.Exact,
+    ),
+    true,
+    "Exact matches identical URL",
+  );
+  assertEquals(
+    isSingleUriMatch(
+      exactUri,
+      "https://ID.ATLASSIAN.COM/login?application=jira",
+      UriMatchMode.Exact,
+    ),
+    true,
+    "Exact matches case-insensitively",
+  );
+  assertEquals(
+    isSingleUriMatch(
+      exactUri,
+      "https://id.atlassian.com/login?application=confluence",
+      UriMatchMode.Exact,
+    ),
+    false,
+    "Exact rejects different query param",
+  );
+  assertEquals(
+    isSingleUriMatch(
+      exactUri,
+      "https://id.atlassian.com/login",
+      UriMatchMode.Exact,
+    ),
+    false,
+    "Exact rejects URL without query params",
+  );
+});
+
+test("Vault Domain Matching - Detailed Regex edge cases (wildcards, invalid syntax safety, ReDoS limit)", () => {
+  // Wildcard subdomains
+  const regexUri = "^https:\\/\\/[a-z0-9-]+\\.internal\\.mycorp\\.net(\\/.*)?$";
+
+  assertEquals(
+    isSingleUriMatch(
+      regexUri,
+      "https://auth-node-1.internal.mycorp.net/login",
+      UriMatchMode.Regex,
+    ),
+    true,
+    "Regex matches compliant internal node URL",
+  );
+  assertEquals(
+    isSingleUriMatch(
+      regexUri,
+      "https://external.mycorp.net/login",
+      UriMatchMode.Regex,
+    ),
+    false,
+    "Regex rejects non-matching domain structure",
+  );
+
+  // Invalid regex string safety (must not throw error, returns false safely)
+  const invalidRegex = "[a-z(invalid[syntax";
+  assertEquals(
+    isSingleUriMatch(invalidRegex, "https://example.com", UriMatchMode.Regex),
+    false,
+    "Regex safely returns false for malformed regex syntax",
+  );
+
+  // ReDoS prevention limit (>250 chars)
+  const longPattern = "a".repeat(251);
+  assertEquals(
+    isSingleUriMatch(longPattern, "https://example.com", UriMatchMode.Regex),
+    false,
+    "Regex returns false for pattern exceeding safety length threshold",
+  );
+});
+
+test("Vault Domain Matching - Detailed Never match edge cases and item-level isolation", () => {
+  const item = createMockLoginItem(asVaultItemId("never-item"), "Never Item", [
+    {
+      uri: "https://secure.banking.com/login",
+      match: UriMatchMode.Never,
+    },
+    {
+      uri: "https://secure.banking.com/help",
+      match: UriMatchMode.Exact,
+    },
+  ]);
+
+  // The Never-mode URI never matches
+  assertEquals(
+    isMatchingDomain(item, "https://secure.banking.com/login"),
+    false,
+    "Never mode prevents autofill matching completely on login URL",
+  );
+
+  // The second URI on the same item with Exact mode matches correctly
+  assertEquals(
+    isMatchingDomain(item, "https://secure.banking.com/help"),
+    true,
+    "Other URI on the same item with valid mode still matches",
+  );
+});
+
+test("Vault Domain Matching - Fallback to Default / Override Match Strategy", () => {
+  // Item with match: null (default detection mode)
+  const itemDefault = createMockLoginItem(
+    asVaultItemId("default-match-item"),
+    "Default Match Item",
+    [{ uri: "https://sub.portal.com/login", match: null }],
+  );
+
+  // 1. When overrideDefaultMode is omitted, defaults to UriMatchMode.Domain
+  assertEquals(
+    isMatchingDomain(itemDefault, "https://other.portal.com/page"),
+    true,
+    "Defaults to Base Domain matching when match is null",
+  );
+
+  // 2. When overrideDefaultMode is UriMatchMode.Host
+  assertEquals(
+    isMatchingDomain(
+      itemDefault,
+      "https://other.portal.com/page",
+      UriMatchMode.Host,
+    ),
+    false,
+    "Respects overrideDefaultMode = Host and rejects different subdomain",
+  );
+
+  // 3. When overrideDefaultMode is UriMatchMode.Exact
+  assertEquals(
+    isMatchingDomain(
+      itemDefault,
+      "https://sub.portal.com/login",
+      UriMatchMode.Exact,
+    ),
+    true,
+    "Respects overrideDefaultMode = Exact for exact URL",
+  );
+  assertEquals(
+    isMatchingDomain(
+      itemDefault,
+      "https://sub.portal.com/login?extra=1",
+      UriMatchMode.Exact,
+    ),
+    false,
+    "Respects overrideDefaultMode = Exact and rejects URL with extra params",
+  );
+});

@@ -26,15 +26,22 @@ export function mapCustomFields(
     name?: string | null;
     value?: string | null;
     type?: number | null;
+    linkedId?: number | null;
   }> | null,
 ): VaultField[] {
   if (!fields || !Array.isArray(fields)) return [];
   return fields.map((f) => {
     const parsed = CustomFieldTypeSchema.safeParse(f.type);
+    const rawLinkedId = f.linkedId;
+    const linkedId =
+      typeof rawLinkedId === "number" && !isNaN(rawLinkedId)
+        ? rawLinkedId
+        : undefined;
     return {
       name: (f.name ?? "").trim(),
       value: (f.value ?? "").trim(),
       type: parsed.success ? parsed.data : CustomFieldType.Text,
+      linkedId,
     };
   });
 }
@@ -50,6 +57,7 @@ export interface CreateBaseVaultItemInput {
     name?: string | null;
     value?: string | null;
     type?: number | null;
+    linkedId?: number | null;
   }> | null;
   creationDate?: string | null;
   revisionDate?: string | null;

@@ -25,6 +25,11 @@ export const AutofillOptions: Component = () => {
     await updateExtensionSettingsUseCase({ autoSubmitOnAutofill: checked });
   };
 
+  const handleAutoCopyTotpToggle = async (checked: boolean) => {
+    setSettingsStore("autoCopyTotp", checked);
+    await updateExtensionSettingsUseCase({ autoCopyTotp: checked });
+  };
+
   const handleShowSuggestionsToggle = async (checked: boolean) => {
     if (!checked) {
       setSettingsStore({
@@ -76,6 +81,7 @@ export const AutofillOptions: Component = () => {
   const isShowSuggestionsEnabled = () =>
     settingsStore.showAutofillSuggestionsOnFocus;
   const isAutoSubmitEnabled = () => settingsStore.autoSubmitOnAutofill;
+  const isAutoCopyTotpEnabled = () => settingsStore.autoCopyTotp;
 
   return (
     <div class="app-container">
@@ -86,6 +92,14 @@ export const AutofillOptions: Component = () => {
           {t("autofill_options_header")}
         </div>
         <div class="card p-16 mb-20 d-flex flex-column gap-16">
+          <Checkbox
+            id="autofill-auto-copy-totp"
+            checked={isAutoCopyTotpEnabled()}
+            onChange={handleAutoCopyTotpToggle}
+            label={t("auto_copy_totp_label")}
+            description={t("auto_copy_totp_sub")}
+          />
+
           <Checkbox
             id="autofill-show-suggestions"
             checked={isShowSuggestionsEnabled()}

@@ -3,7 +3,7 @@ import { type Component, type JSX, Show } from "solid-js";
 interface CheckboxProps {
   id: string;
   checked: boolean;
-  onChange: (checked: boolean) => void;
+  onChange?: (checked: boolean) => void;
   label?: string;
   description?: string;
   suffix?: JSX.Element;
@@ -14,7 +14,9 @@ interface CheckboxProps {
 export const Checkbox: Component<CheckboxProps> = (props) => {
   const handleChange = (e: Event & { currentTarget: HTMLInputElement }) => {
     const target = e.currentTarget;
-    props.onChange(target.checked);
+    if (props.onChange) {
+      props.onChange(target.checked);
+    }
     queueMicrotask(() => {
       target.checked = props.checked;
     });

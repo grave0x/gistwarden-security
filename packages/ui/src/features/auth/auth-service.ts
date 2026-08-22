@@ -16,6 +16,7 @@ import {
 } from "@gistwarden/domain";
 import {
   checkVaultConfiguredUseCase,
+  checkVaultStatusUseCase,
   clearDerivedKey,
   createNewVaultUseCase,
   downloadVaultRoute,
@@ -31,9 +32,11 @@ import {
 import {
   DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG,
   DEFAULT_PIN_CONFIG,
+  DEFAULT_SYNC_CONFIG,
   GistPayloadSchema,
   getAccountSettings,
   getSyncToken,
+  type VaultMode,
 } from "@gistwarden/repository";
 import { err, ok, type Result } from "neverthrow";
 import { reconcile } from "solid-js/store";
@@ -782,4 +785,69 @@ export async function updateSessionTimeout(
   action: VaultTimeoutAction,
 ): Promise<void> {
   await updateSessionTimeoutUseCase(timeout, action);
+}
+
+export async function syncVaultStatus(
+  mode: VaultMode,
+  autoConfigure = false,
+): Promise<"checking" | "exists" | "new"> {
+  const accRes = await getAccountSettings(mode);
+  const acc = accRes.isOk() ? accRes.value : null;
+
+  if (acc) {
+    const currentSyncConfig = acc.syncConfig;
+    setAccountStore("masterPasswordConfig", acc.masterPasswordConfig);
+    setAccountStore("pinConfig", acc.pinConfig);
+    setAccountStore("syncConfig", currentSyncConfig);
+    setAccountStore("gistId", currentSyncConfig.gistId || "");
+  }
+
+  let activeToken = accountStore.syncToken;
+  if (!activeToken) {
+    const tokenFromStorage = await getSyncToken(mode);
+    if (tokenFromStorage) {
+      activeToken = tokenFromStorage;
+      setAccountStore("syncToken", tokenFromStorage);
+    }
+  }
+
+  const statusResult = await checkVaultStatusUseCase(mode, acc, activeToken);
+
+  if (
+    statusResult.salt &&
+    statusResult.salt !== acc?.masterPasswordConfig.salt
+  ) {
+    const updatedMpConfig = {
+      ...(acc?.masterPasswordConfig || DEFAULT_MASTER_PASSWORD_SECURITY_CONFIG),
+      salt: statusResult.salt,
+    };
+    const baseSyncConfig = acc?.syncConfig || DEFAULT_SYNC_CONFIG;
+    const updatedSyncConfig = {
+      ...baseSyncConfig,
+      ...(statusResult.gistId ? { gistId: statusResult.gistId } : {}),
+    };
+    await updateAccountSettings(
+      {
+        masterPasswordConfig: updatedMpConfig,
+        syncConfig: updatedSyncConfig,
+      },
+      mode,
+    );
+    setAccountStore("masterPasswordConfig", updatedMpConfig);
+    setAccountStore("syncConfig", updatedSyncConfig);
+    if (statusResult.gistId) {
+      setAccountStore("gistId", statusResult.gistId);
+    }
+  }
+
+  if (statusResult.status === "new") {
+    setAccountStore("vaultConfigured", false);
+  } else if (statusResult.status === "exists") {
+    if (mode !== "local_storage" || autoConfigure) {
+      const isConfigured = await checkVaultConfiguredUseCase(mode, acc);
+      setAccountStore("vaultConfigured", isConfigured);
+    }
+  }
+
+  return statusResult.status;
 }

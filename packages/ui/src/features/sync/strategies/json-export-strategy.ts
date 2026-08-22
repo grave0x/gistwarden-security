@@ -1,4 +1,10 @@
-import { type Folder, type VaultItem, VaultItemType } from "@gistwarden/domain";
+import {
+  FieldType,
+  type Folder,
+  LoginLinkedId,
+  type VaultItem,
+  VaultItemType,
+} from "@gistwarden/domain";
 import { APP_NAME } from "@/core/constants.ts";
 import type { ExportResult, ExportStrategy } from "../import-export-types.ts";
 
@@ -117,11 +123,52 @@ export const jsonExportStrategy = {
         name: item.name,
         notes: item.notes || "",
         favorite: item.favorite,
-        fields: item.fields.map((f) => ({
-          type: f.type ?? 0,
-          name: f.name || "",
-          value: f.value || "",
-        })),
+        fields: item.fields.map((f) => {
+          const fieldType = f.type ?? FieldType.Text;
+          if (fieldType === FieldType.Linked) {
+            let linkedId: number = LoginLinkedId.Username;
+            if (typeof f.linkedId === "number" && !isNaN(f.linkedId)) {
+              linkedId = f.linkedId;
+            } else if (
+              f.value === "password" ||
+              f.value === String(LoginLinkedId.Password)
+            ) {
+              linkedId = LoginLinkedId.Password;
+            } else if (
+              f.value === "username" ||
+              f.value === String(LoginLinkedId.Username)
+            ) {
+              linkedId = LoginLinkedId.Username;
+            } else if (
+              f.value === "totp" ||
+              f.value === String(LoginLinkedId.Totp)
+            ) {
+              linkedId = LoginLinkedId.Totp;
+            } else if (!isNaN(Number(f.value)) && Number(f.value) > 0) {
+              linkedId = Number(f.value);
+            }
+            return {
+              name: f.name || "",
+              value: null,
+              type: FieldType.Linked,
+              linkedId,
+            };
+          }
+          if (fieldType === FieldType.Boolean) {
+            return {
+              name: f.name || "",
+              value: f.value === "true" || f.value === "1" ? "true" : "false",
+              type: FieldType.Boolean,
+              linkedId: null,
+            };
+          }
+          return {
+            name: f.name || "",
+            value: f.value != null ? String(f.value) : "",
+            type: fieldType,
+            linkedId: null,
+          };
+        }),
         creationDate: item.creationDate,
         revisionDate: item.revisionDate,
       };

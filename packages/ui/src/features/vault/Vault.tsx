@@ -461,6 +461,8 @@ export const Vault: Component = () => {
           type: MSG_AUTOFILL_CREDENTIALS,
           username,
           password,
+          totp: item.login.totp || "",
+          fields: item.fields || [],
         });
 
         if (rawResponseRes.isOk()) {
@@ -468,6 +470,20 @@ export const Vault: Component = () => {
             rawResponseRes.value,
           );
           if (parseResult.success && parseResult.data.success) {
+            const rawSecret = item.login.totp || "";
+            if (rawSecret.trim() && settingsStore.autoCopyTotp) {
+              const generateTotpResult = generateTotpSafe(
+                rawSecret,
+                settingsStore.timeOffset,
+              );
+              if (generateTotpResult.isOk()) {
+                await copyToClipboardWithMessage(
+                  generateTotpResult.value,
+                  "toast_totp_copied",
+                );
+                return;
+              }
+            }
             showToast(t("toast_success"), "success");
           }
         } else {

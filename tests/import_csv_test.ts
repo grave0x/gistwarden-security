@@ -1,6 +1,8 @@
 import {
   asFolderId,
+  FieldType,
   isLoginItem,
+  LoginLinkedId,
   parseCSV,
   type VaultItem,
   VaultItemType,
@@ -9,6 +11,7 @@ import {
   parseAndValidateBitwardenCsv,
   parseAndValidateBrowserCsv,
 } from "../packages/ui/src/features/sync/csv-import.ts";
+import { jsonExportStrategy } from "../packages/ui/src/features/sync/strategies/json-export-strategy.ts";
 import { jsonImportStrategy } from "../packages/ui/src/features/sync/strategies/json-import-strategy.ts";
 import { assert, assertEquals, test } from "./assert.ts";
 
@@ -178,4 +181,143 @@ test("Import Failure - Return safe error for malformed/corrupted CSV & JSON", ()
   );
   assert(noItemsRes.isErr(), "JSON without items array should return error");
   assertEquals(noItemsRes.error, "vault_import_error_invalid");
+});
+
+test("Bitwarden JSON Custom Fields - Import & Export with Linked, Checkbox, Text, Hidden", () => {
+  const bitwardenJson = JSON.stringify({
+    encrypted: false,
+    folders: [],
+    items: [
+      {
+        id: "bw_item_1",
+        type: VaultItemType.Login,
+        name: "Test Bitwarden Fields",
+        notes: "",
+        favorite: false,
+        fields: [
+          {
+            type: FieldType.Text,
+            name: "text_field",
+            value: "text_val",
+          },
+          {
+            type: FieldType.Hidden,
+            name: "hidden_field",
+            value: "hidden_secret",
+          },
+          {
+            type: FieldType.Boolean,
+            name: "checkbox_field",
+            value: "true",
+          },
+          {
+            type: FieldType.Linked,
+            name: "linked_user",
+            linkedId: LoginLinkedId.Username,
+          },
+          {
+            type: FieldType.Linked,
+            name: "linked_pass",
+            linkedId: LoginLinkedId.Password,
+          },
+          {
+            type: FieldType.Linked,
+            name: "linked_2fa",
+            linkedId: LoginLinkedId.Totp,
+          },
+        ],
+        login: {
+          username: "my_user",
+          password: "my_password",
+          totp: "JBSWY3DPEHPK3PXP",
+          uris: [{ uri: "https://example.com" }],
+        },
+      },
+    ],
+  });
+
+  const importRes = jsonImportStrategy.parseAndValidate(bitwardenJson, []);
+  assert(
+    importRes.isOk(),
+    "Bitwarden custom fields JSON should import successfully",
+  );
+
+  if (importRes.isOk()) {
+    const importedItem = importRes.value.combinedItems[0];
+    assert(importedItem !== undefined, "Item should exist");
+    assertEquals(importedItem?.fields.length, 6);
+
+    assertEquals(importedItem?.fields[0]?.type, FieldType.Text);
+    assertEquals(importedItem?.fields[0]?.name, "text_field");
+    assertEquals(importedItem?.fields[0]?.value, "text_val");
+
+    assertEquals(importedItem?.fields[1]?.type, FieldType.Hidden);
+    assertEquals(importedItem?.fields[1]?.name, "hidden_field");
+    assertEquals(importedItem?.fields[1]?.value, "hidden_secret");
+
+    assertEquals(importedItem?.fields[2]?.type, FieldType.Boolean);
+    assertEquals(importedItem?.fields[2]?.name, "checkbox_field");
+    assertEquals(importedItem?.fields[2]?.value, "true");
+
+    assertEquals(importedItem?.fields[3]?.type, FieldType.Linked);
+    assertEquals(importedItem?.fields[3]?.name, "linked_user");
+    assertEquals(importedItem?.fields[3]?.value, "username");
+    assertEquals(importedItem?.fields[3]?.linkedId, LoginLinkedId.Username);
+
+    assertEquals(importedItem?.fields[4]?.type, FieldType.Linked);
+    assertEquals(importedItem?.fields[4]?.name, "linked_pass");
+    assertEquals(importedItem?.fields[4]?.value, "password");
+    assertEquals(importedItem?.fields[4]?.linkedId, LoginLinkedId.Password);
+
+    assertEquals(importedItem?.fields[5]?.type, FieldType.Linked);
+    assertEquals(importedItem?.fields[5]?.name, "linked_2fa");
+    assertEquals(importedItem?.fields[5]?.value, "totp");
+    assertEquals(importedItem?.fields[5]?.linkedId, LoginLinkedId.Totp);
+
+    // Test Export
+    const exportRes = jsonExportStrategy.export(
+      importRes.value.combinedItems,
+      [],
+    );
+    const exportedObj = JSON.parse(exportRes.fileContent);
+    const exportedFields = exportedObj.items[0].fields;
+
+    assertEquals(exportedFields.length, 6);
+    assertEquals(exportedFields[0], {
+      type: FieldType.Text,
+      name: "text_field",
+      value: "text_val",
+      linkedId: null,
+    });
+    assertEquals(exportedFields[1], {
+      type: FieldType.Hidden,
+      name: "hidden_field",
+      value: "hidden_secret",
+      linkedId: null,
+    });
+    assertEquals(exportedFields[2], {
+      type: FieldType.Boolean,
+      name: "checkbox_field",
+      value: "true",
+      linkedId: null,
+    });
+    assertEquals(exportedFields[3], {
+      type: FieldType.Linked,
+      name: "linked_user",
+      value: null,
+      linkedId: LoginLinkedId.Username,
+    });
+    assertEquals(exportedFields[4], {
+      type: FieldType.Linked,
+      name: "linked_pass",
+      value: null,
+      linkedId: LoginLinkedId.Password,
+    });
+    assertEquals(exportedFields[5], {
+      type: FieldType.Linked,
+      name: "linked_2fa",
+      value: null,
+      linkedId: LoginLinkedId.Totp,
+    });
+  }
 });

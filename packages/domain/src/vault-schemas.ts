@@ -54,6 +54,7 @@ export const VaultFieldSchema = z
       .union([z.string(), z.number(), z.boolean(), z.null()])
       .optional()
       .transform((v) => (v == null ? "" : String(v))),
+    linkedId: z.coerce.number().nullish(),
   })
   .readonly();
 export type VaultField = z.infer<typeof VaultFieldSchema>;
@@ -270,6 +271,7 @@ export const AccountItemSchema = z
     username: z.string(),
     password: z.string().optional(),
     totp: z.string().optional(),
+    fields: z.array(VaultFieldSchema).optional(),
   })
   .readonly();
 export type AutofillMatchingAccount = z.infer<typeof AccountItemSchema>;
@@ -282,6 +284,7 @@ export const AutofillSuggestionPayloadSchema = z
     password: z.string().optional(),
     itemId: z.string().optional(),
     totp: z.string().optional(),
+    fields: z.array(VaultFieldSchema).optional(),
     accounts: z.array(AccountItemSchema).optional(),
     onFill: z
       .custom<(selectedAcc?: AutofillMatchingAccount) => void>()
@@ -423,8 +426,14 @@ export const ImportLoginItemSchema = z
     type: z.literal(VaultItemType.Login),
     name: z.string(),
     notes: z.string().nullish(),
-    favorite: z.boolean(),
-    reprompt: z.number(),
+    favorite: z
+      .union([z.boolean(), z.number(), z.string()])
+      .nullish()
+      .transform((v) => v === true || v === 1 || v === "1" || v === "true"),
+    reprompt: z.coerce
+      .number()
+      .nullish()
+      .transform((v) => v ?? 0),
     creationDate: z.string().nullish(),
     revisionDate: z.string().nullish(),
     fields: z.array(VaultFieldSchema).nullish(),
@@ -461,8 +470,14 @@ export const ImportSecureNoteItemSchema = z
     type: z.literal(VaultItemType.SecureNote),
     name: z.string(),
     notes: z.string().nullish(),
-    favorite: z.boolean(),
-    reprompt: z.number(),
+    favorite: z
+      .union([z.boolean(), z.number(), z.string()])
+      .nullish()
+      .transform((v) => v === true || v === 1 || v === "1" || v === "true"),
+    reprompt: z.coerce
+      .number()
+      .nullish()
+      .transform((v) => v ?? 0),
     creationDate: z.string().nullish(),
     revisionDate: z.string().nullish(),
     fields: z.array(VaultFieldSchema).nullish(),
@@ -481,8 +496,14 @@ export const ImportCardItemSchema = z
     type: z.literal(VaultItemType.Card),
     name: z.string(),
     notes: z.string().nullish(),
-    favorite: z.boolean(),
-    reprompt: z.number(),
+    favorite: z
+      .union([z.boolean(), z.number(), z.string()])
+      .nullish()
+      .transform((v) => v === true || v === 1 || v === "1" || v === "true"),
+    reprompt: z.coerce
+      .number()
+      .nullish()
+      .transform((v) => v ?? 0),
     creationDate: z.string().nullish(),
     revisionDate: z.string().nullish(),
     fields: z.array(VaultFieldSchema).nullish(),
@@ -506,8 +527,14 @@ export const ImportIdentityItemSchema = z
     type: z.literal(VaultItemType.Identity),
     name: z.string(),
     notes: z.string().nullish(),
-    favorite: z.boolean(),
-    reprompt: z.number(),
+    favorite: z
+      .union([z.boolean(), z.number(), z.string()])
+      .nullish()
+      .transform((v) => v === true || v === 1 || v === "1" || v === "true"),
+    reprompt: z.coerce
+      .number()
+      .nullish()
+      .transform((v) => v ?? 0),
     creationDate: z.string().nullish(),
     revisionDate: z.string().nullish(),
     fields: z.array(VaultFieldSchema).nullish(),
@@ -543,8 +570,14 @@ export const ImportSshKeyItemSchema = z
     type: z.literal(VaultItemType.SshKey),
     name: z.string(),
     notes: z.string().nullish(),
-    favorite: z.boolean(),
-    reprompt: z.number(),
+    favorite: z
+      .union([z.boolean(), z.number(), z.string()])
+      .nullish()
+      .transform((v) => v === true || v === 1 || v === "1" || v === "true"),
+    reprompt: z.coerce
+      .number()
+      .nullish()
+      .transform((v) => v ?? 0),
     creationDate: z.string().nullish(),
     revisionDate: z.string().nullish(),
     fields: z.array(VaultFieldSchema).nullish(),

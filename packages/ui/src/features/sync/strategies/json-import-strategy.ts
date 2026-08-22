@@ -2,11 +2,13 @@ import {
   asFido2CredentialId,
   asRpId,
   createBaseVaultItem,
+  FieldType,
   type Folder,
   FolderSchema,
   getVaultItemFallbackName,
   type ImportItem,
   ImportItemSchema,
+  LoginLinkedId,
   logger,
   type VaultItem,
   VaultItemType,
@@ -98,7 +100,52 @@ export const jsonImportStrategy = {
         notes: item.notes,
         favorite: item.favorite,
         reprompt: item.reprompt,
-        fields: item.fields,
+        fields: item.fields?.map((f) => {
+          let val = f.value || "";
+          let linkedId = f.linkedId;
+          const fieldType = f.type ?? FieldType.Text;
+          if (fieldType === FieldType.Linked) {
+            if (
+              linkedId === LoginLinkedId.Username &&
+              (!val || val === String(LoginLinkedId.Username))
+            ) {
+              val = "username";
+            } else if (
+              linkedId === LoginLinkedId.Password &&
+              (!val || val === String(LoginLinkedId.Password))
+            ) {
+              val = "password";
+            } else if (
+              linkedId === LoginLinkedId.Totp &&
+              (!val || val === String(LoginLinkedId.Totp))
+            ) {
+              val = "totp";
+            } else if (!linkedId) {
+              if (
+                val === "username" ||
+                val === String(LoginLinkedId.Username)
+              ) {
+                linkedId = LoginLinkedId.Username;
+                val = "username";
+              } else if (
+                val === "password" ||
+                val === String(LoginLinkedId.Password)
+              ) {
+                linkedId = LoginLinkedId.Password;
+                val = "password";
+              } else if (val === "totp" || val === String(LoginLinkedId.Totp)) {
+                linkedId = LoginLinkedId.Totp;
+                val = "totp";
+              }
+            }
+          }
+          return {
+            name: f.name || "",
+            value: val,
+            type: fieldType,
+            linkedId,
+          };
+        }),
         creationDate: item.creationDate || undefined,
         revisionDate: item.revisionDate || undefined,
         fallbackName: getVaultItemFallbackName(item.type),

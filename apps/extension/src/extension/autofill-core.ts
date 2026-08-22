@@ -1,3 +1,8 @@
+import {
+  CustomFieldType,
+  LoginLinkedId,
+  type VaultField,
+} from "@gistwarden/domain";
 import { getBaseDomain } from "@/core/domain-utils.ts";
 
 export interface SubmittedCredentials {
@@ -27,6 +32,142 @@ export function setInputValue(element: HTMLInputElement, value: string): void {
   element.dispatchEvent(new Event("input", { bubbles: true }));
   element.dispatchEvent(new Event("change", { bubbles: true }));
   element.blur();
+}
+
+// Helper to fill checkbox matching React/Angular/Vue state detection
+export function setCheckboxValue(
+  element: HTMLInputElement,
+  checked: boolean,
+): void {
+  element.focus();
+
+  // React 15/16+ tracker workaround for checkbox
+  const nativeCheckedSetter = Object.getOwnPropertyDescriptor(
+    window.HTMLInputElement.prototype,
+    "checked",
+  )?.set;
+
+  if (nativeCheckedSetter) {
+    nativeCheckedSetter.call(element, checked);
+  } else {
+    element.checked = checked;
+  }
+
+  // Dispatch events to trigger JS Framework change detection
+  element.dispatchEvent(new Event("input", { bubbles: true }));
+  element.dispatchEvent(new Event("change", { bubbles: true }));
+  element.blur();
+}
+
+function autofillCustomFields(
+  customFields?: readonly VaultField[],
+  username?: string,
+  password?: string,
+  totp?: string,
+): { filledAny: boolean; filledElements: Set<Element> } {
+  const filledElements = new Set<Element>();
+  let filledAny = false;
+
+  if (!customFields || customFields.length === 0) {
+    return { filledAny, filledElements };
+  }
+
+  const allInputs = Array.from(
+    document.querySelectorAll<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >("input, textarea, select"),
+  );
+
+  for (const field of customFields) {
+    if (!field.name || !field.name.trim()) continue;
+    if (field.type === CustomFieldType.Divider) continue;
+
+    const fieldNameLower = field.name.trim().toLowerCase();
+
+    // Determine value to fill based on field type
+    let valueToFill = "";
+    if (field.type === CustomFieldType.Linked) {
+      const linkedTarget = (field.value || "").toLowerCase().trim();
+      const linkedId = field.linkedId;
+      if (
+        linkedId === LoginLinkedId.Username ||
+        linkedTarget === "username" ||
+        linkedTarget === String(LoginLinkedId.Username)
+      ) {
+        valueToFill = username || "";
+      } else if (
+        linkedId === LoginLinkedId.Password ||
+        linkedTarget === "password" ||
+        linkedTarget === String(LoginLinkedId.Password)
+      ) {
+        valueToFill = password || "";
+      } else if (
+        linkedId === LoginLinkedId.Totp ||
+        linkedTarget === "totp" ||
+        linkedTarget === String(LoginLinkedId.Totp)
+      ) {
+        valueToFill = totp || "";
+      } else {
+        valueToFill = field.value || "";
+      }
+    } else if (field.type === CustomFieldType.Boolean) {
+      const isTruthy = new Set(["true", "1", "yes", "y", "✓"]).has(
+        (field.value || "").toLowerCase().trim(),
+      );
+      valueToFill = isTruthy ? "true" : "false";
+    } else {
+      valueToFill = field.value || "";
+    }
+
+    // Find candidate DOM elements matching field.name
+    for (const el of allInputs) {
+      if (filledElements.has(el)) continue;
+
+      const id = (el.id || "").toLowerCase();
+      const name = (el.name || "").toLowerCase();
+      const placeholder =
+        "placeholder" in el ? (el.placeholder || "").toLowerCase() : "";
+      const ariaLabel = (el.getAttribute("aria-label") || "").toLowerCase();
+      const dataTest = (el.getAttribute("data-test") || "").toLowerCase();
+      const dataTestId = (el.getAttribute("data-testid") || "").toLowerCase();
+
+      const isMatch =
+        id === fieldNameLower ||
+        name === fieldNameLower ||
+        placeholder === fieldNameLower ||
+        ariaLabel === fieldNameLower ||
+        dataTest === fieldNameLower ||
+        dataTestId === fieldNameLower;
+
+      if (isMatch) {
+        if (el instanceof HTMLInputElement) {
+          if (el.type === "checkbox" || el.type === "radio") {
+            const shouldCheck = new Set(["true", "y", "1", "yes", "✓"]).has(
+              String(valueToFill).toLowerCase().trim(),
+            );
+            setCheckboxValue(el, shouldCheck);
+            filledElements.add(el);
+            filledAny = true;
+          } else {
+            setInputValue(el, valueToFill);
+            filledElements.add(el);
+            filledAny = true;
+          }
+        } else if (
+          el instanceof HTMLTextAreaElement ||
+          el instanceof HTMLSelectElement
+        ) {
+          el.value = valueToFill;
+          el.dispatchEvent(new Event("input", { bubbles: true }));
+          el.dispatchEvent(new Event("change", { bubbles: true }));
+          filledElements.add(el);
+          filledAny = true;
+        }
+      }
+    }
+  }
+
+  return { filledAny, filledElements };
 }
 
 const LOGIN_BUTTON_KEYWORDS = [
@@ -124,12 +265,26 @@ export function performAutofill(
   username?: string,
   password?: string,
   autoSubmit: boolean = false,
+  customFields?: readonly VaultField[],
+  totp?: string,
 ): boolean {
   let filledAny = false;
   let targetForm: HTMLFormElement | null = null;
   let targetInput: HTMLInputElement | null = null;
 
-  // Find all password fields on the page
+  // 1. Fill custom fields (including Linked fields) first!
+  const customResult = autofillCustomFields(
+    customFields,
+    username,
+    password,
+    totp,
+  );
+  if (customResult.filledAny) {
+    filledAny = true;
+  }
+  const filledElements = customResult.filledElements;
+
+  // 2. Find all password fields on the page
   const passwordFields = document.querySelectorAll('input[type="password"]');
 
   if (passwordFields.length > 0) {
@@ -196,12 +351,12 @@ export function performAutofill(
         }
       }
 
-      // Fill values
-      if (password && passwordField) {
+      // Fill values (if not already filled by custom fields)
+      if (password && passwordField && !filledElements.has(passwordField)) {
         setInputValue(passwordField, password);
         filledAny = true;
       }
-      if (username && usernameField) {
+      if (username && usernameField && !filledElements.has(usernameField)) {
         setInputValue(usernameField, username);
         filledAny = true;
       }
@@ -214,6 +369,7 @@ export function performAutofill(
     for (let i = 0; i < textInputs.length; i++) {
       const input = textInputs[i];
       if (!(input instanceof HTMLInputElement)) continue;
+      if (filledElements.has(input)) continue;
 
       const name = (input.name || "").toLowerCase();
       const id = (input.id || "").toLowerCase();

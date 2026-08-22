@@ -20,7 +20,6 @@ export async function setupGithub(
   setAccountStore({
     syncConfig,
     syncToken: token,
-    vaultConfigured: true,
   });
 
   return ok();

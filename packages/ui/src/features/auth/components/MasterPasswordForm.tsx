@@ -57,20 +57,18 @@ export const MasterPasswordForm: Component<MasterPasswordFormProps> = (
         </Button>
       </Show>
 
-      <Show when={settingsStore.vaultMode !== "local_storage"}>
-        <div class="login-or-divider">
-          <span>{t("login_or")}</span>
-        </div>
+      <div class="login-or-divider">
+        <span>{t("login_or")}</span>
+      </div>
 
-        <Button
-          type="button"
-          variant="secondary"
-          block
-          onClick={() => props.onLogout()}
-        >
-          {t("settings_logout_title")}
-        </Button>
-      </Show>
+      <Button
+        type="button"
+        variant="secondary"
+        block
+        onClick={() => props.onLogout()}
+      >
+        {t("settings_logout_title")}
+      </Button>
 
       <div class="mt-16 text-center">
         <a

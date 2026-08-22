@@ -1,9 +1,11 @@
 import {
+  APP_NAME,
   asGistId,
   asGitHubAccessToken,
   asVaultItemId,
   createDefaultVaultItem,
   mergeVaultItem,
+  SESSION_KEY_PENDING_SYNC_TOKEN,
   sessionManager,
   VaultItemType,
   View,
@@ -27,9 +29,12 @@ import {
   vaultSecurityContext,
 } from "@gistwarden/orchestrator";
 import {
+  DEFAULT_SYNC_CONFIG,
   getLocalVaultPayload,
   removeLocalVaultPayload,
   setLocalVaultPayload,
+  setSessionItem,
+  updateAccountSettings,
   type VaultMode,
 } from "@gistwarden/repository";
 import { Window } from "happy-dom";
@@ -46,6 +51,7 @@ import {
   lock,
   logout,
   resetMasterPasswordSecurity,
+  syncVaultStatus,
   unlock,
   verifyMasterPassword,
 } from "../packages/ui/src/features/auth/auth-service.ts";
@@ -54,6 +60,7 @@ import {
   setPinUnlock,
   unlockWithPin,
 } from "../packages/ui/src/features/auth/pin-service.ts";
+import { setupGithub } from "../packages/ui/src/features/sync/github-auth.ts";
 import { assert, assertEquals } from "./assert.ts";
 
 export function setupTestDOM(mode: VaultMode = "local_storage"): Window {
@@ -87,8 +94,103 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
   const originalFetch = globalThis.fetch;
   globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = typeof input === "string" ? input : input.toString();
+    const method = init?.method?.toUpperCase() || "GET";
+
+    if (url.startsWith("https://gist.githubusercontent.com")) {
+      return new Response(storedPayload, {
+        status: 200,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+
+    if (url.startsWith("https://api.github.com")) {
+      if (url.endsWith("/user")) {
+        return new Response(
+          JSON.stringify({
+            login: "testuser",
+            avatar_url: "https://github.com/testuser.png",
+          }),
+          { status: 200, headers: { "Content-Type": "application/json" } },
+        );
+      }
+      const gistDesc = `${APP_NAME.toLowerCase()}_vault`;
+      const gistFileName = `${APP_NAME.toLowerCase()}.json`;
+
+      if (url.includes("/gists")) {
+        if (method === "GET") {
+          if (!storedPayload) {
+            return new Response(JSON.stringify([]), {
+              status: 200,
+              headers: { "Content-Type": "application/json" },
+            });
+          }
+          if (url.includes("/gists/mock_gist_id")) {
+            return new Response(
+              JSON.stringify({
+                id: "mock_gist_id",
+                description: gistDesc,
+                updated_at: new Date().toISOString(),
+                files: {
+                  [gistFileName]: {
+                    content: storedPayload,
+                    raw_url: `https://gist.githubusercontent.com/raw/mock_gist_id/${gistFileName}`,
+                  },
+                },
+              }),
+              { status: 200, headers: { "Content-Type": "application/json" } },
+            );
+          }
+          return new Response(
+            JSON.stringify([
+              {
+                id: "mock_gist_id",
+                description: gistDesc,
+                updated_at: new Date().toISOString(),
+                files: {
+                  [gistFileName]: {
+                    content: storedPayload,
+                    raw_url: `https://gist.githubusercontent.com/raw/mock_gist_id/${gistFileName}`,
+                  },
+                },
+              },
+            ]),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          );
+        }
+        if (method === "POST" || method === "PATCH") {
+          const body = typeof init?.body === "string" ? init.body : "";
+          if (body) {
+            try {
+              const parsed = JSON.parse(body);
+              if (parsed.files?.[gistFileName]?.content) {
+                storedPayload = parsed.files[gistFileName].content;
+              }
+            } catch {
+              storedPayload = body;
+            }
+          }
+          return new Response(
+            JSON.stringify({
+              id: "mock_gist_id",
+              updated_at: new Date().toISOString(),
+              files: {
+                [gistFileName]: {
+                  content: storedPayload,
+                  raw_url: `https://gist.githubusercontent.com/raw/mock_gist_id/${gistFileName}`,
+                },
+              },
+            }),
+            { status: 200, headers: { "Content-Type": "application/json" } },
+          );
+        }
+        if (method === "DELETE") {
+          storedPayload = "";
+          return new Response(null, { status: 204 });
+        }
+      }
+    }
+
     if (url.startsWith("http://localhost:3000")) {
-      const method = init?.method?.toUpperCase() || "GET";
       if (url.endsWith("/vault")) {
         if (method === "GET") {
           if (!storedPayload) {
@@ -669,6 +771,25 @@ export async function runMasterVaultE2EFlow(mode: VaultMode): Promise<void> {
   assertEquals(accountStore.isLocked, true);
 
   // Step 15: Re-login after Logout & VERIFY INTERMEDIATE VAULT STATE
+  setSettingsStore("vaultMode", mode);
+  if (mode === "github_gist") {
+    await setupGithub(githubToken);
+  } else if (mode === "self_hosted_server") {
+    const updatedSyncConfig = {
+      ...DEFAULT_SYNC_CONFIG,
+      serverUrl,
+      username: "admin",
+    };
+    await setSessionItem(SESSION_KEY_PENDING_SYNC_TOKEN, selfHostedToken);
+    await updateAccountSettings(
+      { syncConfig: updatedSyncConfig },
+      "self_hosted_server",
+    );
+    setAccountStore("syncConfig", updatedSyncConfig);
+    setAccountStore("syncToken", selfHostedToken);
+  }
+  await syncVaultStatus(mode);
+
   const reloginResult = await unlock(newMasterPassword);
   assert(
     reloginResult.isOk(),

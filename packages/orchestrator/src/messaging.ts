@@ -33,7 +33,7 @@ export type ExtensionMessageHandler = (
   message: unknown,
   sender: chrome.runtime.MessageSender,
   sendResponse: (response?: unknown) => void,
-) => boolean | undefined;
+) => boolean | undefined | void | Promise<void>;
 
 /**
  * Register a listener for extension runtime messages with safety checks for non-extension environments.

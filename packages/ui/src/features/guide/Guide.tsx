@@ -1,10 +1,17 @@
 import { View } from "@gistwarden/domain";
 import { init, updateLanguage } from "@gistwarden/ui";
-import { type Component, onCleanup, onMount, Show } from "solid-js";
+import {
+  type Component,
+  createSignal,
+  For,
+  onCleanup,
+  onMount,
+  Show,
+} from "solid-js";
 import Button from "@/components/ui/Button.tsx";
 import Select from "@/components/ui/Select.tsx";
 import { APP_NAME } from "@/core/constants.ts";
-import { t } from "@/core/i18n.ts";
+import { onLanguageChange, t } from "@/core/i18n.ts";
 import { navigate as navigateApp } from "@/core/navigation.ts";
 import { getAppVersion, getAssetUrl, isWeb } from "@/core/runtime.ts";
 import { accountStore, settingsStore } from "@/core/store.ts";
@@ -24,6 +31,7 @@ const LANG_OPTIONS = [
 
 export const Guide: Component = () => {
   const { route, navigate } = useGuideRoute();
+  const [langVersion, setLangVersion] = createSignal(0);
 
   onMount(async () => {
     document.body.classList.add("guide-body-native");
@@ -32,8 +40,13 @@ export const Guide: Component = () => {
     }
   });
 
+  const cleanupLangListener = onLanguageChange(() => {
+    setLangVersion((v) => v + 1);
+  });
+
   onCleanup(() => {
     document.body.classList.remove("guide-body-native");
+    cleanupLangListener();
   });
 
   const handleLangChange = (val: "en" | "vi") => {
@@ -50,66 +63,70 @@ export const Guide: Component = () => {
 
   return (
     <Show when={accountStore.isLoaded && settingsStore.isLoaded}>
-      <div class="guide-wrapper">
-        {/* Top Header Bar */}
-        <header class="guide-header">
-          <div class="guide-header-left">
-            <Show when={isWeb()}>
-              <button
-                type="button"
-                class="guide-back-btn"
-                title="Quay về Vault"
-                onClick={() => navigateApp(View.Vault)}
-              >
-                <ArrowLeftIcon size={18} />
-              </button>
-            </Show>
-            <div class="logo-area">
-              <img
-                src={getAssetUrl("icons/icon-48.png")}
-                alt={`${APP_NAME} Logo`}
-                class="logo"
-              />
-              <div class="brand">
-                <h1>{APP_NAME}</h1>
-                <span class="badge">v{getAppVersion()}</span>
+      <For each={[langVersion()]}>
+        {() => (
+          <div class="guide-wrapper">
+            {/* Top Header Bar */}
+            <header class="guide-header">
+              <div class="guide-header-left">
+                <Show when={isWeb()}>
+                  <button
+                    type="button"
+                    class="guide-back-btn"
+                    title={t("settings_vault_options_label")}
+                    onClick={() => navigateApp(View.Vault)}
+                  >
+                    <ArrowLeftIcon size={18} />
+                  </button>
+                </Show>
+                <div class="logo-area">
+                  <img
+                    src={getAssetUrl("icons/icon-48.png")}
+                    alt={`${APP_NAME} Logo`}
+                    class="logo"
+                  />
+                  <div class="brand">
+                    <h1>{APP_NAME}</h1>
+                    <span class="badge">v{getAppVersion()}</span>
+                  </div>
+                </div>
               </div>
+
+              <div class="header-controls">
+                {/* Language Selector */}
+                <div class="lang-selector">
+                  <GlobeIcon size={14} />
+                  <Select
+                    value={settingsStore.language}
+                    onChange={(e) => {
+                      const val = e.currentTarget.value;
+                      if (val === "en" || val === "vi") {
+                        handleLangChange(val);
+                      }
+                    }}
+                    options={LANG_OPTIONS}
+                  />
+                </div>
+
+                <Button variant="secondary" onClick={handleOpenGist}>
+                  <ExternalLinkIcon size={14} /> {t("settings_open_gist_title")}
+                </Button>
+              </div>
+            </header>
+
+            {/* Main Guide Body */}
+            <div class="guide-container">
+              {/* Expandable Accordion Tree Sidebar */}
+              <GuideTreeSidebar currentRoute={route()} onNavigate={navigate} />
+
+              {/* Router Content Renderer */}
+              <main class="guide-main-content">
+                <GuideContentRenderer route={route()} />
+              </main>
             </div>
           </div>
-
-          <div class="header-controls">
-            {/* Language Selector */}
-            <div class="lang-selector">
-              <GlobeIcon size={14} />
-              <Select
-                value={settingsStore.language}
-                onChange={(e) => {
-                  const val = e.currentTarget.value;
-                  if (val === "en" || val === "vi") {
-                    handleLangChange(val);
-                  }
-                }}
-                options={LANG_OPTIONS}
-              />
-            </div>
-
-            <Button variant="secondary" onClick={handleOpenGist}>
-              <ExternalLinkIcon size={14} /> {t("settings_open_gist_title")}
-            </Button>
-          </div>
-        </header>
-
-        {/* Main Guide Body */}
-        <div class="guide-container">
-          {/* Expandable Accordion Tree Sidebar */}
-          <GuideTreeSidebar currentRoute={route()} onNavigate={navigate} />
-
-          {/* Router Content Renderer */}
-          <main class="guide-main-content">
-            <GuideContentRenderer route={route()} />
-          </main>
-        </div>
-      </div>
+        )}
+      </For>
     </Show>
   );
 };

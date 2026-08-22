@@ -38,6 +38,7 @@ export interface ExtensionSettingsStore {
   vaultTimeoutAction: VaultTimeoutAction;
   timeOffset: number;
   autoSubmitOnAutofill: boolean;
+  autoCopyTotp: boolean;
   showAutofillSuggestionsOnFocus: boolean;
   enablePageAnimations: boolean;
   excludedDomains: readonly string[];
@@ -108,6 +109,7 @@ export const initialExtensionSettings: Omit<
   vaultTimeoutAction: "lock",
   timeOffset: 0,
   autoSubmitOnAutofill: true,
+  autoCopyTotp: true,
   showAutofillSuggestionsOnFocus: true,
   enablePageAnimations: true,
   excludedDomains: DEFAULT_EXCLUDED_DOMAINS,

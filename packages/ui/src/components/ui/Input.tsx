@@ -16,7 +16,7 @@ export const Input: Component<InputProps> = (props) => {
   let inputRef: HTMLInputElement | undefined;
   const [isCapsLockOn, setIsCapsLockOn] = createSignal(false);
   const [showPassword, setShowPassword] = createSignal(false);
-  let wasPassword = props.type === "password";
+  const wasPassword = props.type === "password";
 
   const handleStepUp = () => {
     if (inputRef && !props.disabled) {
@@ -71,7 +71,12 @@ export const Input: Component<InputProps> = (props) => {
     </div>
   );
 
-  const [local, others] = splitProps(props, ["class", "rightActions", "ref"]);
+  const [local, others] = splitProps(props, [
+    "type",
+    "class",
+    "rightActions",
+    "ref",
+  ]);
 
   const checkCapsLock = (e: KeyboardEvent) => {
     if (typeof e.getModifierState === "function") {
@@ -79,13 +84,7 @@ export const Input: Component<InputProps> = (props) => {
     }
   };
 
-  const isPasswordInput = () => {
-    if (others.type === "password") {
-      wasPassword = true;
-      return true;
-    }
-    return wasPassword;
-  };
+  const isPasswordInput = () => local.type === "password";
 
   const showWarning = () => isPasswordInput() && isCapsLockOn();
 
@@ -93,7 +92,7 @@ export const Input: Component<InputProps> = (props) => {
     if (isPasswordInput()) {
       return showPassword() ? "text" : "password";
     }
-    return others.type;
+    return local.type;
   };
 
   const capsLockBadge = (
@@ -130,7 +129,7 @@ export const Input: Component<InputProps> = (props) => {
 
   const baseRightActions = () => {
     if (local.rightActions) return local.rightActions;
-    if (others.type === "number") return numberSpinners;
+    if (local.type === "number") return numberSpinners;
     return undefined;
   };
 
@@ -142,7 +141,7 @@ export const Input: Component<InputProps> = (props) => {
   );
 
   const hasActions = () =>
-    !!local.rightActions || others.type === "number" || isPasswordInput();
+    Boolean(local.rightActions) || local.type === "number" || isPasswordInput();
 
   const inputClass = () => {
     const base = hasActions() ? "input-field" : "input-control";
@@ -168,8 +167,42 @@ export const Input: Component<InputProps> = (props) => {
     return `${base} ${layoutClasses}`.trim();
   };
 
-  if (hasActions()) {
-    return (
+  return (
+    <Show
+      when={hasActions()}
+      fallback={
+        <input
+          ref={(el) => {
+            inputRef = el;
+            const parentRef = local.ref;
+            if (typeof parentRef === "function") {
+              parentRef(el);
+            }
+          }}
+          class={inputClass()}
+          {...others}
+          type={currentType()}
+          onKeyDown={(e) => {
+            checkCapsLock(e);
+            if (typeof others.onKeyDown === "function") {
+              others.onKeyDown(e);
+            }
+          }}
+          onKeyUp={(e) => {
+            checkCapsLock(e);
+            if (typeof others.onKeyUp === "function") {
+              others.onKeyUp(e);
+            }
+          }}
+          onBlur={(e) => {
+            setIsCapsLockOn(false);
+            if (typeof others.onBlur === "function") {
+              others.onBlur(e);
+            }
+          }}
+        />
+      }
+    >
       <div class={wrapperClass()}>
         <input
           ref={(el) => {
@@ -203,40 +236,7 @@ export const Input: Component<InputProps> = (props) => {
         />
         <div class="input-actions">{effectiveRightActions()}</div>
       </div>
-    );
-  }
-
-  return (
-    <input
-      ref={(el) => {
-        inputRef = el;
-        const parentRef = local.ref;
-        if (typeof parentRef === "function") {
-          parentRef(el);
-        }
-      }}
-      class={inputClass()}
-      {...others}
-      type={currentType()}
-      onKeyDown={(e) => {
-        checkCapsLock(e);
-        if (typeof others.onKeyDown === "function") {
-          others.onKeyDown(e);
-        }
-      }}
-      onKeyUp={(e) => {
-        checkCapsLock(e);
-        if (typeof others.onKeyUp === "function") {
-          others.onKeyUp(e);
-        }
-      }}
-      onBlur={(e) => {
-        setIsCapsLockOn(false);
-        if (typeof others.onBlur === "function") {
-          others.onBlur(e);
-        }
-      }}
-    />
+    </Show>
   );
 };
 

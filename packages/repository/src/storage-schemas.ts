@@ -86,6 +86,7 @@ export const ExtensionSettingsSchema = z
     vaultTimeoutAction: VaultTimeoutActionSchema.default("lock"),
     timeOffset: z.number().default(0),
     autoSubmitOnAutofill: z.boolean().default(true),
+    autoCopyTotp: z.boolean().default(true),
     showAutofillSuggestionsOnFocus: z.boolean().default(true),
     enablePageAnimations: z.boolean().default(true),
     excludedDomains: z.array(z.string()).default([...DEFAULT_EXCLUDED_DOMAINS]),

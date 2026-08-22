@@ -261,6 +261,7 @@ export async function checkAutofillSuggestionUseCase(
     username: m.login.username || "",
     password: m.login.password || "",
     totp: m.login.totp || "",
+    fields: m.fields || [],
   }));
 
   const bestMatch = matchingAccounts[0];
@@ -276,6 +277,7 @@ export async function checkAutofillSuggestionUseCase(
       username: bestMatch.username,
       password: bestMatch.password,
       totp: bestMatch.totp,
+      fields: bestMatch.fields,
       accounts: matchingAccounts,
     },
   };

@@ -45,6 +45,7 @@ import { isRecord } from "@/core/storage.ts";
 import AccountSecurity from "@/features/auth/AccountSecurity.tsx";
 import ChangeMasterPassword from "@/features/auth/ChangeMasterPassword.tsx";
 // Import Views
+import LockScreen from "@/features/auth/LockScreen.tsx";
 import Login from "@/features/auth/Login.tsx";
 import Generator from "@/features/generator/Generator.tsx";
 import PasswordHistory from "@/features/generator/PasswordHistory.tsx";
@@ -122,6 +123,9 @@ const MainLayout: Component<RouteSectionProps> = (props) => {
             <Switch>
               <Match when={uiStore.view === View.Welcome}>
                 <Welcome />
+              </Match>
+              <Match when={accountStore.vaultConfigured}>
+                <LockScreen />
               </Match>
               <Match when={true}>
                 <Login />
