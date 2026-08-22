@@ -2,6 +2,47 @@ import { getBaseDomain, getHostname, toPunycodeUrl } from "./domain-utils.ts";
 import { UriMatchMode, type VaultItem } from "./vault-schemas.ts";
 import { isLoginItem, type VaultItemType } from "./vault-types.ts";
 
+const URI_MATCH_STRATEGIES: Record<
+  UriMatchMode,
+  (storedUri: string, currentUrl: string) => boolean
+> = {
+  [UriMatchMode.Domain]: (sUri, cUrl) => {
+    const targetBase = getBaseDomain(cUrl);
+    const itemBase = getBaseDomain(sUri);
+    return Boolean(targetBase && itemBase && targetBase === itemBase);
+  },
+  [UriMatchMode.Host]: (sUri, cUrl) => {
+    const targetHost = getHostname(cUrl);
+    const itemHost = getHostname(sUri);
+    return Boolean(targetHost && itemHost && targetHost === itemHost);
+  },
+  [UriMatchMode.StartsWith]: (sUri, cUrl) => {
+    const sPunyUrl = toPunycodeUrl(sUri);
+    const cPunyUrl = toPunycodeUrl(cUrl);
+    return (
+      cUrl.toLowerCase().startsWith(sUri.toLowerCase()) ||
+      (Boolean(sPunyUrl) && Boolean(cPunyUrl) && cPunyUrl.startsWith(sPunyUrl))
+    );
+  },
+  [UriMatchMode.Exact]: (sUri, cUrl) => {
+    const sPunyUrl = toPunycodeUrl(sUri);
+    const cPunyUrl = toPunycodeUrl(cUrl);
+    return (
+      cUrl.toLowerCase() === sUri.toLowerCase() ||
+      (Boolean(sPunyUrl) && Boolean(cPunyUrl) && cPunyUrl === sPunyUrl)
+    );
+  },
+  [UriMatchMode.Regex]: (sUri, cUrl) => {
+    if (sUri.length > 250) return false;
+    try {
+      return new RegExp(sUri, "i").test(cUrl);
+    } catch {
+      return false;
+    }
+  },
+  [UriMatchMode.Never]: () => false,
+};
+
 export function isSingleUriMatch(
   storedUri: string,
   currentDomainOrUrl: string,
@@ -13,49 +54,11 @@ export function isSingleUriMatch(
   const effectiveMode =
     itemMatchMode ?? overrideDefaultMode ?? UriMatchMode.Domain;
 
-  if (effectiveMode === UriMatchMode.Never) {
-    return false;
-  }
+  const matcher =
+    URI_MATCH_STRATEGIES[effectiveMode] ??
+    URI_MATCH_STRATEGIES[UriMatchMode.Domain];
 
-  const sUri = storedUri.trim();
-  const cUrl = currentDomainOrUrl.trim();
-
-  if (effectiveMode === UriMatchMode.Exact) {
-    const sPunyUrl = toPunycodeUrl(sUri);
-    const cPunyUrl = toPunycodeUrl(cUrl);
-    return (
-      cUrl.toLowerCase() === sUri.toLowerCase() ||
-      (Boolean(sPunyUrl) && Boolean(cPunyUrl) && cPunyUrl === sPunyUrl)
-    );
-  }
-
-  if (effectiveMode === UriMatchMode.StartsWith) {
-    const sPunyUrl = toPunycodeUrl(sUri);
-    const cPunyUrl = toPunycodeUrl(cUrl);
-    return (
-      cUrl.toLowerCase().startsWith(sUri.toLowerCase()) ||
-      (Boolean(sPunyUrl) && Boolean(cPunyUrl) && cPunyUrl.startsWith(sPunyUrl))
-    );
-  }
-
-  if (effectiveMode === UriMatchMode.Host) {
-    const targetHost = getHostname(cUrl);
-    const itemHost = getHostname(sUri);
-    return Boolean(targetHost && itemHost && targetHost === itemHost);
-  }
-
-  if (effectiveMode === UriMatchMode.Regex) {
-    if (sUri.length > 250) return false;
-    try {
-      return new RegExp(sUri, "i").test(cUrl);
-    } catch {
-      return false;
-    }
-  }
-
-  const targetBase = getBaseDomain(cUrl);
-  const itemBase = getBaseDomain(sUri);
-  return Boolean(targetBase && itemBase && targetBase === itemBase);
+  return matcher(storedUri.trim(), currentDomainOrUrl.trim());
 }
 
 export function isMatchingDomain(

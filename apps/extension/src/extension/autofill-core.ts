@@ -59,6 +59,61 @@ export function setCheckboxValue(
   element.blur();
 }
 
+const TRUTHY_BOOLEAN_SET = new Set(["true", "1", "yes", "y", "✓"]);
+
+interface AutofillCredentialContext {
+  username?: string;
+  password?: string;
+  totp?: string;
+}
+
+const LINKED_PROPERTY_EXTRACTORS: Record<
+  string | number,
+  (ctx: AutofillCredentialContext) => string | undefined
+> = {
+  [LoginLinkedId.Username]: (ctx) => ctx.username,
+  username: (ctx) => ctx.username,
+  [LoginLinkedId.Password]: (ctx) => ctx.password,
+  password: (ctx) => ctx.password,
+  [LoginLinkedId.Totp]: (ctx) => ctx.totp,
+  totp: (ctx) => ctx.totp,
+};
+
+function resolveLinkedFieldValue(
+  field: VaultField,
+  ctx: AutofillCredentialContext,
+): string {
+  const linkedId = field.linkedId;
+  if (linkedId) {
+    const extractor = LINKED_PROPERTY_EXTRACTORS[linkedId];
+    if (extractor) {
+      return extractor(ctx) || "";
+    }
+  }
+  const linkedTarget = (field.value || "").toLowerCase().trim();
+  if (linkedTarget) {
+    const extractor = LINKED_PROPERTY_EXTRACTORS[linkedTarget];
+    if (extractor) {
+      return extractor(ctx) || "";
+    }
+  }
+  return field.value || "";
+}
+
+const FIELD_VALUE_RESOLVERS: Record<
+  CustomFieldType,
+  (field: VaultField, ctx: AutofillCredentialContext) => string
+> = {
+  [CustomFieldType.Text]: (field) => field.value || "",
+  [CustomFieldType.Hidden]: (field) => field.value || "",
+  [CustomFieldType.Boolean]: (field) =>
+    TRUTHY_BOOLEAN_SET.has((field.value || "").toLowerCase().trim())
+      ? "true"
+      : "false",
+  [CustomFieldType.Linked]: (field, ctx) => resolveLinkedFieldValue(field, ctx),
+  [CustomFieldType.Divider]: () => "",
+};
+
 function autofillCustomFields(
   customFields?: readonly VaultField[],
   username?: string,
@@ -78,46 +133,19 @@ function autofillCustomFields(
     >("input, textarea, select"),
   );
 
+  const credContext: AutofillCredentialContext = { username, password, totp };
+
   for (const field of customFields) {
     if (!field.name || !field.name.trim()) continue;
     if (field.type === CustomFieldType.Divider) continue;
 
     const fieldNameLower = field.name.trim().toLowerCase();
 
-    // Determine value to fill based on field type
-    let valueToFill = "";
-    if (field.type === CustomFieldType.Linked) {
-      const linkedTarget = (field.value || "").toLowerCase().trim();
-      const linkedId = field.linkedId;
-      if (
-        linkedId === LoginLinkedId.Username ||
-        linkedTarget === "username" ||
-        linkedTarget === String(LoginLinkedId.Username)
-      ) {
-        valueToFill = username || "";
-      } else if (
-        linkedId === LoginLinkedId.Password ||
-        linkedTarget === "password" ||
-        linkedTarget === String(LoginLinkedId.Password)
-      ) {
-        valueToFill = password || "";
-      } else if (
-        linkedId === LoginLinkedId.Totp ||
-        linkedTarget === "totp" ||
-        linkedTarget === String(LoginLinkedId.Totp)
-      ) {
-        valueToFill = totp || "";
-      } else {
-        valueToFill = field.value || "";
-      }
-    } else if (field.type === CustomFieldType.Boolean) {
-      const isTruthy = new Set(["true", "1", "yes", "y", "✓"]).has(
-        (field.value || "").toLowerCase().trim(),
-      );
-      valueToFill = isTruthy ? "true" : "false";
-    } else {
-      valueToFill = field.value || "";
-    }
+    // Determine value to fill using strategy lookup
+    const resolver =
+      FIELD_VALUE_RESOLVERS[field.type] ??
+      FIELD_VALUE_RESOLVERS[CustomFieldType.Text];
+    const valueToFill = resolver(field, credContext);
 
     // Find candidate DOM elements matching field.name
     for (const el of allInputs) {
@@ -142,7 +170,7 @@ function autofillCustomFields(
       if (isMatch) {
         if (el instanceof HTMLInputElement) {
           if (el.type === "checkbox" || el.type === "radio") {
-            const shouldCheck = new Set(["true", "y", "1", "yes", "✓"]).has(
+            const shouldCheck = TRUTHY_BOOLEAN_SET.has(
               String(valueToFill).toLowerCase().trim(),
             );
             setCheckboxValue(el, shouldCheck);

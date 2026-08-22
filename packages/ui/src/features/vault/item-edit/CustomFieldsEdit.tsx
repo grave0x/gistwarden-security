@@ -11,6 +11,25 @@ interface CustomFieldsEditProps {
   onChange: (fields: VaultField[]) => void;
 }
 
+const FIELD_PREVIEW_RESOLVERS: Record<
+  CustomFieldType,
+  (field: VaultField) => string
+> = {
+  [CustomFieldType.Hidden]: () => "••••••••",
+  [CustomFieldType.Boolean]: (f) =>
+    f.value === "true" || f.value === "1" ? "✓ True" : "✗ False",
+  [CustomFieldType.Linked]: (f) => `🔗 ${f.value || ""}`,
+  [CustomFieldType.Text]: (f) => f.value || t("detail_no_value"),
+  [CustomFieldType.Divider]: () => "",
+};
+
+function getCustomFieldPreviewText(field: VaultField): string {
+  const resolver =
+    FIELD_PREVIEW_RESOLVERS[field.type] ??
+    FIELD_PREVIEW_RESOLVERS[CustomFieldType.Text];
+  return resolver(field);
+}
+
 export const CustomFieldsEdit: Component<CustomFieldsEditProps> = (props) => {
   // Drag and drop states
   const [draggedIndex, setDraggedIndex] = createSignal<number | null>(null);
@@ -36,53 +55,57 @@ export const CustomFieldsEdit: Component<CustomFieldsEditProps> = (props) => {
     setShowEditFieldModal(true);
   };
 
-  const handleSaveFieldEdit = (field: {
-    name: string;
-    value: string;
-    type: number;
-  }) => {
+  const handleCloseModal = () => {
+    setShowEditFieldModal(false);
+    setSelectedFieldIndex(null);
+  };
+
+  const handleSaveField = (savedField: VaultField) => {
     const idx = selectedFieldIndex();
     if (idx === null) {
-      props.onChange([...props.fields, field]);
+      props.onChange([...props.fields, savedField]);
     } else {
-      props.onChange(props.fields.map((f, i) => (i === idx ? field : f)));
+      const next = [...props.fields];
+      next[idx] = savedField;
+      props.onChange(next);
     }
     setShowEditFieldModal(false);
     setSelectedFieldIndex(null);
   };
 
-  const handleCloseFieldModal = () => {
-    setShowEditFieldModal(false);
-    setSelectedFieldIndex(null);
+  const handleRemoveField = (index: number) => {
+    const next = [...props.fields];
+    next.splice(index, 1);
+    props.onChange(next);
   };
 
   const handleDragStart = (index: number, e: DragEvent) => {
     setDraggedIndex(index);
     if (e.dataTransfer) {
       e.dataTransfer.effectAllowed = "move";
+      e.dataTransfer.setData("text/plain", String(index));
     }
   };
 
   const handleDragOver = (index: number, e: DragEvent) => {
     e.preventDefault();
-    const dragged = draggedIndex();
-    if (dragged === null || dragged === index) return;
+    if (e.dataTransfer) {
+      e.dataTransfer.dropEffect = "move";
+    }
+    const fromIdx = draggedIndex();
+    if (fromIdx === null || fromIdx === index) return;
 
-    const list = [...props.fields];
-    const [moved] = list.splice(dragged, 1);
-    if (moved) {
-      list.splice(index, 0, moved);
-      props.onChange(list);
+    const next = [...props.fields];
+    const item = next.splice(fromIdx, 1)[0];
+    if (item) {
+      next.splice(index, 0, item);
       setDraggedIndex(index);
+      props.onChange(next);
     }
   };
 
   const handleDragEnd = () => {
     setDraggedIndex(null);
-  };
-
-  const handleRemoveField = (index: number) => {
-    props.onChange(props.fields.filter((_, i) => i !== index));
   };
 
   return (
@@ -117,15 +140,7 @@ export const CustomFieldsEdit: Component<CustomFieldsEditProps> = (props) => {
                             {field.name}
                           </span>
                           <span class="field-sub-value">
-                            {field.type === CustomFieldType.Hidden
-                              ? "••••••••"
-                              : field.type === CustomFieldType.Boolean
-                                ? field.value === "true" || field.value === "1"
-                                  ? "✓ True"
-                                  : "✗ False"
-                                : field.type === CustomFieldType.Linked
-                                  ? `🔗 ${field.value}`
-                                  : field.value || t("detail_no_value")}
+                            {getCustomFieldPreviewText(field)}
                           </span>
                         </div>
                         <div class="d-flex gap-8">
@@ -207,8 +222,8 @@ export const CustomFieldsEdit: Component<CustomFieldsEditProps> = (props) => {
         isOpen={showEditFieldModal()}
         isEdit={selectedFieldIndex() !== null}
         initialField={initialField()}
-        onClose={handleCloseFieldModal}
-        onSave={handleSaveFieldEdit}
+        onClose={handleCloseModal}
+        onSave={handleSaveField}
       />
     </>
   );

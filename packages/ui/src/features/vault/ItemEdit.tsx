@@ -34,6 +34,21 @@ import {
 } from "@/features/vault/vault-utils.ts";
 import { TrashIcon } from "@/icons/svg/index.ts";
 
+const ITEM_NAME_PLACEHOLDERS: Record<VaultItemType, () => string> = {
+  [VaultItemType.Login]: () => t("edit_placeholder_name_login"),
+  [VaultItemType.SecureNote]: () => t("edit_placeholder_name_note"),
+  [VaultItemType.Card]: () => "e.g. Visa, Mastercard...",
+  [VaultItemType.Identity]: () => t("edit_placeholder_name_login"),
+  [VaultItemType.SshKey]: () => t("edit_placeholder_name_login"),
+};
+
+function getItemNamePlaceholder(itemType: VaultItemType): string {
+  const getPlaceholder =
+    ITEM_NAME_PLACEHOLDERS[itemType] ??
+    ITEM_NAME_PLACEHOLDERS[VaultItemType.Login];
+  return getPlaceholder();
+}
+
 export const ItemEdit: Component = () => {
   const isEdit = () => {
     const id = uiStore.selectedItem?.id;
@@ -220,13 +235,7 @@ export const ItemEdit: Component = () => {
                 type="text"
                 value={formState.name}
                 onInput={(e) => updateForm("name", e.currentTarget.value)}
-                placeholder={
-                  formState.itemType === VaultItemType.SecureNote
-                    ? t("edit_placeholder_name_note")
-                    : formState.itemType === VaultItemType.Card
-                      ? "e.g. Visa, Mastercard..."
-                      : t("edit_placeholder_name_login")
-                }
+                placeholder={getItemNamePlaceholder(formState.itemType)}
               />
             </div>
 

@@ -1,7 +1,15 @@
 import type { VaultField } from "@gistwarden/domain";
 import { CustomFieldType, VaultItemType } from "@gistwarden/domain";
 import { copyToClipboardWithMessage } from "@gistwarden/ui";
-import { type Component, createSignal, For, onMount, Show } from "solid-js";
+import {
+  type Component,
+  createSignal,
+  For,
+  Match,
+  onMount,
+  Show,
+  Switch,
+} from "solid-js";
 import Button from "@/components/ui/Button.tsx";
 import Checkbox from "@/components/ui/Checkbox.tsx";
 import DetailHeader from "@/components/ui/DetailHeader.tsx";
@@ -15,6 +23,17 @@ import {
   getVaultItemDetailTitle,
 } from "@/features/vault/vault-utils.ts";
 import { CopyIcon, EyeIcon, EyeOffIcon, TrashIcon } from "@/icons/svg/index.ts";
+
+function formatDetailFieldValue(field: VaultField, isVisible: boolean): string {
+  switch (field.type) {
+    case CustomFieldType.Hidden:
+      return isVisible ? field.value || "" : "••••••••••••";
+    case CustomFieldType.Linked:
+      return `🔗 ${field.value || ""}`;
+    default:
+      return field.value || t("detail_no_value");
+  }
+}
 
 export const ItemDetail: Component = () => {
   // Local view states
@@ -113,76 +132,71 @@ export const ItemDetail: Component = () => {
             <div class="card mb-16">
               <For each={fields()}>
                 {(field, index) => (
-                  <Show
-                    when={field.type === CustomFieldType.Divider}
-                    fallback={
-                      field.type === CustomFieldType.Boolean ? (
-                        <div class="detail-row custom-field-row align-items-center">
-                          <div class="field-content">
-                            <Checkbox
-                              id={`detail-cf-bool-${index()}`}
-                              checked={
-                                field.value === "true" || field.value === "1"
+                  <Switch>
+                    <Match when={field.type === CustomFieldType.Divider}>
+                      <div class="custom-field-divider">
+                        <span>{field.name || "Divider"}</span>
+                      </div>
+                    </Match>
+                    <Match when={field.type === CustomFieldType.Boolean}>
+                      <div class="detail-row custom-field-row align-items-center">
+                        <div class="field-content">
+                          <Checkbox
+                            id={`detail-cf-bool-${index()}`}
+                            checked={
+                              field.value === "true" || field.value === "1"
+                            }
+                            disabled
+                            label={field.name || t("edit_label_fields")}
+                          />
+                        </div>
+                      </div>
+                    </Match>
+                    <Match when={true}>
+                      <div class="detail-row custom-field-row">
+                        <div class="field-content">
+                          <div class="field-label">
+                            {field.name || t("edit_label_fields")}
+                          </div>
+                          <div class="field-value">
+                            {formatDetailFieldValue(
+                              field,
+                              Boolean(visibleFields()[index()]),
+                            )}
+                          </div>
+                        </div>
+                        <div class="field-actions">
+                          <Show when={field.type === CustomFieldType.Hidden}>
+                            <button
+                              type="button"
+                              class="action-btn"
+                              onClick={() => toggleFieldVisibility(index())}
+                              title={t("edit_field_val_placeholder")}
+                            >
+                              <Show
+                                when={visibleFields()[index()]}
+                                fallback={<EyeIcon class="icon-inline" />}
+                              >
+                                <EyeOffIcon class="icon-inline" />
+                              </Show>
+                            </button>
+                          </Show>
+                          <Show when={field.value}>
+                            <button
+                              type="button"
+                              class="action-btn"
+                              onClick={() =>
+                                handleCopy(field.value, field.name || "value")
                               }
-                              disabled
-                              label={field.name || t("edit_label_fields")}
-                            />
-                          </div>
+                              title={t("btn_copy")}
+                            >
+                              <CopyIcon />
+                            </button>
+                          </Show>
                         </div>
-                      ) : (
-                        <div class="detail-row custom-field-row">
-                          <div class="field-content">
-                            <div class="field-label">
-                              {field.name || t("edit_label_fields")}
-                            </div>
-                            <div class="field-value">
-                              {field.type === CustomFieldType.Hidden
-                                ? visibleFields()[index()]
-                                  ? field.value
-                                  : "••••••••••••"
-                                : field.type === CustomFieldType.Linked
-                                  ? `🔗 ${field.value}`
-                                  : field.value || t("detail_no_value")}
-                            </div>
-                          </div>
-                          <div class="field-actions">
-                            <Show when={field.type === CustomFieldType.Hidden}>
-                              <button
-                                type="button"
-                                class="action-btn"
-                                onClick={() => toggleFieldVisibility(index())}
-                                title={t("edit_field_val_placeholder")}
-                              >
-                                <Show
-                                  when={visibleFields()[index()]}
-                                  fallback={<EyeIcon class="icon-inline" />}
-                                >
-                                  <EyeOffIcon class="icon-inline" />
-                                </Show>
-                              </button>
-                            </Show>
-                            <Show when={field.value}>
-                              <button
-                                type="button"
-                                class="action-btn"
-                                onClick={() =>
-                                  handleCopy(field.value, field.name || "value")
-                                }
-                                title={t("btn_copy")}
-                              >
-                                <CopyIcon />
-                              </button>
-                            </Show>
-                          </div>
-                        </div>
-                      )
-                    }
-                  >
-                    {/* Divider row */}
-                    <div class="custom-field-divider">
-                      <span>{field.name || "Divider"}</span>
-                    </div>
-                  </Show>
+                      </div>
+                    </Match>
+                  </Switch>
                 )}
               </For>
             </div>

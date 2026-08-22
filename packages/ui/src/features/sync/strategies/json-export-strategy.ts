@@ -108,6 +108,84 @@ const EXPORT_CONVERTERS: Record<VaultItemType, ExportItemConverter> = {
   },
 };
 
+const LINKED_STRING_TO_ID: Record<string, number> = {
+  username: LoginLinkedId.Username,
+  [String(LoginLinkedId.Username)]: LoginLinkedId.Username,
+  password: LoginLinkedId.Password,
+  [String(LoginLinkedId.Password)]: LoginLinkedId.Password,
+  totp: LoginLinkedId.Totp,
+  [String(LoginLinkedId.Totp)]: LoginLinkedId.Totp,
+};
+
+function resolveExportLinkedId(f: VaultItem["fields"][number]): number {
+  if (typeof f.linkedId === "number" && !isNaN(f.linkedId)) {
+    return f.linkedId;
+  }
+  const val = String(f.value || "")
+    .toLowerCase()
+    .trim();
+  const foundId = LINKED_STRING_TO_ID[val];
+  if (foundId !== undefined) {
+    return foundId;
+  }
+  const num = Number(val);
+  if (!isNaN(num) && num > 0) {
+    return num;
+  }
+  return LoginLinkedId.Username;
+}
+
+interface ExportedVaultField {
+  name: string;
+  value: string | null;
+  type: FieldType;
+  linkedId: number | null;
+}
+
+const FIELD_EXPORT_TRANSFORMERS: Record<
+  FieldType,
+  (f: VaultItem["fields"][number]) => ExportedVaultField
+> = {
+  [FieldType.Linked]: (f) => ({
+    name: f.name || "",
+    value: null,
+    type: FieldType.Linked,
+    linkedId: resolveExportLinkedId(f),
+  }),
+  [FieldType.Boolean]: (f) => ({
+    name: f.name || "",
+    value: f.value === "true" || f.value === "1" ? "true" : "false",
+    type: FieldType.Boolean,
+    linkedId: null,
+  }),
+  [FieldType.Text]: (f) => ({
+    name: f.name || "",
+    value: f.value != null ? String(f.value) : "",
+    type: FieldType.Text,
+    linkedId: null,
+  }),
+  [FieldType.Hidden]: (f) => ({
+    name: f.name || "",
+    value: f.value != null ? String(f.value) : "",
+    type: FieldType.Hidden,
+    linkedId: null,
+  }),
+  [FieldType.Divider]: (f) => ({
+    name: f.name || "",
+    value: "",
+    type: FieldType.Divider,
+    linkedId: null,
+  }),
+};
+
+function exportVaultField(f: VaultItem["fields"][number]): ExportedVaultField {
+  const fieldType = f.type ?? FieldType.Text;
+  const transformer =
+    FIELD_EXPORT_TRANSFORMERS[fieldType] ??
+    FIELD_EXPORT_TRANSFORMERS[FieldType.Text];
+  return transformer(f);
+}
+
 export const jsonExportStrategy = {
   id: "json",
   nameKey: "export_option_json",
@@ -123,52 +201,7 @@ export const jsonExportStrategy = {
         name: item.name,
         notes: item.notes || "",
         favorite: item.favorite,
-        fields: item.fields.map((f) => {
-          const fieldType = f.type ?? FieldType.Text;
-          if (fieldType === FieldType.Linked) {
-            let linkedId: number = LoginLinkedId.Username;
-            if (typeof f.linkedId === "number" && !isNaN(f.linkedId)) {
-              linkedId = f.linkedId;
-            } else if (
-              f.value === "password" ||
-              f.value === String(LoginLinkedId.Password)
-            ) {
-              linkedId = LoginLinkedId.Password;
-            } else if (
-              f.value === "username" ||
-              f.value === String(LoginLinkedId.Username)
-            ) {
-              linkedId = LoginLinkedId.Username;
-            } else if (
-              f.value === "totp" ||
-              f.value === String(LoginLinkedId.Totp)
-            ) {
-              linkedId = LoginLinkedId.Totp;
-            } else if (!isNaN(Number(f.value)) && Number(f.value) > 0) {
-              linkedId = Number(f.value);
-            }
-            return {
-              name: f.name || "",
-              value: null,
-              type: FieldType.Linked,
-              linkedId,
-            };
-          }
-          if (fieldType === FieldType.Boolean) {
-            return {
-              name: f.name || "",
-              value: f.value === "true" || f.value === "1" ? "true" : "false",
-              type: FieldType.Boolean,
-              linkedId: null,
-            };
-          }
-          return {
-            name: f.name || "",
-            value: f.value != null ? String(f.value) : "",
-            type: fieldType,
-            linkedId: null,
-          };
-        }),
+        fields: item.fields.map(exportVaultField),
         creationDate: item.creationDate,
         revisionDate: item.revisionDate,
       };

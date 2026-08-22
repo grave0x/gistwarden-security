@@ -21,6 +21,177 @@ import type { TranslationKey } from "@/core/i18n.ts";
 import { safeJsonParse } from "@/core/json-utils.ts";
 import type { ImportResult, ImportStrategy } from "../import-export-types.ts";
 
+const LINKED_ID_TO_CANONICAL_KEY: Record<number, string> = {
+  [LoginLinkedId.Username]: "username",
+  [LoginLinkedId.Password]: "password",
+  [LoginLinkedId.Totp]: "totp",
+};
+
+const LINKED_CANONICAL_KEY_TO_ID: Record<string, number> = {
+  username: LoginLinkedId.Username,
+  [String(LoginLinkedId.Username)]: LoginLinkedId.Username,
+  password: LoginLinkedId.Password,
+  [String(LoginLinkedId.Password)]: LoginLinkedId.Password,
+  totp: LoginLinkedId.Totp,
+  [String(LoginLinkedId.Totp)]: LoginLinkedId.Totp,
+};
+
+function normalizeImportLinkedField(
+  rawVal: string,
+  rawLinkedId?: number | null,
+): { value: string; linkedId: number | null } {
+  let linkedId = rawLinkedId ?? null;
+  let val = rawVal.trim();
+
+  if (linkedId) {
+    const canonicalKey = LINKED_ID_TO_CANONICAL_KEY[linkedId];
+    if (canonicalKey && (!val || val === String(linkedId))) {
+      val = canonicalKey;
+    }
+  } else {
+    const canonicalId = LINKED_CANONICAL_KEY_TO_ID[val.toLowerCase()];
+    if (canonicalId !== undefined) {
+      linkedId = canonicalId;
+      val = LINKED_ID_TO_CANONICAL_KEY[canonicalId] ?? val;
+    }
+  }
+
+  return { value: val, linkedId };
+}
+
+function importVaultField(f: NonNullable<ImportItem["fields"]>[number]) {
+  const fieldType = f.type ?? FieldType.Text;
+  if (fieldType === FieldType.Linked) {
+    const { value, linkedId } = normalizeImportLinkedField(
+      f.value || "",
+      f.linkedId,
+    );
+    return {
+      name: f.name || "",
+      value,
+      type: FieldType.Linked,
+      linkedId: linkedId ?? undefined,
+    };
+  }
+
+  return {
+    name: f.name || "",
+    value: f.value || "",
+    type: fieldType,
+    linkedId: f.linkedId ?? undefined,
+  };
+}
+
+type ImportItemConverter = (
+  item: ImportItem,
+  base: ReturnType<typeof createBaseVaultItem>,
+  now: string,
+) => VaultItem;
+
+const IMPORT_CONVERTERS: Record<VaultItemType, ImportItemConverter> = {
+  [VaultItemType.SecureNote]: (_item, base) => ({
+    ...base,
+    type: VaultItemType.SecureNote,
+  }),
+  [VaultItemType.Card]: (item, base) => {
+    const cardData = item.type === VaultItemType.Card ? item.card || {} : {};
+    return {
+      ...base,
+      type: VaultItemType.Card,
+      card: {
+        cardholderName: cardData.cardholderName || "",
+        brand: cardData.brand || "",
+        number: cardData.number || "",
+        expMonth: cardData.expMonth || "",
+        expYear: cardData.expYear || "",
+        code: cardData.code || "",
+      },
+    };
+  },
+  [VaultItemType.Identity]: (item, base) => {
+    const identityData =
+      item.type === VaultItemType.Identity ? item.identity || {} : {};
+    return {
+      ...base,
+      type: VaultItemType.Identity,
+      identity: {
+        title: identityData.title || "",
+        firstName: identityData.firstName || "",
+        middleName: identityData.middleName || "",
+        lastName: identityData.lastName || "",
+        username: identityData.username || "",
+        company: identityData.company || "",
+        ssn: identityData.ssn || "",
+        passportNumber: identityData.passportNumber || "",
+        licenseNumber: identityData.licenseNumber || "",
+        email: identityData.email || "",
+        phone: identityData.phone || "",
+        address1: identityData.address1 || "",
+        address2: identityData.address2 || "",
+        address3: identityData.address3 || "",
+        city: identityData.city || "",
+        state: identityData.state || "",
+        postalCode: identityData.postalCode || "",
+        country: identityData.country || "",
+      },
+    };
+  },
+  [VaultItemType.SshKey]: (item, base) => {
+    const sshData = item.type === VaultItemType.SshKey ? item.sshKey || {} : {};
+    return {
+      ...base,
+      type: VaultItemType.SshKey,
+      sshKey: {
+        privateKey: sshData.privateKey || "",
+        publicKey: sshData.publicKey || "",
+        keyFingerprint: sshData.keyFingerprint || "",
+      },
+    };
+  },
+  [VaultItemType.Login]: (item, base, now) => {
+    const loginData =
+      item.type === VaultItemType.Login ? item.login : undefined;
+    const rawFido = loginData?.fido2Credentials;
+    return {
+      ...base,
+      type: VaultItemType.Login,
+      login: {
+        username: loginData?.username || "",
+        password: loginData?.password || "",
+        totp: loginData?.totp || "",
+        uris: loginData?.uris
+          ? loginData.uris.map(
+              (u: { uri?: string; match?: number | null }) => ({
+                uri: u.uri || "",
+                match: u.match || null,
+              }),
+            )
+          : [],
+        fido2Credentials:
+          rawFido?.map((c: Record<string, unknown>) => ({
+            credentialId: asFido2CredentialId(String(c.credentialId || "")),
+            keyType: String(c.keyType || ""),
+            keyAlgorithm: String(c.keyAlgorithm || ""),
+            keyCurve: String(c.keyCurve || ""),
+            keyValue: String(c.keyValue || ""),
+            counter: typeof c.counter === "number" ? c.counter : 0,
+            rpId: asRpId(String(c.rpId || "")),
+            userHandle: String(c.userHandle || ""),
+            userName: String(c.userName || ""),
+            userDisplayName: String(c.userDisplayName || ""),
+            creationDate: String(c.creationDate || now),
+            discoverable:
+              typeof c.discoverable === "string"
+                ? c.discoverable === "true"
+                : Boolean(c.discoverable),
+          })) || [],
+        passwordRevisionDate: loginData?.passwordRevisionDate || null,
+        passwordHistory: loginData?.passwordHistory || [],
+      },
+    };
+  },
+};
+
 export const jsonImportStrategy = {
   id: "json",
   nameKey: "import_option_json",
@@ -89,10 +260,6 @@ export const jsonImportStrategy = {
 
     const now = new Date().toISOString();
     const newVaultItems: VaultItem[] = itemsToImport.map((item) => {
-      const isLogin = item.type === VaultItemType.Login;
-      const loginData = isLogin ? item.login : undefined;
-      const rawFido = loginData?.fido2Credentials;
-
       const base = createBaseVaultItem({
         id: item.id || undefined,
         folderId: item.folderId || null,
@@ -100,146 +267,15 @@ export const jsonImportStrategy = {
         notes: item.notes,
         favorite: item.favorite,
         reprompt: item.reprompt,
-        fields: item.fields?.map((f) => {
-          let val = f.value || "";
-          let linkedId = f.linkedId;
-          const fieldType = f.type ?? FieldType.Text;
-          if (fieldType === FieldType.Linked) {
-            if (
-              linkedId === LoginLinkedId.Username &&
-              (!val || val === String(LoginLinkedId.Username))
-            ) {
-              val = "username";
-            } else if (
-              linkedId === LoginLinkedId.Password &&
-              (!val || val === String(LoginLinkedId.Password))
-            ) {
-              val = "password";
-            } else if (
-              linkedId === LoginLinkedId.Totp &&
-              (!val || val === String(LoginLinkedId.Totp))
-            ) {
-              val = "totp";
-            } else if (!linkedId) {
-              if (
-                val === "username" ||
-                val === String(LoginLinkedId.Username)
-              ) {
-                linkedId = LoginLinkedId.Username;
-                val = "username";
-              } else if (
-                val === "password" ||
-                val === String(LoginLinkedId.Password)
-              ) {
-                linkedId = LoginLinkedId.Password;
-                val = "password";
-              } else if (val === "totp" || val === String(LoginLinkedId.Totp)) {
-                linkedId = LoginLinkedId.Totp;
-                val = "totp";
-              }
-            }
-          }
-          return {
-            name: f.name || "",
-            value: val,
-            type: fieldType,
-            linkedId,
-          };
-        }),
+        fields: item.fields?.map(importVaultField),
         creationDate: item.creationDate || undefined,
         revisionDate: item.revisionDate || undefined,
         fallbackName: getVaultItemFallbackName(item.type),
       });
 
-      if (item.type === VaultItemType.SecureNote) {
-        return {
-          ...base,
-          type: VaultItemType.SecureNote,
-        };
-      } else if (item.type === VaultItemType.Card) {
-        const cardData = item.card || {};
-        return {
-          ...base,
-          type: VaultItemType.Card,
-          card: {
-            cardholderName: cardData.cardholderName || "",
-            brand: cardData.brand || "",
-            number: cardData.number || "",
-            expMonth: cardData.expMonth || "",
-            expYear: cardData.expYear || "",
-            code: cardData.code || "",
-          },
-        };
-      } else if (item.type === VaultItemType.Identity) {
-        const identityData = item.identity || {};
-        return {
-          ...base,
-          type: VaultItemType.Identity,
-          identity: {
-            title: identityData.title || "",
-            firstName: identityData.firstName || "",
-            middleName: identityData.middleName || "",
-            lastName: identityData.lastName || "",
-            username: identityData.username || "",
-            company: identityData.company || "",
-            ssn: identityData.ssn || "",
-            passportNumber: identityData.passportNumber || "",
-            licenseNumber: identityData.licenseNumber || "",
-            email: identityData.email || "",
-            phone: identityData.phone || "",
-            address1: identityData.address1 || "",
-            address2: identityData.address2 || "",
-            address3: identityData.address3 || "",
-            city: identityData.city || "",
-            state: identityData.state || "",
-            postalCode: identityData.postalCode || "",
-            country: identityData.country || "",
-          },
-        };
-      } else if (item.type === VaultItemType.SshKey) {
-        const sshData = item.sshKey || {};
-        return {
-          ...base,
-          type: VaultItemType.SshKey,
-          sshKey: {
-            privateKey: sshData.privateKey || "",
-            publicKey: sshData.publicKey || "",
-            keyFingerprint: sshData.keyFingerprint || "",
-          },
-        };
-      } else {
-        return {
-          ...base,
-          type: VaultItemType.Login,
-          login: {
-            username: loginData?.username || "",
-            password: loginData?.password || "",
-            totp: loginData?.totp || "",
-            uris: loginData?.uris
-              ? loginData.uris.map((u) => ({
-                  uri: u.uri || "",
-                  match: u.match || null,
-                }))
-              : [],
-            fido2Credentials:
-              rawFido?.map((c) => ({
-                credentialId: asFido2CredentialId(c.credentialId || ""),
-                keyType: c.keyType || "",
-
-                keyAlgorithm: c.keyAlgorithm || "",
-                keyCurve: c.keyCurve || "",
-                keyValue: c.keyValue || "",
-                counter: c.counter ?? 0,
-                rpId: asRpId(c.rpId || ""),
-                userHandle: c.userHandle || "",
-                userName: c.userName || "",
-                userDisplayName: c.userDisplayName || "",
-                creationDate: c.creationDate || now,
-                discoverable: c.discoverable,
-              })) || [],
-          },
-        };
-      }
+      const converter =
+        IMPORT_CONVERTERS[item.type] ?? IMPORT_CONVERTERS[VaultItemType.Login];
+      return converter(item, base, now);
     });
 
     const existingMap = new Map<string, VaultItem>();
