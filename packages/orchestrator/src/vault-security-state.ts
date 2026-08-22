@@ -65,11 +65,19 @@ export class SessionExpiredVaultState implements VaultSecurityState {
   }
 }
 
+/**
+ * VaultSecurityContext - State Pattern Context for Vault Security State.
+ * Manages transitions between Locked, Unlocked, and Expired states.
+ */
 export class VaultSecurityContext {
   private state: VaultSecurityState = new LockedVaultState();
 
   get currentStatus(): SecurityStatus {
     return this.state.status;
+  }
+
+  getState(): VaultSecurityState {
+    return this.state;
   }
 
   async lock(): Promise<void> {
@@ -85,13 +93,12 @@ export class VaultSecurityContext {
   async expireSession(): Promise<void> {
     this.state = new SessionExpiredVaultState();
     await persistSessionKey(null);
-    this.state = new LockedVaultState();
   }
 
-  async getKey(): Promise<CryptoKey | null> {
-    const key = await this.state.getKey();
-    if (key) return key;
-
+  /**
+   * Explicit command to restore session key from persistent/session storage.
+   */
+  async restoreSession(): Promise<CryptoKey | null> {
     const restoredKey = await restoreSessionKeyFromStorage();
     if (restoredKey) {
       this.state = new UnlockedVaultState(restoredKey);
@@ -100,12 +107,25 @@ export class VaultSecurityContext {
     return null;
   }
 
+  /**
+   * Pure query for current key (with automated lazy restore if needed).
+   */
+  async getKey(): Promise<CryptoKey | null> {
+    const key = await this.state.getKey();
+    if (key) return key;
+
+    return await this.restoreSession();
+  }
+
+  /**
+   * Delegates secured execution polymorphically to current state object.
+   */
   async executeSecured<T>(
     fn: (key: CryptoKey) => Promise<T>,
   ): Promise<Result<T, TranslationKey>> {
-    const key = await this.getKey();
-    if (!key) {
-      return err("login_title_locked");
+    // If state is not unlocked, try to restore before delegating
+    if (this.state.status !== "unlocked") {
+      await this.restoreSession();
     }
     return this.state.executeSecured(fn);
   }

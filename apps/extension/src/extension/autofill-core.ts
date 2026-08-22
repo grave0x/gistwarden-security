@@ -215,40 +215,75 @@ function isLoginKeywordMatch(text: string): boolean {
   return LOGIN_BUTTON_KEYWORDS.some((kw) => normalized.includes(kw));
 }
 
+// ----------------------------------------------------
+// Chain of Responsibility: Submit Button & Form Submitter
+// ----------------------------------------------------
+
+interface SubmitHandler {
+  setNext(handler: SubmitHandler): SubmitHandler;
+  handle(container: ParentNode): boolean;
+}
+
+abstract class AbstractSubmitHandler implements SubmitHandler {
+  private nextHandler?: SubmitHandler;
+
+  setNext(handler: SubmitHandler): SubmitHandler {
+    this.nextHandler = handler;
+    return handler;
+  }
+
+  handle(container: ParentNode): boolean {
+    if (this.nextHandler) {
+      return this.nextHandler.handle(container);
+    }
+    return false;
+  }
+}
+
+class ExplicitSubmitTypeHandler extends AbstractSubmitHandler {
+  override handle(container: ParentNode): boolean {
+    const submitElements = container.querySelectorAll<HTMLElement>(
+      'button[type="submit"], input[type="submit"]',
+    );
+    if (submitElements.length > 0) {
+      const firstSubmit = submitElements[0];
+      if (firstSubmit) {
+        firstSubmit.click();
+        return true;
+      }
+    }
+    return super.handle(container);
+  }
+}
+
+class KeywordCandidateButtonHandler extends AbstractSubmitHandler {
+  override handle(container: ParentNode): boolean {
+    const candidateButtons = container.querySelectorAll<HTMLElement>(
+      'button, [type="button"], a.btn, .btn, [role="button"]',
+    );
+    for (let i = 0; i < candidateButtons.length; i++) {
+      const btn = candidateButtons[i];
+      if (!btn) continue;
+      const btnText = (
+        btn.innerText ||
+        btn.getAttribute("value") ||
+        btn.id ||
+        btn.className ||
+        ""
+      ).toLowerCase();
+      if (isLoginKeywordMatch(btnText)) {
+        btn.click();
+        return true;
+      }
+    }
+    return super.handle(container);
+  }
+}
+
 function submitElementFoundAndClicked(container: ParentNode): boolean {
-  // 1. Search type="submit" elements
-  const submitElements = container.querySelectorAll<HTMLElement>(
-    'button[type="submit"], input[type="submit"]',
-  );
-  if (submitElements.length > 0) {
-    const firstSubmit = submitElements[0];
-    if (firstSubmit) {
-      firstSubmit.click();
-      return true;
-    }
-  }
-
-  // 2. Search candidate buttons with login keywords
-  const candidateButtons = container.querySelectorAll<HTMLElement>(
-    'button, [type="button"], a.btn, .btn, [role="button"]',
-  );
-  for (let i = 0; i < candidateButtons.length; i++) {
-    const btn = candidateButtons[i];
-    if (!btn) continue;
-    const btnText = (
-      btn.innerText ||
-      btn.getAttribute("value") ||
-      btn.id ||
-      btn.className ||
-      ""
-    ).toLowerCase();
-    if (isLoginKeywordMatch(btnText)) {
-      btn.click();
-      return true;
-    }
-  }
-
-  return false;
+  const chain = new ExplicitSubmitTypeHandler();
+  chain.setNext(new KeywordCandidateButtonHandler());
+  return chain.handle(container);
 }
 
 export function autoSubmitLogin(
@@ -289,6 +324,81 @@ export function autoSubmitLogin(
   submitElementFoundAndClicked(document);
 }
 
+// ----------------------------------------------------
+// Chain of Responsibility: Username Field Extractor
+// ----------------------------------------------------
+
+interface UsernameExtractor {
+  extract(passwordField: HTMLInputElement, form: HTMLFormElement | null): HTMLInputElement | null;
+}
+
+class FormPrecedingUsernameExtractor implements UsernameExtractor {
+  extract(passwordField: HTMLInputElement, form: HTMLFormElement | null): HTMLInputElement | null {
+    if (!form) return null;
+    const textInputs = form.querySelectorAll(
+      'input[type="text"], input[type="email"], input[type="tel"], input:not([type])',
+    );
+    let matchedInput: HTMLInputElement | null = null;
+    for (let j = 0; j < textInputs.length; j++) {
+      const input = textInputs[j];
+      if (!(input instanceof HTMLInputElement)) continue;
+      if (input === passwordField) continue;
+
+      const type = input.type.toLowerCase();
+      if (
+        type !== "text" &&
+        type !== "email" &&
+        type !== "tel" &&
+        input.hasAttribute("type")
+      ) {
+        continue;
+      }
+
+      const position = input.compareDocumentPosition(passwordField);
+      if (position & Node.DOCUMENT_POSITION_FOLLOWING) {
+        matchedInput = input;
+      }
+    }
+    return matchedInput;
+  }
+}
+
+class DomPrecedingUsernameExtractor implements UsernameExtractor {
+  extract(passwordField: HTMLInputElement, _form?: HTMLFormElement | null): HTMLInputElement | null {
+    const allInputs = Array.from(document.querySelectorAll("input"));
+    const passIndex = allInputs.indexOf(passwordField);
+    if (passIndex > 0) {
+      for (let j = passIndex - 1; j >= 0; j--) {
+        const input = allInputs[j];
+        if (input instanceof HTMLInputElement) {
+          const type = input.type.toLowerCase();
+          if (
+            type === "text" ||
+            type === "email" ||
+            type === "tel" ||
+            !input.hasAttribute("type")
+          ) {
+            return input;
+          }
+        }
+      }
+    }
+    return null;
+  }
+}
+
+function findUsernameInputForPassword(
+  passwordField: HTMLInputElement,
+  form: HTMLFormElement | null,
+): HTMLInputElement | null {
+  const formExtractor = new FormPrecedingUsernameExtractor();
+  const formResult = formExtractor.extract(passwordField, form);
+  if (formResult) return formResult;
+
+  const domExtractor = new DomPrecedingUsernameExtractor();
+  return domExtractor.extract(passwordField, form);
+}
+
 export function performAutofill(
   username?: string,
   password?: string,
@@ -324,60 +434,7 @@ export function performAutofill(
       if (!targetForm && form) targetForm = form;
       if (!targetInput) targetInput = passwordField;
 
-      let usernameField: HTMLInputElement | null = null;
-
-      // 1. Search username input within the same form
-      if (form) {
-        const textInputs = form.querySelectorAll(
-          'input[type="text"], input[type="email"], input[type="tel"], input:not([type])',
-        );
-
-        // Find the text input situated before the password input
-        for (let j = 0; j < textInputs.length; j++) {
-          const input = textInputs[j];
-          if (!(input instanceof HTMLInputElement)) continue;
-          if (input === passwordField) continue;
-
-          // Check basic input type
-          const type = input.type.toLowerCase();
-          if (
-            type !== "text" &&
-            type !== "email" &&
-            type !== "tel" &&
-            input.hasAttribute("type")
-          ) {
-            continue;
-          }
-
-          const position = input.compareDocumentPosition(passwordField);
-          if (position & Node.DOCUMENT_POSITION_FOLLOWING) {
-            usernameField = input;
-          }
-        }
-      }
-
-      // 2. If no form or no username input in form, search in the whole DOM before password field
-      if (!usernameField) {
-        const allInputs = Array.from(document.querySelectorAll("input"));
-        const passIndex = allInputs.indexOf(passwordField);
-        if (passIndex > 0) {
-          for (let j = passIndex - 1; j >= 0; j--) {
-            const input = allInputs[j];
-            if (input instanceof HTMLInputElement) {
-              const type = input.type.toLowerCase();
-              if (
-                type === "text" ||
-                type === "email" ||
-                type === "tel" ||
-                !input.hasAttribute("type")
-              ) {
-                usernameField = input;
-                break;
-              }
-            }
-          }
-        }
-      }
+      const usernameField = findUsernameInputForPassword(passwordField, form);
 
       // Fill values (if not already filled by custom fields)
       if (password && passwordField && !filledElements.has(passwordField)) {
@@ -453,49 +510,11 @@ export function extractSubmittedCredentials(
     return null;
   }
 
-  let usernameInput: HTMLInputElement | null = null;
   const parentForm = chosenPasswordInput.closest("form");
-
-  if (parentForm) {
-    const candidateInputs = parentForm.querySelectorAll<HTMLInputElement>(
-      'input[type="text"], input[type="email"], input[type="tel"], input:not([type])',
-    );
-    for (let i = 0; i < candidateInputs.length; i++) {
-      const input = candidateInputs[i];
-      if (!input || input === chosenPasswordInput) continue;
-      const pos = input.compareDocumentPosition(chosenPasswordInput);
-      if (pos & Node.DOCUMENT_POSITION_FOLLOWING) {
-        if (input.value && input.value.trim().length > 0) {
-          usernameInput = input;
-        }
-      }
-    }
-  }
-
-  if (!usernameInput) {
-    const allInputs = Array.from(
-      document.querySelectorAll<HTMLInputElement>("input"),
-    );
-    const passIdx = allInputs.indexOf(chosenPasswordInput);
-    if (passIdx > 0) {
-      for (let i = passIdx - 1; i >= 0; i--) {
-        const input = allInputs[i];
-        if (!input) continue;
-        const type = input.type.toLowerCase();
-        if (
-          type === "text" ||
-          type === "email" ||
-          type === "tel" ||
-          !input.hasAttribute("type")
-        ) {
-          if (input.value && input.value.trim().length > 0) {
-            usernameInput = input;
-            break;
-          }
-        }
-      }
-    }
-  }
+  const usernameInput = findUsernameInputForPassword(
+    chosenPasswordInput,
+    parentForm,
+  );
 
   const currentUrl = window.location.href;
   const domain = getBaseDomain(currentUrl);
@@ -503,7 +522,7 @@ export function extractSubmittedCredentials(
   return {
     domain,
     url: currentUrl,
-    username: usernameInput ? usernameInput.value.trim() : "",
+    username: usernameInput && usernameInput.value ? usernameInput.value.trim() : "",
     password: chosenPasswordInput.value,
   };
 }

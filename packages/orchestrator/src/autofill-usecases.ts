@@ -12,6 +12,7 @@ import {
 } from "@gistwarden/domain";
 import {
   DEFAULT_EXCLUDED_DOMAINS,
+  getActiveVaultMode,
   getExtensionSettings,
   getLocalItem,
   removeLocalItem,
@@ -180,7 +181,8 @@ export async function processPendingUnapprovedCredentialsUseCase(): Promise<void
   }
 
   if (validPayloads.length > 0) {
-    await batchSavePayloads(vaultData, validPayloads);
+    const activeMode = await getActiveVaultMode();
+    await batchSavePayloads(vaultData, validPayloads, activeMode);
   }
 
   isProcessingPendingQueue = false;
@@ -224,7 +226,8 @@ export async function saveCredentialActionUseCase(
     }
   }
 
-  return await batchSavePayloads(vaultData, validPayloads);
+  const activeMode = await getActiveVaultMode();
+  return await batchSavePayloads(vaultData, validPayloads, activeMode);
 }
 
 export async function checkAutofillSuggestionUseCase(

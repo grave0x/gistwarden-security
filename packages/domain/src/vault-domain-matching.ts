@@ -1,6 +1,12 @@
 import { getBaseDomain, getHostname, toPunycodeUrl } from "./domain-utils.ts";
 import { UriMatchMode, type VaultItem } from "./vault-schemas.ts";
 import { isLoginItem, type VaultItemType } from "./vault-types.ts";
+import {
+  DomainMatchSpec,
+  filterVaultItemsBySpec,
+  SearchQuerySpec,
+  TypeMatchSpec,
+} from "./vault-specifications.ts";
 
 const URI_MATCH_STRATEGIES: Record<
   UriMatchMode,
@@ -109,13 +115,11 @@ export function filterMatchingDomainItems(
   overrideDefaultMode?: UriMatchMode,
 ): VaultItem[] {
   if (!domain) return [];
-  let list = items;
-  if (filterType && filterType !== "all") {
-    list = list.filter((item) => item.type === filterType);
-  }
-  const filtered = list.filter((item) =>
-    isMatchingDomain(item, domain, overrideDefaultMode),
+
+  const spec = new TypeMatchSpec(filterType).and(
+    new DomainMatchSpec(domain, overrideDefaultMode),
   );
+  const filtered = filterVaultItemsBySpec(items, spec);
 
   const exactMatchIds = new Set(
     filtered
@@ -150,25 +154,9 @@ export function filterVaultItemsByQuery(
   searchQuery: string,
   filterType: VaultItemType | "all" = "all",
 ): VaultItem[] {
-  const q = searchQuery.toLowerCase().trim();
-  let list = items;
-  if (filterType && filterType !== "all") {
-    list = list.filter((item) => item.type === filterType);
-  }
-  if (q) {
-    list = list.filter((item) => {
-      const nameMatch = item.name.toLowerCase().includes(q);
-      if (!isLoginItem(item)) return nameMatch;
-      const usernameMatch = Boolean(
-        item.login.username?.toLowerCase().includes(q),
-      );
-      const uriMatch = Boolean(
-        item.login.uris?.some((u: { uri: string }) =>
-          u.uri.toLowerCase().includes(q),
-        ),
-      );
-      return nameMatch || usernameMatch || uriMatch;
-    });
-  }
-  return sortVaultItemsByName(list);
+  const spec = new TypeMatchSpec(filterType).and(
+    new SearchQuerySpec(searchQuery),
+  );
+  const matchedList = filterVaultItemsBySpec(items, spec);
+  return sortVaultItemsByName(matchedList);
 }

@@ -21,6 +21,7 @@ import {
   type TrashVaultItem,
   type VaultItem,
   type VaultItemId,
+  VaultItemBuilder,
   VaultItemType,
   VaultListSchema,
   type VaultPayload,
@@ -442,6 +443,7 @@ export async function clearVaultUseCase(
 export async function batchSavePayloads(
   vaultData: { items: VaultItem[]; key: CryptoKey; salt: string },
   payloads: SaveActionPayload[],
+  vaultMode: VaultMode = "github_gist",
 ): Promise<boolean> {
   if (payloads.length === 0) return true;
 
@@ -484,23 +486,11 @@ export async function batchSavePayloads(
         hasRealChanges = true;
       }
     } else {
-      const newItem: LoginVaultItem = {
-        id: asVaultItemId(crypto.randomUUID()),
-        type: VaultItemType.Login,
-
-        name: payload.domain || "New Login",
-        login: {
-          username: payload.username,
-          password: payload.password,
-          uris: payload.domain ? [{ uri: `https://${payload.domain}` }] : [],
-        },
-        notes: "",
-        favorite: false,
-        reprompt: 0,
-        fields: [],
-        creationDate: nowStr,
-        revisionDate: nowStr,
-      };
+      const newItem = VaultItemBuilder.login()
+        .setName(payload.domain || "New Login")
+        .setCredentials(payload.username, payload.password)
+        .addUri(payload.domain ? `https://${payload.domain}` : "")
+        .build();
       updatedItems.push(newItem);
       hasRealChanges = true;
     }
@@ -526,7 +516,34 @@ export async function batchSavePayloads(
   if (setRes.isErr()) return false;
 
   vaultData.items = updatedItems;
-  const uploadRes = await getSyncProvider().upload(payloadObj);
+
+  const provider = getSyncProvider(vaultMode);
+  const token = await getSyncToken(vaultMode);
+  const accRes = await getAccountSettings(vaultMode);
+  const syncConfig = accRes.isOk() ? accRes.value.syncConfig : undefined;
+
+  const uploadRes = await provider.upload(payloadObj, {
+    token: token || undefined,
+    serverUrl: syncConfig?.serverUrl,
+    gistId: syncConfig?.gistId,
+    username: syncConfig?.username,
+  });
+
+  if (uploadRes.isOk()) {
+    const gistId = uploadRes.value.gistId;
+    if (gistId && syncConfig && gistId !== syncConfig.gistId) {
+      await updateAccountSettings(
+        {
+          syncConfig: { ...syncConfig, gistId },
+          lastSync: Date.now(),
+        },
+        vaultMode,
+      );
+    } else {
+      await updateAccountSettings({ lastSync: Date.now() }, vaultMode);
+    }
+  }
+
   broadcastMessage({ type: MSG_VAULT_ITEMS_UPDATED });
   return uploadRes.isOk();
 }
@@ -573,24 +590,11 @@ export async function batchImportGoogleMigrationAccountsUseCase(
             ? `${itemMap.account.issuer} (${itemMap.account.name})`
             : itemMap.account.name || "Google Authenticator Import";
 
-          const newItem: LoginVaultItem = {
-            id: asVaultItemId(crypto.randomUUID()),
-            type: VaultItemType.Login,
-
-            name: titleName,
-            login: {
-              username: itemMap.account.name || "",
-              password: "",
-              totp: itemMap.account.otpauthUrl,
-              uris: [],
-            },
-            notes: "",
-            favorite: false,
-            reprompt: 0,
-            fields: [],
-            creationDate: nowStr,
-            revisionDate: nowStr,
-          };
+          const newItem = VaultItemBuilder.login()
+            .setName(titleName)
+            .setUsername(itemMap.account.name || "")
+            .setTotp(itemMap.account.otpauthUrl)
+            .build();
           updatedItems.push(newItem);
         }
       }

@@ -2,17 +2,14 @@ import {
   asGistId,
   type GistId,
   type GitHubAccessToken,
-  type ISyncProvider,
-  isRecord,
   type SyncOptions,
   type SyncProviderId,
   type SyncResult,
-  type SyncStatusResult,
   type SyncValidationResult,
-  safeJsonParse,
   type TranslationKey,
 } from "@gistwarden/domain";
 import { err, type Result } from "neverthrow";
+import { BaseSyncProvider } from "./base-sync-provider.ts";
 import {
   deleteGist,
   downloadFromGist,
@@ -22,8 +19,9 @@ import {
 
 /**
  * Provider quản lý lưu trữ và đồng bộ dữ liệu Vault qua GitHub Gist.
+ * Kế thừa BaseSyncProvider (Template Method Pattern).
  */
-export class GithubGistProvider implements ISyncProvider {
+export class GithubGistProvider extends BaseSyncProvider {
   readonly id: SyncProviderId = "github_gist";
   readonly name = "GitHub Gist";
 
@@ -75,57 +73,5 @@ export class GithubGistProvider implements ISyncProvider {
     return Promise.resolve(
       Boolean(options?.hasStoredEncryptedToken || options?.token),
     );
-  }
-
-  /**
-   * Kiểm tra đa hình trạng thái của Cloud Vault (Gist):
-   * 1. Chưa có Token -> "exists" (hiển thị form nhập Token / OAuth)
-   * 2. Đã có Token: Gọi download() kiểm tra Gist thực tế từ xa
-   * 3. Gist tồn tại -> Trả về "exists", salt, gistId
-   * 4. Gist KHÔNG tồn tại trên GitHub (provider_error_not_found) -> Tự dọn dẹp account_settings rác và trả về "new"
-   * 5. Lỗi mạng / offline mà đã có salt địa phương -> Trả về "exists" để dùng offline
-   */
-  async checkVaultStatus(options?: SyncOptions): Promise<SyncStatusResult> {
-    if (!options?.token) {
-      if (options?.hasStoredSalt) {
-        return { status: "exists" };
-      }
-      return { status: "new" };
-    }
-
-    const downloadRes = await this.download(options);
-
-    if (downloadRes.isOk() && downloadRes.value.content) {
-      const content = downloadRes.value.content;
-      const foundGistId = downloadRes.value.gistId;
-      const payloadJsonRes = safeJsonParse(content);
-      if (payloadJsonRes.isOk() && isRecord(payloadJsonRes.value)) {
-        const salt =
-          typeof payloadJsonRes.value.salt === "string"
-            ? payloadJsonRes.value.salt
-            : undefined;
-        if (salt) {
-          return {
-            status: "exists",
-            salt,
-            gistId: foundGistId,
-          };
-        }
-      }
-      return { status: "exists", gistId: foundGistId };
-    }
-
-    if (
-      downloadRes.isErr() &&
-      downloadRes.error === "provider_error_not_found"
-    ) {
-      return { status: "new" };
-    }
-
-    if (options?.hasStoredSalt) {
-      return { status: "exists" };
-    }
-
-    return { status: "new" };
   }
 }

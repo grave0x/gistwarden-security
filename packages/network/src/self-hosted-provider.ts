@@ -1,16 +1,15 @@
 import type {
-  ISyncProvider,
   SyncOptions,
   SyncProviderId,
   SyncResult,
-  SyncStatusResult,
   SyncValidationResult,
   TranslationKey,
 } from "@gistwarden/domain";
 import { err, ok, type Result } from "neverthrow";
 import { z } from "zod";
+import { BaseSyncProvider } from "./base-sync-provider.ts";
 
-export class SelfHostedProvider implements ISyncProvider {
+export class SelfHostedProvider extends BaseSyncProvider {
   readonly id: SyncProviderId = "self_hosted_server";
   readonly name = "Self-Hosted Server";
 
@@ -22,6 +21,10 @@ export class SelfHostedProvider implements ISyncProvider {
 
   private getToken(options?: SyncOptions): string {
     return options?.token || "";
+  }
+
+  protected override shouldAttemptDownload(options?: SyncOptions): boolean {
+    return Boolean(this.getBaseUrl(options) && this.getToken(options));
   }
 
   async upload(
@@ -171,52 +174,5 @@ export class SelfHostedProvider implements ISyncProvider {
       options?.hasStoredEncryptedToken || options?.hasStoredSalt,
     );
     return Promise.resolve(Boolean(baseUrl && (token || hasStored)));
-  }
-
-  async checkVaultStatus(options?: SyncOptions): Promise<SyncStatusResult> {
-    const baseUrl = this.getBaseUrl(options);
-    if (!baseUrl) {
-      return { status: "new" };
-    }
-
-    if (options?.hasStoredSalt) {
-      return { status: "exists" };
-    }
-
-    const token = this.getToken(options);
-    if (!token) {
-      return { status: "new" };
-    }
-
-    try {
-      const response = await fetch(`${baseUrl}/vault`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.status === 404) {
-        return { status: "new" };
-      }
-
-      if (response.ok) {
-        const rawJson: unknown = await response.json().catch(() => ({}));
-        const vaultSchema = z.object({ salt: z.string().optional() });
-        const parsedVault = vaultSchema.safeParse(rawJson);
-        const saltValue = parsedVault.success
-          ? parsedVault.data.salt
-          : undefined;
-
-        return {
-          status: "exists",
-          salt: saltValue,
-        };
-      }
-
-      return { status: "exists" };
-    } catch {
-      return { status: "exists" };
-    }
   }
 }
